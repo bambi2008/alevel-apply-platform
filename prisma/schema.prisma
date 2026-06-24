@@ -1,0 +1,339 @@
+// A-Level 留学申请平台 — Prisma schema (Phase 1)
+// 说明：核心模型已落地；Phase 2 预留模型见文件末尾注释。
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  // RAG 预留：实现向量检索时再启用 pgvector 扩展
+  // （generator 加 previewFeatures = ["postgresqlExtensions"]，datasource 加 extensions = [pgvector]）
+}
+
+// ---------- 账户 ----------
+enum Role {
+  STUDENT
+  ADMIN
+  MENTOR
+}
+
+model User {
+  id           String   @id @default(cuid())
+  phone        String?  @unique
+  email        String?  @unique
+  passwordHash String?
+  role         Role     @default(STUDENT)
+  locale       String   @default("zh-CN")
+  profile      StudentProfile?
+  consents     Consent[]
+  documents    Document[]
+  auditLogs    AuditLog[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+enum ConsentType {
+  PRIVACY_PIPL
+  CROSS_BORDER
+  GUARDIAN
+  MARKETING
+}
+
+model Consent {
+  id        String      @id @default(cuid())
+  userId    String
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      ConsentType
+  version   String
+  grantedAt DateTime    @default(now())
+
+  @@index([userId])
+}
+
+// ---------- 学生档案 ----------
+enum Region {
+  UK
+  HK
+}
+
+model StudentProfile {
+  id             String              @id @default(cuid())
+  userId         String              @unique
+  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName       String?
+  school         String?
+  isMinor        Boolean             @default(false)
+  intakeYear     Int?
+  targetRegions  Region[]
+  intendedMajors String[]
+  budgetNote     String?
+  subjects       ALevelSubject[]
+  testScores     TestScore[]
+  applications   Application[]
+  statements     PersonalStatement[]
+  tasks          Task[]
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+}
+
+enum GradeKind {
+  AS
+  PREDICTED
+  ACTUAL
+}
+
+model ALevelSubject {
+  id        String         @id @default(cuid())
+  profileId String
+  profile   StudentProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  subject   String
+  kind      GradeKind
+  grade     String // A*, A, B, C, D, E, U
+
+  @@index([profileId])
+}
+
+model TestScore {
+  id        String         @id @default(cuid())
+  profileId String
+  profile   StudentProfile @relation(fields: [profileId], references: [id], onDelete: Cascade)
+  type      String // IELTS / TOEFL / DUOLINGO
+  overall   Float?
+  subscores Json?
+  takenAt   DateTime?
+
+  @@index([profileId])
+}
+
+// ---------- 院校与专业 ----------
+model University {
+  id       String    @id @default(cuid())
+  name     String
+  nameZh   String?
+  region   Region
+  city     String?
+  ucasCode String?
+  website  String?
+  ranking  Json?
+  programs Program[]
+
+  @@index([region])
+}
+
+enum ApplyRoute {
+  UCAS
+  HK_DIRECT
+}
+
+model Program {
+  id               String        @id @default(cuid())
+  universityId     String
+  university       University    @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  name             String
+  nameZh           String?
+  degree           String? // BSc / BA / BEng ...
+  durationYears    Int?
+  applyRoute       ApplyRoute
+  ucasCourseCode   String?
+  tuitionPerYear   Int?
+  // 入学要求（结构化 + 文本）
+  aLevelOffer      String? // 例 "A*AA"
+  requiredSubjects Json? // [{ subject, minGrade }]
+  englishReq       Json? // { ielts, toefl }
+  admissionTest    String? // LNAT / UCAT / TMUA ...
+  requirementsText String?
+  applications     Application[]
+
+  @@index([universityId])
+  @@index([applyRoute])
+}
+
+// ---------- 申请 ----------
+enum ChoiceType {
+  UCAS_CHOICE
+  HK_DIRECT
+}
+
+enum AppStatus {
+  PLANNING
+  IN_PROGRESS
+  SUBMITTED
+  INTERVIEW
+  OFFER
+  REJECTED
+  ACCEPTED
+  WITHDRAWN
+}
+
+model Application {
+  id          String                @id @default(cuid())
+  studentId   String
+  student     StudentProfile        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  programId   String
+  program     Program               @relation(fields: [programId], references: [id])
+  choiceType  ChoiceType
+  status      AppStatus             @default(PLANNING)
+  externalRef String?
+  submittedAt DateTime?
+  offer       Offer?
+  documents   ApplicationDocument[]
+  tasks       Task[]
+  createdAt   DateTime              @default(now())
+  updatedAt   DateTime              @updatedAt
+
+  @@index([studentId])
+  @@index([programId])
+}
+
+enum OfferType {
+  CONDITIONAL
+  UNCONDITIONAL
+}
+
+enum OfferDecision {
+  FIRM
+  INSURANCE
+  DECLINE
+  ACCEPTED
+}
+
+model Offer {
+  id            String         @id @default(cuid())
+  applicationId String         @unique
+  application   Application    @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  type          OfferType
+  conditions    String?
+  decision      OfferDecision?
+  deadline      DateTime?
+  respondedAt   DateTime?
+  createdAt     DateTime       @default(now())
+}
+
+// ---------- 资料 ----------
+enum DocType {
+  TRANSCRIPT
+  PASSPORT
+  PREDICTED_GRADES
+  IELTS
+  TOEFL
+  CERTIFICATE
+  PHOTO
+  OTHER
+}
+
+model Document {
+  id        String                @id @default(cuid())
+  ownerId   String
+  owner     User                  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  type      DocType
+  fileKey   String // 存储适配器的 key
+  fileName  String
+  mime      String?
+  size      Int?
+  createdAt DateTime              @default(now())
+  links     ApplicationDocument[]
+
+  @@index([ownerId])
+}
+
+model ApplicationDocument {
+  applicationId String
+  documentId    String
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  document      Document    @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@id([applicationId, documentId])
+}
+
+// ---------- 文书 ----------
+enum PsKind {
+  UK_UCAS_3Q
+  HK_ESSAY
+}
+
+model PersonalStatement {
+  id        String                     @id @default(cuid())
+  studentId String
+  student   StudentProfile             @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  kind      PsKind
+  title     String?
+  content   Json // UK: { q1, q2, q3 }；HK: { body }
+  wordCount Int                        @default(0)
+  status    String                     @default("DRAFT")
+  versions  PersonalStatementVersion[]
+  updatedAt DateTime                   @updatedAt
+  createdAt DateTime                   @default(now())
+
+  @@index([studentId])
+}
+
+model PersonalStatementVersion {
+  id          String            @id @default(cuid())
+  statementId String
+  statement   PersonalStatement @relation(fields: [statementId], references: [id], onDelete: Cascade)
+  content     Json
+  createdAt   DateTime          @default(now())
+
+  @@index([statementId])
+}
+
+// ---------- 时间线 / 任务 ----------
+enum TaskStatus {
+  TODO
+  DOING
+  DONE
+}
+
+model Task {
+  id            String         @id @default(cuid())
+  studentId     String
+  student       StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  applicationId String?
+  application   Application?   @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+  title         String
+  category      String? // DOC / WRITING / SUBMIT / TEST / INTERVIEW
+  dueDate       DateTime?
+  status        TaskStatus     @default(TODO)
+  createdAt     DateTime       @default(now())
+
+  @@index([studentId])
+  @@index([applicationId])
+}
+
+// ---------- 内容 / 合规 ----------
+model ContentArticle {
+  id        String   @id @default(cuid())
+  slug      String
+  locale    String
+  title     String
+  body      String
+  category  String?
+  published Boolean  @default(false)
+  updatedAt DateTime @updatedAt
+
+  @@unique([slug, locale])
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  actorId   String?
+  actor     User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  action    String
+  entity    String?
+  entityId  String?
+  meta      Json?
+  createdAt DateTime @default(now())
+
+  @@index([actorId])
+  @@index([entity, entityId])
+}
+
+// ---------- Phase 2 预留（暂不建表）----------
+// model Mentor { ... }            // 真人导师
+// model Booking { ... }           // 预约
+// model Order / Payment { ... }   // 支付订单
+// model Reference { ... }         // 推荐信
+// model Notification { ... }      // 通知记录
+// model Embedding { ... }         // pgvector 向量（RAG）
