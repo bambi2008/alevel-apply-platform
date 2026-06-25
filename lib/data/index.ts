@@ -15,6 +15,7 @@ type UniRow = {
 };
 type ProgRow = {
   id: string; universityId: string; name: string; nameZh: string | null;
+  field: string | null;
   degreeType: string | null; applyRoute: "UCAS" | "HK_DIRECT";
   annualTuitionGbp: number | null; annualTuitionHkd: number | null;
   alevelOfferTypical: string | null; alevelOfferMinimum: string | null;
@@ -42,6 +43,7 @@ function mapProgram(p: ProgRow): Program {
     universityId: p.universityId,
     name: p.name,
     nameZh: p.nameZh ?? p.name,
+    field: p.field ?? undefined,
     degreeType: p.degreeType ?? undefined,
     applyRoute: p.applyRoute,
     annualTuitionGbp: p.annualTuitionGbp ?? undefined,

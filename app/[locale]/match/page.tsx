@@ -10,7 +10,7 @@ import {
   type ProgramRequirement,
 } from "@/lib/matching";
 import type { ProgramWithUniversity, IeltsSubscores } from "@/lib/data/types";
-import { SUBJECTS, GRADES } from "@/lib/constants";
+import { SUBJECTS, GRADES, FIELDS, fieldLabel } from "@/lib/constants";
 import { loadProfile, profileHasGrades } from "@/lib/profile/store";
 import { AddToApplication } from "@/components/add-to-application";
 
@@ -24,10 +24,23 @@ const CATEGORY_STYLE: Record<MatchCategory, string> = {
   out_of_reach: "bg-neutral-100 text-neutral-500 border-neutral-200",
 };
 
+function guessField(majors: string[]): string {
+  for (const m of majors) {
+    const s = m.trim();
+    const lm = s.toLowerCase();
+    const f = FIELDS.find(
+      (x) => x.zh.includes(s) || s.includes(x.zh) || lm.includes(x.en.toLowerCase()) || lm.includes(x.value),
+    );
+    if (f) return f.value;
+  }
+  return "all";
+}
+
 export default function MatchPage() {
   const t = useTranslations("match");
   const locale = useLocale();
   const isEn = locale === "en";
+  const [field, setField] = useState<string>("all");
 
   const [rows, setRows] = useState<Row[]>([
     { subject: "Mathematics", grade: "A*" },
@@ -45,6 +58,7 @@ export default function MatchPage() {
       setRows(p.subjects.map((s) => ({ subject: s.subject, grade: s.grade })));
       setIelts(p.ielts != null ? String(p.ielts) : "");
       setIeltsSub(p.ieltsSubscores ?? null);
+      setField(guessField(p.intendedMajors ?? []));
       setFromProfile(true);
     }
   }, []);
@@ -61,7 +75,8 @@ export default function MatchPage() {
     if (!submitted) return null;
     const grades = rows.filter((r) => r.subject && r.grade);
     const studentIelts = ielts ? Number(ielts) : null;
-    const evaluated = programs.map((p) => {
+    const pool = field === "all" ? programs : programs.filter((p) => p.field === field);
+    const evaluated = pool.map((p) => {
       const req: ProgramRequirement = {
         typicalOffer: p.alevelOfferTypical,
         minimumOffer: p.alevelOfferMinimum,
@@ -80,7 +95,7 @@ export default function MatchPage() {
     };
     for (const e of evaluated) grouped[e.result.category].push(e);
     return grouped;
-  }, [submitted, rows, ielts, ieltsSub, programs]);
+  }, [submitted, rows, ielts, ieltsSub, programs, field]);
 
   const setRow = (i: number, patch: Partial<Row>) =>
     setRows((rs) => rs.map((r, idx) => (idx === i ? { ...r, ...patch } : r)));
@@ -104,6 +119,19 @@ export default function MatchPage() {
 
       {/* Form */}
       <div className="mt-6 rounded-xl border border-neutral-200 p-5">
+        <label className="flex items-center gap-2 text-sm text-neutral-600 mb-4">
+          {t("field")}
+          <select
+            className="flex-1 rounded-md border border-neutral-300 px-3 py-2 text-sm"
+            value={field}
+            onChange={(e) => setField(e.target.value)}
+          >
+            <option value="all">{t("allFields")}</option>
+            {FIELDS.map((f) => (
+              <option key={f.value} value={f.value}>{fieldLabel(f.value, locale)}</option>
+            ))}
+          </select>
+        </label>
         <div className="space-y-3">
           {rows.map((r, i) => (
             <div key={i} className="flex items-center gap-2">
@@ -171,7 +199,8 @@ export default function MatchPage() {
       </div>
 
       {/* Results */}
-      {results && (
+      {results &&
+        (CATEGORY_ORDER.some((c) => results[c].length > 0) ? (
         <div className="mt-8 space-y-8">
           {isEn && <p className="text-xs text-neutral-400">{t("reasonsNote")}</p>}
           {CATEGORY_ORDER.map((cat) => {
@@ -222,7 +251,9 @@ export default function MatchPage() {
           })}
           <p className="text-xs text-neutral-400">{t("disclaimer")}</p>
         </div>
-      )}
+        ) : (
+          <p className="mt-8 text-neutral-500">{t("noneInField")}</p>
+        ))}
 
       <p className="mt-8 text-sm text-neutral-500">
         <Link href="/universities" className="text-blue-600 hover:underline">

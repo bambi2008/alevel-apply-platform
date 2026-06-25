@@ -89,6 +89,9 @@
     "programCount": "{count} 个专业",
     "reasonsNote": "（以下匹配说明当前为中文）",
     "disclaimer": "⚠️ 当前为样例院校数据，入学要求以各院校官网为准。匹配结果仅供参考，不构成录取保证。",
+    "field": "专业方向",
+    "allFields": "全部方向",
+    "noneInField": "该专业方向暂无样例院校数据（样例库有限，将持续扩充）。",
     "toUniversities": "想查看完整院校与专业？前往院校库。"
   },
   "profile": {

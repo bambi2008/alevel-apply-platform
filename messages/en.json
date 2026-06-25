@@ -89,6 +89,9 @@
     "programCount": "{count} course(s)",
     "reasonsNote": "(match notes are currently in Chinese)",
     "disclaimer": "⚠️ Sample university data; verify entry requirements with each university. Results are for reference only and are not an admission guarantee.",
+    "field": "Field",
+    "allFields": "All fields",
+    "noneInField": "No sample universities for this field yet (sample data is limited and growing).",
     "toUniversities": "Want the full list of universities and courses? Go to the database."
   },
   "profile": {

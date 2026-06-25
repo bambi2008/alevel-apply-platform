@@ -167,6 +167,7 @@ model Program {
   university            University  @relation(fields: [universityId], references: [id], onDelete: Cascade)
   name                  String // 英文课程名
   nameZh                String?
+  field                 String? // 专业方向/学科领域，如 cs / aerospace（见 lib/constants FIELDS）
   degreeType            DegreeType?
   durationYears         Int?
   applyRoute            ApplyRoute

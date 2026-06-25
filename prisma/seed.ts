@@ -33,6 +33,7 @@ async function main() {
         universityId: p.universityId,
         name: p.name,
         nameZh: p.nameZh,
+        field: p.field,
         // mock 的 degreeType 是字符串，对应 Prisma DegreeType 枚举（BA/BSc/BEng…）
         degreeType: p.degreeType as never,
         applyRoute: p.applyRoute,

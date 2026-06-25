@@ -23,6 +23,7 @@ export interface Program {
   universityId: string;
   name: string;
   nameZh: string;
+  field?: string;
   degreeType?: string;
   applyRoute: ApplyRoute;
   annualTuitionGbp?: number;
