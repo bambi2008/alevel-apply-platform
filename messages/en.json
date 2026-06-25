@@ -1,0 +1,46 @@
+{
+  "meta": {
+    "title": "QiaoShen · A-Level UK/HK University Applications",
+    "description": "A low-cost, transparent, process-driven UK (UCAS) and Hong Kong university application toolkit for mainland Chinese A-Level students: course matching, university database, application tracking, and personal statement tools."
+  },
+  "nav": {
+    "brandSuffix": "A-Level UK/HK Apply",
+    "home": "Home",
+    "match": "Match",
+    "universities": "Universities",
+    "profile": "My Profile",
+    "applications": "Applications",
+    "statements": "Statement",
+    "pricing": "Pricing",
+    "freeMatch": "Free Match"
+  },
+  "footer": {
+    "rights": "QiaoShen · For reference only; verify requirements with official sources",
+    "disclaimer": "We do not ghost-write statements or guarantee admission"
+  },
+  "home": {
+    "badge": "Built for A-Level · UK UCAS + HK Direct",
+    "titleLine1": "Own your university application,",
+    "titleBefore": "at ",
+    "titleHighlight": "1/20",
+    "titleAfter": " the cost of an agent",
+    "subtitle": "A UK / Hong Kong undergraduate application platform for mainland A-Level students: course matching, a university database, application tracking and statement tools — transparent, structured, affordable.",
+    "ctaTry": "Try course matching free",
+    "ctaBrowse": "Browse universities",
+    "priceNote": "Traditional agents ¥20,000–¥60,000 · QiaoShen ¥299–¥899/yr",
+    "features": [
+      { "emoji": "🎯", "href": "/match", "title": "Course Matching", "desc": "Enter your A-Level predictions and get reach / match / safety tiers based on each course's minimum and typical offers." },
+      { "emoji": "🏛️", "href": "/universities", "title": "University Database", "desc": "Entry requirements, tuition and rankings for UK + HK universities and courses — structured and transparent." },
+      { "emoji": "📅", "href": "/match", "title": "Application Tracking", "desc": "Status, document checklists and deadline calendar for each application — never miss a deadline." },
+      { "emoji": "✍️", "href": "/statements", "title": "Statement Tools", "desc": "Structured guidance for the UCAS personal statement plus character / format self-checks (AI assist coming soon)." }
+    ],
+    "pricingHeading": "Transparent Pricing",
+    "pricingSub": "One annual fee covering the full application toolkit",
+    "plans": [
+      { "name": "Free", "price": "¥0", "unit": "", "tagline": "Explore", "perks": ["Course matching (top 5 results)", "Basic university info", "1 statement draft"] },
+      { "name": "Standard", "price": "¥299", "unit": "/yr", "tagline": "Budget", "highlight": true, "perks": ["Full course matching", "Full university database", "Application calendar & tasks", "Statement editor"] },
+      { "name": "Pro", "price": "¥899", "unit": "/yr", "tagline": "Most popular", "perks": ["Everything in Standard", "AI statement feedback", "Past-case library", "Offer comparison"] }
+    ],
+    "pricingNote": "Pricing is a product plan and subject to change at launch. We do not guarantee admission."
+  }
+}

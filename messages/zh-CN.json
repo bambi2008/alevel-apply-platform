@@ -1,0 +1,46 @@
+{
+  "meta": {
+    "title": "桥申 · A-Level 英国/香港大学申请平台",
+    "description": "为中国大陆 A-Level 学生提供低成本、透明、流程化的英国（UCAS）与香港大学申请工具：选校匹配、院校数据库、申请追踪、文书工具。"
+  },
+  "nav": {
+    "brandSuffix": "A-Level 英港申请",
+    "home": "首页",
+    "match": "选校匹配",
+    "universities": "院校库",
+    "profile": "我的档案",
+    "applications": "申请清单",
+    "statements": "文书",
+    "pricing": "定价",
+    "freeMatch": "免费选校"
+  },
+  "footer": {
+    "rights": "桥申 · 仅供参考，院校要求以官方为准",
+    "disclaimer": "本平台不代写文书、不承诺录取结果"
+  },
+  "home": {
+    "badge": "A-Level 专属 · 英国 UCAS + 香港直申",
+    "titleLine1": "自己掌控留学申请，",
+    "titleBefore": "用 ",
+    "titleHighlight": "1/20",
+    "titleAfter": " 的价格替代中介",
+    "subtitle": "为中国大陆 A-Level 学生打造的英国 / 香港本科申请平台：选校匹配、院校数据库、申请追踪、文书工具，透明、流程化、低成本。",
+    "ctaTry": "免费试用选校匹配",
+    "ctaBrowse": "浏览院校库",
+    "priceNote": "传统中介 ¥20,000–¥60,000 · 桥申 ¥299–¥899/年",
+    "features": [
+      { "emoji": "🎯", "href": "/match", "title": "选校匹配", "desc": "输入 A-Level 预估成绩，按最低/典型 offer 智能给出冲刺/匹配/稳妥分层。" },
+      { "emoji": "🏛️", "href": "/universities", "title": "院校数据库", "desc": "英国 + 香港院校与专业的入学要求、学费、排名，结构化透明可查。" },
+      { "emoji": "📅", "href": "/match", "title": "申请追踪", "desc": "每所申请的状态、材料清单与截止日历，不再漏 deadline。" },
+      { "emoji": "✍️", "href": "/statements", "title": "文书工具", "desc": "UCAS 个人陈述结构化引导 + 字数/格式自查（AI 辅助即将上线）。" }
+    ],
+    "pricingHeading": "透明定价",
+    "pricingSub": "一次年费，覆盖申请全流程工具",
+    "plans": [
+      { "name": "免费版", "price": "¥0", "unit": "", "tagline": "探索期", "perks": ["选校匹配（前 5 结果）", "院校基础信息查询", "1 份文书草稿"] },
+      { "name": "标准版", "price": "¥299", "unit": "/年", "tagline": "预算敏感", "highlight": true, "perks": ["完整选校匹配", "全量院校数据库", "申请日历与任务", "文书编辑器"] },
+      { "name": "专业版", "price": "¥899", "unit": "/年", "tagline": "主流之选", "perks": ["标准版全部", "AI 文书润色", "往届案例库", "Offer 对比分析"] }
+    ],
+    "pricingNote": "定价为产品规划方案，最终以正式上线为准。本平台不承诺录取结果。"
+  }
+}

@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import { getPrograms, getUniversities } from "@/lib/data";
 import type { Region } from "@/lib/data/types";
 import { AddToApplication } from "@/components/add-to-application";
