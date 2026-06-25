@@ -194,6 +194,37 @@ export default function ProfilePage() {
             />
           </label>
         </div>
+        <div className="mt-4">
+          <span className="text-sm text-neutral-500">{tc("subscores")}</span>
+          <div className="mt-1 grid grid-cols-4 gap-2 max-w-md">
+            {([
+              { key: "listening", label: "subListening" },
+              { key: "reading", label: "subReading" },
+              { key: "writing", label: "subWriting" },
+              { key: "speaking", label: "subSpeaking" },
+            ] as const).map((b) => (
+              <label key={b.key} className="text-xs text-neutral-500">
+                {tc(b.label)}
+                <input
+                  type="number"
+                  step="0.5"
+                  min={0}
+                  max={9}
+                  className="mt-1 w-full rounded-md border border-neutral-300 px-2 py-1.5"
+                  value={p.ieltsSubscores?.[b.key] ?? ""}
+                  onChange={(e) =>
+                    set({
+                      ieltsSubscores: {
+                        ...p.ieltsSubscores,
+                        [b.key]: e.target.value ? Number(e.target.value) : null,
+                      },
+                    })
+                  }
+                />
+              </label>
+            ))}
+          </div>
+        </div>
       </section>
 
       <div className="mt-6 flex items-center gap-4">

@@ -28,17 +28,26 @@ export interface SubjectRequirement {
   minGrade: string;
 }
 
+export interface IeltsSubscores {
+  listening?: number | null;
+  reading?: number | null;
+  writing?: number | null;
+  speaking?: number | null;
+}
+
 export interface ProgramRequirement {
   typicalOffer?: string | null; // 典型 offer，如 "AAA"
   minimumOffer?: string | null; // 最低 offer，如 "AAB"
   requiredSubjects?: SubjectRequirement[] | null; // 必修科目
   excludedSubjects?: string[] | null; // 不接受计入的科目，如 General Studies
   ielts?: number | null; // 雅思总分要求
+  ieltsSubscores?: IeltsSubscores | null; // 雅思单科小分要求
 }
 
 export interface StudentForMatch {
   grades: StudentGrade[]; // 预估或实考
   ielts?: number | null;
+  ieltsSubscores?: IeltsSubscores | null;
 }
 
 export type MatchCategory = "safety" | "match" | "reach" | "out_of_reach";
@@ -165,6 +174,28 @@ export function evaluateMatch(
       reasons.push(`雅思 ${student.ielts} 低于要求 ${req.ielts}`);
     } else {
       reasons.push(`雅思 ${student.ielts} 满足要求 ${req.ielts}`);
+    }
+  }
+
+  // 3b) 雅思单科小分
+  if (req.ieltsSubscores) {
+    const bands: { key: keyof IeltsSubscores; zh: string }[] = [
+      { key: "listening", zh: "听力" },
+      { key: "reading", zh: "阅读" },
+      { key: "writing", zh: "写作" },
+      { key: "speaking", zh: "口语" },
+    ];
+    for (const b of bands) {
+      const need = req.ieltsSubscores[b.key];
+      if (need == null) continue;
+      const got = student.ieltsSubscores?.[b.key];
+      if (got == null) {
+        meetsEnglish = false;
+        reasons.push(`需要雅思${b.zh}小分 ${need}，你未填写`);
+      } else if (got < need) {
+        meetsEnglish = false;
+        reasons.push(`雅思${b.zh} ${got} 低于要求 ${need}`);
+      }
     }
   }
 

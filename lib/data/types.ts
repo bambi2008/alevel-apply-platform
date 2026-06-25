@@ -32,8 +32,16 @@ export interface Program {
   requiredSubjects?: SubjectRequirement[];
   excludedSubjects?: string[];
   ielts?: number;
+  ieltsSubscores?: IeltsSubscores;
   admissionsTest?: string;
   interviewRequired?: boolean;
+}
+
+export interface IeltsSubscores {
+  listening?: number | null;
+  reading?: number | null;
+  writing?: number | null;
+  speaking?: number | null;
 }
 
 export interface ProgramWithUniversity extends Program {

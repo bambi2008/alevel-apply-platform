@@ -9,7 +9,7 @@ import {
   type MatchCategory,
   type ProgramRequirement,
 } from "@/lib/matching";
-import type { ProgramWithUniversity } from "@/lib/data/types";
+import type { ProgramWithUniversity, IeltsSubscores } from "@/lib/data/types";
 import { SUBJECTS, GRADES } from "@/lib/constants";
 import { loadProfile, profileHasGrades } from "@/lib/profile/store";
 import { AddToApplication } from "@/components/add-to-application";
@@ -37,12 +37,14 @@ export default function MatchPage() {
   const [ielts, setIelts] = useState<string>("6.5");
   const [submitted, setSubmitted] = useState(false);
   const [fromProfile, setFromProfile] = useState(false);
+  const [ieltsSub, setIeltsSub] = useState<IeltsSubscores | null>(null);
 
   useEffect(() => {
     const p = loadProfile();
     if (p && profileHasGrades(p)) {
       setRows(p.subjects.map((s) => ({ subject: s.subject, grade: s.grade })));
       setIelts(p.ielts != null ? String(p.ielts) : "");
+      setIeltsSub(p.ieltsSubscores ?? null);
       setFromProfile(true);
     }
   }, []);
@@ -66,15 +68,19 @@ export default function MatchPage() {
         requiredSubjects: p.requiredSubjects,
         excludedSubjects: p.excludedSubjects,
         ielts: p.ielts,
+        ieltsSubscores: p.ieltsSubscores,
       };
-      return { program: p, result: evaluateMatch({ grades, ielts: studentIelts }, req) };
+      return {
+        program: p,
+        result: evaluateMatch({ grades, ielts: studentIelts, ieltsSubscores: ieltsSub }, req),
+      };
     });
     const grouped: Record<MatchCategory, typeof evaluated> = {
       safety: [], match: [], reach: [], out_of_reach: [],
     };
     for (const e of evaluated) grouped[e.result.category].push(e);
     return grouped;
-  }, [submitted, rows, ielts, programs]);
+  }, [submitted, rows, ielts, ieltsSub, programs]);
 
   const setRow = (i: number, patch: Partial<Row>) =>
     setRows((rs) => rs.map((r, idx) => (idx === i ? { ...r, ...patch } : r)));

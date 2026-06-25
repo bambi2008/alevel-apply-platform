@@ -6,6 +6,7 @@ import type {
   Region,
   University,
   SubjectRequirement,
+  IeltsSubscores,
 } from "./types";
 
 type UniRow = {
@@ -18,7 +19,8 @@ type ProgRow = {
   annualTuitionGbp: number | null; annualTuitionHkd: number | null;
   alevelOfferTypical: string | null; alevelOfferMinimum: string | null;
   requiredSubjects: unknown; excludedSubjects: string[];
-  ieltsOverall: number | null; admissionsTest: string | null; interviewRequired: boolean | null;
+  ieltsOverall: number | null; ieltsSubscores: unknown;
+  admissionsTest: string | null; interviewRequired: boolean | null;
 };
 
 function mapUni(u: UniRow): University {
@@ -49,6 +51,7 @@ function mapProgram(p: ProgRow): Program {
     requiredSubjects: (p.requiredSubjects as SubjectRequirement[] | null) ?? undefined,
     excludedSubjects: p.excludedSubjects ?? undefined,
     ielts: p.ieltsOverall ?? undefined,
+    ieltsSubscores: (p.ieltsSubscores as IeltsSubscores | null) ?? undefined,
     admissionsTest: p.admissionsTest ?? undefined,
     interviewRequired: p.interviewRequired ?? undefined,
   };

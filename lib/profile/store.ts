@@ -17,6 +17,14 @@ export interface UserProfile {
   intendedMajors: string[];
   subjects: ProfileSubject[];
   ielts?: number | null;
+  ieltsSubscores?: IeltsSubscores | null;
+}
+
+export interface IeltsSubscores {
+  listening?: number | null;
+  reading?: number | null;
+  writing?: number | null;
+  speaking?: number | null;
 }
 
 const KEY = "alevel:profile:v1";

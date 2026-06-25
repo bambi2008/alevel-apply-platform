@@ -43,6 +43,7 @@ async function main() {
         requiredSubjects: (p.requiredSubjects ?? undefined) as never,
         excludedSubjects: p.excludedSubjects ?? [],
         ieltsOverall: p.ielts,
+        ieltsSubscores: (p.ieltsSubscores ?? undefined) as never,
         admissionsTest: p.admissionsTest,
         interviewRequired: p.interviewRequired,
       },

@@ -45,7 +45,12 @@
     "hk": "Hong Kong",
     "predicted": "Predicted",
     "actual": "Actual",
-    "as": "AS"
+    "as": "AS",
+    "subscores": "IELTS band scores (optional)",
+    "subListening": "Listening",
+    "subReading": "Reading",
+    "subWriting": "Writing",
+    "subSpeaking": "Speaking"
   },
   "home": {
     "badge": "Built for A-Level · UK UCAS + HK Direct",

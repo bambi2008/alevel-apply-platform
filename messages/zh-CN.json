@@ -45,7 +45,12 @@
     "hk": "香港",
     "predicted": "预估",
     "actual": "实考",
-    "as": "AS"
+    "as": "AS",
+    "subscores": "雅思单科小分（选填）",
+    "subListening": "听力",
+    "subReading": "阅读",
+    "subWriting": "写作",
+    "subSpeaking": "口语"
   },
   "home": {
     "badge": "A-Level 专属 · 英国 UCAS + 香港直申",
