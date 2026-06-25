@@ -14,6 +14,7 @@ const navLinks = [
   { href: "/universities", label: "院校库" },
   { href: "/profile", label: "我的档案" },
   { href: "/applications", label: "申请清单" },
+  { href: "/statements", label: "文书" },
   { href: "/#pricing", label: "定价" },
 ];
 
