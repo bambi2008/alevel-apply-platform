@@ -1,15 +1,8 @@
+import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { getPrograms, getUniversities } from "@/lib/data";
 import type { Region } from "@/lib/data/types";
 import { AddToApplication } from "@/components/add-to-application";
-
-export const metadata = { title: "院校库 · 桥申" };
-
-const REGION_TABS: { key: Region | "ALL"; label: string }[] = [
-  { key: "ALL", label: "全部" },
-  { key: "UK", label: "英国" },
-  { key: "HK", label: "香港" },
-];
 
 export default async function UniversitiesPage({
   searchParams,
@@ -18,6 +11,11 @@ export default async function UniversitiesPage({
 }) {
   const { region: regionParam } = await searchParams;
   const region = regionParam === "UK" || regionParam === "HK" ? (regionParam as Region) : undefined;
+
+  const t = await getTranslations("universities");
+  const tc = await getTranslations("common");
+  const locale = await getLocale();
+  const isEn = locale === "en";
 
   const universities = await getUniversities(region);
   const programs = await getPrograms({ region });
@@ -28,32 +26,36 @@ export default async function UniversitiesPage({
     programsByUni.set(p.universityId, arr);
   }
 
+  const tabs: { key: Region | "ALL"; label: string }[] = [
+    { key: "ALL", label: t("tabAll") },
+    { key: "UK", label: tc("uk") },
+    { key: "HK", label: tc("hk") },
+  ];
+
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
-      <h1 className="text-3xl font-bold">院校库</h1>
-      <p className="mt-2 text-neutral-600">
-        英国（UCAS）与香港本科院校及专业的入学要求、学费、排名（当前为样例数据，需人工核验官方来源）。
-      </p>
+      <h1 className="text-3xl font-bold">{t("title")}</h1>
+      <p className="mt-2 text-neutral-600">{t("intro")}</p>
 
       {/* Region tabs */}
-      <div className="mt-6 flex gap-2">
-        {REGION_TABS.map((t) => {
-          const active = (t.key === "ALL" && !region) || t.key === region;
-          const href = t.key === "ALL" ? "/universities" : `/universities?region=${t.key}`;
+      <div className="mt-6 flex gap-2 flex-wrap">
+        {tabs.map((tab) => {
+          const active = (tab.key === "ALL" && !region) || tab.key === region;
+          const href = tab.key === "ALL" ? "/universities" : `/universities?region=${tab.key}`;
           return (
             <Link
-              key={t.key}
+              key={tab.key}
               href={href}
               className={`px-4 py-1.5 rounded-full text-sm border ${
                 active ? "bg-blue-600 text-white border-blue-600" : "border-neutral-300 text-neutral-600 hover:bg-neutral-50"
               }`}
             >
-              {t.label}
+              {tab.label}
             </Link>
           );
         })}
         <span className="ml-auto self-center text-sm text-neutral-400">
-          {universities.length} 所院校 · {programs.length} 个专业
+          {t("summary", { unis: universities.length, programs: programs.length })}
         </span>
       </div>
 
@@ -61,16 +63,18 @@ export default async function UniversitiesPage({
       <div className="mt-6 space-y-4">
         {universities.map((u) => {
           const ps = programsByUni.get(u.id) ?? [];
+          const primary = isEn ? u.name : u.nameZh;
+          const secondary = isEn ? u.nameZh : u.name;
           return (
             <div key={u.id} className="rounded-xl border border-neutral-200 p-5">
               <div className="flex items-baseline justify-between flex-wrap gap-2">
                 <div>
                   <h2 className="font-semibold text-lg">
-                    {u.nameZh}
-                    <span className="ml-2 text-sm font-normal text-neutral-500">{u.name}</span>
+                    {primary}
+                    <span className="ml-2 text-sm font-normal text-neutral-500">{secondary}</span>
                   </h2>
                   <div className="text-sm text-neutral-500 mt-0.5">
-                    {u.region === "UK" ? "英国" : "香港"} · {u.city}
+                    {u.region === "UK" ? tc("uk") : tc("hk")} · {u.city}
                     {u.league ? ` · ${u.league}` : ""}
                   </div>
                 </div>
@@ -85,12 +89,12 @@ export default async function UniversitiesPage({
                 <div className="mt-4 grid sm:grid-cols-2 gap-2">
                   {ps.map((p) => (
                     <div key={p.id} className="rounded-lg bg-neutral-50 px-3 py-2 text-sm">
-                      <div className="font-medium">{p.nameZh}</div>
+                      <div className="font-medium">{isEn ? p.name : p.nameZh}</div>
                       <div className="text-neutral-500 flex flex-wrap gap-x-3">
-                        <span>典型 {p.alevelOfferTypical ?? "—"}</span>
-                        <span>雅思 {p.ielts ?? "—"}</span>
-                        {p.interviewRequired && <span className="text-amber-600">需面试</span>}
-                        {p.admissionsTest && <span>笔试 {p.admissionsTest}</span>}
+                        <span>{t("typical")} {p.alevelOfferTypical ?? "—"}</span>
+                        <span>{t("ielts")} {p.ielts ?? "—"}</span>
+                        {p.interviewRequired && <span className="text-amber-600">{t("interview")}</span>}
+                        {p.admissionsTest && <span>{t("test")} {p.admissionsTest}</span>}
                       </div>
                       <div className="mt-1.5">
                         <AddToApplication programId={p.id} />
@@ -106,7 +110,7 @@ export default async function UniversitiesPage({
 
       <div className="mt-8">
         <Link href="/match" className="text-blue-600 hover:underline">
-          → 用我的成绩做选校匹配
+          {t("toMatch")}
         </Link>
       </div>
     </div>

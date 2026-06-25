@@ -18,6 +18,16 @@
     "rights": "QiaoShen · For reference only; verify requirements with official sources",
     "disclaimer": "We do not ghost-write statements or guarantee admission"
   },
+  "common": {
+    "loading": "Loading…",
+    "addToApplication": "Add to application",
+    "added": "Added",
+    "uk": "UK",
+    "hk": "Hong Kong",
+    "predicted": "Predicted",
+    "actual": "Actual",
+    "as": "AS"
+  },
   "home": {
     "badge": "Built for A-Level · UK UCAS + HK Direct",
     "titleLine1": "Own your university application,",
@@ -42,5 +52,91 @@
       { "name": "Pro", "price": "¥899", "unit": "/yr", "tagline": "Most popular", "perks": ["Everything in Standard", "AI statement feedback", "Past-case library", "Offer comparison"] }
     ],
     "pricingNote": "Pricing is a product plan and subject to change at launch. We do not guarantee admission."
+  },
+  "match": {
+    "title": "Course Matching",
+    "intro": "Enter your A-Level predicted/actual grades and IELTS. We tier each course as reach / match / safety against its minimum and typical offers (sample university data for now).",
+    "fromProfile": "Loaded grades from your profile — you can adjust them below for this run.",
+    "addSubject": "Add subject",
+    "ielts": "IELTS overall",
+    "start": "Match",
+    "typical": "Typical",
+    "minimum": "Min",
+    "programCount": "{count} course(s)",
+    "reasonsNote": "(match notes are currently in Chinese)",
+    "disclaimer": "⚠️ Sample university data; verify entry requirements with each university. Results are for reference only and are not an admission guarantee.",
+    "toUniversities": "Want the full list of universities and courses? Go to the database."
+  },
+  "profile": {
+    "title": "My Profile",
+    "intro": "Once filled in, Course Matching auto-loads your grades. Saved in your browser for now (cloud sync after login).",
+    "basicInfo": "Basic info",
+    "fullName": "Name (optional)",
+    "school": "School (optional)",
+    "intakeYear": "Intended intake year",
+    "intendedMajors": "Intended majors (comma-separated)",
+    "intendedMajorsPlaceholder": "Computer Science, Economics",
+    "targetRegions": "Target regions",
+    "grades": "A-Level grades",
+    "addSubject": "Add subject",
+    "ielts": "IELTS overall",
+    "save": "Save profile",
+    "savedAt": "Saved",
+    "goMatch": "Go to matching →"
+  },
+  "applications": {
+    "title": "Applications",
+    "intro": "Track your application progress and offers. Saved in your browser for now (cloud sync after login).",
+    "statTotal": "Total",
+    "statOffers": "Offers",
+    "statSubmitted": "Submitted",
+    "empty": "No applications yet. Add courses from Course Matching or the University database.",
+    "status": "Status",
+    "offerType": "Offer type",
+    "decision": "Your decision",
+    "conditions": "Conditions (e.g. A*AA)",
+    "statuses": {
+      "PLANNING": "Planning", "IN_PROGRESS": "In progress", "SUBMITTED": "Submitted",
+      "INTERVIEW": "Interview", "OFFER": "Offer", "ACCEPTED": "Accepted",
+      "REJECTED": "Rejected", "WITHDRAWN": "Withdrawn"
+    },
+    "offerTypes": { "CONDITIONAL": "Conditional", "UNCONDITIONAL": "Unconditional" },
+    "decisions": { "FIRM": "Firm", "INSURANCE": "Insurance", "DECLINE": "Decline", "ACCEPTED": "Accepted" }
+  },
+  "statements": {
+    "title": "Statement Studio",
+    "intro": "UCAS personal statement (three structured questions from 2026 entry). Structured guidance plus character / format self-checks to help you write a strong PS yourself.",
+    "aiNotice": "⚠️ This tool assists only and does not ghost-write. Your statement must be your own — UCAS runs similarity detection. AI feedback coming soon.",
+    "totalChars": "Total characters",
+    "minHint": "Aim for at least {min} characters",
+    "chars": "{n} chars",
+    "placeholder": "Write here…",
+    "selfCheckTitle": "Pre-submission checklist",
+    "save": "Save draft",
+    "savedAt": "Saved",
+    "questions": [
+      { "title": "Q1 · Why do you want to study this course?", "hint": "Explain where your interest and motivation come from; avoid vague 'always loved it' — back it with specific experiences." },
+      { "title": "Q2 · How have your studies prepared you?", "hint": "Connect your A-Level subjects, topics, reading or projects, and how they built relevant knowledge and skills." },
+      { "title": "Q3 · What have you done outside education, and why is it useful?", "hint": "Competitions, research, internships, volunteering, self-study — focus on what you learned and its relevance." }
+    ],
+    "selfCheck": [
+      "Original work, not copied or ghost-written (UCAS runs similarity detection)",
+      "Focus on academic motivation and ability, not unrelated personal sentiment",
+      "Use concrete examples and outcomes, not vague adjectives",
+      "No special formatting / emoji / hyperlinks",
+      "Avoid clichéd openings (famous quotes, dictionary definitions)",
+      "Three answers total under 4000 characters"
+    ]
+  },
+  "universities": {
+    "title": "University Database",
+    "intro": "Entry requirements, tuition and rankings for UK (UCAS) and Hong Kong undergraduate universities and courses (sample data; verify with official sources).",
+    "tabAll": "All",
+    "summary": "{unis} universities · {programs} courses",
+    "typical": "Typical",
+    "ielts": "IELTS",
+    "interview": "Interview",
+    "test": "Test",
+    "toMatch": "→ Match with my grades"
   }
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { getAllProgramsSync } from "@/lib/data";
 import {
@@ -15,7 +16,16 @@ import {
   type AppStatus,
 } from "@/lib/applications/store";
 
+type OfferTypeVal = "CONDITIONAL" | "UNCONDITIONAL" | undefined;
+type OfferDecisionVal = "FIRM" | "INSURANCE" | "DECLINE" | "ACCEPTED" | undefined;
+
 export default function ApplicationsPage() {
+  const t = useTranslations("applications");
+  const tc = useTranslations("common");
+  const tnav = useTranslations("nav");
+  const locale = useLocale();
+  const isEn = locale === "en";
+
   const [items, setItems] = useState<ApplicationItem[]>([]);
   const [loaded, setLoaded] = useState(false);
   const programs = useMemo(() => getAllProgramsSync(), []);
@@ -28,61 +38,65 @@ export default function ApplicationsPage() {
     return subscribeApps(sync);
   }, []);
 
-  const statusLabel = (s: AppStatus) => APP_STATUSES.find((x) => x.value === s);
+  const colorOf = (s: AppStatus) => APP_STATUSES.find((x) => x.value === s)?.color ?? "";
   const offerCount = items.filter((i) => i.status === "OFFER" || i.status === "ACCEPTED").length;
 
-  if (!loaded) return <div className="mx-auto max-w-4xl px-4 py-10 text-neutral-400">加载中…</div>;
+  if (!loaded) return <div className="mx-auto max-w-4xl px-4 py-10 text-neutral-400">{tc("loading")}</div>;
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
-      <h1 className="text-3xl font-bold">申请清单</h1>
-      <p className="mt-2 text-neutral-600">
-        管理你的申请进度与 Offer。资料暂存本地浏览器（接入登录后云端同步）。
-      </p>
+      <h1 className="text-3xl font-bold">{t("title")}</h1>
+      <p className="mt-2 text-neutral-600">{t("intro")}</p>
 
-      {/* 概览 */}
+      {/* Overview */}
       <div className="mt-6 grid grid-cols-3 gap-3">
-        <Stat label="申请总数" value={items.length} />
-        <Stat label="已获 Offer" value={offerCount} />
+        <Stat label={t("statTotal")} value={items.length} />
+        <Stat label={t("statOffers")} value={offerCount} />
         <Stat
-          label="已提交"
+          label={t("statSubmitted")}
           value={items.filter((i) => ["SUBMITTED", "INTERVIEW", "OFFER", "ACCEPTED"].includes(i.status)).length}
         />
       </div>
 
       {items.length === 0 ? (
         <div className="mt-8 rounded-xl border border-dashed border-neutral-300 p-10 text-center text-neutral-500">
-          还没有申请。去 <Link href="/match" className="text-blue-600 hover:underline">选校匹配</Link> 或{" "}
-          <Link href="/universities" className="text-blue-600 hover:underline">院校库</Link> 把感兴趣的专业「加入申请」。
+          <p>{t("empty")}</p>
+          <p className="mt-2">
+            <Link href="/match" className="text-blue-600 hover:underline">{tnav("match")}</Link>
+            {" · "}
+            <Link href="/universities" className="text-blue-600 hover:underline">{tnav("universities")}</Link>
+          </p>
         </div>
       ) : (
         <div className="mt-6 space-y-3">
           {items.map((item) => {
             const p = programOf(item.programId);
-            const sl = statusLabel(item.status);
             const showOffer = item.status === "OFFER" || item.status === "ACCEPTED";
             return (
               <div key={item.programId} className="rounded-xl border border-neutral-200 p-4">
                 <div className="flex justify-between gap-3 flex-wrap">
                   <div>
                     <div className="font-medium">
-                      {p ? `${p.university.nameZh} · ${p.nameZh}` : item.programId}
+                      {p
+                        ? `${isEn ? p.university.name : p.university.nameZh} · ${isEn ? p.name : p.nameZh}`
+                        : item.programId}
                     </div>
                     {p && (
                       <div className="text-sm text-neutral-500">
-                        {p.university.name} — {p.name} · 典型 {p.alevelOfferTypical ?? "—"}
+                        {isEn ? p.university.nameZh : p.university.name} — {isEn ? p.nameZh : p.name}
+                        {p.alevelOfferTypical ? ` · ${p.alevelOfferTypical}` : ""}
                       </div>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    {sl && (
-                      <span className={`text-xs px-2 py-0.5 rounded-full ${sl.color}`}>{sl.label}</span>
-                    )}
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${colorOf(item.status)}`}>
+                      {t(`statuses.${item.status}`)}
+                    </span>
                     <button
                       type="button"
                       onClick={() => removeApplication(item.programId)}
                       className="text-neutral-400 hover:text-red-500 text-sm"
-                      aria-label="移除"
+                      aria-label="remove"
                     >
                       ✕
                     </button>
@@ -91,7 +105,7 @@ export default function ApplicationsPage() {
 
                 <div className="mt-3 flex flex-wrap items-center gap-3">
                   <label className="text-sm text-neutral-600 flex items-center gap-2">
-                    状态
+                    {t("status")}
                     <select
                       className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
                       value={item.status}
@@ -100,7 +114,7 @@ export default function ApplicationsPage() {
                       }
                     >
                       {APP_STATUSES.map((s) => (
-                        <option key={s.value} value={s.value}>{s.label}</option>
+                        <option key={s.value} value={s.value}>{t(`statuses.${s.value}`)}</option>
                       ))}
                     </select>
                   </label>
@@ -109,7 +123,7 @@ export default function ApplicationsPage() {
                 {showOffer && (
                   <div className="mt-3 rounded-lg bg-neutral-50 p-3 grid sm:grid-cols-3 gap-2">
                     <label className="text-sm text-neutral-600">
-                      Offer 类型
+                      {t("offerType")}
                       <select
                         className="mt-1 w-full rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
                         value={item.offer?.type ?? ""}
@@ -120,13 +134,13 @@ export default function ApplicationsPage() {
                         }
                       >
                         <option value="">—</option>
-                        {OFFER_TYPES.map((t) => (
-                          <option key={t.value} value={t.value}>{t.label}</option>
+                        {OFFER_TYPES.map((o) => (
+                          <option key={o.value} value={o.value}>{t(`offerTypes.${o.value}`)}</option>
                         ))}
                       </select>
                     </label>
                     <label className="text-sm text-neutral-600">
-                      你的决定
+                      {t("decision")}
                       <select
                         className="mt-1 w-full rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
                         value={item.offer?.decision ?? ""}
@@ -138,12 +152,12 @@ export default function ApplicationsPage() {
                       >
                         <option value="">—</option>
                         {OFFER_DECISIONS.map((d) => (
-                          <option key={d.value} value={d.value}>{d.label}</option>
+                          <option key={d.value} value={d.value}>{t(`decisions.${d.value}`)}</option>
                         ))}
                       </select>
                     </label>
                     <label className="text-sm text-neutral-600">
-                      条件（如 A*AA）
+                      {t("conditions")}
                       <input
                         className="mt-1 w-full rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
                         value={item.offer?.conditions ?? ""}
@@ -164,9 +178,6 @@ export default function ApplicationsPage() {
     </div>
   );
 }
-
-type OfferTypeVal = "CONDITIONAL" | "UNCONDITIONAL" | undefined;
-type OfferDecisionVal = "FIRM" | "INSURANCE" | "DECLINE" | "ACCEPTED" | undefined;
 
 function Stat({ label, value }: { label: string; value: number }) {
   return (

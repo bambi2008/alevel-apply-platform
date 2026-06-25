@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { SUBJECTS, GRADES, GRADE_KINDS, REGIONS } from "@/lib/constants";
 import {
@@ -13,6 +14,8 @@ import {
 import type { Region } from "@/lib/data/types";
 
 export default function ProfilePage() {
+  const t = useTranslations("profile");
+  const tc = useTranslations("common");
   const [p, setP] = useState<UserProfile>(emptyProfile);
   const [loaded, setLoaded] = useState(false);
   const [savedAt, setSavedAt] = useState<string | null>(null);
@@ -52,21 +55,19 @@ export default function ProfilePage() {
     setSavedAt(new Date().toLocaleTimeString());
   };
 
-  if (!loaded) return <div className="mx-auto max-w-3xl px-4 py-10 text-neutral-400">加载中…</div>;
+  if (!loaded) return <div className="mx-auto max-w-3xl px-4 py-10 text-neutral-400">{tc("loading")}</div>;
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
-      <h1 className="text-3xl font-bold">我的档案</h1>
-      <p className="mt-2 text-neutral-600">
-        填好后，<Link href="/match" className="text-blue-600 hover:underline">选校匹配</Link> 会自动带入你的成绩。资料暂存在本地浏览器（接入登录后改为云端同步）。
-      </p>
+      <h1 className="text-3xl font-bold">{t("title")}</h1>
+      <p className="mt-2 text-neutral-600">{t("intro")}</p>
 
-      {/* 基本信息 */}
+      {/* Basic info */}
       <section className="mt-6 rounded-xl border border-neutral-200 p-5 space-y-4">
-        <h2 className="font-semibold">基本信息</h2>
+        <h2 className="font-semibold">{t("basicInfo")}</h2>
         <div className="grid sm:grid-cols-2 gap-3">
           <label className="text-sm">
-            <span className="text-neutral-500">姓名（选填）</span>
+            <span className="text-neutral-500">{t("fullName")}</span>
             <input
               className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2"
               value={p.fullName ?? ""}
@@ -74,7 +75,7 @@ export default function ProfilePage() {
             />
           </label>
           <label className="text-sm">
-            <span className="text-neutral-500">就读学校（选填）</span>
+            <span className="text-neutral-500">{t("school")}</span>
             <input
               className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2"
               value={p.school ?? ""}
@@ -82,7 +83,7 @@ export default function ProfilePage() {
             />
           </label>
           <label className="text-sm">
-            <span className="text-neutral-500">计划入学年份</span>
+            <span className="text-neutral-500">{t("intakeYear")}</span>
             <input
               type="number"
               min={2025}
@@ -93,19 +94,19 @@ export default function ProfilePage() {
             />
           </label>
           <label className="text-sm">
-            <span className="text-neutral-500">意向专业（逗号分隔）</span>
+            <span className="text-neutral-500">{t("intendedMajors")}</span>
             <input
               className="mt-1 w-full rounded-md border border-neutral-300 px-3 py-2"
               value={p.intendedMajors.join("，")}
               onChange={(e) =>
                 set({ intendedMajors: e.target.value.split(/[，,]/).map((s) => s.trim()).filter(Boolean) })
               }
-              placeholder="计算机科学，经济学"
+              placeholder={t("intendedMajorsPlaceholder")}
             />
           </label>
         </div>
         <div className="text-sm">
-          <span className="text-neutral-500">目标地区</span>
+          <span className="text-neutral-500">{t("targetRegions")}</span>
           <div className="mt-1 flex gap-2">
             {REGIONS.map((r) => {
               const active = p.targetRegions.includes(r.value);
@@ -118,7 +119,7 @@ export default function ProfilePage() {
                     active ? "bg-blue-600 text-white border-blue-600" : "border-neutral-300 text-neutral-600"
                   }`}
                 >
-                  {r.label}
+                  {tc(r.value.toLowerCase())}
                 </button>
               );
             })}
@@ -126,9 +127,9 @@ export default function ProfilePage() {
         </div>
       </section>
 
-      {/* A-Level 成绩 */}
+      {/* A-Level grades */}
       <section className="mt-4 rounded-xl border border-neutral-200 p-5">
-        <h2 className="font-semibold mb-3">A-Level 成绩</h2>
+        <h2 className="font-semibold mb-3">{t("grades")}</h2>
         <div className="space-y-3">
           {p.subjects.map((s, i) => (
             <div key={i} className="flex items-center gap-2">
@@ -147,7 +148,7 @@ export default function ProfilePage() {
                 onChange={(e) => setSubject(i, { kind: e.target.value as ProfileSubject["kind"] })}
               >
                 {GRADE_KINDS.map((k) => (
-                  <option key={k.value} value={k.value}>{k.label}</option>
+                  <option key={k.value} value={k.value}>{tc(k.value.toLowerCase())}</option>
                 ))}
               </select>
               <select
@@ -164,7 +165,7 @@ export default function ProfilePage() {
                 onClick={() => removeSubject(i)}
                 disabled={p.subjects.length <= 1}
                 className="px-2 py-2 text-neutral-400 hover:text-red-500 disabled:opacity-30"
-                aria-label="删除科目"
+                aria-label="remove"
               >
                 ✕
               </button>
@@ -178,10 +179,10 @@ export default function ProfilePage() {
             disabled={p.subjects.length >= 5}
             className="text-sm text-blue-600 hover:underline disabled:opacity-40"
           >
-            + 添加科目
+            + {t("addSubject")}
           </button>
           <label className="flex items-center gap-2 text-sm text-neutral-600">
-            雅思总分
+            {t("ielts")}
             <input
               type="number"
               step="0.5"
@@ -201,12 +202,12 @@ export default function ProfilePage() {
           onClick={onSave}
           className="rounded-lg bg-blue-600 text-white px-6 py-2.5 font-medium hover:bg-blue-700"
         >
-          保存档案
+          {t("save")}
         </button>
         {savedAt && (
           <span className="text-sm text-green-600">
-            ✓ 已保存（{savedAt}）·{" "}
-            <Link href="/match" className="text-blue-600 hover:underline">去选校匹配 →</Link>
+            ✓ {t("savedAt")}（{savedAt}）·{" "}
+            <Link href="/match" className="text-blue-600 hover:underline">{t("goMatch")}</Link>
           </span>
         )}
       </div>

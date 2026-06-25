@@ -18,6 +18,16 @@
     "rights": "桥申 · 仅供参考，院校要求以官方为准",
     "disclaimer": "本平台不代写文书、不承诺录取结果"
   },
+  "common": {
+    "loading": "加载中…",
+    "addToApplication": "加入申请",
+    "added": "已加入申请",
+    "uk": "英国",
+    "hk": "香港",
+    "predicted": "预估",
+    "actual": "实考",
+    "as": "AS"
+  },
   "home": {
     "badge": "A-Level 专属 · 英国 UCAS + 香港直申",
     "titleLine1": "自己掌控留学申请，",
@@ -42,5 +52,91 @@
       { "name": "专业版", "price": "¥899", "unit": "/年", "tagline": "主流之选", "perks": ["标准版全部", "AI 文书润色", "往届案例库", "Offer 对比分析"] }
     ],
     "pricingNote": "定价为产品规划方案，最终以正式上线为准。本平台不承诺录取结果。"
+  },
+  "match": {
+    "title": "选校匹配",
+    "intro": "填入你的 A-Level 预估/实考成绩与雅思，系统按各专业的最低与典型要求，给出冲刺 / 匹配 / 稳妥分层（当前为样例院校数据）。",
+    "fromProfile": "已带入「我的档案」中的成绩，可在下方临时调整。",
+    "addSubject": "添加科目",
+    "ielts": "雅思总分",
+    "start": "开始匹配",
+    "typical": "典型",
+    "minimum": "最低",
+    "programCount": "{count} 个专业",
+    "reasonsNote": "（以下匹配说明当前为中文）",
+    "disclaimer": "⚠️ 当前为样例院校数据，入学要求以各院校官网为准。匹配结果仅供参考，不构成录取保证。",
+    "toUniversities": "想查看完整院校与专业？前往院校库。"
+  },
+  "profile": {
+    "title": "我的档案",
+    "intro": "填好后，选校匹配会自动带入你的成绩。资料暂存在本地浏览器（接入登录后改为云端同步）。",
+    "basicInfo": "基本信息",
+    "fullName": "姓名（选填）",
+    "school": "就读学校（选填）",
+    "intakeYear": "计划入学年份",
+    "intendedMajors": "意向专业（逗号分隔）",
+    "intendedMajorsPlaceholder": "计算机科学，经济学",
+    "targetRegions": "目标地区",
+    "grades": "A-Level 成绩",
+    "addSubject": "添加科目",
+    "ielts": "雅思总分",
+    "save": "保存档案",
+    "savedAt": "已保存",
+    "goMatch": "去选校匹配 →"
+  },
+  "applications": {
+    "title": "申请清单",
+    "intro": "管理你的申请进度与 Offer。资料暂存本地浏览器（接入登录后云端同步）。",
+    "statTotal": "申请总数",
+    "statOffers": "已获 Offer",
+    "statSubmitted": "已提交",
+    "empty": "还没有申请。去选校匹配或院校库把感兴趣的专业「加入申请」。",
+    "status": "状态",
+    "offerType": "Offer 类型",
+    "decision": "你的决定",
+    "conditions": "条件（如 A*AA）",
+    "statuses": {
+      "PLANNING": "计划中", "IN_PROGRESS": "准备中", "SUBMITTED": "已提交",
+      "INTERVIEW": "面试中", "OFFER": "已获 Offer", "ACCEPTED": "已接受",
+      "REJECTED": "被拒", "WITHDRAWN": "已撤回"
+    },
+    "offerTypes": { "CONDITIONAL": "有条件", "UNCONDITIONAL": "无条件" },
+    "decisions": { "FIRM": "第一志愿 (Firm)", "INSURANCE": "保底 (Insurance)", "DECLINE": "拒绝", "ACCEPTED": "已接受" }
+  },
+  "statements": {
+    "title": "文书工作台",
+    "intro": "UCAS 个人陈述（2026 入学起为 3 个结构化问题）。结构化引导 + 字数与格式自查，帮你自己写出高质量 PS。",
+    "aiNotice": "⚠️ 本工具仅辅助，不代写。个人陈述须为你本人原创——UCAS 内置相似度检测，代写有风险。AI 润色建议即将上线。",
+    "totalChars": "合计字符",
+    "minHint": "建议不少于 {min} 字符",
+    "chars": "{n} 字符",
+    "placeholder": "在此撰写…",
+    "selfCheckTitle": "提交前自查",
+    "save": "保存草稿",
+    "savedAt": "已保存",
+    "questions": [
+      { "title": "Q1 · 为什么想学这个专业？", "hint": "说明你对该学科的兴趣来源与动机，避免空泛的『从小就喜欢』，用具体经历支撑。" },
+      { "title": "Q2 · 你的学业如何为之做准备？", "hint": "结合 A-Level 科目、课题、阅读或项目，说明它们如何培养了相关知识与能力。" },
+      { "title": "Q3 · 教育之外做了哪些准备，为何有用？", "hint": "竞赛、科研、实习、志愿、自学等课外经历，重点是『学到了什么 / 与专业的关联』。" }
+    ],
+    "selfCheck": [
+      "内容为本人原创，未抄袭或代写（UCAS 内置相似度检测）",
+      "聚焦学术动机与能力，少写无关的个人情感",
+      "用具体事例与成果，而非空泛形容词",
+      "未使用特殊格式 / 表情符号 / 超链接",
+      "避免老套开头（如名人名言、字典定义）",
+      "三题合计不超过 4000 字符"
+    ]
+  },
+  "universities": {
+    "title": "院校库",
+    "intro": "英国（UCAS）与香港本科院校及专业的入学要求、学费、排名（当前为样例数据，需人工核验官方来源）。",
+    "tabAll": "全部",
+    "summary": "{unis} 所院校 · {programs} 个专业",
+    "typical": "典型",
+    "ielts": "雅思",
+    "interview": "需面试",
+    "test": "笔试",
+    "toMatch": "→ 用我的成绩做选校匹配"
   }
 }

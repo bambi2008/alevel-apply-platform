@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import {
   evaluateMatch,
@@ -24,6 +25,10 @@ const CATEGORY_STYLE: Record<MatchCategory, string> = {
 };
 
 export default function MatchPage() {
+  const t = useTranslations("match");
+  const locale = useLocale();
+  const isEn = locale === "en";
+
   const [rows, setRows] = useState<Row[]>([
     { subject: "Mathematics", grade: "A*" },
     { subject: "Physics", grade: "A" },
@@ -33,7 +38,6 @@ export default function MatchPage() {
   const [submitted, setSubmitted] = useState(false);
   const [fromProfile, setFromProfile] = useState(false);
 
-  // 进入页面时，若本地档案已有成绩则自动带入
   useEffect(() => {
     const p = loadProfile();
     if (p && profileHasGrades(p)) {
@@ -74,18 +78,16 @@ export default function MatchPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
-      <h1 className="text-3xl font-bold">选校匹配</h1>
-      <p className="mt-2 text-neutral-600">
-        填入你的 A-Level 预估/实考成绩与雅思，系统按各专业的最低与典型要求，给出
-        <span className="text-amber-700"> 冲刺 </span>/
-        <span className="text-blue-700"> 匹配 </span>/
-        <span className="text-green-700"> 稳妥 </span>分层（当前为样例院校数据）。
-      </p>
+      <h1 className="text-3xl font-bold">{t("title")}</h1>
+      <p className="mt-2 text-neutral-600">{t("intro")}</p>
 
       {fromProfile && (
-        <div className="mt-3 text-sm text-blue-700 bg-blue-50 rounded-lg px-3 py-2">
-          已带入<Link href="/profile" className="underline">我的档案</Link>中的成绩，可在下方临时调整。
-        </div>
+        <Link
+          href="/profile"
+          className="mt-3 block text-sm text-blue-700 bg-blue-50 rounded-lg px-3 py-2 hover:bg-blue-100"
+        >
+          {t("fromProfile")}
+        </Link>
       )}
 
       {/* Form */}
@@ -116,7 +118,7 @@ export default function MatchPage() {
                 onClick={() => removeRow(i)}
                 disabled={rows.length <= 1}
                 className="px-2 py-2 text-neutral-400 hover:text-red-500 disabled:opacity-30"
-                aria-label="删除科目"
+                aria-label="remove"
               >
                 ✕
               </button>
@@ -131,10 +133,10 @@ export default function MatchPage() {
             disabled={rows.length >= 4}
             className="text-sm text-blue-600 hover:underline disabled:opacity-40"
           >
-            + 添加科目
+            + {t("addSubject")}
           </button>
           <label className="flex items-center gap-2 text-sm text-neutral-600 ml-auto">
-            雅思总分
+            {t("ielts")}
             <input
               type="number"
               step="0.5"
@@ -152,13 +154,14 @@ export default function MatchPage() {
           onClick={() => setSubmitted(true)}
           className="mt-5 w-full rounded-lg bg-blue-600 text-white py-2.5 font-medium hover:bg-blue-700"
         >
-          开始匹配
+          {t("start")}
         </button>
       </div>
 
       {/* Results */}
       {results && (
         <div className="mt-8 space-y-8">
+          {isEn && <p className="text-xs text-neutral-400">{t("reasonsNote")}</p>}
           {CATEGORY_ORDER.map((cat) => {
             const items = results[cat];
             if (items.length === 0) return null;
@@ -166,9 +169,11 @@ export default function MatchPage() {
               <section key={cat}>
                 <h2 className="flex items-center gap-2 font-semibold mb-3">
                   <span className={`text-xs px-2 py-0.5 rounded-full border ${CATEGORY_STYLE[cat]}`}>
-                    {CATEGORY_LABEL[cat].zh}
+                    {CATEGORY_LABEL[cat][isEn ? "en" : "zh"]}
                   </span>
-                  <span className="text-neutral-400 text-sm">{items.length} 个专业</span>
+                  <span className="text-neutral-400 text-sm">
+                    {t("programCount", { count: items.length })}
+                  </span>
                 </h2>
                 <div className="space-y-3">
                   {items.map(({ program, result }) => (
@@ -176,15 +181,17 @@ export default function MatchPage() {
                       <div className="flex justify-between gap-3">
                         <div>
                           <div className="font-medium">
-                            {program.university.nameZh} · {program.nameZh}
+                            {(isEn ? program.university.name : program.university.nameZh)} ·{" "}
+                            {isEn ? program.name : program.nameZh}
                           </div>
                           <div className="text-sm text-neutral-500">
-                            {program.university.name} — {program.name}
+                            {isEn ? program.university.nameZh : program.university.name} —{" "}
+                            {isEn ? program.nameZh : program.name}
                           </div>
                         </div>
                         <div className="text-right text-sm whitespace-nowrap">
-                          <div className="text-neutral-700">典型 {program.alevelOfferTypical ?? "—"}</div>
-                          <div className="text-neutral-400">最低 {program.alevelOfferMinimum ?? "—"}</div>
+                          <div className="text-neutral-700">{t("typical")} {program.alevelOfferTypical ?? "—"}</div>
+                          <div className="text-neutral-400">{t("minimum")} {program.alevelOfferMinimum ?? "—"}</div>
                         </div>
                       </div>
                       <ul className="mt-2 text-sm text-neutral-600 space-y-0.5">
@@ -201,14 +208,14 @@ export default function MatchPage() {
               </section>
             );
           })}
-          <p className="text-xs text-neutral-400">
-            ⚠️ 当前为样例院校数据，入学要求以各院校官网为准。匹配结果仅供参考，不构成录取保证。
-          </p>
+          <p className="text-xs text-neutral-400">{t("disclaimer")}</p>
         </div>
       )}
 
       <p className="mt-8 text-sm text-neutral-500">
-        想查看完整院校与专业？前往 <Link href="/universities" className="text-blue-600 hover:underline">院校库</Link>。
+        <Link href="/universities" className="text-blue-600 hover:underline">
+          {t("toUniversities")}
+        </Link>
       </p>
     </div>
   );

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import {
   addApplication,
   hasApplication,
@@ -10,6 +11,7 @@ import {
 
 export function AddToApplication({ programId }: { programId: string }) {
   const [added, setAdded] = useState(false);
+  const t = useTranslations("common");
 
   useEffect(() => {
     const sync = () => setAdded(hasApplication(programId));
@@ -27,7 +29,7 @@ export function AddToApplication({ programId }: { programId: string }) {
           : "border-neutral-300 text-neutral-600 hover:bg-neutral-50"
       }`}
     >
-      {added ? "✓ 已加入申请" : "+ 加入申请"}
+      {added ? `✓ ${t("added")}` : `+ ${t("addToApplication")}`}
     </button>
   );
 }
