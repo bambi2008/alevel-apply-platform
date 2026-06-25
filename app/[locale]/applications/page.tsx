@@ -1,9 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
-import { getAllProgramsSync } from "@/lib/data";
+import type { ProgramWithUniversity } from "@/lib/data/types";
 import {
   APP_STATUSES,
   OFFER_TYPES,
@@ -28,13 +28,17 @@ export default function ApplicationsPage() {
 
   const [items, setItems] = useState<ApplicationItem[]>([]);
   const [loaded, setLoaded] = useState(false);
-  const programs = useMemo(() => getAllProgramsSync(), []);
+  const [programs, setPrograms] = useState<ProgramWithUniversity[]>([]);
   const programOf = (id: string) => programs.find((p) => p.id === id);
 
   useEffect(() => {
     const sync = () => setItems(listApplications());
     sync();
     setLoaded(true);
+    fetch("/api/programs")
+      .then((r) => r.json())
+      .then(setPrograms)
+      .catch(() => {});
     return subscribeApps(sync);
   }, []);
 

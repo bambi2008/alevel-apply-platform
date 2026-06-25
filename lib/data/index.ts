@@ -1,30 +1,82 @@
-// 数据访问层：当前由 mock 数据支撑（DATA_SOURCE=mock）。
-// 接入数据库时，把这些函数改为 Prisma 查询（lib/db.ts），页面无需改动。
-import { mockPrograms, mockUniversities } from "./mock";
-import type { ProgramWithUniversity, Region, University } from "./types";
+// 数据访问层：由 PostgreSQL（Prisma）支撑。页面只调这些函数，与存储实现解耦。
+import { db } from "@/lib/db";
+import type {
+  Program,
+  ProgramWithUniversity,
+  Region,
+  University,
+  SubjectRequirement,
+} from "./types";
+
+type UniRow = {
+  id: string; name: string; nameZh: string | null; region: "UK" | "HK";
+  city: string | null; league: string | null; qsRankWorld: number | null; website: string | null;
+};
+type ProgRow = {
+  id: string; universityId: string; name: string; nameZh: string | null;
+  degreeType: string | null; applyRoute: "UCAS" | "HK_DIRECT";
+  annualTuitionGbp: number | null; annualTuitionHkd: number | null;
+  alevelOfferTypical: string | null; alevelOfferMinimum: string | null;
+  requiredSubjects: unknown; excludedSubjects: string[];
+  ieltsOverall: number | null; admissionsTest: string | null; interviewRequired: boolean | null;
+};
+
+function mapUni(u: UniRow): University {
+  return {
+    id: u.id,
+    name: u.name,
+    nameZh: u.nameZh ?? u.name,
+    region: u.region,
+    city: u.city ?? "",
+    league: u.league ?? undefined,
+    qsRankWorld: u.qsRankWorld ?? undefined,
+    website: u.website ?? undefined,
+  };
+}
+
+function mapProgram(p: ProgRow): Program {
+  return {
+    id: p.id,
+    universityId: p.universityId,
+    name: p.name,
+    nameZh: p.nameZh ?? p.name,
+    degreeType: p.degreeType ?? undefined,
+    applyRoute: p.applyRoute,
+    annualTuitionGbp: p.annualTuitionGbp ?? undefined,
+    annualTuitionHkd: p.annualTuitionHkd ?? undefined,
+    alevelOfferTypical: p.alevelOfferTypical ?? undefined,
+    alevelOfferMinimum: p.alevelOfferMinimum ?? undefined,
+    requiredSubjects: (p.requiredSubjects as SubjectRequirement[] | null) ?? undefined,
+    excludedSubjects: p.excludedSubjects ?? undefined,
+    ielts: p.ieltsOverall ?? undefined,
+    admissionsTest: p.admissionsTest ?? undefined,
+    interviewRequired: p.interviewRequired ?? undefined,
+  };
+}
 
 export async function getUniversities(region?: Region): Promise<University[]> {
-  const list = region ? mockUniversities.filter((u) => u.region === region) : mockUniversities;
-  return [...list].sort((a, b) => (a.qsRankWorld ?? 9999) - (b.qsRankWorld ?? 9999));
+  const us = await db.university.findMany({
+    where: region ? { region } : {},
+    orderBy: { qsRankWorld: "asc" },
+  });
+  return us.map((u) => mapUni(u as UniRow));
 }
 
 export async function getUniversity(id: string): Promise<University | null> {
-  return mockUniversities.find((u) => u.id === id) ?? null;
-}
-
-function withUniversity(programId?: string): ProgramWithUniversity[] {
-  return mockPrograms
-    .map((p) => {
-      const u = mockUniversities.find((x) => x.id === p.universityId);
-      return u ? { ...p, university: u } : null;
-    })
-    .filter((x): x is ProgramWithUniversity => x !== null)
-    .filter((x) => (programId ? x.id === programId : true));
+  const u = await db.university.findUnique({ where: { id } });
+  return u ? mapUni(u as UniRow) : null;
 }
 
 export async function getPrograms(opts?: { region?: Region; q?: string }): Promise<ProgramWithUniversity[]> {
-  let list = withUniversity();
-  if (opts?.region) list = list.filter((p) => p.university.region === opts.region);
+  const ps = await db.program.findMany({
+    where: opts?.region ? { university: { region: opts.region } } : {},
+    include: { university: true },
+    orderBy: { university: { qsRankWorld: "asc" } },
+  });
+  let list: ProgramWithUniversity[] = ps.map((p) => ({
+    ...mapProgram(p as ProgRow),
+    university: mapUni(p.university as UniRow),
+  }));
   if (opts?.q) {
     const q = opts.q.trim().toLowerCase();
     list = list.filter(
@@ -39,10 +91,7 @@ export async function getPrograms(opts?: { region?: Region; q?: string }): Promi
 }
 
 export async function getProgram(id: string): Promise<ProgramWithUniversity | null> {
-  return withUniversity(id)[0] ?? null;
-}
-
-/** 同步版：供客户端选校页（已内置 mock 数据）使用。 */
-export function getAllProgramsSync(): ProgramWithUniversity[] {
-  return withUniversity();
+  const p = await db.program.findUnique({ where: { id }, include: { university: true } });
+  if (!p) return null;
+  return { ...mapProgram(p as ProgRow), university: mapUni(p.university as UniRow) };
 }

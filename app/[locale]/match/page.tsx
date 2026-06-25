@@ -9,7 +9,7 @@ import {
   type MatchCategory,
   type ProgramRequirement,
 } from "@/lib/matching";
-import { getAllProgramsSync } from "@/lib/data";
+import type { ProgramWithUniversity } from "@/lib/data/types";
 import { SUBJECTS, GRADES } from "@/lib/constants";
 import { loadProfile, profileHasGrades } from "@/lib/profile/store";
 import { AddToApplication } from "@/components/add-to-application";
@@ -47,7 +47,13 @@ export default function MatchPage() {
     }
   }, []);
 
-  const programs = useMemo(() => getAllProgramsSync(), []);
+  const [programs, setPrograms] = useState<ProgramWithUniversity[]>([]);
+  useEffect(() => {
+    fetch("/api/programs")
+      .then((r) => r.json())
+      .then(setPrograms)
+      .catch(() => {});
+  }, []);
 
   const results = useMemo(() => {
     if (!submitted) return null;
