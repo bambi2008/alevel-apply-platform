@@ -18,6 +18,25 @@
     "rights": "桥申 · 仅供参考，院校要求以官方为准",
     "disclaimer": "本平台不代写文书、不承诺录取结果"
   },
+  "auth": {
+    "loginTitle": "登录",
+    "registerTitle": "注册",
+    "email": "邮箱",
+    "password": "密码",
+    "guardian": "我是未成年人，已获监护人同意",
+    "consent": "我已阅读并同意隐私政策（PIPL）",
+    "loginBtn": "登录",
+    "registerBtn": "注册并登录",
+    "toRegister": "没有账号？去注册",
+    "toLogin": "已有账号？去登录",
+    "login": "登录",
+    "logout": "退出",
+    "errors": {
+      "INVALID": "邮箱或密码格式不正确（密码至少 6 位）",
+      "EXISTS": "该邮箱已注册",
+      "BADCREDS": "邮箱或密码错误"
+    }
+  },
   "common": {
     "loading": "加载中…",
     "addToApplication": "加入申请",

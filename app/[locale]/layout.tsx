@@ -5,6 +5,8 @@ import { getMessages, getTranslations, setRequestLocale } from "next-intl/server
 import { Link } from "@/i18n/navigation";
 import { routing, type AppLocale } from "@/i18n/routing";
 import { LocaleSwitcher } from "@/components/locale-switcher";
+import { auth } from "@/auth";
+import { logoutAction } from "@/lib/auth/actions";
 import "../globals.css";
 
 export async function generateMetadata({
@@ -19,6 +21,8 @@ export async function generateMetadata({
 
 async function Header() {
   const t = await getTranslations("nav");
+  const ta = await getTranslations("auth");
+  const session = await auth();
   const links = [
     { href: "/", label: t("home") },
     { href: "/match", label: t("match") },
@@ -47,6 +51,26 @@ async function Header() {
             </Link>
           ))}
           <LocaleSwitcher />
+          {session?.user ? (
+            <form action={logoutAction} className="flex items-center gap-1 ml-1">
+              <span className="text-xs text-neutral-500 hidden lg:inline max-w-[140px] truncate">
+                {session.user.email}
+              </span>
+              <button
+                type="submit"
+                className="px-2.5 py-1.5 rounded-md text-neutral-600 hover:bg-neutral-100"
+              >
+                {ta("logout")}
+              </button>
+            </form>
+          ) : (
+            <Link
+              href="/login"
+              className="ml-1 px-2.5 py-1.5 rounded-md text-neutral-600 hover:bg-neutral-100"
+            >
+              {ta("login")}
+            </Link>
+          )}
           <Link
             href="/match"
             className="ml-1 px-3 py-1.5 rounded-md bg-blue-600 text-white hover:bg-blue-700"

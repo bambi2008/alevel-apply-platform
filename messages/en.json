@@ -18,6 +18,25 @@
     "rights": "QiaoShen · For reference only; verify requirements with official sources",
     "disclaimer": "We do not ghost-write statements or guarantee admission"
   },
+  "auth": {
+    "loginTitle": "Sign in",
+    "registerTitle": "Sign up",
+    "email": "Email",
+    "password": "Password",
+    "guardian": "I am a minor and have guardian consent",
+    "consent": "I have read and agree to the Privacy Policy (PIPL)",
+    "loginBtn": "Sign in",
+    "registerBtn": "Sign up & sign in",
+    "toRegister": "No account? Sign up",
+    "toLogin": "Have an account? Sign in",
+    "login": "Sign in",
+    "logout": "Sign out",
+    "errors": {
+      "INVALID": "Invalid email or password (min 6 characters)",
+      "EXISTS": "Email already registered",
+      "BADCREDS": "Wrong email or password"
+    }
+  },
   "common": {
     "loading": "Loading…",
     "addToApplication": "Add to application",
