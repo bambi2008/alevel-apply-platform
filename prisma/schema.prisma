@@ -107,17 +107,42 @@ model TestScore {
   @@index([profileId])
 }
 
-// ---------- 院校与专业 ----------
+// ---------- 院校与专业（字段对齐 docs/product/02_院校字段表.md）----------
+enum AppSystem {
+  UCAS
+  DIRECT
+  BOTH
+}
+
 model University {
-  id       String    @id @default(cuid())
-  name     String
-  nameZh   String?
-  region   Region
-  city     String?
-  ucasCode String?
-  website  String?
-  ranking  Json?
-  programs Program[]
+  id                  String     @id @default(cuid())
+  name                String // 英文全称
+  nameZh              String?
+  region              Region // UK / HK
+  city                String?
+  league              String? // Russell Group / HK UGC 8 ...
+  qsRankWorld         Int?
+  qsRankSubject       Json? // { "Computer Science": 5, ... }
+  ucasCode            String? // 单字母院校代码（UK）
+  ucasInstitutionCode String? // 四位字母代码
+  website             String?
+  admissionsUrl       String?
+  logoUrl             String?
+  // 申请系统
+  applicationSystem    AppSystem?
+  applicationPortalUrl String?
+  applicationFeeGbp    Int?
+  applicationFeeHkd    Int?
+  maxChoices           Int? // UK=5；HK 无限制可留空
+  // 截止与时间
+  openDate          DateTime?
+  deadlineEarly     DateTime? // 牛剑 / 医学等
+  deadlineMain      DateTime?
+  deadlineLate      DateTime?
+  resultReleaseFrom DateTime?
+  resultReleaseTo   DateTime?
+  ranking           Json?
+  programs          Program[]
 
   @@index([region])
 }
@@ -127,22 +152,68 @@ enum ApplyRoute {
   HK_DIRECT
 }
 
+enum DegreeType {
+  BA
+  BSc
+  BEng
+  LLB
+  MBChB
+  OTHER
+}
+
 model Program {
-  id               String        @id @default(cuid())
-  universityId     String
-  university       University    @relation(fields: [universityId], references: [id], onDelete: Cascade)
-  name             String
-  nameZh           String?
-  degree           String? // BSc / BA / BEng ...
-  durationYears    Int?
-  applyRoute       ApplyRoute
-  ucasCourseCode   String?
-  tuitionPerYear   Int?
-  // 入学要求（结构化 + 文本）
-  aLevelOffer      String? // 例 "A*AA"
-  requiredSubjects Json? // [{ subject, minGrade }]
-  englishReq       Json? // { ielts, toefl }
-  admissionTest    String? // LNAT / UCAT / TMUA ...
+  id                    String      @id @default(cuid())
+  universityId          String
+  university            University  @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  name                  String // 英文课程名
+  nameZh                String?
+  degreeType            DegreeType?
+  durationYears         Int?
+  applyRoute            ApplyRoute
+  ucasCourseCode        String?
+  coursePageUrl         String?
+  mode                  String? // Full-time / Part-time
+  acceptsGapYear        Boolean?
+  deadlineEarlyOverride DateTime? // 课程级覆盖（牛剑 / 医学）
+
+  // 学费
+  annualTuitionGbp Int?
+  annualTuitionHkd Int?
+
+  // 入学要求 - 成绩
+  alevelOfferTypical String? // 典型 "AAB"
+  alevelOfferMinimum String? // 最低 "ABB"
+  requiredSubjects   Json? // [{ subject, minGrade }]
+  preferredSubjects  String[]
+  excludedSubjects   String[] // 如 General Studies
+  asLevelRequired    Boolean?
+  epqConsidered      Boolean?
+  gcseMinEnglish     Int?
+  gcseMinMaths       Int?
+  ibMinimum          Int?
+  satAccepted        Boolean?
+
+  // 入学要求 - 语言
+  ieltsOverall       Float?
+  ieltsSubscores     Json? // { writing, speaking, listening, reading }
+  toeflMinimum       Int?
+  languageExemptions String?
+
+  // 入学考试 / 面试
+  admissionsTest    String? // LNAT / UCAT / MAT / TMUA ...
+  interviewRequired Boolean?
+
+  // 奖学金
+  scholarshipAvailable Boolean?
+  scholarshipUrl       String?
+
+  // 录取数据（历史参考，每年更新）
+  acceptanceRate      Float?
+  avgOfferGrade       String?
+  intlStudentRatio    Float?
+  mainlandChinaCohort Int?
+  dataYear            Int?
+
   requirementsText String?
   applications     Application[]
 

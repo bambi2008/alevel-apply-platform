@@ -1,5 +1,6 @@
 // 选校匹配引擎（纯函数，可单测，不依赖 DB/UI）
-// 根据学生 A-Level 成绩 + 英语成绩，对照专业入学要求，给出 reach/match/safety 分类与解释。
+// 根据学生 A-Level 成绩 + 英语成绩，对照专业入学要求（最低/典型 offer、必修与不接受科目、英语），
+// 给出 reach/match/safety 分类与解释。
 
 export type ALevelGrade = "A*" | "A" | "B" | "C" | "D" | "E" | "U";
 
@@ -14,7 +15,7 @@ export const GRADE_POINTS: Record<string, number> = {
 };
 
 export function gradePoints(grade: string): number {
-  return GRADE_POINTS[grade.trim().toUpperCase().replace("*", "*")] ?? 0;
+  return GRADE_POINTS[grade.trim().toUpperCase()] ?? 0;
 }
 
 export interface StudentGrade {
@@ -28,9 +29,11 @@ export interface SubjectRequirement {
 }
 
 export interface ProgramRequirement {
-  aLevelOffer?: string | null; // 例 "A*AA"
-  requiredSubjects?: SubjectRequirement[] | null;
-  ielts?: number | null;
+  typicalOffer?: string | null; // 典型 offer，如 "AAA"
+  minimumOffer?: string | null; // 最低 offer，如 "AAB"
+  requiredSubjects?: SubjectRequirement[] | null; // 必修科目
+  excludedSubjects?: string[] | null; // 不接受计入的科目，如 General Studies
+  ielts?: number | null; // 雅思总分要求
 }
 
 export interface StudentForMatch {
@@ -42,12 +45,14 @@ export type MatchCategory = "safety" | "match" | "reach" | "out_of_reach";
 
 export interface MatchResult {
   category: MatchCategory;
-  meetsGrades: boolean;
+  eligible: boolean; // 达到最低门槛（成绩+科目+英语均满足最低）
+  meetsTypical: boolean; // 达到典型 offer
+  meetsMinimumGrades: boolean;
   meetsSubjects: boolean;
   meetsEnglish: boolean;
   studentPoints: number;
-  requiredPoints: number;
-  gap: number; // requiredPoints - studentPoints（正数=差多少分）
+  typicalPoints: number;
+  minimumPoints: number;
   reasons: string[];
 }
 
@@ -70,9 +75,18 @@ export function parseOffer(offer: string): string[] {
 
 const norm = (s: string) => s.trim().toLowerCase();
 
-/** 取学生最好的 n 门成绩点数之和。 */
-function topPoints(grades: StudentGrade[], n: number): number {
+function offerPoints(offer: string): { points: number; count: number } {
+  const grades = parseOffer(offer);
+  return {
+    points: grades.reduce((sum, g) => sum + gradePoints(g), 0),
+    count: grades.length,
+  };
+}
+
+/** 取学生最好的 n 门成绩点数之和（已剔除不接受科目）。 */
+function topPoints(grades: StudentGrade[], n: number, excluded: Set<string>): number {
   return grades
+    .filter((g) => !excluded.has(norm(g.subject)))
     .map((g) => gradePoints(g.grade))
     .sort((a, b) => b - a)
     .slice(0, n)
@@ -82,29 +96,45 @@ function topPoints(grades: StudentGrade[], n: number): number {
 /**
  * 对单个专业做匹配评估。
  * 分类规则：
- *  - 全部满足（成绩+科目+英语）：超出 ≥1 个等级 -> safety；否则 -> match
- *  - 未全部满足：总分差距 gap ≤ 1 个等级 -> reach；否则 -> out_of_reach
+ *  - 达到典型 offer + 满足科目/英语：超出 ≥1 个等级 -> safety；否则 -> match
+ *  - 仅达到最低 offer（< 典型）+ 满足科目/英语：reach
+ *  - 接近最低（差 ≤1 个等级）：reach
+ *  - 其余（含必修缺失/英语不达且差距大）：out_of_reach
  */
 export function evaluateMatch(
   student: StudentForMatch,
   req: ProgramRequirement,
 ): MatchResult {
   const reasons: string[] = [];
+  const excluded = new Set((req.excludedSubjects ?? []).map(norm));
 
-  // 1) 成绩点数
-  const offerGrades = req.aLevelOffer ? parseOffer(req.aLevelOffer) : [];
-  const requiredPoints = offerGrades.reduce((s, g) => s + gradePoints(g), 0);
-  const n = offerGrades.length || 3;
-  const studentPoints = topPoints(student.grades, n);
-  const gap = requiredPoints - studentPoints;
-  const meetsGrades = offerGrades.length === 0 ? true : studentPoints >= requiredPoints;
+  // 不接受科目提示
+  const usedExcluded = student.grades.filter((g) => excluded.has(norm(g.subject)));
+  if (usedExcluded.length > 0) {
+    reasons.push(
+      `注意：${usedExcluded.map((g) => g.subject).join("、")} 不计入该校成绩要求`,
+    );
+  }
 
-  if (offerGrades.length === 0) {
+  // 1) 成绩点数（典型 / 最低）
+  const typicalStr = req.typicalOffer || req.minimumOffer || "";
+  const minimumStr = req.minimumOffer || req.typicalOffer || "";
+  const typical = typicalStr ? offerPoints(typicalStr) : { points: 0, count: 0 };
+  const minimum = minimumStr ? offerPoints(minimumStr) : { points: 0, count: 0 };
+  const n = typical.count || minimum.count || 3;
+  const studentPoints = topPoints(student.grades, n, excluded);
+
+  const meetsTypical = typical.count === 0 ? true : studentPoints >= typical.points;
+  const meetsMinimumGrades = minimum.count === 0 ? true : studentPoints >= minimum.points;
+
+  if (typical.count === 0 && minimum.count === 0) {
     reasons.push("该专业未提供结构化成绩要求，仅供参考");
-  } else if (meetsGrades) {
-    reasons.push(`成绩达标：你最好 ${n} 门 ${studentPoints} 分 ≥ 要求 ${requiredPoints} 分（${req.aLevelOffer}）`);
+  } else if (meetsTypical) {
+    reasons.push(`成绩达到典型要求：你最好 ${n} 门 ${studentPoints} 分 ≥ ${typicalStr}（${typical.points} 分）`);
+  } else if (meetsMinimumGrades) {
+    reasons.push(`成绩达到最低要求 ${minimumStr}（${minimum.points} 分），但低于典型 ${typicalStr}`);
   } else {
-    reasons.push(`成绩偏低：你 ${studentPoints} 分 < 要求 ${requiredPoints} 分（差 ${gap} 分，约 ${gap} 个等级）`);
+    reasons.push(`成绩 ${studentPoints} 分 < 最低要求 ${minimumStr}（${minimum.points} 分），差 ${minimum.points - studentPoints} 分`);
   }
 
   // 2) 先修科目
@@ -139,28 +169,29 @@ export function evaluateMatch(
   }
 
   // 4) 综合分类
-  const allMet = meetsGrades && meetsSubjects && meetsEnglish;
+  const eligible = meetsMinimumGrades && meetsSubjects && meetsEnglish;
+  const minGap = minimum.points - studentPoints;
   let category: MatchCategory;
-  if (allMet) {
-    category = studentPoints >= requiredPoints + 1 ? "safety" : "match";
-  } else if (meetsSubjects && meetsEnglish && gap <= 1) {
-    // 仅成绩略差、其余满足
-    category = "reach";
-  } else if (!meetsSubjects || !meetsEnglish) {
-    // 硬性条件缺失：成绩接近算 reach，否则 out_of_reach
-    category = gap <= 1 ? "reach" : "out_of_reach";
+  if (meetsTypical && meetsSubjects && meetsEnglish) {
+    category = studentPoints >= typical.points + 1 ? "safety" : "match";
+  } else if (eligible) {
+    category = "reach"; // 达到最低但未达典型
+  } else if (meetsSubjects && meetsEnglish && minGap <= 1) {
+    category = "reach"; // 接近最低
   } else {
     category = "out_of_reach";
   }
 
   return {
     category,
-    meetsGrades,
+    eligible,
+    meetsTypical,
+    meetsMinimumGrades,
     meetsSubjects,
     meetsEnglish,
     studentPoints,
-    requiredPoints,
-    gap,
+    typicalPoints: typical.points,
+    minimumPoints: minimum.points,
     reasons,
   };
 }
