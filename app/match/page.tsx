@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   evaluateMatch,
@@ -9,13 +9,8 @@ import {
   type ProgramRequirement,
 } from "@/lib/matching";
 import { getAllProgramsSync } from "@/lib/data";
-
-const SUBJECTS = [
-  "Mathematics", "Further Mathematics", "Physics", "Chemistry", "Biology",
-  "Economics", "Computer Science", "Business", "History", "Geography",
-  "English Literature", "Psychology", "Art", "Politics", "Law",
-];
-const GRADES = ["A*", "A", "B", "C", "D", "E"];
+import { SUBJECTS, GRADES } from "@/lib/constants";
+import { loadProfile, profileHasGrades } from "@/lib/profile/store";
 
 type Row = { subject: string; grade: string };
 
@@ -35,6 +30,17 @@ export default function MatchPage() {
   ]);
   const [ielts, setIelts] = useState<string>("6.5");
   const [submitted, setSubmitted] = useState(false);
+  const [fromProfile, setFromProfile] = useState(false);
+
+  // 进入页面时，若本地档案已有成绩则自动带入
+  useEffect(() => {
+    const p = loadProfile();
+    if (p && profileHasGrades(p)) {
+      setRows(p.subjects.map((s) => ({ subject: s.subject, grade: s.grade })));
+      setIelts(p.ielts != null ? String(p.ielts) : "");
+      setFromProfile(true);
+    }
+  }, []);
 
   const programs = useMemo(() => getAllProgramsSync(), []);
 
@@ -74,6 +80,12 @@ export default function MatchPage() {
         <span className="text-blue-700"> 匹配 </span>/
         <span className="text-green-700"> 稳妥 </span>分层（当前为样例院校数据）。
       </p>
+
+      {fromProfile && (
+        <div className="mt-3 text-sm text-blue-700 bg-blue-50 rounded-lg px-3 py-2">
+          已带入<Link href="/profile" className="underline">我的档案</Link>中的成绩，可在下方临时调整。
+        </div>
+      )}
 
       {/* Form */}
       <div className="mt-6 rounded-xl border border-neutral-200 p-5">
