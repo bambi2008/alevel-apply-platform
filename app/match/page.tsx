@@ -11,6 +11,7 @@ import {
 import { getAllProgramsSync } from "@/lib/data";
 import { SUBJECTS, GRADES } from "@/lib/constants";
 import { loadProfile, profileHasGrades } from "@/lib/profile/store";
+import { AddToApplication } from "@/components/add-to-application";
 
 type Row = { subject: string; grade: string };
 
@@ -191,6 +192,9 @@ export default function MatchPage() {
                           <li key={idx}>· {reason}</li>
                         ))}
                       </ul>
+                      <div className="mt-3">
+                        <AddToApplication programId={program.id} />
+                      </div>
                     </div>
                   ))}
                 </div>

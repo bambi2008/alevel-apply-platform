@@ -1,0 +1,178 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
+import Link from "next/link";
+import { getAllProgramsSync } from "@/lib/data";
+import {
+  APP_STATUSES,
+  OFFER_TYPES,
+  OFFER_DECISIONS,
+  listApplications,
+  removeApplication,
+  updateApplication,
+  subscribeApps,
+  type ApplicationItem,
+  type AppStatus,
+} from "@/lib/applications/store";
+
+export default function ApplicationsPage() {
+  const [items, setItems] = useState<ApplicationItem[]>([]);
+  const [loaded, setLoaded] = useState(false);
+  const programs = useMemo(() => getAllProgramsSync(), []);
+  const programOf = (id: string) => programs.find((p) => p.id === id);
+
+  useEffect(() => {
+    const sync = () => setItems(listApplications());
+    sync();
+    setLoaded(true);
+    return subscribeApps(sync);
+  }, []);
+
+  const statusLabel = (s: AppStatus) => APP_STATUSES.find((x) => x.value === s);
+  const offerCount = items.filter((i) => i.status === "OFFER" || i.status === "ACCEPTED").length;
+
+  if (!loaded) return <div className="mx-auto max-w-4xl px-4 py-10 text-neutral-400">加载中…</div>;
+
+  return (
+    <div className="mx-auto max-w-4xl px-4 py-10">
+      <h1 className="text-3xl font-bold">申请清单</h1>
+      <p className="mt-2 text-neutral-600">
+        管理你的申请进度与 Offer。资料暂存本地浏览器（接入登录后云端同步）。
+      </p>
+
+      {/* 概览 */}
+      <div className="mt-6 grid grid-cols-3 gap-3">
+        <Stat label="申请总数" value={items.length} />
+        <Stat label="已获 Offer" value={offerCount} />
+        <Stat
+          label="已提交"
+          value={items.filter((i) => ["SUBMITTED", "INTERVIEW", "OFFER", "ACCEPTED"].includes(i.status)).length}
+        />
+      </div>
+
+      {items.length === 0 ? (
+        <div className="mt-8 rounded-xl border border-dashed border-neutral-300 p-10 text-center text-neutral-500">
+          还没有申请。去 <Link href="/match" className="text-blue-600 hover:underline">选校匹配</Link> 或{" "}
+          <Link href="/universities" className="text-blue-600 hover:underline">院校库</Link> 把感兴趣的专业「加入申请」。
+        </div>
+      ) : (
+        <div className="mt-6 space-y-3">
+          {items.map((item) => {
+            const p = programOf(item.programId);
+            const sl = statusLabel(item.status);
+            const showOffer = item.status === "OFFER" || item.status === "ACCEPTED";
+            return (
+              <div key={item.programId} className="rounded-xl border border-neutral-200 p-4">
+                <div className="flex justify-between gap-3 flex-wrap">
+                  <div>
+                    <div className="font-medium">
+                      {p ? `${p.university.nameZh} · ${p.nameZh}` : item.programId}
+                    </div>
+                    {p && (
+                      <div className="text-sm text-neutral-500">
+                        {p.university.name} — {p.name} · 典型 {p.alevelOfferTypical ?? "—"}
+                      </div>
+                    )}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {sl && (
+                      <span className={`text-xs px-2 py-0.5 rounded-full ${sl.color}`}>{sl.label}</span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => removeApplication(item.programId)}
+                      className="text-neutral-400 hover:text-red-500 text-sm"
+                      aria-label="移除"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+
+                <div className="mt-3 flex flex-wrap items-center gap-3">
+                  <label className="text-sm text-neutral-600 flex items-center gap-2">
+                    状态
+                    <select
+                      className="rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+                      value={item.status}
+                      onChange={(e) =>
+                        updateApplication(item.programId, { status: e.target.value as AppStatus })
+                      }
+                    >
+                      {APP_STATUSES.map((s) => (
+                        <option key={s.value} value={s.value}>{s.label}</option>
+                      ))}
+                    </select>
+                  </label>
+                </div>
+
+                {showOffer && (
+                  <div className="mt-3 rounded-lg bg-neutral-50 p-3 grid sm:grid-cols-3 gap-2">
+                    <label className="text-sm text-neutral-600">
+                      Offer 类型
+                      <select
+                        className="mt-1 w-full rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+                        value={item.offer?.type ?? ""}
+                        onChange={(e) =>
+                          updateApplication(item.programId, {
+                            offer: { ...item.offer, type: (e.target.value || undefined) as OfferTypeVal },
+                          })
+                        }
+                      >
+                        <option value="">—</option>
+                        {OFFER_TYPES.map((t) => (
+                          <option key={t.value} value={t.value}>{t.label}</option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="text-sm text-neutral-600">
+                      你的决定
+                      <select
+                        className="mt-1 w-full rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+                        value={item.offer?.decision ?? ""}
+                        onChange={(e) =>
+                          updateApplication(item.programId, {
+                            offer: { ...item.offer, decision: (e.target.value || undefined) as OfferDecisionVal },
+                          })
+                        }
+                      >
+                        <option value="">—</option>
+                        {OFFER_DECISIONS.map((d) => (
+                          <option key={d.value} value={d.value}>{d.label}</option>
+                        ))}
+                      </select>
+                    </label>
+                    <label className="text-sm text-neutral-600">
+                      条件（如 A*AA）
+                      <input
+                        className="mt-1 w-full rounded-md border border-neutral-300 px-2 py-1.5 text-sm"
+                        value={item.offer?.conditions ?? ""}
+                        onChange={(e) =>
+                          updateApplication(item.programId, {
+                            offer: { ...item.offer, conditions: e.target.value },
+                          })
+                        }
+                      />
+                    </label>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+type OfferTypeVal = "CONDITIONAL" | "UNCONDITIONAL" | undefined;
+type OfferDecisionVal = "FIRM" | "INSURANCE" | "DECLINE" | "ACCEPTED" | undefined;
+
+function Stat({ label, value }: { label: string; value: number }) {
+  return (
+    <div className="rounded-xl border border-neutral-200 p-4 text-center">
+      <div className="text-2xl font-bold">{value}</div>
+      <div className="text-sm text-neutral-500 mt-0.5">{label}</div>
+    </div>
+  );
+}

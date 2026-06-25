@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getPrograms, getUniversities } from "@/lib/data";
 import type { Region } from "@/lib/data/types";
+import { AddToApplication } from "@/components/add-to-application";
 
 export const metadata = { title: "院校库 · 桥申" };
 
@@ -90,6 +91,9 @@ export default async function UniversitiesPage({
                         <span>雅思 {p.ielts ?? "—"}</span>
                         {p.interviewRequired && <span className="text-amber-600">需面试</span>}
                         {p.admissionsTest && <span>笔试 {p.admissionsTest}</span>}
+                      </div>
+                      <div className="mt-1.5">
+                        <AddToApplication programId={p.id} />
                       </div>
                     </div>
                   ))}
