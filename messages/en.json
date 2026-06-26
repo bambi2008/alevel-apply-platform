@@ -12,7 +12,10 @@
     "applications": "Applications",
     "statements": "Statement",
     "pricing": "Pricing",
-    "freeMatch": "Free Match"
+    "freeMatch": "Free Match",
+    "timeline": "Timeline",
+    "applyGuide": "UCAS Guide",
+    "tests": "Test Prep"
   },
   "footer": {
     "rights": "QiaoShen · For reference only; verify requirements with official sources",
@@ -51,6 +54,31 @@
     "subReading": "Reading",
     "subWriting": "Writing",
     "subSpeaking": "Speaking"
+  },
+  "dashboard": {
+    "greeting": "Hi, {name}",
+    "student": "student",
+    "subtitle": "Your personal application workspace",
+    "yourGoal": "My goal",
+    "intakeYear": "{year} entry",
+    "addMajors": "+ Add intended majors",
+    "nextSteps": "What to do next",
+    "fullTimeline": "Full timeline",
+    "timelineDone": "All milestones complete — congratulations!",
+    "tools": "Tools",
+    "tool": {
+      "match": "Course Matching",
+      "applications": "My Applications",
+      "appCount": "{n} added",
+      "statements": "Statement Studio",
+      "universities": "University DB",
+      "applyGuide": "UCAS Form Guide",
+      "tests": "Test Prep"
+    },
+    "profileIncomplete": "Your profile is incomplete — matching results may be limited.",
+    "completeProfile": "Complete it",
+    "noProfile": "No profile yet — fill in your grades and goals to get started.",
+    "buildProfile": "Build my profile"
   },
   "home": {
     "badge": "Built for A-Level · UK UCAS + HK Direct",
@@ -154,6 +182,58 @@
       "Avoid clichéd openings (famous quotes, dictionary definitions)",
       "Three answers total under 4000 characters"
     ]
+  },
+  "timeline": {
+    "title": "Application Timeline",
+    "loading": "Loading…",
+    "intakeNote": "{year} entry",
+    "nextUp": "Up next",
+    "disclaimer": "Dates reflect a typical application cycle; verify with each university. To change your intake year, visit",
+    "editProfile": "My Profile",
+    "status": {
+      "done": "Done",
+      "urgent": "Urgent",
+      "upcoming": "Soon",
+      "future": "Upcoming"
+    },
+    "prep": {
+      "early": { "label": "Well ahead", "desc": "Plenty of time before the main deadlines — ideal for deep university research and drafting a polished statement." },
+      "on-track": { "label": "On track", "desc": "Following the milestones steadily — focus on personal statement quality and complete documentation." },
+      "late": { "label": "Time is tight", "desc": "Deadlines are close — prioritise getting core materials submitted before any further optimisation." }
+    },
+    "ms.research.title": "Research universities & courses",
+    "ms.research.desc": "Identify target universities and courses; gather entry requirements, tuition, and rankings.",
+    "ms.research.earlyTip": "Ahead of schedule: read course syllabuses in depth and prepare specific questions for open days.",
+    "ms.research.lateTip": "Time limited: focus on 5–8 schools you already have in mind and gather their key requirements quickly.",
+    "ms.ucasReg.title": "Register a UCAS account",
+    "ms.ucasReg.desc": "Create an account on the UCAS website, fill in your basic details, and prepare to start your application.",
+    "ms.ucasReg.lateTip": "Register now — account activation takes time; don't leave it until the final week.",
+    "ms.oxbridge.title": "Oxbridge deadline (15 Oct)",
+    "ms.oxbridge.desc": "UCAS applications for Oxford or Cambridge must be submitted by this date.",
+    "ms.oxbridge.earlyTip": "If Oxbridge is on your list, start preparing admissions tests (MAT/STEP/TSA etc.) now.",
+    "ms.oxbridge.lateTip": "If you're applying to Oxbridge your personal statement must be finalised immediately — no delay.",
+    "ms.psDraft.title": "Personal statement first draft",
+    "ms.psDraft.desc": "Complete a first draft of your UCAS personal statement (3 structured questions) to allow revision time.",
+    "ms.psDraft.earlyTip": "Write multiple versions to compare, or ask a teacher or peer for early feedback.",
+    "ms.psDraft.lateTip": "Go straight to a final draft — make sure the structure is complete before polishing wording.",
+    "ms.hkOpen.title": "HK applications open",
+    "ms.hkOpen.desc": "HKU, HKUST and other universities typically open direct-admission portals from November — watch official websites.",
+    "ms.ucasMain.title": "UCAS main deadline (15 Jan)",
+    "ms.ucasMain.desc": "Deadline for all non-Oxbridge UK UCAS choices; all five choices must be submitted by this date.",
+    "ms.ucasMain.earlyTip": "Submitting early is possible — some universities review on a rolling basis.",
+    "ms.ucasMain.lateTip": "Under two months to go — lock in your personal statement and references now, no margin for delay.",
+    "ms.hkDeadline.title": "HK direct-admission deadline",
+    "ms.hkDeadline.desc": "Most HK universities close direct admission between March and April — confirm each school's own date.",
+    "ms.ucasDecisions.title": "UCAS decisions arriving",
+    "ms.ucasDecisions.desc": "Offers and rejections will appear in UCAS Track — keep notifications on.",
+    "ms.ucasReply.title": "UCAS reply deadline",
+    "ms.ucasReply.desc": "Choose your Firm and Insurance universities in UCAS before the reply deadline.",
+    "ms.exams.title": "A-Level exam season",
+    "ms.exams.desc": "May–June A-Level exams determine whether you meet the conditions of any conditional offer.",
+    "ms.exams.earlyTip": "Well prepared — maintain momentum and practise past papers to optimise timing.",
+    "ms.exams.lateTip": "Intensive revision: focus on high-frequency topics and ensure core content is solid.",
+    "ms.results.title": "Results day & confirmation",
+    "ms.results.desc": "Grades released; conditional offers confirmed. If grades fall short, Clearing opens immediately."
   },
   "universities": {
     "title": "University Database",

@@ -222,12 +222,10 @@ export default function MatchPage() {
                       <div className="flex justify-between gap-3">
                         <div>
                           <div className="font-medium">
-                            {(isEn ? program.university.name : program.university.nameZh)} ·{" "}
-                            {isEn ? program.name : program.nameZh}
+                            {program.university.nameZh} · {program.nameZh}
                           </div>
-                          <div className="text-sm text-neutral-500">
-                            {isEn ? program.university.nameZh : program.university.name} —{" "}
-                            {isEn ? program.nameZh : program.name}
+                          <div className="text-xs text-neutral-400 mt-0.5">
+                            {program.university.name} — {program.name}
                           </div>
                         </div>
                         <div className="text-right text-sm whitespace-nowrap">

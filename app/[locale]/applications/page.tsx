@@ -42,7 +42,7 @@ export default function ApplicationsPage() {
     return subscribeApps(sync);
   }, []);
 
-  const colorOf = (s: AppStatus) => APP_STATUSES.find((x) => x.value === s)?.color ?? "";
+  const statusOf = (s: AppStatus) => APP_STATUSES.find((x) => x.value === s);
   const offerCount = items.filter((i) => i.status === "OFFER" || i.status === "ACCEPTED").length;
 
   if (!loaded) return <div className="mx-auto max-w-4xl px-4 py-10 text-neutral-400">{tc("loading")}</div>;
@@ -81,20 +81,19 @@ export default function ApplicationsPage() {
                 <div className="flex justify-between gap-3 flex-wrap">
                   <div>
                     <div className="font-medium">
-                      {p
-                        ? `${isEn ? p.university.name : p.university.nameZh} · ${isEn ? p.name : p.nameZh}`
-                        : item.programId}
+                      {p ? `${p.university.nameZh} · ${p.nameZh}` : item.programId}
                     </div>
                     {p && (
-                      <div className="text-sm text-neutral-500">
-                        {isEn ? p.university.nameZh : p.university.name} — {isEn ? p.nameZh : p.name}
+                      <div className="text-xs text-neutral-400 mt-0.5">
+                        {p.university.name} — {p.name}
                         {p.alevelOfferTypical ? ` · ${p.alevelOfferTypical}` : ""}
                       </div>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${colorOf(item.status)}`}>
-                      {t(`statuses.${item.status}`)}
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${statusOf(item.status)?.color ?? ""}`}>
+                      {statusOf(item.status)?.label}
+                      <span className="ml-1 opacity-60">{statusOf(item.status)?.en}</span>
                     </span>
                     <button
                       type="button"
@@ -118,7 +117,7 @@ export default function ApplicationsPage() {
                       }
                     >
                       {APP_STATUSES.map((s) => (
-                        <option key={s.value} value={s.value}>{t(`statuses.${s.value}`)}</option>
+                        <option key={s.value} value={s.value}>{s.label} {s.en}</option>
                       ))}
                     </select>
                   </label>

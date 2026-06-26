@@ -1,5 +1,8 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
+import { auth } from "@/auth";
+import { Dashboard } from "@/components/dashboard";
+import { ProcessOverview } from "@/components/process-overview";
 
 type Feature = { emoji: string; href: string; title: string; desc: string };
 type Plan = {
@@ -11,14 +14,7 @@ type Plan = {
   perks: string[];
 };
 
-export default async function Home({
-  params,
-}: {
-  params: Promise<{ locale: string }>;
-}) {
-  const { locale } = await params;
-  setRequestLocale(locale);
-  const t = await getTranslations("home");
+function Landing({ t }: { t: Awaited<ReturnType<typeof getTranslations<"home">>> }) {
   const features = t.raw("features") as Feature[];
   const plans = t.raw("plans") as Plan[];
 
@@ -48,8 +44,15 @@ export default async function Home({
         <p className="mt-4 text-sm text-neutral-400">{t("priceNote")}</p>
       </section>
 
+      {/* Process overview */}
+      <section className="py-12 border-t border-neutral-100">
+        <div className="max-w-2xl mx-auto">
+          <ProcessOverview />
+        </div>
+      </section>
+
       {/* Features */}
-      <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-8">
+      <section className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 pb-8 border-t border-neutral-100 pt-12">
         {features.map((f) => (
           <Link key={f.title} href={f.href} className="block rounded-xl border border-neutral-200 p-5 hover:border-blue-300 hover:shadow-sm transition">
             <div className="text-2xl mb-2">{f.emoji}</div>
@@ -89,4 +92,21 @@ export default async function Home({
       </section>
     </div>
   );
+}
+
+export default async function Home({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  setRequestLocale(locale);
+  const session = await auth();
+  const t = await getTranslations("home");
+
+  if (session?.user) {
+    return <Dashboard email={session.user.email} />;
+  }
+
+  return <Landing t={t} />;
 }

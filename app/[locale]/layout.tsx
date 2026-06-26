@@ -24,12 +24,15 @@ async function Header() {
   const ta = await getTranslations("auth");
   const session = await auth();
   const links = [
-    { href: "/", label: t("home") },
-    { href: "/match", label: t("match") },
-    { href: "/universities", label: t("universities") },
-    { href: "/profile", label: t("profile") },
-    { href: "/applications", label: t("applications") },
-    { href: "/statements", label: t("statements") },
+    { href: "/", label: t("home"), en: "Home" },
+    { href: "/match", label: t("match"), en: "Match" },
+    { href: "/universities", label: t("universities"), en: "Universities" },
+    { href: "/profile", label: t("profile"), en: "Profile" },
+    { href: "/applications", label: t("applications"), en: "Applications" },
+    { href: "/statements", label: t("statements"), en: "Statement" },
+    { href: "/timeline", label: t("timeline"), en: "Timeline" },
+    { href: "/apply-guide", label: t("applyGuide"), en: "UCAS Guide" },
+    { href: "/tests", label: t("tests"), en: "Test Prep" },
   ];
   return (
     <header className="border-b border-neutral-200 bg-white/90 backdrop-blur sticky top-0 z-10">
@@ -45,9 +48,10 @@ async function Header() {
             <Link
               key={l.href}
               href={l.href}
-              className="px-2.5 py-1.5 rounded-md text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 hidden md:block"
+              className="px-2.5 py-1.5 rounded-md text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 hidden md:flex flex-col items-center leading-tight"
             >
-              {l.label}
+              <span className="text-sm">{l.label}</span>
+              <span className="text-[10px] text-neutral-400">{l.en}</span>
             </Link>
           ))}
           <LocaleSwitcher />

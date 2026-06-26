@@ -12,7 +12,10 @@
     "applications": "申请清单",
     "statements": "文书",
     "pricing": "定价",
-    "freeMatch": "免费选校"
+    "freeMatch": "免费选校",
+    "timeline": "申请时间线",
+    "applyGuide": "UCAS 填表指南",
+    "tests": "入学笔试"
   },
   "footer": {
     "rights": "桥申 · 仅供参考，院校要求以官方为准",
@@ -51,6 +54,31 @@
     "subReading": "阅读",
     "subWriting": "写作",
     "subSpeaking": "口语"
+  },
+  "dashboard": {
+    "greeting": "你好，{name}",
+    "student": "同学",
+    "subtitle": "这是你的专属申请工作台",
+    "yourGoal": "我的目标",
+    "intakeYear": "{year} 年入学",
+    "addMajors": "+ 添加意向专业",
+    "nextSteps": "接下来要做的事",
+    "fullTimeline": "查看完整时间线",
+    "timelineDone": "所有节点均已完成，恭喜！",
+    "tools": "工具箱",
+    "tool": {
+      "match": "选校匹配",
+      "applications": "我的申请",
+      "appCount": "{n} 所",
+      "statements": "文书工作台",
+      "universities": "院校库",
+      "applyGuide": "UCAS 填表指南",
+      "tests": "入学笔试备考"
+    },
+    "profileIncomplete": "档案未完整填写，选校匹配效果会受影响。",
+    "completeProfile": "去完善",
+    "noProfile": "还没有建立档案，先填写一下基本信息和成绩。",
+    "buildProfile": "建立我的档案"
   },
   "home": {
     "badge": "A-Level 专属 · 英国 UCAS + 香港直申",
@@ -154,6 +182,58 @@
       "避免老套开头（如名人名言、字典定义）",
       "三题合计不超过 4000 字符"
     ]
+  },
+  "timeline": {
+    "title": "申请时间线",
+    "loading": "加载中…",
+    "intakeNote": "{year} 年入学",
+    "nextUp": "下一个节点",
+    "disclaimer": "日期为典型申请周期，实际以各院校官网为准。修改入学年份请前往",
+    "editProfile": "我的档案",
+    "status": {
+      "done": "已完成",
+      "urgent": "紧急",
+      "upcoming": "临近",
+      "future": "待到来"
+    },
+    "prep": {
+      "early": { "label": "准备充裕", "desc": "距主要截止日还有充足时间，适合深度调研院校与打磨文书。" },
+      "on-track": { "label": "进度正常", "desc": "按节点稳步推进，重点确保个人陈述质量和申请材料完整。" },
+      "late": { "label": "时间紧张", "desc": "距截止日较近，优先保证核心材料完整提交，暂缓非必要优化。" }
+    },
+    "ms.research.title": "调研院校与专业",
+    "ms.research.desc": "确定目标院校与专业方向，收集入学要求、学费与排名信息。",
+    "ms.research.earlyTip": "时间充裕：建议深度阅读各院校课程大纲，准备有针对性的问题。",
+    "ms.research.lateTip": "时间有限：聚焦已有初步意向的 5–8 所院校，快速收集关键要求。",
+    "ms.ucasReg.title": "注册 UCAS 账号",
+    "ms.ucasReg.desc": "在 UCAS 官网创建账号，填写基本信息，准备开始填写申请。",
+    "ms.ucasReg.lateTip": "尽快注册，账号激活需要时间，不要等到最后一周。",
+    "ms.oxbridge.title": "牛剑截止日（10 月 15 日）",
+    "ms.oxbridge.desc": "申请牛津或剑桥大学的 UCAS 申请必须在此日期前提交。",
+    "ms.oxbridge.earlyTip": "如有牛剑意向，现在开始准备学术测试（MAT/STEP/TSA 等）。",
+    "ms.oxbridge.lateTip": "若有牛剑申请，个人陈述需立即完成，不可拖延。",
+    "ms.psDraft.title": "个人陈述初稿完成",
+    "ms.psDraft.desc": "UCAS 个人陈述（3 个结构化问题）应在此前完成初稿，留出修改时间。",
+    "ms.psDraft.earlyTip": "可以多写几个版本对比，或请老师/同学提前反馈。",
+    "ms.psDraft.lateTip": "直接进入最终稿，避免反复大改——先保证结构完整再优化措辞。",
+    "ms.hkOpen.title": "香港院校申请开放",
+    "ms.hkOpen.desc": "港大、港科大等院校直申通道通常在 11 月陆续开放，注意各校官网公告。",
+    "ms.ucasMain.title": "UCAS 主截止日（1 月 15 日）",
+    "ms.ucasMain.desc": "非牛剑英国院校的 UCAS 申请截止日，所有志愿须在此日前提交。",
+    "ms.ucasMain.earlyTip": "提前完成可早于截止日递交，部分院校先到先审。",
+    "ms.ucasMain.lateTip": "距截止不足两个月，个人陈述与推荐信必须立即锁定，不留余地。",
+    "ms.hkDeadline.title": "香港直申截止日",
+    "ms.hkDeadline.desc": "大多数香港院校直申截止日在 3–4 月，请逐一确认各校官网。",
+    "ms.ucasDecisions.title": "UCAS 院校决定陆续到来",
+    "ms.ucasDecisions.desc": "UCAS Track 上会陆续收到 Offer 或拒信，关注 Track 通知。",
+    "ms.ucasReply.title": "UCAS 回复截止日",
+    "ms.ucasReply.desc": "须在 UCAS 规定日期前选择 Firm（第一志愿）和 Insurance（保底）院校。",
+    "ms.exams.title": "A-Level 考试季",
+    "ms.exams.desc": "5–6 月 A-Level 正式考试，决定是否达到有条件 Offer 的要求。",
+    "ms.exams.earlyTip": "备考充分，保持状态；提前模拟考以熟悉真题节奏。",
+    "ms.exams.lateTip": "集中冲刺核心知识点，保证高频考点熟练度，不要分散精力。",
+    "ms.results.title": "A-Level 放榜 & 入学确认",
+    "ms.results.desc": "成绩公布，Unconditional Offer 生效；若未达分可进入 Clearing 通道。"
   },
   "universities": {
     "title": "院校库",

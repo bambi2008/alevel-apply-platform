@@ -89,7 +89,10 @@ export default async function UniversitiesPage({
                 <div className="mt-4 grid sm:grid-cols-2 gap-2">
                   {ps.map((p) => (
                     <div key={p.id} className="rounded-lg bg-neutral-50 px-3 py-2 text-sm">
-                      <div className="font-medium">{isEn ? p.name : p.nameZh}</div>
+                      <div className="font-medium">
+                        {p.nameZh}
+                        <span className="ml-1.5 text-xs font-normal text-neutral-400">{p.name}</span>
+                      </div>
                       <div className="text-neutral-500 flex flex-wrap gap-x-3">
                         <span>{t("typical")} {p.alevelOfferTypical ?? "—"}</span>
                         <span>{t("ielts")} {p.ielts ?? "—"}</span>
