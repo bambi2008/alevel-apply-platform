@@ -1,14 +1,11 @@
-// Claude API 数学大题分步评分端点
-// 输入：题目、学生解答、参考答案要点
-// 输出：各小问得分 + 反馈 + 标准答案
-
 import { NextRequest, NextResponse } from "next/server";
-import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 
 export const runtime = "nodejs";
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
+const client = new OpenAI({
+  apiKey: process.env.DEEPSEEK_API_KEY,
+  baseURL: "https://api.deepseek.com",
 });
 
 export interface GradeRequest {
@@ -48,7 +45,7 @@ Rules:
 1. Award marks for correct METHOD even if the final answer is wrong (method marks).
 2. Award marks for correct intermediate results (accuracy marks).
 3. Be fair but rigorous — do not award marks for unsupported claims or circular reasoning.
-4. Respond ONLY with valid JSON in the exact format specified.
+4. Respond ONLY with valid JSON in the exact format specified. No markdown, no extra text.
 5. Write feedback in Chinese (中文). Be specific about what was correct and what was missing.
 6. If a student's approach is valid but different from the outline, award appropriate marks.`;
 
@@ -75,7 +72,7 @@ ${p.studentWork || "(no answer provided)"}
 Full model solution (for reference):
 ${req.fullSolution}
 
-Respond with ONLY this JSON structure (no other text):
+Respond with ONLY this JSON structure (no other text, no markdown code blocks):
 {
   "perPart": [
     {
@@ -92,9 +89,9 @@ Respond with ONLY this JSON structure (no other text):
 `;
 
 export async function POST(req: NextRequest) {
-  if (!process.env.ANTHROPIC_API_KEY) {
+  if (!process.env.DEEPSEEK_API_KEY) {
     return NextResponse.json(
-      { error: "ANTHROPIC_API_KEY not configured" },
+      { error: "DEEPSEEK_API_KEY not configured" },
       { status: 503 }
     );
   }
@@ -111,21 +108,18 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const message = await client.messages.create({
-      model: "claude-sonnet-4-6",
+    const completion = await client.chat.completions.create({
+      model: "deepseek-chat",
       max_tokens: 2048,
-      system: GRADE_SYSTEM_PROMPT,
-      messages: [{ role: "user", content: GRADE_PROMPT(body) }],
+      response_format: { type: "json_object" },
+      messages: [
+        { role: "system", content: GRADE_SYSTEM_PROMPT },
+        { role: "user", content: GRADE_PROMPT(body) },
+      ],
     });
 
-    const content = message.content[0];
-    if (content.type !== "text") {
-      throw new Error("Unexpected response type");
-    }
-
-    // Parse JSON from Claude's response
-    const raw = content.text.trim();
-    // Strip markdown code blocks if present
+    const raw = completion.choices[0]?.message?.content?.trim() ?? "";
+    // Strip markdown code blocks if model ignores the instruction
     const jsonText = raw.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
     const parsed = JSON.parse(jsonText) as {
       perPart: {
