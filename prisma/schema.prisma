@@ -74,6 +74,7 @@ model StudentProfile {
   applications   Application[]
   statements     PersonalStatement[]
   tasks          Task[]
+  examSessions   ExamSession[]
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
 }
@@ -400,6 +401,39 @@ model AuditLog {
 
   @@index([actorId])
   @@index([entity, entityId])
+}
+
+// ---------- 入学笔试练习记录 ----------
+
+model ExamSession {
+  id          String         @id @default(cuid())
+  studentId   String
+  student     StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  testId      String         // "mat" | "step" | "engaa"
+  mode        String         // "practice" | "mock"
+  totalEarned Int
+  totalMax    Int
+  timeUsedSec Int?
+  answers     ExamAnswer[]
+  createdAt   DateTime       @default(now())
+
+  @@index([studentId])
+  @@index([testId])
+}
+
+model ExamAnswer {
+  id         String      @id @default(cuid())
+  sessionId  String
+  session    ExamSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  questionId String
+  type       String      // "mcq" | "long"
+  selected   String?     // MCQ: 所选选项
+  work       Json?       // 大题: { "(i)": "...", ... }
+  earned     Int
+  max        Int
+  feedback   Json?       // AI 评分 perPart 数组
+
+  @@index([sessionId])
 }
 
 // ---------- Phase 2 预留（暂不建表）----------

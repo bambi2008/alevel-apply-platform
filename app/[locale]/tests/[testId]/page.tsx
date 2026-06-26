@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { getTestById, type AdmissionsTest } from "@/lib/tests";
@@ -16,7 +16,7 @@ export default function TestDetailPage({
   return <TestDetailContent test={test} />;
 }
 
-type TabId = "overview" | "topics" | "plan" | "practice";
+type TabId = "overview" | "topics" | "plan" | "practice" | "history";
 
 function TestDetailContent({ test }: { test: AdmissionsTest }) {
   const [tab, setTab] = useState<TabId>("overview");
@@ -26,6 +26,7 @@ function TestDetailContent({ test }: { test: AdmissionsTest }) {
     { id: "topics", label: "知识点模块", labelEn: "Topics" },
     { id: "plan", label: "备考计划", labelEn: "Study Plan" },
     { id: "practice", label: "练习 / 模拟", labelEn: "Practice" },
+    ...(test.hasQuestionBank ? [{ id: "history" as TabId, label: "历史记录", labelEn: "History" }] : []),
   ];
 
   return (
@@ -122,6 +123,7 @@ function TestDetailContent({ test }: { test: AdmissionsTest }) {
       {tab === "topics" && <TopicsTab test={test} />}
       {tab === "plan" && <PlanTab test={test} />}
       {tab === "practice" && <PracticeTab test={test} />}
+      {tab === "history" && <HistoryTab test={test} />}
     </div>
   );
 }
@@ -354,6 +356,109 @@ function PracticeTab({ test }: { test: AdmissionsTest }) {
         ℹ️ 题库正在建设中。AI 生成的数学题经过多轮审核，如发现题目有误请反馈给我们。
         模拟考试中的数学大题由 Claude API 进行分步评分，按解题步骤给部分分。
       </div>
+    </div>
+  );
+}
+
+interface HistoryEntry {
+  id: string;
+  testId: string;
+  mode: string;
+  totalEarned: number;
+  totalMax: number;
+  timeUsedSec: number | null;
+  createdAt: string;
+  _count: { answers: number };
+}
+
+function HistoryTab({ test }: { test: AdmissionsTest }) {
+  const [sessions, setSessions] = useState<HistoryEntry[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch(`/api/exam-sessions?testId=${test.id}`)
+      .then((r) => {
+        if (r.status === 401) throw new Error("请先登录查看历史记录");
+        if (!r.ok) throw new Error("加载失败");
+        return r.json() as Promise<HistoryEntry[]>;
+      })
+      .then(setSessions)
+      .catch((e) => setError(e.message));
+  }, [test.id]);
+
+  const fmt = (iso: string) =>
+    new Date(iso).toLocaleString("zh-CN", { month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit" });
+
+  const fmtTime = (s: number | null) => {
+    if (!s) return "—";
+    const m = Math.floor(s / 60);
+    const sec = s % 60;
+    return `${m}:${String(sec).padStart(2, "0")}`;
+  };
+
+  if (error) {
+    return (
+      <div className="text-center py-16 text-neutral-500">
+        <p className="text-lg mb-2">⚠️ {error}</p>
+        {error.includes("登录") && (
+          <Link href="/login" className="mt-3 inline-block px-4 py-2 rounded-lg bg-blue-600 text-white text-sm">
+            前往登录
+          </Link>
+        )}
+      </div>
+    );
+  }
+
+  if (!sessions) {
+    return <div className="text-center py-16 text-neutral-400 text-sm">加载中…</div>;
+  }
+
+  if (sessions.length === 0) {
+    return (
+      <div className="text-center py-16 text-neutral-400">
+        <p className="text-5xl mb-4">📋</p>
+        <p>还没有练习记录</p>
+        <div className="flex gap-3 justify-center mt-6">
+          <Link href={`/tests/${test.id}/practice`} className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm">
+            开始练习
+          </Link>
+          <Link href={`/tests/${test.id}/mock`} className="px-4 py-2 rounded-lg border border-neutral-300 text-sm">
+            开始模拟考试
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      <p className="text-sm text-neutral-500 mb-4">最近 {sessions.length} 次练习记录</p>
+      {sessions.map((s) => {
+        const pct = s.totalMax > 0 ? Math.round((s.totalEarned / s.totalMax) * 100) : 0;
+        return (
+          <div key={s.id} className="flex items-center gap-4 rounded-xl border border-neutral-200 px-4 py-3 bg-white">
+            <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
+              pct >= 80 ? "bg-green-100 text-green-700" :
+              pct >= 60 ? "bg-amber-100 text-amber-700" :
+              "bg-red-100 text-red-600"
+            }`}>
+              {pct}%
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-2">
+                <span className="text-xs px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-600">
+                  {s.mode === "mock" ? "模拟考试" : "专项练习"}
+                </span>
+                <span className="text-xs text-neutral-400">{fmt(s.createdAt)}</span>
+              </div>
+              <div className="text-sm font-medium mt-0.5">
+                {s.totalEarned}/{s.totalMax} 分 · {s._count.answers} 题
+                {s.timeUsedSec && <span className="text-xs text-neutral-400 ml-2">用时 {fmtTime(s.timeUsedSec)}</span>}
+              </div>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }

@@ -511,6 +511,34 @@ function MockResults({
   const mcqTotal = results.filter((r) => r.type === "mcq").length;
   const pct = totalMax > 0 ? Math.round((totalEarned / totalMax) * 100) : 0;
 
+  // Save to DB silently on mount (best-effort)
+  useEffect(() => {
+    const payload = {
+      testId,
+      mode: "mock",
+      totalEarned,
+      totalMax,
+      answers: results.map((r) => {
+        const ans = answers.find((a) => a.questionId === r.questionId);
+        return {
+          questionId: r.questionId,
+          type: r.type,
+          selected: ans?.type === "mcq" ? ans.selected ?? undefined : undefined,
+          work: ans?.type === "long" ? ans.works : undefined,
+          earned: r.earned ?? 0,
+          max: r.max ?? 0,
+          feedback: r.grading?.perPart ?? undefined,
+        };
+      }),
+    };
+    fetch("/api/exam-sessions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    }).catch(() => {/* ignore */});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
       <div className="text-center mb-10">

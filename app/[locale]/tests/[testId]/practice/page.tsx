@@ -561,6 +561,29 @@ function SessionSummary({
   const mcqCorrect = mcqResults.filter((r) => r.correct).length;
   const longEarned = longResults.reduce((s, r) => s + (r.earned ?? 0), 0);
   const longMax = longResults.reduce((s, r) => s + (r.max ?? 0), 0);
+  const totalEarned = mcqResults.reduce((s, r) => s + (r.correct ? (queue.find((q) => q.id === r.questionId) as MCQQuestion | undefined)?.marks ?? 0 : 0), 0) + longEarned;
+  const totalMax = results.reduce((s, r) => s + (r.max ?? 0), 0);
+
+  // Save to DB silently (best-effort, non-blocking)
+  useEffect(() => {
+    fetch("/api/exam-sessions", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        testId,
+        mode: "practice",
+        totalEarned,
+        totalMax,
+        answers: results.map((r) => ({
+          questionId: r.questionId,
+          type: r.type,
+          earned: r.earned ?? (r.correct ? 1 : 0),
+          max: r.max ?? 1,
+        })),
+      }),
+    }).catch(() => {/* ignore auth/network errors */});
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10 text-center">
