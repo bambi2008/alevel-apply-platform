@@ -313,13 +313,12 @@ function PracticeTab({ test }: { test: AdmissionsTest }) {
               </div>
             )}
           </div>
-          <button
-            type="button"
-            className="mt-4 w-full py-2.5 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition"
-            onClick={() => alert("题库练习功能即将上线，敬请期待！")}
+          <Link
+            href={`/tests/${test.id}/practice`}
+            className="mt-4 block w-full py-2.5 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition text-center"
           >
-            开始专项练习
-          </button>
+            开始专项练习 →
+          </Link>
         </div>
 
         {/* Mock exam */}
@@ -342,13 +341,12 @@ function PracticeTab({ test }: { test: AdmissionsTest }) {
               <span className="font-medium">AI 分步评分</span>
             </div>
           </div>
-          <button
-            type="button"
-            className="mt-4 w-full py-2.5 rounded-lg border border-blue-600 text-blue-600 text-sm font-medium hover:bg-blue-50 transition"
-            onClick={() => alert("模拟考试功能即将上线，敬请期待！")}
+          <Link
+            href={`/tests/${test.id}/mock`}
+            className="mt-4 block w-full py-2.5 rounded-lg border border-blue-600 text-blue-600 text-sm font-medium hover:bg-blue-50 transition text-center"
           >
-            开始模拟考试
-          </button>
+            开始模拟考试 →
+          </Link>
         </div>
       </div>
 
