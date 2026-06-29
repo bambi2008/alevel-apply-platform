@@ -792,5 +792,483 @@ export const ESAT_PHYS2_EXTRA: MCQQuestion[] = [
   },
 ];
 
+// ════════════════════════════════════════════════════════════════════════
+//  esat-phys3 · 物理波与现代物理 补充 25 题（达到 40）
+// ════════════════════════════════════════════════════════════════════════
+export const ESAT_PHYS3_EXTRA: MCQQuestion[] = [
+  {
+    id: "esat-p-096",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "A wave has a frequency of $50\\,\\text{Hz}$ and a wavelength of $4\\,\\text{m}$. Its speed is:",
+    options: [
+      { key: "A", text: "$12.5\\,\\text{m s}^{-1}$" },
+      { key: "B", text: "$54\\,\\text{m s}^{-1}$" },
+      { key: "C", text: "$200\\,\\text{m s}^{-1}$" },
+      { key: "D", text: "$0.08\\,\\text{m s}^{-1}$" },
+    ],
+    answer: "C",
+    solution: "$v=f\\lambda=50\\times4=200\\,\\text{m s}^{-1}$.",
+  },
+  {
+    id: "esat-p-097",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "A wave has a frequency of $200\\,\\text{Hz}$. Its period is:",
+    options: [
+      { key: "A", text: "$200\\,\\text{s}$" },
+      { key: "B", text: "$0.005\\,\\text{s}$" },
+      { key: "C", text: "$0.05\\,\\text{s}$" },
+      { key: "D", text: "$5\\,\\text{s}$" },
+    ],
+    answer: "B",
+    solution: "$T=\\dfrac{1}{f}=\\dfrac{1}{200}=0.005\\,\\text{s}$.",
+  },
+  {
+    id: "esat-p-098",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Sound travels at $340\\,\\text{m s}^{-1}$ in air. The wavelength of a $170\\,\\text{Hz}$ sound wave is:",
+    options: [
+      { key: "A", text: "$0.5\\,\\text{m}$" },
+      { key: "B", text: "$2\\,\\text{m}$" },
+      { key: "C", text: "$510\\,\\text{m}$" },
+      { key: "D", text: "$57\\,800\\,\\text{m}$" },
+    ],
+    answer: "B",
+    solution: "$\\lambda=\\dfrac{v}{f}=\\dfrac{340}{170}=2\\,\\text{m}$.",
+  },
+  {
+    id: "esat-p-099",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "Which of the following is a longitudinal wave?",
+    options: [
+      { key: "A", text: "A sound wave in air" },
+      { key: "B", text: "A wave on a vibrating string" },
+      { key: "C", text: "A light wave" },
+      { key: "D", text: "A water surface ripple" },
+    ],
+    answer: "A",
+    solution:
+      "In a longitudinal wave the oscillations are parallel to the direction of travel (compressions and rarefactions) — this describes sound. The others are transverse.",
+  },
+  {
+    id: "esat-p-100",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "Which part of the electromagnetic spectrum has the SHORTEST wavelength?",
+    options: [
+      { key: "A", text: "Radio waves" },
+      { key: "B", text: "Visible light" },
+      { key: "C", text: "Microwaves" },
+      { key: "D", text: "Gamma rays" },
+    ],
+    answer: "D",
+    solution:
+      "The EM spectrum from longest to shortest wavelength: radio → microwave → infrared → visible → ultraviolet → X-ray → gamma. Gamma rays have the shortest wavelength (and highest frequency/energy).",
+  },
+  {
+    id: "esat-p-101",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "All electromagnetic waves travel through a vacuum at the same speed, approximately:",
+    options: [
+      { key: "A", text: "$340\\,\\text{m s}^{-1}$" },
+      { key: "B", text: "$1500\\,\\text{m s}^{-1}$" },
+      { key: "C", text: "$3\\times10^{8}\\,\\text{m s}^{-1}$" },
+      { key: "D", text: "$3\\times10^{6}\\,\\text{m s}^{-1}$" },
+    ],
+    answer: "C",
+    solution:
+      "All EM waves travel at the speed of light $c\\approx3\\times10^{8}\\,\\text{m s}^{-1}$ in a vacuum.",
+  },
+  {
+    id: "esat-p-102",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Diffraction of a wave through a gap is most pronounced when the gap width is:",
+    options: [
+      { key: "A", text: "Much larger than the wavelength" },
+      { key: "B", text: "Approximately equal to the wavelength" },
+      { key: "C", text: "Exactly zero" },
+      { key: "D", text: "Much smaller than one wavelength" },
+    ],
+    answer: "B",
+    solution:
+      "The spreading (diffraction) is greatest when the gap is comparable in size to the wavelength. A very wide gap causes little spreading.",
+  },
+  {
+    id: "esat-p-103",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Two coherent sources emit waves in phase. Constructive interference (a maximum) occurs at a point where the path difference is:",
+    options: [
+      { key: "A", text: "A whole number of wavelengths ($n\\lambda$)" },
+      { key: "B", text: "An odd number of half-wavelengths ($(n+\\tfrac12)\\lambda$)" },
+      { key: "C", text: "Always zero" },
+      { key: "D", text: "One quarter of a wavelength" },
+    ],
+    answer: "A",
+    solution:
+      "Waves arrive in phase and reinforce when the path difference is a whole number of wavelengths, $n\\lambda$, giving constructive interference.",
+  },
+  {
+    id: "esat-p-104",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "For two in-phase coherent sources, destructive interference (a minimum) occurs where the path difference equals:",
+    options: [
+      { key: "A", text: "$n\\lambda$" },
+      { key: "B", text: "$(n+\\tfrac12)\\lambda$" },
+      { key: "C", text: "$2n\\lambda$" },
+      { key: "D", text: "Zero only" },
+    ],
+    answer: "B",
+    solution:
+      "A path difference of an odd number of half-wavelengths, $(n+\\tfrac12)\\lambda$, makes the waves arrive exactly out of phase, cancelling — destructive interference.",
+  },
+  {
+    id: "esat-p-105",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "A string of length $0.5\\,\\text{m}$ fixed at both ends vibrates in its fundamental (first harmonic) mode. The wavelength of the standing wave is:",
+    options: [
+      { key: "A", text: "$0.25\\,\\text{m}$" },
+      { key: "B", text: "$0.5\\,\\text{m}$" },
+      { key: "C", text: "$1\\,\\text{m}$" },
+      { key: "D", text: "$2\\,\\text{m}$" },
+    ],
+    answer: "C",
+    solution:
+      "The fundamental has a node at each end and one antinode in the middle, so the string holds half a wavelength: $L=\\tfrac{\\lambda}{2}\\Rightarrow\\lambda=2L=2\\times0.5=1\\,\\text{m}$.",
+  },
+  {
+    id: "esat-p-106",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "Taking the Planck constant $h=6.6\\times10^{-34}\\,\\text{J s}$, the energy of a photon of frequency $5\\times10^{14}\\,\\text{Hz}$ is:",
+    options: [
+      { key: "A", text: "$3.3\\times10^{-19}\\,\\text{J}$" },
+      { key: "B", text: "$3.3\\times10^{-20}\\,\\text{J}$" },
+      { key: "C", text: "$6.6\\times10^{-19}\\,\\text{J}$" },
+      { key: "D", text: "$1.3\\times10^{-48}\\,\\text{J}$" },
+    ],
+    answer: "A",
+    solution:
+      "$E=hf=(6.6\\times10^{-34})(5\\times10^{14})=33\\times10^{-20}=3.3\\times10^{-19}\\,\\text{J}$.",
+  },
+  {
+    id: "esat-p-107",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "For a photon, energy is related to wavelength by which expression ($h$ = Planck constant, $c$ = speed of light)?",
+    options: [
+      { key: "A", text: "$E=\\dfrac{hc}{\\lambda}$" },
+      { key: "B", text: "$E=hc\\lambda$" },
+      { key: "C", text: "$E=\\dfrac{\\lambda}{hc}$" },
+      { key: "D", text: "$E=\\dfrac{h}{c\\lambda}$" },
+    ],
+    answer: "A",
+    solution:
+      "$E=hf$ and $c=f\\lambda$, so $f=\\dfrac{c}{\\lambda}$ and $E=\\dfrac{hc}{\\lambda}$ — shorter wavelength means higher photon energy.",
+  },
+  {
+    id: "esat-p-108",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "In the photoelectric effect, increasing the INTENSITY of the incident light (keeping its frequency the same) increases:",
+    options: [
+      { key: "A", text: "The maximum kinetic energy of each emitted electron" },
+      { key: "B", text: "The number of electrons emitted per second" },
+      { key: "C", text: "The threshold frequency" },
+      { key: "D", text: "The work function of the metal" },
+    ],
+    answer: "B",
+    solution:
+      "Higher intensity means more photons per second, so more electrons are released per second. The maximum KE of each electron depends only on the photon frequency (energy), not on intensity.",
+  },
+  {
+    id: "esat-p-109",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "No electrons are emitted from a metal surface, however bright the light, unless the light's frequency exceeds a certain value. This value is the:",
+    options: [
+      { key: "A", text: "Threshold frequency" },
+      { key: "B", text: "Resonant frequency" },
+      { key: "C", text: "Fundamental frequency" },
+      { key: "D", text: "Larmor frequency" },
+    ],
+    answer: "A",
+    solution:
+      "Each photon must carry at least the work function energy ($hf \\geq \\phi$) to free an electron. Below the threshold frequency, no single photon has enough energy, so no emission occurs no matter how intense the light — strong evidence for the particle (photon) model.",
+  },
+  {
+    id: "esat-p-110",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "The photoelectric effect provides evidence that light behaves as:",
+    options: [
+      { key: "A", text: "A continuous wave only" },
+      { key: "B", text: "A stream of particles (photons)" },
+      { key: "C", text: "A sound wave" },
+      { key: "D", text: "A magnetic field only" },
+    ],
+    answer: "B",
+    solution:
+      "The instantaneous emission and the existence of a threshold frequency cannot be explained by the wave model; they require light to come in discrete quanta (photons) — demonstrating wave–particle duality.",
+  },
+  {
+    id: "esat-p-111",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "A hot gas emits a line spectrum (specific colours only) rather than a continuous spectrum because:",
+    options: [
+      { key: "A", text: "Electrons can have any energy in an atom" },
+      { key: "B", text: "Electrons drop between discrete energy levels, emitting photons of specific energies" },
+      { key: "C", text: "The gas is too cold" },
+      { key: "D", text: "Photons have no energy" },
+    ],
+    answer: "B",
+    solution:
+      "Atomic electrons occupy discrete energy levels. When an electron falls from a higher to a lower level it emits a photon of energy $hf=E_2-E_1$. Only certain transitions are possible, so only certain frequencies (lines) appear.",
+  },
+  {
+    id: "esat-p-112",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "An alpha particle is identical to:",
+    options: [
+      { key: "A", text: "An electron" },
+      { key: "B", text: "A helium nucleus (2 protons + 2 neutrons)" },
+      { key: "C", text: "A high-energy photon" },
+      { key: "D", text: "A single proton" },
+    ],
+    answer: "B",
+    solution:
+      "An alpha particle is a helium-4 nucleus: 2 protons and 2 neutrons, charge $+2$, relatively massive and only weakly penetrating.",
+  },
+  {
+    id: "esat-p-113",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "In beta-minus ($\\beta^-$) decay, what happens inside the nucleus?",
+    options: [
+      { key: "A", text: "A proton changes into a neutron, emitting a positron" },
+      { key: "B", text: "A neutron changes into a proton, emitting an electron" },
+      { key: "C", text: "Two protons and two neutrons are emitted together" },
+      { key: "D", text: "A photon is emitted with no change in the nucleus" },
+    ],
+    answer: "B",
+    solution:
+      "In $\\beta^-$ decay a neutron becomes a proton, emitting a fast electron (the beta particle) and an antineutrino. The nucleon number is unchanged but the proton number increases by 1.",
+  },
+  {
+    id: "esat-p-114",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "When a nucleus emits a gamma ray, its mass number and atomic number:",
+    options: [
+      { key: "A", text: "Both decrease by 2" },
+      { key: "B", text: "Stay the same" },
+      { key: "C", text: "Both increase by 1" },
+      { key: "D", text: "The atomic number increases by 1" },
+    ],
+    answer: "B",
+    solution:
+      "A gamma ray is a high-energy photon carrying away energy but no mass or charge. The nucleus simply loses energy (de-excites); its mass number and atomic number are unchanged.",
+  },
+  {
+    id: "esat-p-115",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "A radioactive source has an activity of $80\\,\\text{Bq}$. After 3 half-lives, its activity is:",
+    options: [
+      { key: "A", text: "$40\\,\\text{Bq}$" },
+      { key: "B", text: "$27\\,\\text{Bq}$" },
+      { key: "C", text: "$10\\,\\text{Bq}$" },
+      { key: "D", text: "$0\\,\\text{Bq}$" },
+    ],
+    answer: "C",
+    solution:
+      "Each half-life halves the activity: $80\\to40\\to20\\to10\\,\\text{Bq}$ after three half-lives.",
+  },
+  {
+    id: "esat-p-116",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "The activity of a sample falls from $800\\,\\text{Bq}$ to $100\\,\\text{Bq}$ in $30\\,\\text{minutes}$. The half-life of the source is:",
+    options: [
+      { key: "A", text: "$5\\,\\text{min}$" },
+      { key: "B", text: "$10\\,\\text{min}$" },
+      { key: "C", text: "$15\\,\\text{min}$" },
+      { key: "D", text: "$30\\,\\text{min}$" },
+    ],
+    answer: "B",
+    solution:
+      "$800\\to400\\to200\\to100$ is 3 halvings. So 3 half-lives = 30 min, giving a half-life of $\\dfrac{30}{3}=10\\,\\text{min}$.",
+  },
+  {
+    id: "esat-p-117",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Uranium-238 ($^{238}_{\\,92}\\text{U}$) decays by emitting an alpha particle. The resulting nucleus has:",
+    options: [
+      { key: "A", text: "Mass number 234, atomic number 90" },
+      { key: "B", text: "Mass number 236, atomic number 91" },
+      { key: "C", text: "Mass number 238, atomic number 90" },
+      { key: "D", text: "Mass number 234, atomic number 92" },
+    ],
+    answer: "A",
+    solution:
+      "Alpha emission removes 2 protons and 2 neutrons: mass number $238-4=234$, atomic number $92-2=90$ (this is thorium-234).",
+  },
+  {
+    id: "esat-p-118",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "In the nuclear equation $^{14}_{\\,6}\\text{C}\\rightarrow{}^{14}_{\\,7}\\text{N}+X$, the particle $X$ is:",
+    options: [
+      { key: "A", text: "An alpha particle" },
+      { key: "B", text: "A beta-minus particle (electron)" },
+      { key: "C", text: "A neutron" },
+      { key: "D", text: "A gamma photon" },
+    ],
+    answer: "B",
+    solution:
+      "Mass number is unchanged (14 = 14) but the atomic number rises from 6 to 7. This is characteristic of $\\beta^-$ decay, in which a neutron converts to a proton and an electron is emitted.",
+  },
+  {
+    id: "esat-p-119",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "Which statement correctly describes nuclear fusion?",
+    options: [
+      { key: "A", text: "A heavy nucleus splits into smaller nuclei" },
+      { key: "B", text: "Two light nuclei join to form a heavier nucleus, releasing energy" },
+      { key: "C", text: "An electron is captured by a nucleus" },
+      { key: "D", text: "A nucleus emits a gamma ray only" },
+    ],
+    answer: "B",
+    solution:
+      "Fusion joins light nuclei (e.g. hydrogen isotopes) into a heavier one, releasing energy — the process that powers stars such as the Sun. Splitting a heavy nucleus is fission.",
+  },
+  {
+    id: "esat-p-120",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-phys3",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "In a nuclear reaction a mass of $1\\times10^{-3}\\,\\text{kg}$ is converted entirely to energy. Using $E=mc^2$ with $c=3\\times10^{8}\\,\\text{m s}^{-1}$, the energy released is:",
+    options: [
+      { key: "A", text: "$3\\times10^{5}\\,\\text{J}$" },
+      { key: "B", text: "$9\\times10^{13}\\,\\text{J}$" },
+      { key: "C", text: "$9\\times10^{16}\\,\\text{J}$" },
+      { key: "D", text: "$3\\times10^{8}\\,\\text{J}$" },
+    ],
+    answer: "B",
+    solution:
+      "$E=mc^2=(1\\times10^{-3})(3\\times10^{8})^2=(1\\times10^{-3})(9\\times10^{16})=9\\times10^{13}\\,\\text{J}$.",
+  },
+];
+
 // 聚合（后续模块在此累加）
-export const ESAT_TOPUP_QUESTIONS = [...ESAT_PHYS1_EXTRA, ...ESAT_PHYS2_EXTRA];
+export const ESAT_TOPUP_QUESTIONS = [...ESAT_PHYS1_EXTRA, ...ESAT_PHYS2_EXTRA, ...ESAT_PHYS3_EXTRA];
