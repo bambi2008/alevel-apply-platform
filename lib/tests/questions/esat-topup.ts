@@ -1270,5 +1270,402 @@ export const ESAT_PHYS3_EXTRA: MCQQuestion[] = [
   },
 ];
 
+// ════════════════════════════════════════════════════════════════════════
+//  esat-chem1 · 化学原子结构与化学键 补充 20 题（达到 40）—— 5 选项
+// ════════════════════════════════════════════════════════════════════════
+export const ESAT_CHEM1_EXTRA: MCQQuestion[] = [
+  {
+    id: "esat-c-061",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-chem1",
+    difficulty: 1,
+    marks: 1,
+    question: "Which subatomic particle has no electric charge?",
+    options: [
+      { key: "A", text: "Proton" },
+      { key: "B", text: "Neutron" },
+      { key: "C", text: "Electron" },
+      { key: "D", text: "Positron" },
+      { key: "E", text: "Ion" },
+    ],
+    answer: "B",
+    solution:
+      "The neutron is electrically neutral. The proton carries +1 and the electron −1 (relative charges).",
+  },
+  {
+    id: "esat-c-062",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-chem1",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "The atomic (proton) number of an element is equal to the number of:",
+    options: [
+      { key: "A", text: "Neutrons in the nucleus" },
+      { key: "B", text: "Protons in the nucleus" },
+      { key: "C", text: "Protons plus neutrons" },
+      { key: "D", text: "Electron shells" },
+      { key: "E", text: "Neutrons minus protons" },
+    ],
+    answer: "B",
+    solution:
+      "Atomic number = number of protons, which defines the element. Mass number = protons + neutrons.",
+  },
+  {
+    id: "esat-c-063",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-chem1",
+    difficulty: 1,
+    marks: 1,
+    question: "Isotopes of an element have:",
+    options: [
+      { key: "A", text: "The same number of protons but different numbers of neutrons" },
+      { key: "B", text: "The same number of neutrons but different numbers of protons" },
+      { key: "C", text: "Different numbers of electrons and protons" },
+      { key: "D", text: "Different atomic numbers" },
+      { key: "E", text: "Different chemical symbols" },
+    ],
+    answer: "A",
+    solution:
+      "Isotopes have the same proton number (same element) but different numbers of neutrons, so different mass numbers. They have identical chemical properties.",
+  },
+  {
+    id: "esat-c-064",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-chem1",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "How many neutrons are in an atom of sodium-23 (atomic number 11)?",
+    options: [
+      { key: "A", text: "11" },
+      { key: "B", text: "12" },
+      { key: "C", text: "23" },
+      { key: "D", text: "34" },
+      { key: "E", text: "1" },
+    ],
+    answer: "B",
+    solution:
+      "Neutrons = mass number − atomic number = 23 − 11 = 12.",
+  },
+  {
+    id: "esat-c-065",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-chem1",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "The full electron configuration of a magnesium atom (atomic number 12) is:",
+    options: [
+      { key: "A", text: "1s² 2s² 2p⁶ 3s²" },
+      { key: "B", text: "1s² 2s² 2p⁸" },
+      { key: "C", text: "1s² 2s² 2p⁶ 3p²" },
+      { key: "D", text: "1s² 2s² 2p⁶ 3s¹ 3p¹" },
+      { key: "E", text: "1s² 2s² 2p⁶ 3s² 3p²" },
+    ],
+    answer: "A",
+    solution:
+      "Twelve electrons fill: 1s² (2), 2s² (2), 2p⁶ (6), 3s² (2) = 12. The 2p subshell holds a maximum of 6, so option B is impossible.",
+  },
+  {
+    id: "esat-c-066",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-chem1",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "How many electrons does a sodium ion (Na⁺, atomic number 11) contain?",
+    options: [
+      { key: "A", text: "9" },
+      { key: "B", text: "10" },
+      { key: "C", text: "11" },
+      { key: "D", text: "12" },
+      { key: "E", text: "23" },
+    ],
+    answer: "B",
+    solution:
+      "A neutral Na atom has 11 electrons; losing one to form Na⁺ leaves 10 electrons (the same configuration as neon).",
+  },
+  {
+    id: "esat-c-067",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-chem1",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Which element would most readily form an ion with a 2+ charge?",
+    options: [
+      { key: "A", text: "Sodium (Group 1)" },
+      { key: "B", text: "Magnesium (Group 2)" },
+      { key: "C", text: "Chlorine (Group 17)" },
+      { key: "D", text: "Argon (Group 18)" },
+      { key: "E", text: "Fluorine (Group 17)" },
+    ],
+    answer: "B",
+    solution:
+      "Group 2 elements have two outer electrons and lose both to reach a noble-gas configuration, forming 2+ ions (e.g. Mg²⁺). Group 1 forms 1+; Groups 17 form 1− ions; argon is unreactive.",
+  },
+  {
+    id: "esat-c-068",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-chem1",
+    difficulty: 1,
+    marks: 1,
+    question: "An ionic bond is best described as:",
+    options: [
+      { key: "A", text: "A shared pair of electrons between two atoms" },
+      { key: "B", text: "The electrostatic attraction between oppositely charged ions" },
+      { key: "C", text: "A sea of delocalised electrons around metal ions" },
+      { key: "D", text: "A weak force between molecules" },
+      { key: "E", text: "The attraction between two nuclei" },
+    ],
+    answer: "B",
+    solution:
+      "Ionic bonding is the strong electrostatic attraction between oppositely charged ions, formed by transfer of electrons (typically metal → non-metal).",
+  },
+  {
+    id: "esat-c-069",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-chem1",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Which property is characteristic of a typical ionic compound such as sodium chloride?",
+    options: [
+      { key: "A", text: "Low melting point" },
+      { key: "B", text: "Conducts electricity when solid" },
+      { key: "C", text: "High melting point and conducts when molten or dissolved" },
+      { key: "D", text: "Is a gas at room temperature" },
+      { key: "E", text: "Does not dissolve in any solvent" },
+    ],
+    answer: "C",
+    solution:
+      "Strong ionic attractions in a giant lattice give high melting points. Solids do not conduct (ions fixed), but when molten or dissolved the ions are free to move and carry charge.",
+  },
+  {
+    id: "esat-c-070",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-chem1",
+    difficulty: 1,
+    marks: 1,
+    question: "A covalent bond is formed by:",
+    options: [
+      { key: "A", text: "Transfer of electrons from one atom to another" },
+      { key: "B", text: "Sharing of a pair of electrons between two atoms" },
+      { key: "C", text: "Attraction between ions and delocalised electrons" },
+      { key: "D", text: "Loss of electrons by both atoms" },
+      { key: "E", text: "Attraction between two cations" },
+    ],
+    answer: "B",
+    solution:
+      "A covalent bond is a shared pair of electrons between two atoms (typically between non-metals), held by attraction of both nuclei to the shared pair.",
+  },
+  {
+    id: "esat-c-071",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-chem1",
+    difficulty: 2,
+    marks: 1,
+    question: "Which substance contains covalent bonds?",
+    options: [
+      { key: "A", text: "Sodium chloride (NaCl)" },
+      { key: "B", text: "Magnesium oxide (MgO)" },
+      { key: "C", text: "Carbon dioxide (CO₂)" },
+      { key: "D", text: "Potassium fluoride (KF)" },
+      { key: "E", text: "Calcium chloride (CaCl₂)" },
+    ],
+    answer: "C",
+    solution:
+      "CO₂ is a molecule of two non-metals sharing electrons — covalent. The others are metal + non-metal combinations, which are ionic.",
+  },
+  {
+    id: "esat-c-072",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-chem1",
+    difficulty: 2,
+    marks: 1,
+    question: "Metallic bonding is best described as:",
+    options: [
+      { key: "A", text: "Shared pairs of electrons between metal atoms" },
+      { key: "B", text: "A lattice of positive metal ions in a 'sea' of delocalised electrons" },
+      { key: "C", text: "Transfer of electrons forming a giant ionic lattice" },
+      { key: "D", text: "Weak intermolecular forces between metal molecules" },
+      { key: "E", text: "Attraction between neutral metal atoms only" },
+    ],
+    answer: "B",
+    solution:
+      "In a metal, atoms release their outer electrons to form a lattice of positive ions surrounded by a sea of delocalised electrons; the attraction between the ions and these electrons is the metallic bond.",
+  },
+  {
+    id: "esat-c-073",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-chem1",
+    difficulty: 2,
+    marks: 1,
+    question: "Metals conduct electricity well because:",
+    options: [
+      { key: "A", text: "They contain ions that are free to move in the solid" },
+      { key: "B", text: "They have delocalised electrons that are free to move and carry charge" },
+      { key: "C", text: "Their covalent bonds break easily" },
+      { key: "D", text: "They are made of molecules" },
+      { key: "E", text: "They have a low density" },
+    ],
+    answer: "B",
+    solution:
+      "The delocalised (free) electrons in the metallic lattice can move through the structure when a voltage is applied, carrying an electric current. (Ionic solids do NOT conduct because their ions are fixed.)",
+  },
+  {
+    id: "esat-c-074",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-chem1",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "What is the shape of a methane (CH₄) molecule, which has four bonding pairs and no lone pairs around the carbon?",
+    options: [
+      { key: "A", text: "Linear" },
+      { key: "B", text: "Trigonal planar" },
+      { key: "C", text: "Tetrahedral" },
+      { key: "D", text: "Bent (V-shaped)" },
+      { key: "E", text: "Trigonal pyramidal" },
+    ],
+    answer: "C",
+    solution:
+      "Four bonding pairs and no lone pairs arrange themselves as far apart as possible — a tetrahedron with bond angles of 109.5°.",
+  },
+  {
+    id: "esat-c-075",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-chem1",
+    difficulty: 2,
+    marks: 1,
+    question: "What is the bond angle in a methane (CH₄) molecule?",
+    options: [
+      { key: "A", text: "90°" },
+      { key: "B", text: "104.5°" },
+      { key: "C", text: "107°" },
+      { key: "D", text: "109.5°" },
+      { key: "E", text: "120°" },
+    ],
+    answer: "D",
+    solution:
+      "A regular tetrahedral arrangement of four identical bonding pairs gives bond angles of 109.5°.",
+  },
+  {
+    id: "esat-c-076",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-chem1",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Carbon dioxide (O=C=O) has two double bonds and no lone pairs on the central carbon. Its shape is:",
+    options: [
+      { key: "A", text: "Bent, 104.5°" },
+      { key: "B", text: "Linear, 180°" },
+      { key: "C", text: "Tetrahedral, 109.5°" },
+      { key: "D", text: "Trigonal pyramidal, 107°" },
+      { key: "E", text: "Trigonal planar, 120°" },
+    ],
+    answer: "B",
+    solution:
+      "Two electron regions around the central carbon repel to point in opposite directions, giving a linear molecule with a bond angle of 180°.",
+  },
+  {
+    id: "esat-c-077",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-chem1",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "An ammonia molecule (NH₃) has three bonding pairs and one lone pair on nitrogen. Its shape and approximate bond angle are:",
+    options: [
+      { key: "A", text: "Trigonal planar, 120°" },
+      { key: "B", text: "Tetrahedral, 109.5°" },
+      { key: "C", text: "Trigonal pyramidal, 107°" },
+      { key: "D", text: "Linear, 180°" },
+      { key: "E", text: "Bent, 104.5°" },
+    ],
+    answer: "C",
+    solution:
+      "Four electron regions (3 bonding + 1 lone pair) are arranged tetrahedrally, but only the three bonded atoms define the shape — trigonal pyramidal. The lone pair repels slightly more, compressing the angle to about 107°.",
+  },
+  {
+    id: "esat-c-078",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-chem1",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "A water molecule (H₂O) has two bonding pairs and two lone pairs on oxygen. Its shape and approximate bond angle are:",
+    options: [
+      { key: "A", text: "Linear, 180°" },
+      { key: "B", text: "Bent (V-shaped), 104.5°" },
+      { key: "C", text: "Trigonal pyramidal, 107°" },
+      { key: "D", text: "Tetrahedral, 109.5°" },
+      { key: "E", text: "Trigonal planar, 120°" },
+    ],
+    answer: "B",
+    solution:
+      "Four electron regions (2 bonding + 2 lone pairs) are tetrahedrally arranged, but only the two O–H bonds define the visible shape — bent. The two lone pairs repel strongly, reducing the angle to about 104.5°.",
+  },
+  {
+    id: "esat-c-079",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-chem1",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "In VSEPR theory, the order of repulsion strength between electron pairs is:",
+    options: [
+      { key: "A", text: "bonding–bonding > lone–bonding > lone–lone" },
+      { key: "B", text: "lone–lone > lone–bonding > bonding–bonding" },
+      { key: "C", text: "all repulsions are equal" },
+      { key: "D", text: "lone–bonding > lone–lone > bonding–bonding" },
+      { key: "E", text: "bonding–bonding > lone–lone > lone–bonding" },
+    ],
+    answer: "B",
+    solution:
+      "Lone pairs are held closer to the central atom and are more diffuse, so lone-pair–lone-pair repulsion is greatest, then lone-pair–bonding-pair, then bonding-pair–bonding-pair. This is why lone pairs compress bond angles (e.g. NH₃ 107°, H₂O 104.5°).",
+  },
+  {
+    id: "esat-c-080",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-chem1",
+    difficulty: 2,
+    marks: 1,
+    question: "Which element is the most electronegative?",
+    options: [
+      { key: "A", text: "Fluorine" },
+      { key: "B", text: "Oxygen" },
+      { key: "C", text: "Chlorine" },
+      { key: "D", text: "Carbon" },
+      { key: "E", text: "Sodium" },
+    ],
+    answer: "A",
+    solution:
+      "Electronegativity increases across a period and up a group, peaking at fluorine (top right, excluding the noble gases) — the most electronegative element.",
+  },
+];
+
 // 聚合（后续模块在此累加）
-export const ESAT_TOPUP_QUESTIONS = [...ESAT_PHYS1_EXTRA, ...ESAT_PHYS2_EXTRA, ...ESAT_PHYS3_EXTRA];
+export const ESAT_TOPUP_QUESTIONS = [...ESAT_PHYS1_EXTRA, ...ESAT_PHYS2_EXTRA, ...ESAT_PHYS3_EXTRA, ...ESAT_CHEM1_EXTRA];
