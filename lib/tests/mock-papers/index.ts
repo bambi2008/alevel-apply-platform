@@ -2,6 +2,7 @@
 import type { MCQQuestion } from "@/lib/tests/questions/types";
 import { ESAT_MK1_MATH, ESAT_MK1_PHYS } from "./esat-mock-1";
 import { ESAT_MK2_MATH, ESAT_MK2_PHYS } from "./esat-mock-2";
+import { ESAT_MK3_MATH, ESAT_MK3_CHEM } from "./esat-mock-3";
 
 export interface MockModule {
   id: string;
@@ -70,7 +71,32 @@ export const ESAT_MOCK_2: MockPaper = {
   ],
 };
 
-const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2];
+export const ESAT_MOCK_3: MockPaper = {
+  id: "esat-mock-3",
+  testId: "esat",
+  title: "ESAT 模拟卷三（化学方向）",
+  titleEn: "ESAT Mock Paper 3 (Chemistry)",
+  description:
+    "面向化学方向考生的完整模拟卷：数学（模块一）+ 化学（模块二），每模块 27 题、40 分钟独立计时、五选一、无负分。题目全新原创，与练习题库及其他模拟卷均不重复。",
+  modules: [
+    {
+      id: "math",
+      title: "数学（模块一）",
+      titleEn: "Mathematics (Module 1)",
+      durationSec: 40 * 60,
+      questions: ESAT_MK3_MATH,
+    },
+    {
+      id: "chemistry",
+      title: "化学（模块二）",
+      titleEn: "Chemistry (Module 2)",
+      durationSec: 40 * 60,
+      questions: ESAT_MK3_CHEM,
+    },
+  ],
+};
+
+const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3];
 
 export function getMockPapersForTest(testId: string): MockPaper[] {
   return ALL_MOCK_PAPERS.filter((p) => p.testId === testId);
