@@ -18,7 +18,7 @@ export default function TestDetailPage({
   return <TestDetailContent test={test} />;
 }
 
-type TabId = "overview" | "topics" | "plan" | "practice" | "history";
+type TabId = "overview" | "topics" | "plan" | "practice" | "history" | "analysis";
 
 function TestDetailContent({ test }: { test: AdmissionsTest }) {
   const [tab, setTab] = useState<TabId>("overview");
@@ -29,6 +29,7 @@ function TestDetailContent({ test }: { test: AdmissionsTest }) {
     { id: "plan", label: "备考计划", labelEn: "Study Plan" },
     { id: "practice", label: "练习 / 模拟", labelEn: "Practice" },
     ...(test.hasQuestionBank ? [{ id: "history" as TabId, label: "历史记录", labelEn: "History" }] : []),
+    ...(test.hasQuestionBank ? [{ id: "analysis" as TabId, label: "学情分析", labelEn: "Analysis" }] : []),
   ];
 
   return (
@@ -126,6 +127,7 @@ function TestDetailContent({ test }: { test: AdmissionsTest }) {
       {tab === "plan" && <PlanTab test={test} />}
       {tab === "practice" && <PracticeTab test={test} />}
       {tab === "history" && <HistoryTab test={test} />}
+      {tab === "analysis" && <AnalysisTab test={test} />}
     </div>
   );
 }
@@ -516,6 +518,116 @@ function HistoryTab({ test }: { test: AdmissionsTest }) {
           </Link>
         );
       })}
+    </div>
+  );
+}
+
+interface TopicStat {
+  topicId: string;
+  title: string;
+  earned: number;
+  max: number;
+  count: number;
+  accuracy: number;
+}
+
+function AnalysisTab({ test }: { test: AdmissionsTest }) {
+  const [data, setData] = useState<{ topics: TopicStat[]; totalAnswered: number } | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetch(`/api/exam-sessions/stats?testId=${test.id}`)
+      .then((r) => {
+        if (r.status === 401) throw new Error("请先登录查看学情分析");
+        if (!r.ok) throw new Error("加载失败");
+        return r.json() as Promise<{ topics: TopicStat[]; totalAnswered: number }>;
+      })
+      .then(setData)
+      .catch((e) => setError(e.message));
+  }, [test.id]);
+
+  if (error) {
+    return (
+      <div className="text-center py-16 text-neutral-500">
+        <p className="text-lg mb-2">⚠️ {error}</p>
+        {error.includes("登录") && (
+          <Link href="/login" className="mt-3 inline-block px-4 py-2 rounded-lg bg-blue-600 text-white text-sm">
+            前往登录
+          </Link>
+        )}
+      </div>
+    );
+  }
+
+  if (!data) {
+    return <div className="text-center py-16 text-neutral-400 text-sm">加载中…</div>;
+  }
+
+  if (data.topics.length === 0) {
+    return (
+      <div className="text-center py-16 text-neutral-400">
+        <p className="text-5xl mb-4">📊</p>
+        <p>还没有足够的练习数据</p>
+        <p className="text-sm mt-1">完成一些练习或模拟后，这里会按知识点显示你的正确率和薄弱点。</p>
+        <Link href={`/tests/${test.id}/practice`} className="mt-6 inline-block px-4 py-2 rounded-lg bg-blue-600 text-white text-sm">
+          开始练习
+        </Link>
+      </div>
+    );
+  }
+
+  const weakest = data.topics.filter((t) => t.accuracy < 0.6).slice(0, 3);
+
+  return (
+    <div className="space-y-6">
+      <p className="text-sm text-neutral-500">
+        基于你累计作答的 {data.totalAnswered} 道题，按知识点统计正确率（由低到高排列）。
+      </p>
+
+      {weakest.length > 0 && (
+        <div className="rounded-2xl border border-amber-200 bg-amber-50 p-5">
+          <h3 className="font-semibold text-amber-800 mb-2">🎯 建议优先突破</h3>
+          <div className="flex flex-wrap gap-2">
+            {weakest.map((t) => (
+              <Link
+                key={t.topicId}
+                href={`/tests/${test.id}/practice?topic=${t.topicId}`}
+                className="text-sm px-3 py-1.5 rounded-lg bg-white border border-amber-300 text-amber-800 hover:bg-amber-100"
+              >
+                {t.title}（{Math.round(t.accuracy * 100)}%）→ 去练习
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-3">
+        {data.topics.map((t) => {
+          const pct = Math.round(t.accuracy * 100);
+          const barColor = pct >= 80 ? "bg-green-500" : pct >= 60 ? "bg-amber-500" : "bg-red-500";
+          return (
+            <div key={t.topicId} className="rounded-xl border border-neutral-200 bg-white px-4 py-3">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-sm font-medium text-neutral-800">{t.title}</span>
+                <span className="text-xs text-neutral-500">
+                  {t.earned}/{t.max} 分 · {t.count} 题 · <span className="font-semibold">{pct}%</span>
+                </span>
+              </div>
+              <div className="h-2 bg-neutral-100 rounded-full overflow-hidden">
+                <div className={`h-full ${barColor} rounded-full transition-all`} style={{ width: `${pct}%` }} />
+              </div>
+              <div className="mt-2 text-right">
+                <Link
+                  href={`/tests/${test.id}/practice?topic=${t.topicId}`}
+                  className="text-xs text-blue-600 hover:underline"
+                >
+                  专项练习 →
+                </Link>
+              </div>
+            </div>
+          );
+        })}
+      </div>
     </div>
   );
 }
