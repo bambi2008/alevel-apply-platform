@@ -26,6 +26,10 @@ interface SessionResult {
   correct?: boolean;
   earned?: number;
   max?: number;
+  // 回看所需：MCQ 所选项 / 大题作答文本 / AI 分步反馈
+  selected?: string;
+  work?: Record<string, string>;
+  feedback?: unknown;
 }
 
 export default function PracticePage({ params }: { params: Promise<{ testId: string }> }) {
@@ -125,16 +129,16 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
         <MCQCard
           key={currentQ.id}
           question={currentQ as MCQQuestion}
-          onAnswer={(correct) =>
-            recordResult({ questionId: currentQ.id, type: "mcq", correct })
+          onAnswer={(correct, selected) =>
+            recordResult({ questionId: currentQ.id, type: "mcq", correct, selected })
           }
         />
       ) : (
         <LongAnswerCard
           key={currentQ.id}
           question={currentQ as LongQuestion}
-          onSubmit={(earned, max) =>
-            recordResult({ questionId: currentQ.id, type: "long", earned, max })
+          onSubmit={(earned, max, work, feedback) =>
+            recordResult({ questionId: currentQ.id, type: "long", earned, max, work, feedback })
           }
         />
       )}
@@ -261,7 +265,7 @@ function MCQCard({
   onAnswer,
 }: {
   question: MCQQuestion;
-  onAnswer: (correct: boolean) => void;
+  onAnswer: (correct: boolean, selected: string) => void;
 }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [showSolution, setShowSolution] = useState(false);
@@ -338,7 +342,7 @@ function MCQCard({
           </div>
           <button
             type="button"
-            onClick={() => onAnswer(isCorrect)}
+            onClick={() => onAnswer(isCorrect, selected ?? "")}
             className="mt-4 px-5 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
           >
             下一题 →
@@ -354,7 +358,12 @@ function LongAnswerCard({
   onSubmit,
 }: {
   question: LongQuestion;
-  onSubmit: (earned: number, max: number) => void;
+  onSubmit: (
+    earned: number,
+    max: number,
+    work?: Record<string, string>,
+    feedback?: unknown
+  ) => void;
 }) {
   const [works, setWorks] = useState<Record<string, string>>({});
   const [grading, setGrading] = useState(false);
@@ -534,7 +543,7 @@ function LongAnswerCard({
           <div className="mt-4 flex gap-3">
             <button
               type="button"
-              onClick={() => onSubmit(result.totalEarned, result.totalMax)}
+              onClick={() => onSubmit(result.totalEarned, result.totalMax, works, result.perPart)}
               className="px-5 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
             >
               下一题 →
@@ -587,8 +596,11 @@ function SessionSummary({
         answers: results.map((r) => ({
           questionId: r.questionId,
           type: r.type,
+          selected: r.type === "mcq" ? r.selected ?? undefined : undefined,
+          work: r.type === "long" ? r.work ?? undefined : undefined,
           earned: r.earned ?? (r.correct ? 1 : 0),
           max: r.max ?? 1,
+          feedback: r.feedback ?? undefined,
         })),
       }),
     }).catch(() => {/* ignore auth/network errors */});

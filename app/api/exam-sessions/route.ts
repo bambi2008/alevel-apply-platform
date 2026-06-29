@@ -33,14 +33,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  const profile = await db.studentProfile.findUnique({
+  // 自动建档：用户档案目前仍存在前端（localStorage），尚未整体迁库。
+  // 这里按需创建一条空 StudentProfile，使笔试成绩能正常入库；
+  // 待档案模块迁库后，此 upsert 天然兼容（已存在则不改动）。
+  const profile = await db.studentProfile.upsert({
     where: { userId },
+    update: {},
+    create: { userId },
     select: { id: true },
   });
-
-  if (!profile) {
-    return NextResponse.json({ error: "No student profile" }, { status: 404 });
-  }
 
   const examSession = await db.examSession.create({
     data: {

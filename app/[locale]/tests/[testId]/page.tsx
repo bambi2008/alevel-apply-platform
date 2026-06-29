@@ -488,7 +488,11 @@ function HistoryTab({ test }: { test: AdmissionsTest }) {
       {sessions.map((s) => {
         const pct = s.totalMax > 0 ? Math.round((s.totalEarned / s.totalMax) * 100) : 0;
         return (
-          <div key={s.id} className="flex items-center gap-4 rounded-xl border border-neutral-200 px-4 py-3 bg-white">
+          <Link
+            key={s.id}
+            href={`/tests/${test.id}/history/${s.id}`}
+            className="flex items-center gap-4 rounded-xl border border-neutral-200 px-4 py-3 bg-white hover:border-blue-300 hover:bg-blue-50/40 transition"
+          >
             <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-bold shrink-0 ${
               pct >= 80 ? "bg-green-100 text-green-700" :
               pct >= 60 ? "bg-amber-100 text-amber-700" :
@@ -508,7 +512,8 @@ function HistoryTab({ test }: { test: AdmissionsTest }) {
                 {s.timeUsedSec && <span className="text-xs text-neutral-400 ml-2">用时 {fmtTime(s.timeUsedSec)}</span>}
               </div>
             </div>
-          </div>
+            <span className="text-neutral-300 shrink-0">›</span>
+          </Link>
         );
       })}
     </div>
