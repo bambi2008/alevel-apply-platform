@@ -1,6 +1,7 @@
 // 完整模拟卷注册表。每套卷 = 若干个独立计时的模块。
 import type { MCQQuestion } from "@/lib/tests/questions/types";
 import { ESAT_MK1_MATH, ESAT_MK1_PHYS } from "./esat-mock-1";
+import { ESAT_MK2_MATH, ESAT_MK2_PHYS } from "./esat-mock-2";
 
 export interface MockModule {
   id: string;
@@ -44,7 +45,32 @@ export const ESAT_MOCK_1: MockPaper = {
   ],
 };
 
-const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1];
+export const ESAT_MOCK_2: MockPaper = {
+  id: "esat-mock-2",
+  testId: "esat",
+  title: "ESAT 模拟卷二",
+  titleEn: "ESAT Mock Paper 2",
+  description:
+    "第二套完整模拟卷：每个模块 27 题、40 分钟独立计时、五选一、无负分。题目与模拟卷一及练习题库均不重复，可用于二次限时模拟、检验进步。",
+  modules: [
+    {
+      id: "math",
+      title: "数学（模块一）",
+      titleEn: "Mathematics (Module 1)",
+      durationSec: 40 * 60,
+      questions: ESAT_MK2_MATH,
+    },
+    {
+      id: "physics",
+      title: "物理（模块二）",
+      titleEn: "Physics (Module 2)",
+      durationSec: 40 * 60,
+      questions: ESAT_MK2_PHYS,
+    },
+  ],
+};
+
+const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2];
 
 export function getMockPapersForTest(testId: string): MockPaper[] {
   return ALL_MOCK_PAPERS.filter((p) => p.testId === testId);
