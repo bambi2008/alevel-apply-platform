@@ -786,5 +786,784 @@ export const ESAT_BIO_CELL: MCQQuestion[] = [
   },
 ];
 
-// 聚合（后续 bio2 / bio3 在此累加）
-export const ESAT_BIO_QUESTIONS = [...ESAT_BIO_CELL];
+// ════════════════════════════════════════════════════════════════════════
+//  esat-bio2 · 遗传与进化 (Genetics & Evolution) — 40 题
+// ════════════════════════════════════════════════════════════════════════
+export const ESAT_BIO_GENETICS: MCQQuestion[] = [
+  // ── 孟德尔遗传与单因子杂交 (8) ────────────────────────────────────────
+  {
+    id: "esat-b-041",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "An organism with the genotype Aa is described as:",
+    options: [
+      { key: "A", text: "Homozygous dominant" },
+      { key: "B", text: "Homozygous recessive" },
+      { key: "C", text: "Heterozygous" },
+      { key: "D", text: "Haploid" },
+    ],
+    answer: "C",
+    solution:
+      "Two different alleles of the same gene (A and a) means the organism is heterozygous. Homozygous would be AA or aa.",
+  },
+  {
+    id: "esat-b-042",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "Two heterozygous tall pea plants (Tt) are crossed, where T (tall) is dominant to t (short). What is the expected phenotypic ratio of the offspring?",
+    options: [
+      { key: "A", text: "1 tall : 1 short" },
+      { key: "B", text: "3 tall : 1 short" },
+      { key: "C", text: "all tall" },
+      { key: "D", text: "1 tall : 2 short" },
+    ],
+    answer: "B",
+    solution:
+      "Tt × Tt gives genotypes 1 TT : 2 Tt : 1 tt. TT and Tt are tall, tt is short, so the phenotypic ratio is 3 tall : 1 short.",
+  },
+  {
+    id: "esat-b-043",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "From the cross Tt × Tt, what is the GENOTYPIC ratio of the offspring?",
+    options: [
+      { key: "A", text: "3 : 1" },
+      { key: "B", text: "1 : 1" },
+      { key: "C", text: "1 : 2 : 1" },
+      { key: "D", text: "9 : 3 : 3 : 1" },
+    ],
+    answer: "C",
+    solution:
+      "The Punnett square gives 1 TT : 2 Tt : 1 tt — a genotypic ratio of 1 : 2 : 1 (which corresponds to the 3 : 1 phenotypic ratio).",
+  },
+  {
+    id: "esat-b-044",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "A test cross is carried out to find the genotype of a tall plant by crossing it with a short (tt) plant. The offspring are all tall. The unknown plant was most probably:",
+    options: [
+      { key: "A", text: "Homozygous dominant (TT)" },
+      { key: "B", text: "Heterozygous (Tt)" },
+      { key: "C", text: "Homozygous recessive (tt)" },
+      { key: "D", text: "Impossible to deduce" },
+    ],
+    answer: "A",
+    solution:
+      "If the plant were Tt, crossing with tt would give 1 tall : 1 short. Since all offspring are tall, the plant supplied only T alleles, so it is homozygous TT.",
+  },
+  {
+    id: "esat-b-045",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Two heterozygous parents (Bb) are crossed, where b causes a recessive disorder. What is the probability that a single child is affected (bb)?",
+    options: [
+      { key: "A", text: "$\\tfrac{1}{2}$" },
+      { key: "B", text: "$\\tfrac{1}{3}$" },
+      { key: "C", text: "$\\tfrac{1}{4}$" },
+      { key: "D", text: "0" },
+    ],
+    answer: "C",
+    solution:
+      "Bb × Bb → 1 BB : 2 Bb : 1 bb. Only bb is affected, so the probability is $\\tfrac{1}{4}$.",
+  },
+  {
+    id: "esat-b-046",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "Two carriers (Bb) of a recessive disorder have two children. What is the probability that BOTH children are affected?",
+    options: [
+      { key: "A", text: "$\\tfrac{1}{2}$" },
+      { key: "B", text: "$\\tfrac{1}{8}$" },
+      { key: "C", text: "$\\tfrac{1}{16}$" },
+      { key: "D", text: "$\\tfrac{1}{4}$" },
+    ],
+    answer: "C",
+    solution:
+      "Each child independently has probability $\\tfrac14$ of being affected. For both: $\\tfrac14 \\times \\tfrac14 = \\tfrac{1}{16}$.",
+  },
+  {
+    id: "esat-b-047",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "The observable characteristics of an organism (e.g. flower colour) are called its:",
+    options: [
+      { key: "A", text: "Genotype" },
+      { key: "B", text: "Phenotype" },
+      { key: "C", text: "Karyotype" },
+      { key: "D", text: "Allele" },
+    ],
+    answer: "B",
+    solution:
+      "Phenotype = the expressed, observable traits. Genotype = the alleles present. The phenotype results from the genotype interacting with the environment.",
+  },
+  {
+    id: "esat-b-048",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "A cross between a heterozygous plant (Tt) and a homozygous recessive plant (tt) produces 200 offspring. Approximately how many are expected to be short (tt)?",
+    options: [
+      { key: "A", text: "50" },
+      { key: "B", text: "100" },
+      { key: "C", text: "150" },
+      { key: "D", text: "200" },
+    ],
+    answer: "B",
+    solution:
+      "Tt × tt → 1 Tt : 1 tt, i.e. half are short. Half of 200 = 100.",
+  },
+
+  // ── 双因子杂交与自由组合 (6) ──────────────────────────────────────────
+  {
+    id: "esat-b-049",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "How many genetically different types of gamete can the genotype AaBb produce (genes on different chromosomes)?",
+    options: [
+      { key: "A", text: "2" },
+      { key: "B", text: "3" },
+      { key: "C", text: "4" },
+      { key: "D", text: "8" },
+    ],
+    answer: "C",
+    solution:
+      "Each heterozygous gene gives 2 possible alleles in a gamete; with independent assortment the number of gamete types is $2^n$ where n = number of heterozygous genes. Here $2^2 = 4$: AB, Ab, aB, ab.",
+  },
+  {
+    id: "esat-b-050",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "A dihybrid cross AaBb × AaBb (genes unlinked, both showing simple dominance) gives a phenotypic ratio of:",
+    options: [
+      { key: "A", text: "3 : 1" },
+      { key: "B", text: "1 : 1 : 1 : 1" },
+      { key: "C", text: "9 : 3 : 3 : 1" },
+      { key: "D", text: "1 : 2 : 1" },
+    ],
+    answer: "C",
+    solution:
+      "Combining two independent 3 : 1 ratios gives the classic dihybrid ratio 9 (both dominant) : 3 : 3 : 1 (both recessive).",
+  },
+  {
+    id: "esat-b-051",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "In the cross AaBb × AaBb (unlinked genes), what fraction of offspring are expected to show both recessive phenotypes (aabb)?",
+    options: [
+      { key: "A", text: "$\\tfrac{9}{16}$" },
+      { key: "B", text: "$\\tfrac{3}{16}$" },
+      { key: "C", text: "$\\tfrac{1}{16}$" },
+      { key: "D", text: "$\\tfrac{1}{4}$" },
+    ],
+    answer: "C",
+    solution:
+      "P(aa) = $\\tfrac14$ and P(bb) = $\\tfrac14$; independent, so P(aabb) = $\\tfrac14 \\times \\tfrac14 = \\tfrac{1}{16}$ — the '1' in the 9:3:3:1 ratio.",
+  },
+  {
+    id: "esat-b-052",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "How many different gamete types can an individual of genotype AaBbCc produce (all genes on different chromosomes)?",
+    options: [
+      { key: "A", text: "3" },
+      { key: "B", text: "6" },
+      { key: "C", text: "8" },
+      { key: "D", text: "9" },
+    ],
+    answer: "C",
+    solution:
+      "Three heterozygous genes → $2^3 = 8$ gamete types (ABC, ABc, AbC, Abc, aBC, aBc, abC, abc).",
+  },
+  {
+    id: "esat-b-053",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Two genes located close together on the SAME chromosome tend to be inherited together. This phenomenon is called:",
+    options: [
+      { key: "A", text: "Independent assortment" },
+      { key: "B", text: "Gene linkage" },
+      { key: "C", text: "Codominance" },
+      { key: "D", text: "Epistasis" },
+    ],
+    answer: "B",
+    solution:
+      "Linked genes are on the same chromosome and do not assort independently; they are usually inherited together unless separated by crossing over, producing fewer recombinant offspring than a 9:3:3:1 ratio predicts.",
+  },
+  {
+    id: "esat-b-054",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "A dihybrid test cross (AaBb × aabb) of unlinked genes is expected to give a 1 : 1 : 1 : 1 ratio. An experiment instead gives mostly parental types with few recombinants. This is best explained by:",
+    options: [
+      { key: "A", text: "The genes being linked on the same chromosome" },
+      { key: "B", text: "A mutation in every offspring" },
+      { key: "C", text: "Codominance of both genes" },
+      { key: "D", text: "Non-disjunction" },
+    ],
+    answer: "A",
+    solution:
+      "A large excess of parental combinations and few recombinants indicates the two genes are linked; recombinants arise only when crossing over separates the linked alleles, so they are rarer than independent assortment would give.",
+  },
+
+  // ── 共显性 / 不完全显性 / 复等位基因 (6) ──────────────────────────────
+  {
+    id: "esat-b-055",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "In snapdragons, red (C^R C^R) × white (C^W C^W) gives all pink offspring (C^R C^W). This is an example of:",
+    options: [
+      { key: "A", text: "Complete dominance" },
+      { key: "B", text: "Incomplete dominance" },
+      { key: "C", text: "Sex linkage" },
+      { key: "D", text: "Epistasis" },
+    ],
+    answer: "B",
+    solution:
+      "Neither allele is fully dominant, so the heterozygote shows an intermediate (blended) phenotype — pink. This is incomplete dominance.",
+  },
+  {
+    id: "esat-b-056",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Two pink snapdragons (C^R C^W) are crossed. What phenotypic ratio is expected in the offspring?",
+    options: [
+      { key: "A", text: "all pink" },
+      { key: "B", text: "3 red : 1 white" },
+      { key: "C", text: "1 red : 2 pink : 1 white" },
+      { key: "D", text: "1 red : 1 white" },
+    ],
+    answer: "C",
+    solution:
+      "C^R C^W × C^R C^W → 1 C^R C^R (red) : 2 C^R C^W (pink) : 1 C^W C^W (white). With incomplete dominance the genotypic and phenotypic ratios coincide: 1 : 2 : 1.",
+  },
+  {
+    id: "esat-b-057",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "Human ABO blood group is controlled by three alleles (I^A, I^B, i). The alleles I^A and I^B are codominant. A person with genotype I^A I^B has blood group:",
+    options: [
+      { key: "A", text: "A" },
+      { key: "B", text: "B" },
+      { key: "C", text: "AB" },
+      { key: "D", text: "O" },
+    ],
+    answer: "C",
+    solution:
+      "Because I^A and I^B are codominant, both antigens are expressed, giving blood group AB.",
+  },
+  {
+    id: "esat-b-058",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "A man of blood group O (ii) and a woman of group AB (I^A I^B) have children. Which blood groups are possible among their children?",
+    options: [
+      { key: "A", text: "Only AB" },
+      { key: "B", text: "A or B only" },
+      { key: "C", text: "A, B, AB or O" },
+      { key: "D", text: "Only O" },
+    ],
+    answer: "B",
+    solution:
+      "Father (ii) gives i; mother (I^A I^B) gives I^A or I^B. Children are I^A i (group A) or I^B i (group B). Neither AB nor O is possible.",
+  },
+  {
+    id: "esat-b-059",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "What is the difference between codominance and incomplete dominance?",
+    options: [
+      { key: "A", text: "In codominance both alleles are fully and separately expressed; in incomplete dominance a blended intermediate appears" },
+      { key: "B", text: "They are exactly the same thing" },
+      { key: "C", text: "Codominance only occurs on sex chromosomes" },
+      { key: "D", text: "Incomplete dominance produces four phenotypes" },
+    ],
+    answer: "A",
+    solution:
+      "In codominance (e.g. AB blood, or roan coat) both alleles' products appear distinctly in the heterozygote. In incomplete dominance the heterozygote is an intermediate blend (e.g. pink flowers).",
+  },
+  {
+    id: "esat-b-060",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "A 'multiple-allele' system such as ABO blood group means that:",
+    options: [
+      { key: "A", text: "A single individual can carry more than two alleles at once" },
+      { key: "B", text: "More than two alleles for the gene exist in the population, though each individual has only two" },
+      { key: "C", text: "The gene is always sex-linked" },
+      { key: "D", text: "The gene cannot mutate" },
+    ],
+    answer: "B",
+    solution:
+      "Multiple alleles means three or more allele forms exist in the gene pool (I^A, I^B, i). Any one diploid individual still carries only two of them.",
+  },
+
+  // ── 伴性遗传与性别决定 (5) ────────────────────────────────────────────
+  {
+    id: "esat-b-061",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "In humans, the sex chromosome combination of a typical male is:",
+    options: [
+      { key: "A", text: "XX" },
+      { key: "B", text: "XY" },
+      { key: "C", text: "YY" },
+      { key: "D", text: "XO" },
+    ],
+    answer: "B",
+    solution:
+      "Human males are XY and females XX. The sperm (carrying X or Y) determines the sex of the offspring.",
+  },
+  {
+    id: "esat-b-062",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Red–green colour blindness is caused by a recessive allele on the X chromosome. It is more common in males than females because:",
+    options: [
+      { key: "A", text: "Males have two X chromosomes" },
+      { key: "B", text: "A male needs only one recessive allele on his single X to be affected" },
+      { key: "C", text: "The allele is on the Y chromosome" },
+      { key: "D", text: "Females cannot carry the allele" },
+    ],
+    answer: "B",
+    solution:
+      "Males (XY) have only one X, so a single recessive allele is expressed. Females (XX) need two copies to be affected, which is rarer; a female with one copy is an unaffected carrier.",
+  },
+  {
+    id: "esat-b-063",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "A carrier mother (X^B X^b) for colour blindness has children with an unaffected father (X^B Y). What proportion of their SONS are expected to be colour blind?",
+    options: [
+      { key: "A", text: "0" },
+      { key: "B", text: "$\\tfrac{1}{4}$" },
+      { key: "C", text: "$\\tfrac{1}{2}$" },
+      { key: "D", text: "all" },
+    ],
+    answer: "C",
+    solution:
+      "Sons receive Y from the father and either X^B or X^b from the mother (50:50). So half of the sons are X^b Y (colour blind) and half X^B Y (normal).",
+  },
+  {
+    id: "esat-b-064",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "For the same cross (X^B X^b mother × X^B Y father), what proportion of the DAUGHTERS are expected to be colour blind?",
+    options: [
+      { key: "A", text: "0" },
+      { key: "B", text: "$\\tfrac{1}{4}$" },
+      { key: "C", text: "$\\tfrac{1}{2}$" },
+      { key: "D", text: "all" },
+    ],
+    answer: "A",
+    solution:
+      "Daughters receive X^B from the father plus X^B or X^b from the mother, giving X^B X^B or X^B X^b. Both have at least one X^B, so none is colour blind (half are carriers).",
+  },
+  {
+    id: "esat-b-065",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Why can a father NEVER pass an X-linked recessive allele (such as that for haemophilia) to his sons?",
+    options: [
+      { key: "A", text: "Sons inherit their X chromosome from the mother and the Y from the father" },
+      { key: "B", text: "Sons inherit two X chromosomes" },
+      { key: "C", text: "The allele is dominant" },
+      { key: "D", text: "Fathers do not carry X chromosomes" },
+    ],
+    answer: "A",
+    solution:
+      "A son receives the Y chromosome (not the X) from his father, and his single X from his mother. So an X-linked allele in the father can only be passed to daughters.",
+  },
+
+  // ── 突变与变异来源 (5) ────────────────────────────────────────────────
+  {
+    id: "esat-b-066",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Insertion or deletion of a single base in a coding sequence usually has a more serious effect than a substitution because it:",
+    options: [
+      { key: "A", text: "Always deletes the whole gene" },
+      { key: "B", text: "Causes a frameshift, altering every codon downstream" },
+      { key: "C", text: "Cannot be inherited" },
+      { key: "D", text: "Only changes one amino acid" },
+    ],
+    answer: "B",
+    solution:
+      "Adding or removing a base shifts the reading frame, so all codons after the mutation are changed — typically producing a completely different, non-functional polypeptide. A substitution changes at most one codon.",
+  },
+  {
+    id: "esat-b-067",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "Which of the following is a source of GENETIC variation only (not environmental)?",
+    options: [
+      { key: "A", text: "Mutation and meiosis (crossing over and independent assortment)" },
+      { key: "B", text: "Diet" },
+      { key: "C", text: "Amount of sunlight" },
+      { key: "D", text: "Physical training" },
+    ],
+    answer: "A",
+    solution:
+      "Mutation, plus crossing over, independent assortment and random fertilisation, create new allele combinations — genetic variation. Diet, sunlight and training are environmental influences.",
+  },
+  {
+    id: "esat-b-068",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Continuous variation (such as human height) typically results from:",
+    options: [
+      { key: "A", text: "A single gene with two alleles" },
+      { key: "B", text: "Many genes (polygenes) together with environmental factors" },
+      { key: "C", text: "Sex linkage only" },
+      { key: "D", text: "A single mutation" },
+    ],
+    answer: "B",
+    solution:
+      "Continuous traits show a range of values because they are controlled by many genes (polygenic) and strongly influenced by the environment, giving a normal distribution. Discontinuous traits (e.g. blood group) are usually monogenic.",
+  },
+  {
+    id: "esat-b-069",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "A mutation will only be passed on to offspring if it occurs in:",
+    options: [
+      { key: "A", text: "A skin cell" },
+      { key: "B", text: "A gamete (or gamete-forming cell)" },
+      { key: "C", text: "A red blood cell" },
+      { key: "D", text: "A neurone" },
+    ],
+    answer: "B",
+    solution:
+      "Only mutations in the germ line (gametes or the cells that form them) are inherited. Mutations in body (somatic) cells are not passed to offspring.",
+  },
+  {
+    id: "esat-b-070",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "A non-disjunction event during meiosis produces a gamete with an extra chromosome. If this gamete is fertilised, the result is an individual with:",
+    options: [
+      { key: "A", text: "A point mutation" },
+      { key: "B", text: "An extra whole chromosome (a chromosome mutation, e.g. trisomy)" },
+      { key: "C", text: "A frameshift mutation" },
+      { key: "D", text: "No change in chromosome number" },
+    ],
+    answer: "B",
+    solution:
+      "Non-disjunction is failure of chromosomes (or chromatids) to separate properly, giving gametes with one too many or too few chromosomes. Fertilisation then yields an abnormal chromosome number, e.g. trisomy 21.",
+  },
+
+  // ── 自然选择与进化 + Hardy-Weinberg (6) ──────────────────────────────
+  {
+    id: "esat-b-071",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "Natural selection leads to evolution because:",
+    options: [
+      { key: "A", text: "Individuals change their own genes to suit the environment" },
+      { key: "B", text: "Individuals with advantageous alleles survive and reproduce more, increasing those alleles' frequency over generations" },
+      { key: "C", text: "All variation is environmental" },
+      { key: "D", text: "Mutations never occur" },
+    ],
+    answer: "B",
+    solution:
+      "Variation exists; those with favourable alleles are more likely to survive and breed, passing on those alleles. Over many generations the allele frequencies in the population shift — evolution. (Individuals cannot choose to change their own genes.)",
+  },
+  {
+    id: "esat-b-072",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "The rapid spread of antibiotic resistance in bacteria is a clear example of:",
+    options: [
+      { key: "A", text: "Bacteria deliberately becoming resistant when exposed" },
+      { key: "B", text: "Natural selection: resistant mutants survive the antibiotic and reproduce" },
+      { key: "C", text: "Loss of all genetic variation" },
+      { key: "D", text: "Sexual reproduction in bacteria" },
+    ],
+    answer: "B",
+    solution:
+      "A chance mutation makes some bacteria resistant. The antibiotic kills non-resistant cells; resistant ones survive and multiply, so the resistance allele's frequency rises — natural selection acting on pre-existing variation.",
+  },
+  {
+    id: "esat-b-073",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Selection that favours one extreme of a range of phenotypes (e.g. larger beak size in a drought) is called:",
+    options: [
+      { key: "A", text: "Stabilising selection" },
+      { key: "B", text: "Directional selection" },
+      { key: "C", text: "Disruptive selection" },
+      { key: "D", text: "Artificial selection" },
+    ],
+    answer: "B",
+    solution:
+      "Directional selection shifts the population mean towards one extreme. Stabilising selection favours the mean (against extremes); disruptive selection favours both extremes.",
+  },
+  {
+    id: "esat-b-074",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "In a population at Hardy–Weinberg equilibrium, a recessive condition affects 1 in 100 people. What is the frequency of the recessive allele (q)?",
+    options: [
+      { key: "A", text: "$0.01$" },
+      { key: "B", text: "$0.1$" },
+      { key: "C", text: "$0.5$" },
+      { key: "D", text: "$0.9$" },
+    ],
+    answer: "B",
+    solution:
+      "Affected individuals are homozygous recessive: $q^2 = \\tfrac{1}{100} = 0.01$, so $q = \\sqrt{0.01} = 0.1$.",
+  },
+  {
+    id: "esat-b-075",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "Using the previous population ($q = 0.1$, $p = 0.9$, Hardy–Weinberg), what fraction of people are heterozygous carriers?",
+    options: [
+      { key: "A", text: "$0.01$" },
+      { key: "B", text: "$0.09$" },
+      { key: "C", text: "$0.18$" },
+      { key: "D", text: "$0.81$" },
+    ],
+    answer: "C",
+    solution:
+      "Carrier (heterozygote) frequency is $2pq = 2 \\times 0.9 \\times 0.1 = 0.18$, i.e. 18% of the population.",
+  },
+  {
+    id: "esat-b-076",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Which is a necessary condition for a population to remain at Hardy–Weinberg equilibrium?",
+    options: [
+      { key: "A", text: "Strong natural selection" },
+      { key: "B", text: "Frequent mutation" },
+      { key: "C", text: "No selection, no mutation, no migration, random mating and a large population" },
+      { key: "D", text: "A very small population" },
+    ],
+    answer: "C",
+    solution:
+      "Allele frequencies stay constant only with no selection, no mutation, no gene flow (migration), random mating and a large population (no genetic drift). If any fails, frequencies can change — evolution.",
+  },
+
+  // ── 物种形成 (4) ──────────────────────────────────────────────────────
+  {
+    id: "esat-b-077",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Allopatric speciation begins with:",
+    options: [
+      { key: "A", text: "A geographical barrier physically separating two populations" },
+      { key: "B", text: "A behavioural difference within one freely interbreeding population" },
+      { key: "C", text: "A single mutation in one individual" },
+      { key: "D", text: "Artificial selection by humans" },
+    ],
+    answer: "A",
+    solution:
+      "Allopatric ('different homeland') speciation starts when a physical barrier separates populations, preventing gene flow. They then diverge under different selection pressures until they can no longer interbreed.",
+  },
+  {
+    id: "esat-b-078",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "Two populations are considered separate species when they:",
+    options: [
+      { key: "A", text: "Look slightly different" },
+      { key: "B", text: "Can no longer interbreed to produce fertile offspring" },
+      { key: "C", text: "Live in different countries" },
+      { key: "D", text: "Have any genetic difference at all" },
+    ],
+    answer: "B",
+    solution:
+      "Under the biological species concept, reproductive isolation — the inability to interbreed and produce fertile offspring — defines separate species, regardless of how similar they look.",
+  },
+  {
+    id: "esat-b-079",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "Reproductive isolation can arise WITHOUT a geographical barrier (sympatric speciation). Which is an example of a mechanism for this?",
+    options: [
+      { key: "A", text: "A mountain range splitting a population" },
+      { key: "B", text: "Polyploidy (chromosome doubling) in plants, making them unable to breed with the parent type" },
+      { key: "C", text: "A river dividing a forest" },
+      { key: "D", text: "Continental drift" },
+    ],
+    answer: "B",
+    solution:
+      "Sympatric speciation occurs within the same area. Polyploidy in plants instantly creates a reproductive barrier: polyploids cannot produce fertile offspring with the diploid parents, forming a new species without geographical separation.",
+  },
+  {
+    id: "esat-b-080",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio2",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Genetic drift has a greater effect on small populations than large ones because:",
+    options: [
+      { key: "A", text: "Small populations mutate faster" },
+      { key: "B", text: "Chance changes in allele frequency have a proportionally larger impact when few individuals are involved" },
+      { key: "C", text: "Natural selection does not act on small populations" },
+      { key: "D", text: "Small populations never reach equilibrium" },
+    ],
+    answer: "B",
+    solution:
+      "Genetic drift is random change in allele frequency between generations. In a small population, the loss or random over-representation of a few individuals' alleles causes large swings in frequency; in a large population such chance effects average out.",
+  },
+];
+
+// 聚合（后续 bio3 在此累加）
+export const ESAT_BIO_QUESTIONS = [...ESAT_BIO_CELL, ...ESAT_BIO_GENETICS];
