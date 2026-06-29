@@ -4,6 +4,7 @@
 // 自 2024 年 11 月起取代 ENGAA，2025 年入学起生效
 
 import type { MCQQuestion } from "./types";
+import { ESAT_BIO_QUESTIONS } from "./esat-bio";
 
 export const ESAT_MATH: MCQQuestion[] = [
   // ── 代数与函数 (esat-math1) ──────────────────────────────────────────────
@@ -5006,4 +5007,4 @@ export const ESAT_CHEM: MCQQuestion[] = [
   },
 ];
 
-export const ESAT_QUESTIONS = [...ESAT_MATH, ...ESAT_MATH_2, ...ESAT_PHYSICS, ...ESAT_PHYSICS_2, ...ESAT_MATH2A, ...ESAT_MATH2B, ...ESAT_CHEM];
+export const ESAT_QUESTIONS = [...ESAT_MATH, ...ESAT_MATH_2, ...ESAT_PHYSICS, ...ESAT_PHYSICS_2, ...ESAT_MATH2A, ...ESAT_MATH2B, ...ESAT_CHEM, ...ESAT_BIO_QUESTIONS];
