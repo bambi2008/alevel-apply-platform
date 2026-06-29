@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback, useRef, use } from "react";
 import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { getTestById } from "@/lib/tests";
 import { MAT_QUESTIONS } from "@/lib/tests/questions/mat";
 import { STEP_QUESTIONS } from "@/lib/tests/questions/step";
-import { ENGAA_QUESTIONS } from "@/lib/tests/questions/engaa";
+import { ESAT_QUESTIONS } from "@/lib/tests/questions/esat";
 import type { Question, MCQQuestion, LongQuestion, GradingResult } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
 import type { GradeRequest, GradeResponse } from "@/app/api/grade-answer/route";
@@ -14,7 +14,7 @@ import type { GradeRequest, GradeResponse } from "@/app/api/grade-answer/route";
 const QUESTION_BANKS: Record<string, Question[]> = {
   mat: MAT_QUESTIONS,
   step: STEP_QUESTIONS,
-  engaa: ENGAA_QUESTIONS,
+  esat: ESAT_QUESTIONS,
 };
 
 type ExamState = "briefing" | "running" | "grading" | "results";
@@ -42,11 +42,12 @@ interface GradedResult {
   grading?: GradeResponse;
 }
 
-export default function MockExamPage({ params }: { params: { testId: string } }) {
-  const test = getTestById(params.testId);
+export default function MockExamPage({ params }: { params: Promise<{ testId: string }> }) {
+  const { testId } = use(params);
+  const test = getTestById(testId);
   if (!test || !test.hasQuestionBank) notFound();
 
-  const allQuestions = QUESTION_BANKS[params.testId] ?? [];
+  const allQuestions = QUESTION_BANKS[testId] ?? [];
 
   const [examState, setExamState] = useState<ExamState>("briefing");
   const [queue, setQueue] = useState<Question[]>([]);
@@ -217,7 +218,7 @@ export default function MockExamPage({ params }: { params: { testId: string } })
   if (examState === "results") {
     return (
       <MockResults
-        testId={params.testId}
+        testId={testId}
         queue={queue}
         results={gradedResults}
         answers={answers}

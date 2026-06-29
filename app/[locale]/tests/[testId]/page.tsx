@@ -1,16 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, use } from "react";
 import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { getTestById, type AdmissionsTest } from "@/lib/tests";
+import { getKnowledgeByTopicId } from "@/lib/tests/knowledge";
 
 export default function TestDetailPage({
   params,
 }: {
-  params: { testId: string; locale: string };
+  params: Promise<{ testId: string; locale: string }>;
 }) {
-  const test = getTestById(params.testId);
+  const { testId } = use(params);
+  const test = getTestById(testId);
   if (!test) notFound();
 
   return <TestDetailContent test={test} />;
@@ -193,22 +195,35 @@ function TopicsTab({ test }: { test: AdmissionsTest }) {
   return (
     <div className="space-y-3">
       <p className="text-sm text-neutral-500 mb-4">
-        以下知识点模块是 {test.abbr} 考试范围的核心分类，进入练习模块可按知识点专项练习。
+        以下知识点模块是 {test.abbr} 考试范围的核心分类。点击「学习讲解」查看知识点阐述与例题精讲。
       </p>
-      {test.topics.map((topic, i) => (
-        <div key={topic.id} className="rounded-xl border border-neutral-200 p-4 flex items-start gap-4">
-          <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-700 text-sm font-bold flex items-center justify-center shrink-0">
-            {i + 1}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-baseline gap-2 flex-wrap">
-              <span className="font-semibold text-neutral-900">{topic.title}</span>
-              <span className="text-xs text-neutral-400">{topic.titleEn}</span>
+      {test.topics.map((topic, i) => {
+        const hasLearn = !!getKnowledgeByTopicId(topic.id);
+        return (
+          <div key={topic.id} className="rounded-xl border border-neutral-200 p-4 flex items-start gap-4">
+            <div className="w-8 h-8 rounded-full bg-blue-50 text-blue-700 text-sm font-bold flex items-center justify-center shrink-0">
+              {i + 1}
             </div>
-            <p className="text-sm text-neutral-600 mt-1 leading-relaxed">{topic.description}</p>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center justify-between gap-3 flex-wrap">
+                <div className="flex items-baseline gap-2 flex-wrap">
+                  <span className="font-semibold text-neutral-900">{topic.title}</span>
+                  <span className="text-xs text-neutral-400">{topic.titleEn}</span>
+                </div>
+                {hasLearn && (
+                  <Link
+                    href={`/tests/${test.id}/learn/${topic.id}`}
+                    className="shrink-0 text-xs px-3 py-1 rounded-lg bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition font-medium"
+                  >
+                    学习讲解 →
+                  </Link>
+                )}
+              </div>
+              <p className="text-sm text-neutral-600 mt-1 leading-relaxed">{topic.description}</p>
+            </div>
           </div>
-        </div>
-      ))}
+        );
+      })}
     </div>
   );
 }
@@ -295,66 +310,103 @@ function PracticeTab({ test }: { test: AdmissionsTest }) {
         </p>
       </div>
 
-      <div className="grid sm:grid-cols-2 gap-4">
-        {/* Topic practice */}
-        <div className="rounded-xl border border-neutral-200 p-5">
-          <h4 className="font-semibold mb-2">知识点专项练习</h4>
-          <p className="text-sm text-neutral-500 mb-4">
-            按模块选择练习，系统追踪各知识点正确率。
-          </p>
-          <div className="space-y-2">
-            {test.topics.slice(0, 4).map((topic) => (
-              <div key={topic.id} className="flex items-center justify-between text-sm rounded-lg bg-neutral-50 px-3 py-2">
-                <span className="text-neutral-700">{topic.title}</span>
-                <span className="text-xs text-neutral-400">{topic.titleEn}</span>
-              </div>
-            ))}
-            {test.topics.length > 4 && (
-              <div className="text-xs text-neutral-400 text-center pt-1">
-                + {test.topics.length - 4} 个模块
-              </div>
-            )}
-          </div>
+      {/* Topic practice — full list, each row is a direct link */}
+      <div className="rounded-xl border border-neutral-200 p-5">
+        <div className="flex items-baseline justify-between mb-3">
+          <h4 className="font-semibold">知识点专项练习</h4>
           <Link
             href={`/tests/${test.id}/practice`}
-            className="mt-4 block w-full py-2.5 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition text-center"
+            className="text-xs text-blue-600 hover:underline"
           >
-            开始专项练习 →
+            随机混合练习 →
           </Link>
         </div>
+        <p className="text-sm text-neutral-500 mb-3">点击任意模块直接开始该知识点练习</p>
+        <div className="space-y-1.5">
+          {test.topics.map((topic) => (
+            <Link
+              key={topic.id}
+              href={`/tests/${test.id}/practice?topic=${topic.id}`}
+              className="flex items-center justify-between text-sm rounded-lg border border-neutral-100 bg-neutral-50 px-3 py-2.5 hover:bg-blue-50 hover:border-blue-200 hover:text-blue-700 transition group"
+            >
+              <span className="font-medium">{topic.title}</span>
+              <span className="text-xs text-neutral-400 group-hover:text-blue-500">{topic.titleEn} →</span>
+            </Link>
+          ))}
+        </div>
+      </div>
 
-        {/* Mock exam */}
-        <div className="rounded-xl border border-neutral-200 p-5">
-          <h4 className="font-semibold mb-2">计时模拟考试</h4>
-          <p className="text-sm text-neutral-500 mb-4">
-            模拟真实考试环境：计时、题目随机组合、结束后详细分析。
-          </p>
-          <div className="space-y-2 text-sm">
-            <div className="flex justify-between text-neutral-600">
-              <span>模拟时长</span>
-              <span className="font-medium">{test.duration}</span>
-            </div>
-            <div className="flex justify-between text-neutral-600">
-              <span>题目数量</span>
-              <span className="font-medium">按真实考试题量</span>
-            </div>
-            <div className="flex justify-between text-neutral-600">
-              <span>评分方式</span>
-              <span className="font-medium">AI 分步评分</span>
-            </div>
+      {/* Mock exam */}
+      <div className="rounded-xl border border-neutral-200 p-5">
+        <h4 className="font-semibold mb-2">计时模拟考试</h4>
+        <p className="text-sm text-neutral-500 mb-4">
+          模拟真实考试环境：计时、题目随机组合、结束后详细分析。
+        </p>
+        <div className="space-y-2 text-sm">
+          <div className="flex justify-between text-neutral-600">
+            <span>模拟时长</span>
+            <span className="font-medium">{test.duration}</span>
           </div>
-          <Link
-            href={`/tests/${test.id}/mock`}
-            className="mt-4 block w-full py-2.5 rounded-lg border border-blue-600 text-blue-600 text-sm font-medium hover:bg-blue-50 transition text-center"
-          >
-            开始模拟考试 →
-          </Link>
+          <div className="flex justify-between text-neutral-600">
+            <span>题目数量</span>
+            <span className="font-medium">按真实考试题量</span>
+          </div>
+          <div className="flex justify-between text-neutral-600">
+            <span>评分方式</span>
+            <span className="font-medium">AI 分步评分</span>
+          </div>
         </div>
+        <Link
+          href={`/tests/${test.id}/mock`}
+          className="mt-4 block w-full py-2.5 rounded-lg border border-blue-600 text-blue-600 text-sm font-medium hover:bg-blue-50 transition text-center"
+        >
+          开始模拟考试 →
+        </Link>
+      </div>
+
+      {/* Past papers */}
+      <div className="rounded-xl border border-amber-100 bg-amber-50 px-4 py-4">
+        <h4 className="font-semibold text-amber-900 text-sm mb-2">
+          {test.pastPaperLinks ? "历年真题 — 模拟考试材料" : "官方历年真题"}
+        </h4>
+        <p className="text-xs text-amber-700 mb-3">
+          AI 题库是刷题工具，官方真题是最终检验。建议把历年真题留到备考后期做限时模拟（计时 + 不查资料）。
+        </p>
+        {test.pastPaperLinks ? (
+          <div className="space-y-1.5">
+            {test.pastPaperLinks.map((link) => (
+              <a
+                key={link.label}
+                href={link.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between rounded-lg border border-amber-200 bg-white px-3 py-2 hover:bg-amber-50 transition group"
+              >
+                <div>
+                  <span className="text-xs font-medium text-amber-900">{link.label}</span>
+                  {link.note && (
+                    <p className="text-xs text-amber-600 mt-0.5">{link.note}</p>
+                  )}
+                </div>
+                <span className="text-amber-400 text-xs group-hover:text-amber-700">↗</span>
+              </a>
+            ))}
+          </div>
+        ) : (
+          <a
+            href={test.officialSampleUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-amber-700 text-white text-xs font-medium hover:bg-amber-800 transition"
+          >
+            前往官方真题页面 ↗
+          </a>
+        )}
       </div>
 
       <div className="rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-xs text-neutral-500">
         ℹ️ 题库正在建设中。AI 生成的数学题经过多轮审核，如发现题目有误请反馈给我们。
-        模拟考试中的数学大题由 Claude API 进行分步评分，按解题步骤给部分分。
+        模拟考试中的数学大题由 DeepSeek AI 进行分步评分，按解题步骤给部分分。
       </div>
     </div>
   );

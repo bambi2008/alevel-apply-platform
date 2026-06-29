@@ -30,7 +30,7 @@ export interface AdmissionsTest {
   formatZh: string;       // 考试格式（中文）
   registrationUrl: string;
   officialSampleUrl: string;
-  hasQuestionBank: boolean; // 是否有 AI 题库（MAT/STEP/ENGAA）
+  hasQuestionBank: boolean; // 是否有 AI 题库（MAT/STEP/ESAT）
   overview: string;         // 中文简介
   structureDetails: string; // 结构说明（中文）
   scoringNote: string;      // 评分说明（中文）
@@ -38,6 +38,7 @@ export interface AdmissionsTest {
   studyPlan: StudyPlan[];   // 8–12 周备考计划
   tips: string[];           // 备考关键建议
   statusNote?: string;      // 考试现状提示（如有变更）
+  pastPaperLinks?: Array<{ label: string; url: string; note?: string }>; // 历年真题链接
 }
 
 export const ADMISSIONS_TESTS: AdmissionsTest[] = [
@@ -173,44 +174,63 @@ export const ADMISSIONS_TESTS: AdmissionsTest[] = [
   },
 
   {
-    id: "engaa",
-    name: "Engineering Admissions Assessment",
-    abbr: "ENGAA",
-    nameZh: "工程入学评估",
+    id: "esat",
+    name: "Engineering and Science Admissions Test",
+    abbr: "ESAT",
+    nameZh: "工程与科学入学测试",
     category: "science",
     icon: "⚙",
-    universities: ["University of Cambridge"],
-    programs: ["工程学"],
-    programsEn: ["Engineering"],
-    duration: "2 小时",
-    format: "Section 1: 40 MCQ (20 Math + 20 Physics/Chemistry/Biology, 60 mins); Section 2: 20 Physics+Math MCQ (60 mins)",
-    formatZh: "第一部分：40 道选择题（20 数学 + 20 理科，60 分钟）；第二部分：20 道物理+数学综合选择题（60 分钟，物理深度更高）。",
-    registrationUrl: "https://www.admissionstesting.org/for-test-takers/engaa/",
-    officialSampleUrl: "https://www.undergraduate.study.cam.ac.uk/applying/engineering",
+    universities: ["University of Cambridge", "Imperial College London"],
+    programs: ["工程学", "自然科学（物理/化学方向）", "化学工程", "兽医学"],
+    programsEn: ["Engineering", "Natural Sciences (Physics/Chemistry)", "Chemical Engineering", "Veterinary Medicine"],
+    duration: "每模块 40 分钟（共 3 模块，约 120 分钟）",
+    format: "3 modules × 27 MCQ (5 options, 40 min each): Module 1 Mathematics (all) + 2 of: Biology/Chemistry/Physics/Mathematics 2 (by course)",
+    formatZh: "共 3 模块，每模块 27 道五选一选择题（40 分钟）：模块一数学（必选）+ 从生物/化学/物理/数学2中选 2 个模块（按专业）。工程选数学+物理；自然科学(物化方向)选物理+化学；自然科学(生化方向)选化学+生物。",
+    registrationUrl: "https://www.undergraduate.study.cam.ac.uk/applying/admissions-tests",
+    officialSampleUrl: "https://www.undergraduate.study.cam.ac.uk/applying/admissions-tests",
     hasQuestionBank: true,
-    overview: "ENGAA 是剑桥大学工程系专用入学笔试。考试分两节：第一节测试基础数学与理科能力，第二节深入测试物理与高等数学。2024 年起剑桥宣布从 2025 年起用 ESAT 取代 ENGAA，但历年 ENGAA 真题仍是最优质备考材料。",
-    structureDetails: "Section 1 难度接近 A-Level 竞赛水平；Section 2 的物理题具有相当难度，考查电磁学、力学综合应用，常需快速精确计算。",
-    scoringNote: "选择题无惩罚分（错误不扣分），每题 1 分。Section 1 和 Section 2 分别出分，剑桥用两节分数综合评估。",
-    statusNote: "⚠️ 注意：2025 年起剑桥工程改用 ESAT（Engineering and Science Admissions Test）替代 ENGAA。建议参考 ESAT 官网确认最新考试要求，ENGAA 历年真题作为备考材料仍有效。",
+    overview: "ESAT 自 2024 年 11 月起全面取代 ENGAA 和 NSAA，成为剑桥工程、自然科学、化学工程、兽医及帝国理工部分课程的统一入学笔试。考试由 2 个独立计时模块组成：Module 1 数学（必选）+ Module 2 理科（按专业）。",
+    structureDetails: "Module 1 数学：代数与函数、微积分、几何、数列与级数——与 A-Level Pure Maths 范围一致，但题目设计需快速判断，平均每题不到 90 秒。Module 2 物理（工程方向）：力学、电磁学、波动与现代物理。全为五选一选择题，无负分。",
+    scoringNote: "每题 1 分，无负分。两个模块各自独立计分。剑桥综合两模块成绩及面试成绩评估录取。历年 ENGAA 真题（2016–2023）内容结构高度相似，是目前最优质的 ESAT 备考材料。",
     topics: [
-      { id: "engaa-math1", title: "数学 — 代数与函数", titleEn: "Math: Algebra & Functions", description: "方程组、不等式、二项式定理" },
-      { id: "engaa-math2", title: "数学 — 微积分", titleEn: "Math: Calculus", description: "导数、积分基础、运动方程推导" },
-      { id: "engaa-phys1", title: "物理 — 力学", titleEn: "Physics: Mechanics", description: "牛顿定律、能量守恒、转动力学" },
-      { id: "engaa-phys2", title: "物理 — 电磁学", titleEn: "Physics: Electromagnetism", description: "电场、磁场、感应定律、电路" },
-      { id: "engaa-phys3", title: "物理 — 波与现代物理", titleEn: "Physics: Waves & Modern", description: "波动方程、量子现象、放射性" },
-      { id: "engaa-chem", title: "化学基础（Section 1 部分）", titleEn: "Chemistry Basics (Sec.1)", description: "化学计量、反应速率、酸碱理论" },
+      { id: "esat-math1", title: "数学1 — 代数与函数", titleEn: "Math 1: Algebra & Functions", description: "方程组、不等式、多项式、二项式定理、函数变换（Module 1 必考）" },
+      { id: "esat-math2", title: "数学1 — 微积分", titleEn: "Math 1: Calculus", description: "导数规则、积分基础、运动方程推导、面积计算（Module 1 必考）" },
+      { id: "esat-math3", title: "数学1 — 几何与数列", titleEn: "Math 1: Geometry & Sequences", description: "坐标几何、圆与直线、等差等比数列、三角函数（Module 1 必考）" },
+      { id: "esat-math2a", title: "数学2 — 复数与进阶代数", titleEn: "Math 2: Complex Numbers & Algebra", description: "复数运算与极坐标、进阶多项式、向量点积与叉积（选修 Module 2）" },
+      { id: "esat-math2b", title: "数学2 — 微分方程与矩阵", titleEn: "Math 2: Differential Equations & Matrices", description: "一阶/二阶 ODE、矩阵运算、行列式与特征值（选修 Module 2）" },
+      { id: "esat-phys1", title: "物理 — 力学", titleEn: "Physics: Mechanics", description: "牛顿定律、动量守恒、能量守恒、圆周运动、简单碰撞（选修 Module 2）" },
+      { id: "esat-phys2", title: "物理 — 电磁学", titleEn: "Physics: Electromagnetism", description: "电场、磁场、感应定律、电路分析、电容与电感（选修 Module 2）" },
+      { id: "esat-phys3", title: "物理 — 波与现代物理", titleEn: "Physics: Waves & Modern", description: "波动方程、干涉衍射、光谱、放射性与核物理（选修 Module 2）" },
+      { id: "esat-chem1", title: "化学 — 原子结构与化学键", titleEn: "Chemistry: Atomic Structure & Bonding", description: "原子模型、电子排布、离子键/共价键/金属键、分子形状（选修 Module 2）" },
+      { id: "esat-chem2", title: "化学 — 有机化学", titleEn: "Chemistry: Organic Chemistry", description: "烃类、卤代烃、醇醛酸酯、反应机理、同分异构体（选修 Module 2）" },
+      { id: "esat-chem3", title: "化学 — 物理化学", titleEn: "Chemistry: Physical Chemistry", description: "化学平衡、酸碱与 pH、热化学、电化学与氧化还原（选修 Module 2）" },
+      { id: "esat-bio1", title: "生物 — 细胞与分子生物学", titleEn: "Biology: Cell & Molecular Biology", description: "细胞结构、细胞分裂、DNA 复制与蛋白质合成、酶（选修 Module 2）" },
+      { id: "esat-bio2", title: "生物 — 遗传与进化", titleEn: "Biology: Genetics & Evolution", description: "孟德尔遗传、基因型与表型、自然选择、物种形成（选修 Module 2）" },
+      { id: "esat-bio3", title: "生物 — 生理学与生态学", titleEn: "Biology: Physiology & Ecology", description: "循环/呼吸/神经/激素系统、光合作用、呼吸作用、种群与生态系统（选修 Module 2）" },
     ],
     studyPlan: [
-      { week: "第 1–2 周", focus: "数学专项", tasks: ["A-Level Pure Maths 快速复习（重点：代数/微积分）", "ENGAA Section 1 数学题专项练习（每天 20 题）", "计时练习：40 选择题 60 分钟节奏"] },
-      { week: "第 3–4 周", focus: "物理 Section 1", tasks: ["力学与能量 20 题专项", "电磁学基础 15 题", "化学基础 10 题（仅 Section 1 范围）"] },
-      { week: "第 5–6 周", focus: "Section 2 物理深化", tasks: ["复杂力学推导（Section 2 风格）", "电磁学综合题 10 道", "完成 1 套 ENGAA 历年完整卷"] },
-      { week: "第 7–8 周", focus: "全套模拟 + 弱点击破", tasks: ["每周 1 套完整 2 小时模拟", "逐题分析错因（知识盲区 vs. 计算失误）", "针对弱点专项补强"] },
+      { week: "第 1–2 周", focus: "数学 Module 1 专项", tasks: ["A-Level Pure Maths 快速复习（代数 / 微积分 / 坐标几何）", "每天 20 道 ESAT 风格数学选择题（90 秒/题节奏）", "完成 1 套 ENGAA 历年数学真题（与 ESAT 高度一致）"] },
+      { week: "第 3–4 周", focus: "物理 Module 2 — 力学与电磁学", tasks: ["力学综合：牛顿定律 + 能量守恒 20 题", "电磁学基础：电路 + 磁场 15 题", "做 ENGAA Section 1 物理部分历年真题"] },
+      { week: "第 5–6 周", focus: "物理深化 + 波与现代物理", tasks: ["波动与光学 10 题专项", "核物理 & 放射性 8 题", "完成 1 套 ENGAA 完整历年卷（2 小时）"] },
+      { week: "第 7–8 周", focus: "全套模拟 + 弱点击破", tasks: ["每周 1 套完整 ESAT 模拟（双模块，各 40 分钟）", "逐题分析错因（知识盲区 vs. 计算失误）", "针对弱点专项补强，特别是 Module 1 代数题速度"] },
     ],
     tips: [
-      "选择题无负分——不确定的题目也要选，不要留空白。",
-      "Section 1 节奏是关键：每题约 90 秒，超时就猜并跳过。",
-      "Section 2 物理需要更深的推导能力，建议提前系统学习 A-Level Further Maths。",
-      "ENGAA 已被 ESAT 取代（2025 年起），但备考思路一致，历年真题保持练习价值。",
+      "无负分——所有题必须作答，不确定的要猜，不要留空白。",
+      "Module 1 数学节奏是关键：27 题 40 分钟，平均 89 秒/题——速度和准确度同样重要。",
+      "ENGAA 历年真题（2016–2023）是目前最好的 ESAT 备考材料，结构几乎一致。",
+      "Module 2 物理需要结合数学能力：公式推导 + 代入计算，不只是定性理解。",
+      "帝国理工 EEE/ME 方向也使用 ESAT，备考思路与剑桥工程完全相同。",
+    ],
+    pastPaperLinks: [
+      { label: "ENGAA 2023（最新一年，推荐首做）", url: "https://www.undergraduate.study.cam.ac.uk/applying/admissions-tests", note: "进入页面后点击 ENGAA 下载 2023 年真题" },
+      { label: "ENGAA 2022", url: "https://www.undergraduate.study.cam.ac.uk/applying/admissions-tests" },
+      { label: "ENGAA 2021", url: "https://www.undergraduate.study.cam.ac.uk/applying/admissions-tests" },
+      { label: "ENGAA 2020", url: "https://www.undergraduate.study.cam.ac.uk/applying/admissions-tests" },
+      { label: "ENGAA 2019", url: "https://www.undergraduate.study.cam.ac.uk/applying/admissions-tests" },
+      { label: "ENGAA 2018", url: "https://www.undergraduate.study.cam.ac.uk/applying/admissions-tests" },
+      { label: "ENGAA 2017", url: "https://www.undergraduate.study.cam.ac.uk/applying/admissions-tests" },
+      { label: "ENGAA 2016（最早年份）", url: "https://www.undergraduate.study.cam.ac.uk/applying/admissions-tests" },
+      { label: "ESAT 2024 Specimen Paper（官方样题）", url: "https://www.undergraduate.study.cam.ac.uk/applying/admissions-tests", note: "ESAT 第一份官方样题，格式参考用" },
     ],
   },
 

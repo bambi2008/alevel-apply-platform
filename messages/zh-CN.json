@@ -201,39 +201,63 @@
       "on-track": { "label": "进度正常", "desc": "按节点稳步推进，重点确保个人陈述质量和申请材料完整。" },
       "late": { "label": "时间紧张", "desc": "距截止日较近，优先保证核心材料完整提交，暂缓非必要优化。" }
     },
-    "ms.research.title": "调研院校与专业",
-    "ms.research.desc": "确定目标院校与专业方向，收集入学要求、学费与排名信息。",
-    "ms.research.earlyTip": "时间充裕：建议深度阅读各院校课程大纲，准备有针对性的问题。",
-    "ms.research.lateTip": "时间有限：聚焦已有初步意向的 5–8 所院校，快速收集关键要求。",
-    "ms.ucasReg.title": "注册 UCAS 账号",
-    "ms.ucasReg.desc": "在 UCAS 官网创建账号，填写基本信息，准备开始填写申请。",
-    "ms.ucasReg.lateTip": "尽快注册，账号激活需要时间，不要等到最后一周。",
-    "ms.oxbridge.title": "牛剑截止日（10 月 15 日）",
-    "ms.oxbridge.desc": "申请牛津或剑桥大学的 UCAS 申请必须在此日期前提交。",
-    "ms.oxbridge.earlyTip": "如有牛剑意向，现在开始准备学术测试（MAT/STEP/TSA 等）。",
-    "ms.oxbridge.lateTip": "若有牛剑申请，个人陈述需立即完成，不可拖延。",
-    "ms.psDraft.title": "个人陈述初稿完成",
-    "ms.psDraft.desc": "UCAS 个人陈述（3 个结构化问题）应在此前完成初稿，留出修改时间。",
-    "ms.psDraft.earlyTip": "可以多写几个版本对比，或请老师/同学提前反馈。",
-    "ms.psDraft.lateTip": "直接进入最终稿，避免反复大改——先保证结构完整再优化措辞。",
-    "ms.hkOpen.title": "香港院校申请开放",
-    "ms.hkOpen.desc": "港大、港科大等院校直申通道通常在 11 月陆续开放，注意各校官网公告。",
-    "ms.ucasMain.title": "UCAS 主截止日（1 月 15 日）",
-    "ms.ucasMain.desc": "非牛剑英国院校的 UCAS 申请截止日，所有志愿须在此日前提交。",
-    "ms.ucasMain.earlyTip": "提前完成可早于截止日递交，部分院校先到先审。",
-    "ms.ucasMain.lateTip": "距截止不足两个月，个人陈述与推荐信必须立即锁定，不留余地。",
-    "ms.hkDeadline.title": "香港直申截止日",
-    "ms.hkDeadline.desc": "大多数香港院校直申截止日在 3–4 月，请逐一确认各校官网。",
-    "ms.ucasDecisions.title": "UCAS 院校决定陆续到来",
-    "ms.ucasDecisions.desc": "UCAS Track 上会陆续收到 Offer 或拒信，关注 Track 通知。",
-    "ms.ucasReply.title": "UCAS 回复截止日",
-    "ms.ucasReply.desc": "须在 UCAS 规定日期前选择 Firm（第一志愿）和 Insurance（保底）院校。",
-    "ms.exams.title": "A-Level 考试季",
-    "ms.exams.desc": "5–6 月 A-Level 正式考试，决定是否达到有条件 Offer 的要求。",
-    "ms.exams.earlyTip": "备考充分，保持状态；提前模拟考以熟悉真题节奏。",
-    "ms.exams.lateTip": "集中冲刺核心知识点，保证高频考点熟练度，不要分散精力。",
-    "ms.results.title": "A-Level 放榜 & 入学确认",
-    "ms.results.desc": "成绩公布，Unconditional Offer 生效；若未达分可进入 Clearing 通道。"
+    "ms": {
+      "research": {
+        "title": "调研院校与专业",
+        "desc": "确定目标院校与专业方向，收集入学要求、学费与排名信息。",
+        "earlyTip": "时间充裕：建议深度阅读各院校课程大纲，准备有针对性的问题。",
+        "lateTip": "时间有限：聚焦已有初步意向的 5–8 所院校，快速收集关键要求。"
+      },
+      "ucasReg": {
+        "title": "注册 UCAS 账号",
+        "desc": "在 UCAS 官网创建账号，填写基本信息，准备开始填写申请。",
+        "lateTip": "尽快注册，账号激活需要时间，不要等到最后一周。"
+      },
+      "oxbridge": {
+        "title": "牛剑截止日（10 月 15 日）",
+        "desc": "申请牛津或剑桥大学的 UCAS 申请必须在此日期前提交。",
+        "earlyTip": "如有牛剑意向，现在开始准备学术测试（MAT/STEP/TSA 等）。",
+        "lateTip": "若有牛剑申请，个人陈述需立即完成，不可拖延。"
+      },
+      "psDraft": {
+        "title": "个人陈述初稿完成",
+        "desc": "UCAS 个人陈述（3 个结构化问题）应在此前完成初稿，留出修改时间。",
+        "earlyTip": "可以多写几个版本对比，或请老师/同学提前反馈。",
+        "lateTip": "直接进入最终稿，避免反复大改——先保证结构完整再优化措辞。"
+      },
+      "hkOpen": {
+        "title": "香港院校申请开放",
+        "desc": "港大、港科大等院校直申通道通常在 11 月陆续开放，注意各校官网公告。"
+      },
+      "ucasMain": {
+        "title": "UCAS 主截止日（1 月 15 日）",
+        "desc": "非牛剑英国院校的 UCAS 申请截止日，所有志愿须在此日前提交。",
+        "earlyTip": "提前完成可早于截止日递交，部分院校先到先审。",
+        "lateTip": "距截止不足两个月，个人陈述与推荐信必须立即锁定，不留余地。"
+      },
+      "hkDeadline": {
+        "title": "香港直申截止日",
+        "desc": "大多数香港院校直申截止日在 3–4 月，请逐一确认各校官网。"
+      },
+      "ucasDecisions": {
+        "title": "UCAS 院校决定陆续到来",
+        "desc": "UCAS Track 上会陆续收到 Offer 或拒信，关注 Track 通知。"
+      },
+      "ucasReply": {
+        "title": "UCAS 回复截止日",
+        "desc": "须在 UCAS 规定日期前选择 Firm（第一志愿）和 Insurance（保底）院校。"
+      },
+      "exams": {
+        "title": "A-Level 考试季",
+        "desc": "5–6 月 A-Level 正式考试，决定是否达到有条件 Offer 的要求。",
+        "earlyTip": "备考充分，保持状态；提前模拟考以熟悉真题节奏。",
+        "lateTip": "集中冲刺核心知识点，保证高频考点熟练度，不要分散精力。"
+      },
+      "results": {
+        "title": "A-Level 放榜 & 入学确认",
+        "desc": "成绩公布，Unconditional Offer 生效；若未达分可进入 Clearing 通道。"
+      }
+    }
   },
   "universities": {
     "title": "院校库",

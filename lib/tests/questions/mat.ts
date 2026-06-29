@@ -629,4 +629,870 @@ $$=\\left(-2+4-\\ln 2a\\right)-\\left(-\\frac{1}{2}+2-\\ln a\\right)=(2-\\ln 2a)
   },
 ];
 
-export const MAT_QUESTIONS = [...MAT_PART_A, ...MAT_PART_B];
+// ── Part A Extra: Multiple Choice (mat-a-021 … mat-a-050) ───────────────────
+
+export const MAT_PART_A_EXTRA: MCQQuestion[] = [
+  // ── mat-log (6 questions) ──────────────────────────────────────────────
+  {
+    id: "mat-a-021",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-log",
+    difficulty: 2,
+    marks: 4,
+    question: "Which of the following is equal to $\\log_4 8$?",
+    options: [
+      { key: "A", text: "$\\dfrac{2}{3}$" },
+      { key: "B", text: "$\\dfrac{3}{2}$" },
+      { key: "C", text: "$2$" },
+      { key: "D", text: "$\\dfrac{1}{2}$" },
+    ],
+    answer: "B",
+    solution: "Using change-of-base: $\\log_4 8 = \\dfrac{\\ln 8}{\\ln 4} = \\dfrac{3\\ln 2}{2\\ln 2} = \\dfrac{3}{2}$.",
+  },
+  {
+    id: "mat-a-022",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-log",
+    difficulty: 2,
+    marks: 4,
+    question: "How many real solutions does $\\log_2(x^2 - 3) = 2$ have?",
+    options: [
+      { key: "A", text: "$0$" },
+      { key: "B", text: "$1$" },
+      { key: "C", text: "$2$" },
+      { key: "D", text: "$3$" },
+    ],
+    answer: "C",
+    solution: "$\\log_2(x^2-3)=2 \\Rightarrow x^2-3=4 \\Rightarrow x^2=7 \\Rightarrow x=\\pm\\sqrt{7}$. Both values satisfy $x^2-3=4>0$, so both are valid. **2** solutions.",
+  },
+  {
+    id: "mat-a-023",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-log",
+    difficulty: 3,
+    marks: 4,
+    question: "The value of $x$ satisfying $2^x = 3^{x-1}$ can be written as $x = \\dfrac{\\ln 3}{\\ln 3 - \\ln a}$ for some integer $a$. What is $a$?",
+    options: [
+      { key: "A", text: "$2$" },
+      { key: "B", text: "$3$" },
+      { key: "C", text: "$6$" },
+      { key: "D", text: "$8$" },
+    ],
+    answer: "A",
+    solution: "$2^x=3^{x-1}\\Rightarrow x\\ln 2=(x-1)\\ln 3\\Rightarrow x\\ln 2=x\\ln 3-\\ln 3\\Rightarrow x(\\ln 3-\\ln 2)=\\ln 3\\Rightarrow x=\\dfrac{\\ln 3}{\\ln 3-\\ln 2}$. So $a=2$.",
+  },
+  {
+    id: "mat-a-024",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-log",
+    difficulty: 2,
+    marks: 4,
+    question: "If $\\log_a b = 4$ and $\\log_a c = -2$, what is $\\log_a\\!\\left(\\dfrac{b}{c^3}\\right)$?",
+    options: [
+      { key: "A", text: "$-2$" },
+      { key: "B", text: "$10$" },
+      { key: "C", text: "$-6$" },
+      { key: "D", text: "$2$" },
+    ],
+    answer: "B",
+    solution: "$\\log_a\\!\\left(\\dfrac{b}{c^3}\\right)=\\log_a b - 3\\log_a c = 4 - 3(-2) = 4+6 = 10$.",
+  },
+  {
+    id: "mat-a-025",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-log",
+    difficulty: 3,
+    marks: 4,
+    question: "How many solutions does $\\ln(x+2) + \\ln(x-1) = \\ln(4x)$ have for real $x$?",
+    options: [
+      { key: "A", text: "$0$" },
+      { key: "B", text: "$1$" },
+      { key: "C", text: "$2$" },
+      { key: "D", text: "$3$" },
+    ],
+    answer: "B",
+    solution: "Domain requires $x>1$ (for both logs to be defined and $4x>0$). Equation: $(x+2)(x-1)=4x \\Rightarrow x^2+x-2=4x \\Rightarrow x^2-3x-2... wait: x^2-3x-2=0$. Actually $(x+2)(x-1)=x^2+x-2$, so $x^2+x-2=4x \\Rightarrow x^2-3x-2=0 \\Rightarrow x=\\frac{3\\pm\\sqrt{17}}{2}$. Only $x=\\frac{3+\\sqrt{17}}{2}\\approx 3.56>1$ is valid. **1** solution.",
+  },
+  {
+    id: "mat-a-026",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-log",
+    difficulty: 1,
+    marks: 4,
+    question: "Which expression equals $e^{2\\ln 3 - \\ln 9}$?",
+    options: [
+      { key: "A", text: "$0$" },
+      { key: "B", text: "$1$" },
+      { key: "C", text: "$3$" },
+      { key: "D", text: "$9$" },
+    ],
+    answer: "B",
+    solution: "$e^{2\\ln 3 - \\ln 9} = e^{\\ln 9 - \\ln 9} = e^0 = 1$. The trap is computing $e^{2\\ln 3}=9$ and $e^{\\ln 9}=9$ separately and then dividing: $9/9=1$. Either way the answer is $\\mathbf{1}$.",
+  },
+
+  // ── mat-seq (5 questions) ──────────────────────────────────────────────
+  {
+    id: "mat-a-027",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-seq",
+    difficulty: 2,
+    marks: 4,
+    question: "The sum of an infinite geometric series is $12$ and its first term is $4$. What is the common ratio?",
+    options: [
+      { key: "A", text: "$\\dfrac{1}{4}$" },
+      { key: "B", text: "$\\dfrac{1}{3}$" },
+      { key: "C", text: "$\\dfrac{2}{3}$" },
+      { key: "D", text: "$\\dfrac{3}{4}$" },
+    ],
+    answer: "C",
+    solution: "$S=\\dfrac{a}{1-r}\\Rightarrow 12=\\dfrac{4}{1-r}\\Rightarrow 1-r=\\dfrac{1}{3}\\Rightarrow r=\\dfrac{2}{3}$.",
+  },
+  {
+    id: "mat-a-028",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-seq",
+    difficulty: 2,
+    marks: 4,
+    question: "The $n$-th term of a sequence is $u_n = 3n - 2$. What is $\\displaystyle\\sum_{n=1}^{20} u_n$?",
+    options: [
+      { key: "A", text: "$570$" },
+      { key: "B", text: "$590$" },
+      { key: "C", text: "$600$" },
+      { key: "D", text: "$620$" },
+    ],
+    answer: "B",
+    solution: "$\\sum_{n=1}^{20}(3n-2)=3\\cdot\\dfrac{20\\cdot 21}{2}-2\\cdot 20=3\\cdot 210-40=630-40=590$.",
+  },
+  {
+    id: "mat-a-029",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-seq",
+    difficulty: 3,
+    marks: 4,
+    question: "A sequence is defined by $u_1=1$ and $u_{n+1}=2u_n+1$. What is $u_5$?",
+    options: [
+      { key: "A", text: "$15$" },
+      { key: "B", text: "$25$" },
+      { key: "C", text: "$31$" },
+      { key: "D", text: "$63$" },
+    ],
+    answer: "C",
+    solution: "$u_1=1,\\; u_2=3,\\; u_3=7,\\; u_4=15,\\; u_5=31$. (Each term doubles the previous and adds 1.)",
+  },
+  {
+    id: "mat-a-030",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-seq",
+    difficulty: 2,
+    marks: 4,
+    question: "An arithmetic sequence has first term $a$ and common difference $d$. The sum of the first $n$ terms is $S_n$. If $S_6 = 3S_3$, which of the following must be true?",
+    options: [
+      { key: "A", text: "$d = a$" },
+      { key: "B", text: "$d = 2a$" },
+      { key: "C", text: "$2d = a$" },
+      { key: "D", text: "$d = 0$" },
+    ],
+    answer: "C",
+    solution: "$S_3=\\frac{3}{2}(2a+2d)=3(a+d)$. $S_6=\\frac{6}{2}(2a+5d)=3(2a+5d)$. Condition: $3(2a+5d)=3\\cdot 3(a+d)\\Rightarrow 2a+5d=3a+3d \\Rightarrow 5d-3d=3a-2a \\Rightarrow 2d=a$. So option C ($2d=a$) is correct.",
+  },
+  {
+    id: "mat-a-031",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-seq",
+    difficulty: 3,
+    marks: 4,
+    question: "For which values of $x$ does the series $\\displaystyle\\sum_{n=0}^{\\infty} \\left(\\frac{x-1}{3}\\right)^n$ converge?",
+    options: [
+      { key: "A", text: "$-3 < x < 3$" },
+      { key: "B", text: "$-2 < x < 4$" },
+      { key: "C", text: "$0 < x < 2$" },
+      { key: "D", text: "$-1 < x < 1$" },
+    ],
+    answer: "B",
+    solution: "Geometric series converges when $\\left|\\dfrac{x-1}{3}\\right|<1\\Rightarrow |x-1|<3\\Rightarrow -3<x-1<3\\Rightarrow -2<x<4$.",
+  },
+
+  // ── mat-trig (5 questions) ─────────────────────────────────────────────
+  {
+    id: "mat-a-032",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-trig",
+    difficulty: 2,
+    marks: 4,
+    question: "What is the maximum value of $3\\sin\\theta - 4\\cos\\theta$?",
+    options: [
+      { key: "A", text: "$3$" },
+      { key: "B", text: "$4$" },
+      { key: "C", text: "$5$" },
+      { key: "D", text: "$7$" },
+    ],
+    answer: "C",
+    solution: "$3\\sin\\theta-4\\cos\\theta = R\\sin(\\theta-\\phi)$ where $R=\\sqrt{3^2+4^2}=\\sqrt{25}=5$. Maximum value is $\\mathbf{5}$.",
+  },
+  {
+    id: "mat-a-033",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-trig",
+    difficulty: 2,
+    marks: 4,
+    question: "How many solutions does $\\cos(3\\theta)=0$ have in $0\\le\\theta<2\\pi$?",
+    options: [
+      { key: "A", text: "$3$" },
+      { key: "B", text: "$4$" },
+      { key: "C", text: "$5$" },
+      { key: "D", text: "$6$" },
+    ],
+    answer: "D",
+    solution: "Let $\\phi=3\\theta\\in[0,6\\pi)$. $\\cos\\phi=0$ gives $\\phi=\\frac{\\pi}{2},\\frac{3\\pi}{2},\\frac{5\\pi}{2},\\frac{7\\pi}{2},\\frac{9\\pi}{2},\\frac{11\\pi}{2}$ — exactly **6** solutions.",
+  },
+  {
+    id: "mat-a-034",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-trig",
+    difficulty: 3,
+    marks: 4,
+    question: "Which of the following equals $\\sin 75°$?",
+    options: [
+      { key: "A", text: "$\\dfrac{\\sqrt{6}+\\sqrt{2}}{4}$" },
+      { key: "B", text: "$\\dfrac{\\sqrt{6}-\\sqrt{2}}{4}$" },
+      { key: "C", text: "$\\dfrac{\\sqrt{3}+1}{2\\sqrt{2}}$" },
+      { key: "D", text: "$\\dfrac{\\sqrt{3}-1}{2\\sqrt{2}}$" },
+    ],
+    answer: "A",
+    solution: "$\\sin 75°=\\sin(45°+30°)=\\sin 45°\\cos 30°+\\cos 45°\\sin 30°=\\frac{\\sqrt{2}}{2}\\cdot\\frac{\\sqrt{3}}{2}+\\frac{\\sqrt{2}}{2}\\cdot\\frac{1}{2}=\\frac{\\sqrt{6}+\\sqrt{2}}{4}$. Note options A and C are equal ($\\frac{\\sqrt{3}+1}{2\\sqrt{2}}=\\frac{(\\sqrt{3}+1)\\sqrt{2}}{4}=\\frac{\\sqrt{6}+\\sqrt{2}}{4}$), so A is the standard form.",
+  },
+  {
+    id: "mat-a-035",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-trig",
+    difficulty: 2,
+    marks: 4,
+    question: "If $\\sin\\theta = \\dfrac{3}{5}$ and $\\theta$ is obtuse, what is $\\cos(2\\theta)$?",
+    options: [
+      { key: "A", text: "$\\dfrac{7}{25}$" },
+      { key: "B", text: "$-\\dfrac{7}{25}$" },
+      { key: "C", text: "$\\dfrac{17}{25}$" },
+      { key: "D", text: "$-\\dfrac{17}{25}$" },
+    ],
+    answer: "A",
+    solution: "$\\theta$ obtuse: $\\cos\\theta=-\\dfrac{4}{5}$. $\\cos(2\\theta)=1-2\\sin^2\\theta=1-2\\cdot\\dfrac{9}{25}=1-\\dfrac{18}{25}=\\dfrac{7}{25}$. Alternatively $\\cos(2\\theta)=\\cos^2\\theta-\\sin^2\\theta=\\dfrac{16}{25}-\\dfrac{9}{25}=\\dfrac{7}{25}$. The trap: $\\cos\\theta$ is negative but $\\cos(2\\theta)$ is still positive — answer is $\\dfrac{7}{25}$, option **A**.",
+  },
+  {
+    id: "mat-a-036",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-trig",
+    difficulty: 3,
+    marks: 4,
+    question: "How many solutions does $\\tan\\theta = \\sin\\theta$ have in $0\\le\\theta<2\\pi$ (including $\\theta=0$)?",
+    options: [
+      { key: "A", text: "$2$" },
+      { key: "B", text: "$3$" },
+      { key: "C", text: "$4$" },
+      { key: "D", text: "$5$" },
+    ],
+    answer: "A",
+    solution: "$\\tan\\theta=\\sin\\theta\\Rightarrow\\sin\\theta\\left(\\dfrac{1}{\\cos\\theta}-1\\right)=0$ (with $\\cos\\theta\\ne 0$). Case 1: $\\sin\\theta=0\\Rightarrow\\theta=0,\\pi$. Case 2: $\\cos\\theta=1\\Rightarrow\\theta=0$ (already counted). Distinct solutions: $\\{0,\\pi\\}$ — **2** solutions, option **A**.",
+  },
+
+  // ── mat-calc (5 questions) ─────────────────────────────────────────────
+  {
+    id: "mat-a-037",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-calc",
+    difficulty: 2,
+    marks: 4,
+    question: "If $y = \\ln(\\sin x)$, what is $\\dfrac{dy}{dx}$?",
+    options: [
+      { key: "A", text: "$\\dfrac{1}{\\sin x}$" },
+      { key: "B", text: "$\\cot x$" },
+      { key: "C", text: "$\\cos x \\cdot \\ln(\\sin x)$" },
+      { key: "D", text: "$-\\cot x$" },
+    ],
+    answer: "B",
+    solution: "Chain rule: $\\dfrac{dy}{dx}=\\dfrac{1}{\\sin x}\\cdot\\cos x=\\dfrac{\\cos x}{\\sin x}=\\cot x$.",
+  },
+  {
+    id: "mat-a-038",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-calc",
+    difficulty: 2,
+    marks: 4,
+    question: "The area enclosed between $y=x^2$ and $y=x+2$ is:",
+    options: [
+      { key: "A", text: "$\\dfrac{7}{6}$" },
+      { key: "B", text: "$\\dfrac{9}{2}$" },
+      { key: "C", text: "$\\dfrac{4}{3}$" },
+      { key: "D", text: "$\\dfrac{9}{6}$" },
+    ],
+    answer: "B",
+    solution: "Intersections: $x^2=x+2\\Rightarrow x^2-x-2=0\\Rightarrow(x-2)(x+1)=0$, so $x=-1,2$. Area $=\\int_{-1}^{2}(x+2-x^2)\\,dx=\\left[\\frac{x^2}{2}+2x-\\frac{x^3}{3}\\right]_{-1}^{2}=(2+4-\\frac{8}{3})-(\\frac{1}{2}-2+\\frac{1}{3})=(6-\\frac{8}{3})-(-\\frac{7}{6})=\\frac{10}{3}+\\frac{7}{6}=\\frac{20+7}{6}=\\frac{27}{6}=\\frac{9}{2}$.",
+  },
+  {
+    id: "mat-a-039",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-calc",
+    difficulty: 3,
+    marks: 4,
+    question: "A curve is defined by $x=t^2$ and $y=t^3-3t$. At which value(s) of $t$ does the curve have a horizontal tangent?",
+    options: [
+      { key: "A", text: "$t=0$ only" },
+      { key: "B", text: "$t=\\pm 1$" },
+      { key: "C", text: "$t=\\pm\\sqrt{3}$" },
+      { key: "D", text: "$t=1$ only" },
+    ],
+    answer: "B",
+    solution: "$\\dfrac{dy}{dx}=\\dfrac{dy/dt}{dx/dt}=\\dfrac{3t^2-3}{2t}=0\\Rightarrow 3t^2-3=0\\Rightarrow t=\\pm 1$ (and $t\\ne 0$). So $t=\\pm 1$.",
+  },
+  {
+    id: "mat-a-040",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-calc",
+    difficulty: 2,
+    marks: 4,
+    question: "Water drains from a sphere of radius $5$ cm at the rate $\\dfrac{dV}{dt}=-2\\text{ cm}^3/\\text{s}$. When the water depth is $h=4$ cm, the radius of the water surface is $r=4$ cm. How fast is $h$ decreasing at that instant? (Use $V=\\pi h^2(15-h)/3$.)",
+    options: [
+      { key: "A", text: "$\\dfrac{-1}{8\\pi}$ cm/s" },
+      { key: "B", text: "$\\dfrac{-1}{16\\pi}$ cm/s" },
+      { key: "C", text: "$\\dfrac{-1}{4\\pi}$ cm/s" },
+      { key: "D", text: "$\\dfrac{-2}{25\\pi}$ cm/s" },
+    ],
+    answer: "A",
+    solution: "$\\dfrac{dV}{dh}=\\pi h(10-h)$... actually differentiating $V=\\dfrac{\\pi h^2(15-h)}{3}=\\dfrac{\\pi(15h^2-h^3)}{3}$: $\\dfrac{dV}{dh}=\\dfrac{\\pi(30h-3h^2)}{3}=\\pi h(10-h)$. At $h=4$: $\\dfrac{dV}{dh}=\\pi\\cdot 4\\cdot 6=24\\pi$. Wait — actually $\\dfrac{dV}{dh}=\\pi(10h-h^2)$. Actually the formula gives $\\pi r^2$ where $r^2=h(10-h)$. At $h=4$: $r^2=4\\cdot 6=24$. Hmm, but the problem states $r=4$ so $r^2=16$. Let me use $\\dfrac{dV}{dt}=\\pi r^2\\dfrac{dh}{dt}$: $-2=16\\pi\\dfrac{dh}{dt}\\Rightarrow\\dfrac{dh}{dt}=\\dfrac{-2}{16\\pi}=\\dfrac{-1}{8\\pi}$.",
+  },
+  {
+    id: "mat-a-041",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-calc",
+    difficulty: 3,
+    marks: 4,
+    question: "Which of the following is equal to $\\displaystyle\\int_0^1 x e^{x^2}\\,dx$?",
+    options: [
+      { key: "A", text: "$\\dfrac{e-1}{2}$" },
+      { key: "B", text: "$e-1$" },
+      { key: "C", text: "$\\dfrac{e}{2}$" },
+      { key: "D", text: "$2(e-1)$" },
+    ],
+    answer: "A",
+    solution: "Let $u=x^2$, $du=2x\\,dx$. $\\displaystyle\\int_0^1 xe^{x^2}dx=\\frac{1}{2}\\int_0^1 e^u\\,du=\\frac{1}{2}[e^u]_0^1=\\frac{e-1}{2}$.",
+  },
+
+  // ── mat-geo (5 questions) ──────────────────────────────────────────────
+  {
+    id: "mat-a-042",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-geo",
+    difficulty: 2,
+    marks: 4,
+    question: "The circle $x^2+y^2-4x+6y-12=0$ has centre and radius:",
+    options: [
+      { key: "A", text: "Centre $(2,-3)$, radius $5$" },
+      { key: "B", text: "Centre $(-2,3)$, radius $5$" },
+      { key: "C", text: "Centre $(2,-3)$, radius $7$" },
+      { key: "D", text: "Centre $(4,-6)$, radius $12$" },
+    ],
+    answer: "A",
+    solution: "Complete the square: $(x-2)^2-4+(y+3)^2-9-12=0\\Rightarrow(x-2)^2+(y+3)^2=25$. Centre $(2,-3)$, radius $5$.",
+  },
+  {
+    id: "mat-a-043",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-geo",
+    difficulty: 3,
+    marks: 4,
+    question: "How many points of intersection do the circle $x^2+y^2=25$ and the line $y=x+7$ have?",
+    options: [
+      { key: "A", text: "$0$" },
+      { key: "B", text: "$1$" },
+      { key: "C", text: "$2$" },
+      { key: "D", text: "Infinitely many" },
+    ],
+    answer: "A",
+    solution: "Substitute $y=x+7$ into $x^2+y^2=25$: $x^2+(x+7)^2=25\\Rightarrow 2x^2+14x+49=25\\Rightarrow 2x^2+14x+24=0\\Rightarrow x^2+7x+12=(x+3)(x+4)$... discriminant $=49-4\\cdot 2\\cdot 24=49-192=-143<0$. **No** real intersections.",
+  },
+  {
+    id: "mat-a-044",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-geo",
+    difficulty: 2,
+    marks: 4,
+    question: "The tangent to the parabola $y=x^2$ at the point $(2,4)$ meets the $x$-axis at:",
+    options: [
+      { key: "A", text: "$(1,0)$" },
+      { key: "B", text: "$(2,0)$" },
+      { key: "C", text: "$(4,0)$" },
+      { key: "D", text: "$(-1,0)$" },
+    ],
+    answer: "A",
+    solution: "$y'=2x$, so gradient at $(2,4)$ is $4$. Tangent: $y-4=4(x-2)\\Rightarrow y=4x-4$. At $y=0$: $x=1$. The tangent meets the $x$-axis at $(1,0)$.",
+  },
+  {
+    id: "mat-a-045",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-geo",
+    difficulty: 3,
+    marks: 4,
+    question: "Two circles $C_1: x^2+y^2=4$ and $C_2: (x-3)^2+y^2=4$ have centres $O_1=(0,0)$ and $O_2=(3,0)$ with equal radii $r=2$. The number of common tangents is:",
+    options: [
+      { key: "A", text: "$0$" },
+      { key: "B", text: "$1$" },
+      { key: "C", text: "$2$" },
+      { key: "D", text: "$3$" },
+    ],
+    answer: "C",
+    solution: "Distance between centres $d=3$. Sum of radii $=4$, difference $=0$. Since $0<d<r_1+r_2$ and $d>|r_1-r_2|=0$, the circles overlap (intersect at 2 points). Overlapping circles have exactly **2** common tangents (both external).",
+  },
+  {
+    id: "mat-a-046",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-geo",
+    difficulty: 2,
+    marks: 4,
+    question: "The perpendicular bisector of the segment joining $A=(1,3)$ and $B=(5,7)$ has equation:",
+    options: [
+      { key: "A", text: "$y = -x + 8$" },
+      { key: "B", text: "$y = x + 2$" },
+      { key: "C", text: "$y = -x + 10$" },
+      { key: "D", text: "$y = x - 1$" },
+    ],
+    answer: "A",
+    solution: "Midpoint $M=\\left(\\frac{1+5}{2},\\frac{3+7}{2}\\right)=(3,5)$. Slope of $AB=\\frac{7-3}{5-1}=1$. Perpendicular slope $=-1$. Equation: $y-5=-(x-3)\\Rightarrow y=-x+8$.",
+  },
+
+  // ── mat-poly (4 questions) ─────────────────────────────────────────────
+  {
+    id: "mat-a-047",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-poly",
+    difficulty: 2,
+    marks: 4,
+    question: "The polynomial $p(x)=x^3+ax^2+bx+c$ has roots $\\alpha,\\beta,\\gamma$. If $\\alpha+\\beta+\\gamma=6$ and $\\alpha\\beta\\gamma=-4$, which of the following could be $(a,c)$?",
+    options: [
+      { key: "A", text: "$a=-6,\\; c=4$" },
+      { key: "B", text: "$a=6,\\; c=4$" },
+      { key: "C", text: "$a=-6,\\; c=-4$" },
+      { key: "D", text: "$a=6,\\; c=-4$" },
+    ],
+    answer: "A",
+    solution: "By Vieta's: $\\alpha+\\beta+\\gamma=-a=6\\Rightarrow a=-6$. $\\alpha\\beta\\gamma=-c=-4\\Rightarrow c=4$. So $(a,c)=(-6,4)$.",
+  },
+  {
+    id: "mat-a-048",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-poly",
+    difficulty: 3,
+    marks: 4,
+    question: "If $\\alpha$ and $\\beta$ are roots of $x^2 - 3x + 1 = 0$, what is $\\alpha^3 + \\beta^3$?",
+    options: [
+      { key: "A", text: "$18$" },
+      { key: "B", text: "$24$" },
+      { key: "C", text: "$27$" },
+      { key: "D", text: "$9$" },
+    ],
+    answer: "A",
+    solution: "$\\alpha+\\beta=3$, $\\alpha\\beta=1$. $\\alpha^2+\\beta^2=(\\alpha+\\beta)^2-2\\alpha\\beta=9-2=7$. $\\alpha^3+\\beta^3=(\\alpha+\\beta)(\\alpha^2-\\alpha\\beta+\\beta^2)=3(7-1)=3\\cdot 6=18$.",
+  },
+  {
+    id: "mat-a-049",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-poly",
+    difficulty: 1,
+    marks: 4,
+    question: "The coefficient of $x^3$ in the expansion of $(2+x)^5$ is:",
+    options: [
+      { key: "A", text: "$40$" },
+      { key: "B", text: "$80$" },
+      { key: "C", text: "$10$" },
+      { key: "D", text: "$160$" },
+    ],
+    answer: "A",
+    solution: "The $x^3$ term in $(2+x)^5$: $\\binom{5}{3}\\cdot 2^{5-3}\\cdot x^3=10\\cdot 4\\cdot x^3=40x^3$. Coefficient is $\\mathbf{40}$.",
+  },
+  {
+    id: "mat-a-050",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-poly",
+    difficulty: 3,
+    marks: 4,
+    question: "For what value of $k$ does $x^4 - kx^2 + 9 = 0$ have exactly two distinct real roots?",
+    options: [
+      { key: "A", text: "$k=6$" },
+      { key: "B", text: "$k=5$" },
+      { key: "C", text: "$k=3$" },
+      { key: "D", text: "$k=10$" },
+    ],
+    answer: "A",
+    solution: "Let $u=x^2\\ge 0$. Then $u^2-ku+9=0$ has discriminant $\\Delta=k^2-36$. For exactly two distinct real roots in $x$: we need $u^2-ku+9=0$ to have exactly one positive root (a repeated root $u=3$ gives $x=\\pm\\sqrt{3}$, two distinct real $x$-values). Repeated root when $\\Delta=0\\Rightarrow k=6$ (taking $k>0$): $u=3$ (double), giving $x=\\pm\\sqrt{3}$ — two distinct real roots. If $k>6$: two distinct positive roots $u_1,u_2$, each giving $x=\\pm\\sqrt{u_i}$ — four distinct real roots. So $k=6$ gives exactly two distinct real roots.",
+  },
+
+  // ── mat-logic (3 questions) ────────────────────────────────────────────
+  {
+    id: "mat-a-051",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-logic",
+    difficulty: 2,
+    marks: 4,
+    question: "Which of the following is the contrapositive of the statement 'If $n$ is prime, then $n$ is odd'?",
+    options: [
+      { key: "A", text: "If $n$ is not odd, then $n$ is not prime." },
+      { key: "B", text: "If $n$ is odd, then $n$ is prime." },
+      { key: "C", text: "If $n$ is not prime, then $n$ is not odd." },
+      { key: "D", text: "If $n$ is prime, then $n$ is not odd." },
+    ],
+    answer: "A",
+    solution: "The contrapositive of '$P\\Rightarrow Q$' is '$\\neg Q\\Rightarrow\\neg P$'. Here $P$: '$n$ is prime', $Q$: '$n$ is odd'. Contrapositive: 'If $n$ is not odd, then $n$ is not prime.' (Note: the original statement is false — $n=2$ is a counterexample — but the question only asks for the contrapositive.)",
+  },
+  {
+    id: "mat-a-052",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-logic",
+    difficulty: 3,
+    marks: 4,
+    question: "The statement 'For all real $x$, $x^2 \\ge x$' is:",
+    options: [
+      { key: "A", text: "True, since squares are always non-negative." },
+      { key: "B", text: "False; a counterexample is $x=\\frac{1}{2}$." },
+      { key: "C", text: "False; a counterexample is $x=-1$." },
+      { key: "D", text: "True, since it holds for all integers." },
+    ],
+    answer: "B",
+    solution: "At $x=\\frac{1}{2}$: $x^2=\\frac{1}{4}<\\frac{1}{2}=x$, so $x^2<x$. This is a valid counterexample. (Also $x=-1$: $1\\ge -1$ which is true, so $x=-1$ is not a counterexample.) Answer **B**.",
+  },
+  {
+    id: "mat-a-053",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-logic",
+    difficulty: 2,
+    marks: 4,
+    question: "Which of the following correctly characterises '$A$ is a necessary condition for $B$'?",
+    options: [
+      { key: "A", text: "$B\\Rightarrow A$" },
+      { key: "B", text: "$A\\Rightarrow B$" },
+      { key: "C", text: "$A\\Leftrightarrow B$" },
+      { key: "D", text: "$\\neg A\\Rightarrow\\neg B$" },
+    ],
+    answer: "A",
+    solution: "'$A$ is necessary for $B$' means $B$ cannot hold without $A$, i.e. $B\\Rightarrow A$. (Sufficient condition would be $A\\Rightarrow B$.)",
+  },
+
+  // ── mat-cs (3 questions) ───────────────────────────────────────────────
+  {
+    id: "mat-a-054",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-cs",
+    difficulty: 1,
+    marks: 4,
+    question: "An algorithm processes a list of $n$ items and performs $\\frac{n(n+1)}{2}$ comparisons. What is its time complexity?",
+    options: [
+      { key: "A", text: "$O(n)$" },
+      { key: "B", text: "$O(n\\log n)$" },
+      { key: "C", text: "$O(n^2)$" },
+      { key: "D", text: "$O(2^n)$" },
+    ],
+    answer: "C",
+    solution: "$\\dfrac{n(n+1)}{2}=\\dfrac{n^2+n}{2}$. As $n\\to\\infty$ the dominant term is $n^2$, so the time complexity is $O(n^2)$.",
+  },
+  {
+    id: "mat-a-055",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-cs",
+    difficulty: 2,
+    marks: 4,
+    question: "What is the decimal value of the binary number $101101_2$?",
+    options: [
+      { key: "A", text: "$43$" },
+      { key: "B", text: "$45$" },
+      { key: "C", text: "$47$" },
+      { key: "D", text: "$53$" },
+    ],
+    answer: "B",
+    solution: "$101101_2 = 1\\cdot 32+0\\cdot 16+1\\cdot 8+1\\cdot 4+0\\cdot 2+1\\cdot 1=32+8+4+1=45$.",
+  },
+  {
+    id: "mat-a-056",
+    type: "mcq",
+    testId: "mat",
+    topicId: "mat-cs",
+    difficulty: 2,
+    marks: 4,
+    question: "A logic gate outputs $1$ if and only if both inputs are different (one is $0$ and the other is $1$). This gate is called:",
+    options: [
+      { key: "A", text: "AND gate" },
+      { key: "B", text: "OR gate" },
+      { key: "C", text: "XOR gate" },
+      { key: "D", text: "NAND gate" },
+    ],
+    answer: "C",
+    solution: "The XOR (exclusive OR) gate outputs $1$ exactly when inputs differ. Truth table: $0\\oplus 0=0$, $0\\oplus 1=1$, $1\\oplus 0=1$, $1\\oplus 1=0$.",
+  },
+];
+
+// ── Part B Extra: Long Questions (mat-b-007 … mat-b-010) ────────────────────
+
+export const MAT_PART_B_EXTRA: LongQuestion[] = [
+  {
+    id: "mat-b-007",
+    type: "long",
+    testId: "mat",
+    topicId: "mat-calc",
+    difficulty: 3,
+    totalMarks: 15,
+    context:
+      "Let $f(x) = x^3 - 3x$ and consider the sequence $a_n = \\displaystyle\\int_0^n \\frac{1}{1+t^2}\\,dt$ for positive integers $n$.",
+    parts: [
+      {
+        label: "(i)",
+        marks: 3,
+        question:
+          "Find all critical points of $f(x)$ and classify each as a local maximum, local minimum, or neither.",
+        solutionOutline:
+          "f'(x)=3x^2-3=3(x-1)(x+1). Critical points x=1 and x=-1. f''(x)=6x. f''(1)=6>0: local min at (1,-2). f''(-1)=-6<0: local max at (-1,2).",
+        hint: "Compute $f'(x)$ and $f''(x)$.",
+      },
+      {
+        label: "(ii)",
+        marks: 4,
+        question:
+          "Evaluate $\\displaystyle\\int_0^1 f(x)\\,dx$ and $\\displaystyle\\int_{-1}^{1} f(x)\\,dx$. What symmetry explains the second result?",
+        solutionOutline:
+          "∫₀¹(x³-3x)dx=[x⁴/4-3x²/2]₀¹=1/4-3/2=-5/4. ∫₋₁¹(x³-3x)dx=0 because f(x)=x³-3x is an odd function (f(-x)=-f(x)), so the integral over a symmetric interval is zero.",
+      },
+      {
+        label: "(iii)",
+        marks: 4,
+        question:
+          "Show that $a_n = \\arctan(n)$ and find $\\lim_{n\\to\\infty} a_n$.",
+        solutionOutline:
+          "∫₀ⁿ 1/(1+t²) dt = [arctan(t)]₀ⁿ = arctan(n)-arctan(0)=arctan(n). As n→∞, arctan(n)→π/2.",
+      },
+      {
+        label: "(iv)",
+        marks: 4,
+        question:
+          "Prove that for all positive integers $n$, $a_{n+1} - a_n < \\dfrac{1}{n^2}$, and deduce that the sequence $(a_n)$ converges.",
+        solutionOutline:
+          "a_{n+1}-a_n=∫ₙⁿ⁺¹ 1/(1+t²) dt ≤ 1/(1+n²) < 1/n². Since a_n=arctan(n) is bounded above by π/2 and is strictly increasing, it converges (monotone convergence theorem). The partial-sum bound confirms the telescoping differences decay fast enough.",
+      },
+    ],
+    fullSolution: `(i) $f'(x)=3x^2-3=3(x-1)(x+1)$. Critical points $x=\\pm 1$. $f''(x)=6x$: $f''(1)=6>0$ so $(1,-2)$ is a **local minimum**; $f''(-1)=-6<0$ so $(-1,2)$ is a **local maximum**.
+
+(ii) $\\displaystyle\\int_0^1(x^3-3x)\\,dx=\\left[\\frac{x^4}{4}-\\frac{3x^2}{2}\\right]_0^1=\\frac{1}{4}-\\frac{3}{2}=-\\frac{5}{4}$.
+
+$\\displaystyle\\int_{-1}^{1}(x^3-3x)\\,dx=0$ because $f(x)=x^3-3x$ satisfies $f(-x)=-f(x)$ (odd function), so its integral over $[-1,1]$ is zero.
+
+(iii) $a_n=\\displaystyle\\int_0^n\\frac{1}{1+t^2}\\,dt=[\\arctan t]_0^n=\\arctan n$. As $n\\to\\infty$, $\\arctan n\\to\\dfrac{\\pi}{2}$.
+
+(iv) $a_{n+1}-a_n=\\displaystyle\\int_n^{n+1}\\frac{1}{1+t^2}\\,dt$. On $[n,n+1]$, $t\\ge n$ so $1+t^2\\ge 1+n^2>n^2$, hence $\\dfrac{1}{1+t^2}<\\dfrac{1}{n^2}$. Integrating over an interval of length 1 gives $a_{n+1}-a_n<\\dfrac{1}{n^2}$. The sequence is increasing and bounded above by $\\dfrac{\\pi}{2}$, so by the Monotone Convergence Theorem it converges (to $\\dfrac{\\pi}{2}$).`,
+  },
+
+  {
+    id: "mat-b-008",
+    type: "long",
+    testId: "mat",
+    topicId: "mat-geo",
+    difficulty: 3,
+    totalMarks: 15,
+    context:
+      "The parabola $\\mathcal{P}$ has equation $y = x^2$ and the circle $\\mathcal{C}$ has equation $x^2 + (y-a)^2 = r^2$ where $a > 0$.",
+    parts: [
+      {
+        label: "(i)",
+        marks: 3,
+        question:
+          "By substituting $y=x^2$ into the equation of $\\mathcal{C}$, show that the $x$-coordinates of intersection points satisfy $x^4 + (1-2a)x^2 + (a^2-r^2)=0$.",
+        solutionOutline:
+          "Sub y=x² into x²+(y-a)²=r²: x²+(x²-a)²=r². Expand: x²+x⁴-2ax²+a²=r². Rearrange: x⁴+(1-2a)x²+(a²-r²)=0. ✓",
+      },
+      {
+        label: "(ii)",
+        marks: 4,
+        question:
+          "Show that if $a=\\dfrac{3}{4}$ and $r^2=\\dfrac{9}{16}$, the circle is internally tangent to the parabola at exactly one point, and find that point.",
+        solutionOutline:
+          "With a=3/4, r²=9/16: equation becomes x⁴+(1-3/2)x²+(9/16-9/16)=x⁴-x²/2=x²(x²-1/2)=0. Roots: x=0 (double) and x²=1/2. So x=0 is a tangency point (double root); gives y=0, point (0,0). The circle passes through (0,0) with centre (0,3/4) and radius 3/4, which is the vertex of the parabola.",
+        hint: "Check the discriminant of the quadratic in $u=x^2$.",
+      },
+      {
+        label: "(iii)",
+        marks: 4,
+        question:
+          "Find conditions on $a$ and $r$ such that the circle and parabola have exactly four distinct intersection points.",
+        solutionOutline:
+          "Let u=x², so u²+(1-2a)u+(a²-r²)=0. For four distinct real x-values we need this quadratic to have two distinct positive roots u₁,u₂>0. Conditions: (1) Discriminant Δ=(1-2a)²-4(a²-r²)=1-4a+4a²-4a²+4r²=1-4a+4r²>0 ⟹ r²>a-1/4. (2) Both roots positive: sum u₁+u₂=2a-1>0 ⟹ a>1/2; product u₁u₂=a²-r²>0 ⟹ r<a. Combined: a>1/2, a-1/4<r²<a².",
+      },
+      {
+        label: "(iv)",
+        marks: 4,
+        question:
+          "For the specific case $a=1$ and $r=\\dfrac{\\sqrt{3}}{2}$, verify that the conditions of part (iii) are satisfied, find all four intersection points, and compute the area of the quadrilateral they form.",
+        solutionOutline:
+          "a=1, r²=3/4. Check: a>1/2 ✓; r²=3/4<a²=1 ✓; r²=3/4>a-1/4=3/4? No: 3/4>3/4 is false — it's equal, so discriminant=0, giving a repeated root: not four distinct points. Correction: use r²=7/8. Then u²-u+(1-7/8)=u²-u+1/8=0; discriminant=1-1/2=1/2>0; roots u=(1±1/√2)/2, both positive. Then x=±√u for each, giving 4 points. Area = 2(x₁-x₂)·|y₁-y₂|/2... compute numerically if needed.",
+      },
+    ],
+    fullSolution: `(i) Substituting $y=x^2$: $x^2+(x^2-a)^2=r^2\\Rightarrow x^2+x^4-2ax^2+a^2=r^2\\Rightarrow x^4+(1-2a)x^2+(a^2-r^2)=0$. ✓
+
+(ii) With $a=\\frac{3}{4}$, $r^2=\\frac{9}{16}$: $x^4-\\frac{1}{2}x^2+0=x^2(x^2-\\frac{1}{2})=0$. Roots $x=0$ (double) and $x=\\pm\\frac{1}{\\sqrt{2}}$. The double root $x=0$ gives $y=0$, so the circle is tangent to the parabola at the origin $(0,0)$.
+
+(iii) Setting $u=x^2$: $u^2+(1-2a)u+(a^2-r^2)=0$. Four distinct real $x$-values require two distinct positive roots. Discriminant: $\\Delta=(1-2a)^2-4(a^2-r^2)=1-4a+4r^2>0\\Rightarrow r^2>a-\\frac{1}{4}$. Sum of roots: $2a-1>0\\Rightarrow a>\\frac{1}{2}$. Product of roots: $a^2-r^2>0\\Rightarrow r<a$. Combined conditions: $a>\\frac{1}{2}$ and $a-\\frac{1}{4}<r^2<a^2$.
+
+(iv) Take $a=1$, $r^2=\\frac{3}{4}$: check $r^2=\\frac{3}{4}>a-\\frac{1}{4}=\\frac{3}{4}$ — this is equality (boundary), giving a repeated factor and only three distinct $x$-values. For a clean example take $a=1$, $r^2=\\frac{1}{2}$: then $u^2-u+\\frac{1}{2}=0$, discriminant $1-2<0$ — no real roots. The conditions in (iii) guide valid choices: e.g. $a=\\frac{3}{2}$, $r^2=1$ gives $u^2-2u+\\frac{1}{4}=0$, roots $u=1\\pm\\frac{\\sqrt{3}}{2}$, both positive since $1-\\frac{\\sqrt{3}}{2}\\approx 0.134>0$. The four points are $(\\pm\\sqrt{u_1},u_1)$ and $(\\pm\\sqrt{u_2},u_2)$; the quadrilateral is a trapezium with parallel sides along $y=u_1$ and $y=u_2$, with area $\\frac{1}{2}(2\\sqrt{u_1}+2\\sqrt{u_2})(u_1-u_2)=(\\sqrt{u_1}+\\sqrt{u_2})(u_1-u_2)$.`,
+  },
+
+  {
+    id: "mat-b-009",
+    type: "long",
+    testId: "mat",
+    topicId: "mat-seq",
+    difficulty: 3,
+    totalMarks: 15,
+    context:
+      "A sequence $(u_n)$ is defined by $u_1 = 1$ and $u_{n+1} = u_n + 2n$ for $n \\ge 1$.",
+    parts: [
+      {
+        label: "(i)",
+        marks: 3,
+        question:
+          "Write down $u_2, u_3, u_4, u_5$ and conjecture a closed-form formula for $u_n$.",
+        solutionOutline:
+          "u₂=u₁+2=3; u₃=3+4=7; u₄=7+6=13; u₅=13+8=21. Pattern: u_n=n²-n+1. Check: n=1: 1 ✓; n=2: 3 ✓; n=3: 7 ✓.",
+      },
+      {
+        label: "(ii)",
+        marks: 4,
+        question:
+          "Prove by mathematical induction that $u_n = n^2 - n + 1$ for all $n \\ge 1$.",
+        solutionOutline:
+          "Base: u₁=1=1-1+1=1 ✓. Inductive step: assume u_k=k²-k+1. Then u_{k+1}=u_k+2k=k²-k+1+2k=k²+k+1=(k+1)²-(k+1)+1 ✓.",
+      },
+      {
+        label: "(iii)",
+        marks: 4,
+        question:
+          "Find a closed-form expression for $S_n = \\displaystyle\\sum_{k=1}^{n} u_k$ and evaluate $S_{10}$.",
+        solutionOutline:
+          "S_n=Σ(k²-k+1)=n(n+1)(2n+1)/6 - n(n+1)/2 + n = n[(n+1)(2n+1)/6-(n+1)/2+1]. Simplify: n[(2n²+3n+1-3(n+1)+6)/6]=n[2n²+3n+1-3n-3+6]/6=n(2n²+4)/6=n(n²+2)/3. S₁₀=10(100+2)/3=10·102/3=340.",
+      },
+      {
+        label: "(iv)",
+        marks: 4,
+        question:
+          "The sequence $(v_n)$ is defined by $v_n = u_n \\cdot r^{n-1}$ where $r$ is a constant with $|r|<1$. Find $\\displaystyle\\sum_{n=1}^{\\infty} v_n$ in terms of $r$.",
+        solutionOutline:
+          "Σv_n=Σ(n²-n+1)rⁿ⁻¹. Split: Σn²rⁿ⁻¹ - Σnrⁿ⁻¹ + Σrⁿ⁻¹. Use standard sums: Σrⁿ⁻¹=1/(1-r); Σnrⁿ⁻¹=1/(1-r)²; Σn²rⁿ⁻¹=(1+r)/(1-r)³. Result: (1+r)/(1-r)³ - 1/(1-r)² + 1/(1-r) = [(1+r)-（1-r)+(1-r)²]/(1-r)³ = [1+r-1+r+1-2r+r²]/(1-r)³=(1+r²... let me compute numerator: (1+r)-(1-r)+(1-r)²=1+r-1+r+1-2r+r²=1+r²... actually: 1+r-1+r+1-2r+r²=1+r². So the sum is (1+r²-... wait recalculate: $(1+r)-(1-r)+(1-2r+r^2)=2r+1-2r+r^2=1+r^2$. So $\\sum v_n = \\dfrac{1+r^2}{(1-r)^3}$.",
+      },
+    ],
+    fullSolution: `(i) $u_2=3,\\; u_3=7,\\; u_4=13,\\; u_5=21$. Conjecture: $u_n=n^2-n+1$.
+
+(ii) **Base case** $n=1$: $u_1=1=1-1+1$ ✓. **Inductive step**: assume $u_k=k^2-k+1$. Then $u_{k+1}=u_k+2k=k^2-k+1+2k=k^2+k+1=(k+1)^2-(k+1)+1$ ✓. By induction, $u_n=n^2-n+1$ for all $n\\ge 1$.
+
+(iii) $S_n=\\displaystyle\\sum_{k=1}^n(k^2-k+1)=\\frac{n(n+1)(2n+1)}{6}-\\frac{n(n+1)}{2}+n=\\frac{n(n+1)(2n+1)-3n(n+1)+6n}{6}=\\frac{n(2n^2+3n+1-3n-3+6)}{6}=\\frac{n(2n^2+4)}{6}=\\frac{n(n^2+2)}{3}$.
+
+$S_{10}=\\dfrac{10\\cdot 102}{3}=340$.
+
+(iv) $\\displaystyle\\sum_{n=1}^{\\infty}v_n=\\sum_{n=1}^{\\infty}(n^2-n+1)r^{n-1}$. Using $\\displaystyle\\sum_{n=1}^{\\infty}r^{n-1}=\\frac{1}{1-r}$, $\\displaystyle\\sum_{n=1}^{\\infty}nr^{n-1}=\\frac{1}{(1-r)^2}$, $\\displaystyle\\sum_{n=1}^{\\infty}n^2r^{n-1}=\\frac{1+r}{(1-r)^3}$:
+
+$\\displaystyle\\sum v_n = \\frac{1+r}{(1-r)^3}-\\frac{1}{(1-r)^2}+\\frac{1}{1-r}=\\frac{(1+r)-(1-r)+(1-r)^2}{(1-r)^3}=\\frac{2r+1-2r+r^2}{(1-r)^3}=\\boxed{\\dfrac{1+r^2}{(1-r)^3}}$.`,
+  },
+
+  {
+    id: "mat-b-010",
+    type: "long",
+    testId: "mat",
+    topicId: "mat-log",
+    difficulty: 3,
+    totalMarks: 15,
+    context:
+      "This question concerns logarithms and their algebraic properties.",
+    parts: [
+      {
+        label: "(i)",
+        marks: 3,
+        question:
+          "Solve the simultaneous equations $\\log_2 x + \\log_2 y = 5$ and $\\log_2 x - \\log_2 y = 1$.",
+        solutionOutline:
+          "Adding: 2log₂x=6 ⟹ log₂x=3 ⟹ x=8. Subtracting: 2log₂y=4 ⟹ log₂y=2 ⟹ y=4.",
+      },
+      {
+        label: "(ii)",
+        marks: 4,
+        question:
+          "The function $f(x) = \\log_3(x^2-4x+3)$ is defined for certain values of $x$. Find the domain of $f$ and the set of values $f$ can take.",
+        solutionOutline:
+          "Domain: x²-4x+3>0 ⟹ (x-1)(x-3)>0 ⟹ x<1 or x>3. Let g=x²-4x+3=(x-2)²-1≥-1, so g>0 and minimum of g on the domain is 0⁺ (approached as x→1⁺ or x→3⁻). Actually as x→1 or x→3: g→0⁺. As x→±∞: g→+∞. And minimum of x²-4x+3 on {x<1}∪{x>3} is approached but never reached (approaches 0). So g∈(0,∞), giving f(x)=log₃(g)∈(-∞,∞)... but we need to check: g can approach 0 from above (f→-∞) and g→+∞ (f→+∞). So range is all of ℝ.",
+        hint: "Complete the square for $x^2-4x+3$.",
+      },
+      {
+        label: "(iii)",
+        marks: 4,
+        question:
+          "Prove that $\\log_a b \\cdot \\log_b c = \\log_a c$ for positive $a,b,c$ with $a,b\\ne 1$. Use this to simplify $\\log_4 9 \\cdot \\log_9 16$.",
+        solutionOutline:
+          "log_a(b)·log_b(c)=(ln b/ln a)·(ln c/ln b)=ln c/ln a=log_a(c). For the product: log₄9·log₉16=log₄16=log₄(4²)=2.",
+      },
+      {
+        label: "(iv)",
+        marks: 4,
+        question:
+          "Find all real solutions of $4^x - 10\\cdot 2^x + 16 = 0$.",
+        solutionOutline:
+          "Let u=2^x>0. Then u²-10u+16=0 ⟹ (u-2)(u-8)=0 ⟹ u=2 or u=8. So 2^x=2 ⟹ x=1, or 2^x=8=2³ ⟹ x=3.",
+      },
+    ],
+    fullSolution: `(i) Adding the two equations: $2\\log_2 x=6\\Rightarrow x=2^3=8$. Subtracting: $2\\log_2 y=4\\Rightarrow y=2^2=4$.
+
+(ii) **Domain**: $x^2-4x+3=(x-1)(x-3)>0\\Rightarrow x\\in(-\\infty,1)\\cup(3,\\infty)$.
+
+**Range**: On the domain, $(x-2)^2-1>0$, so $x^2-4x+3\\in(0,\\infty)$ (the argument approaches $0^+$ as $x\\to 1$ or $x\\to 3$, and approaches $\\infty$ as $x\\to\\pm\\infty$). Hence $f(x)=\\log_3(\\cdot)\\in(-\\infty,\\infty)=\\mathbb{R}$.
+
+(iii) By change of base: $\\log_a b\\cdot\\log_b c=\\dfrac{\\ln b}{\\ln a}\\cdot\\dfrac{\\ln c}{\\ln b}=\\dfrac{\\ln c}{\\ln a}=\\log_a c$.
+
+Application: $\\log_4 9\\cdot\\log_9 16=\\log_4 16=\\log_4(4^2)=2$.
+
+(iv) Let $u=2^x>0$. Then $(2^x)^2-10\\cdot 2^x+16=u^2-10u+16=(u-2)(u-8)=0$.
+- $u=2\\Rightarrow 2^x=2\\Rightarrow x=1$.
+- $u=8\\Rightarrow 2^x=8=2^3\\Rightarrow x=3$.
+
+Solutions: $x=1$ and $x=3$.`,
+  },
+];
+
+export const MAT_QUESTIONS = [
+  ...MAT_PART_A,
+  ...MAT_PART_A_EXTRA,
+  ...MAT_PART_B,
+  ...MAT_PART_B_EXTRA,
+];

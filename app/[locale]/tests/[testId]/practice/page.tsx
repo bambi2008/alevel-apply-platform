@@ -1,12 +1,12 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { notFound } from "next/navigation";
+import { useState, useEffect, useCallback, use } from "react";
+import { notFound, useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { getTestById } from "@/lib/tests";
 import { MAT_QUESTIONS } from "@/lib/tests/questions/mat";
 import { STEP_QUESTIONS } from "@/lib/tests/questions/step";
-import { ENGAA_QUESTIONS } from "@/lib/tests/questions/engaa";
+import { ESAT_QUESTIONS } from "@/lib/tests/questions/esat";
 import type { Question, MCQQuestion, LongQuestion, GradingResult } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
 import type { GradeRequest, GradeResponse } from "@/app/api/grade-answer/route";
@@ -14,7 +14,7 @@ import type { GradeRequest, GradeResponse } from "@/app/api/grade-answer/route";
 const QUESTION_BANKS: Record<string, Question[]> = {
   mat: MAT_QUESTIONS,
   step: STEP_QUESTIONS,
-  engaa: ENGAA_QUESTIONS,
+  esat: ESAT_QUESTIONS,
 };
 
 type PracticeMode = "topic" | "mixed";
@@ -28,14 +28,17 @@ interface SessionResult {
   max?: number;
 }
 
-export default function PracticePage({ params }: { params: { testId: string } }) {
-  const test = getTestById(params.testId);
+export default function PracticePage({ params }: { params: Promise<{ testId: string }> }) {
+  const { testId } = use(params);
+  const searchParams = useSearchParams();
+  const test = getTestById(testId);
   if (!test || !test.hasQuestionBank) notFound();
 
-  const allQuestions = QUESTION_BANKS[params.testId] ?? [];
+  const allQuestions = QUESTION_BANKS[testId] ?? [];
 
-  const [mode, setMode] = useState<PracticeMode>("mixed");
-  const [topicId, setTopicId] = useState<string>("all");
+  const initialTopic = searchParams.get("topic") ?? "all";
+  const [mode, setMode] = useState<PracticeMode>(initialTopic !== "all" ? "topic" : "mixed");
+  const [topicId, setTopicId] = useState<string>(initialTopic);
   const [questionCount, setQuestionCount] = useState(10);
   const [sessionState, setSessionState] = useState<SessionState>("select");
   const [queue, setQueue] = useState<Question[]>([]);
@@ -47,8 +50,13 @@ export default function PracticePage({ params }: { params: { testId: string } })
     if (topicId !== "all") {
       pool = allQuestions.filter((q) => q.topicId === topicId);
     }
-    // Shuffle and take N
-    const shuffled = [...pool].sort(() => Math.random() - 0.5).slice(0, questionCount);
+    // Weighted selection: difficulty 3 → 3×, difficulty 2 → 2×, difficulty 1 → 1×
+    const diffWeight = (d: number) => (d === 3 ? 3 : d === 2 ? 2 : 1);
+    const shuffled = [...pool]
+      .map((q) => ({ q, score: Math.random() * diffWeight(q.difficulty) }))
+      .sort((a, b) => b.score - a.score)
+      .map((w) => w.q)
+      .slice(0, questionCount);
     setQueue(shuffled);
     setCurrentIdx(0);
     setResults([]);
@@ -84,7 +92,7 @@ export default function PracticePage({ params }: { params: { testId: string } })
   if (sessionState === "complete") {
     return (
       <SessionSummary
-        testId={params.testId}
+        testId={testId}
         results={results}
         queue={queue}
         onRestart={() => setSessionState("select")}
@@ -98,7 +106,7 @@ export default function PracticePage({ params }: { params: { testId: string } })
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
       <div className="flex items-center justify-between mb-6">
-        <Link href={`/tests/${params.testId}`} className="text-sm text-neutral-500 hover:text-neutral-800">
+        <Link href={`/tests/${testId}`} className="text-sm text-neutral-500 hover:text-neutral-800">
           ← {test.abbr} 备考详情
         </Link>
         <span className="text-sm text-neutral-500">
@@ -115,6 +123,7 @@ export default function PracticePage({ params }: { params: { testId: string } })
 
       {currentQ.type === "mcq" ? (
         <MCQCard
+          key={currentQ.id}
           question={currentQ as MCQQuestion}
           onAnswer={(correct) =>
             recordResult({ questionId: currentQ.id, type: "mcq", correct })
@@ -122,6 +131,7 @@ export default function PracticePage({ params }: { params: { testId: string } })
         />
       ) : (
         <LongAnswerCard
+          key={currentQ.id}
           question={currentQ as LongQuestion}
           onSubmit={(earned, max) =>
             recordResult({ questionId: currentQ.id, type: "long", earned, max })

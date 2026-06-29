@@ -201,39 +201,63 @@
       "on-track": { "label": "On track", "desc": "Following the milestones steadily — focus on personal statement quality and complete documentation." },
       "late": { "label": "Time is tight", "desc": "Deadlines are close — prioritise getting core materials submitted before any further optimisation." }
     },
-    "ms.research.title": "Research universities & courses",
-    "ms.research.desc": "Identify target universities and courses; gather entry requirements, tuition, and rankings.",
-    "ms.research.earlyTip": "Ahead of schedule: read course syllabuses in depth and prepare specific questions for open days.",
-    "ms.research.lateTip": "Time limited: focus on 5–8 schools you already have in mind and gather their key requirements quickly.",
-    "ms.ucasReg.title": "Register a UCAS account",
-    "ms.ucasReg.desc": "Create an account on the UCAS website, fill in your basic details, and prepare to start your application.",
-    "ms.ucasReg.lateTip": "Register now — account activation takes time; don't leave it until the final week.",
-    "ms.oxbridge.title": "Oxbridge deadline (15 Oct)",
-    "ms.oxbridge.desc": "UCAS applications for Oxford or Cambridge must be submitted by this date.",
-    "ms.oxbridge.earlyTip": "If Oxbridge is on your list, start preparing admissions tests (MAT/STEP/TSA etc.) now.",
-    "ms.oxbridge.lateTip": "If you're applying to Oxbridge your personal statement must be finalised immediately — no delay.",
-    "ms.psDraft.title": "Personal statement first draft",
-    "ms.psDraft.desc": "Complete a first draft of your UCAS personal statement (3 structured questions) to allow revision time.",
-    "ms.psDraft.earlyTip": "Write multiple versions to compare, or ask a teacher or peer for early feedback.",
-    "ms.psDraft.lateTip": "Go straight to a final draft — make sure the structure is complete before polishing wording.",
-    "ms.hkOpen.title": "HK applications open",
-    "ms.hkOpen.desc": "HKU, HKUST and other universities typically open direct-admission portals from November — watch official websites.",
-    "ms.ucasMain.title": "UCAS main deadline (15 Jan)",
-    "ms.ucasMain.desc": "Deadline for all non-Oxbridge UK UCAS choices; all five choices must be submitted by this date.",
-    "ms.ucasMain.earlyTip": "Submitting early is possible — some universities review on a rolling basis.",
-    "ms.ucasMain.lateTip": "Under two months to go — lock in your personal statement and references now, no margin for delay.",
-    "ms.hkDeadline.title": "HK direct-admission deadline",
-    "ms.hkDeadline.desc": "Most HK universities close direct admission between March and April — confirm each school's own date.",
-    "ms.ucasDecisions.title": "UCAS decisions arriving",
-    "ms.ucasDecisions.desc": "Offers and rejections will appear in UCAS Track — keep notifications on.",
-    "ms.ucasReply.title": "UCAS reply deadline",
-    "ms.ucasReply.desc": "Choose your Firm and Insurance universities in UCAS before the reply deadline.",
-    "ms.exams.title": "A-Level exam season",
-    "ms.exams.desc": "May–June A-Level exams determine whether you meet the conditions of any conditional offer.",
-    "ms.exams.earlyTip": "Well prepared — maintain momentum and practise past papers to optimise timing.",
-    "ms.exams.lateTip": "Intensive revision: focus on high-frequency topics and ensure core content is solid.",
-    "ms.results.title": "Results day & confirmation",
-    "ms.results.desc": "Grades released; conditional offers confirmed. If grades fall short, Clearing opens immediately."
+    "ms": {
+      "research": {
+        "title": "Research universities & courses",
+        "desc": "Identify target universities and courses; gather entry requirements, tuition, and rankings.",
+        "earlyTip": "Ahead of schedule: read course syllabuses in depth and prepare specific questions for open days.",
+        "lateTip": "Time limited: focus on 5–8 schools you already have in mind and gather their key requirements quickly."
+      },
+      "ucasReg": {
+        "title": "Register a UCAS account",
+        "desc": "Create an account on the UCAS website, fill in your basic details, and prepare to start your application.",
+        "lateTip": "Register now — account activation takes time; don't leave it until the final week."
+      },
+      "oxbridge": {
+        "title": "Oxbridge deadline (15 Oct)",
+        "desc": "UCAS applications for Oxford or Cambridge must be submitted by this date.",
+        "earlyTip": "If Oxbridge is on your list, start preparing admissions tests (MAT/STEP/TSA etc.) now.",
+        "lateTip": "If you're applying to Oxbridge your personal statement must be finalised immediately — no delay."
+      },
+      "psDraft": {
+        "title": "Personal statement first draft",
+        "desc": "Complete a first draft of your UCAS personal statement (3 structured questions) to allow revision time.",
+        "earlyTip": "Write multiple versions to compare, or ask a teacher or peer for early feedback.",
+        "lateTip": "Go straight to a final draft — make sure the structure is complete before polishing wording."
+      },
+      "hkOpen": {
+        "title": "HK applications open",
+        "desc": "HKU, HKUST and other universities typically open direct-admission portals from November — watch official websites."
+      },
+      "ucasMain": {
+        "title": "UCAS main deadline (15 Jan)",
+        "desc": "Deadline for all non-Oxbridge UK UCAS choices; all five choices must be submitted by this date.",
+        "earlyTip": "Submitting early is possible — some universities review on a rolling basis.",
+        "lateTip": "Under two months to go — lock in your personal statement and references now, no margin for delay."
+      },
+      "hkDeadline": {
+        "title": "HK direct-admission deadline",
+        "desc": "Most HK universities close direct admission between March and April — confirm each school's own date."
+      },
+      "ucasDecisions": {
+        "title": "UCAS decisions arriving",
+        "desc": "Offers and rejections will appear in UCAS Track — keep notifications on."
+      },
+      "ucasReply": {
+        "title": "UCAS reply deadline",
+        "desc": "Choose your Firm and Insurance universities in UCAS before the reply deadline."
+      },
+      "exams": {
+        "title": "A-Level exam season",
+        "desc": "May–June A-Level exams determine whether you meet the conditions of any conditional offer.",
+        "earlyTip": "Well prepared — maintain momentum and practise past papers to optimise timing.",
+        "lateTip": "Intensive revision: focus on high-frequency topics and ensure core content is solid."
+      },
+      "results": {
+        "title": "Results day & confirmation",
+        "desc": "Grades released; conditional offers confirmed. If grades fall short, Clearing opens immediately."
+      }
+    }
   },
   "universities": {
     "title": "University Database",
