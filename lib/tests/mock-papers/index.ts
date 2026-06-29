@@ -3,6 +3,7 @@ import type { MCQQuestion } from "@/lib/tests/questions/types";
 import { ESAT_MK1_MATH, ESAT_MK1_PHYS } from "./esat-mock-1";
 import { ESAT_MK2_MATH, ESAT_MK2_PHYS } from "./esat-mock-2";
 import { ESAT_MK3_MATH, ESAT_MK3_CHEM } from "./esat-mock-3";
+import { ESAT_MK4_MATH, ESAT_MK4_BIO } from "./esat-mock-4";
 
 export interface MockModule {
   id: string;
@@ -96,7 +97,32 @@ export const ESAT_MOCK_3: MockPaper = {
   ],
 };
 
-const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3];
+export const ESAT_MOCK_4: MockPaper = {
+  id: "esat-mock-4",
+  testId: "esat",
+  title: "ESAT 模拟卷四（生物方向）",
+  titleEn: "ESAT Mock Paper 4 (Biology)",
+  description:
+    "面向生物方向考生（自然科学生物 / 兽医）的完整模拟卷：数学（模块一）+ 生物（模块二），每模块 27 题、40 分钟独立计时、五选一、无负分。题目全新原创，与练习题库及其他模拟卷均不重复。",
+  modules: [
+    {
+      id: "math",
+      title: "数学（模块一）",
+      titleEn: "Mathematics (Module 1)",
+      durationSec: 40 * 60,
+      questions: ESAT_MK4_MATH,
+    },
+    {
+      id: "biology",
+      title: "生物（模块二）",
+      titleEn: "Biology (Module 2)",
+      durationSec: 40 * 60,
+      questions: ESAT_MK4_BIO,
+    },
+  ],
+};
+
+const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4];
 
 export function getMockPapersForTest(testId: string): MockPaper[] {
   return ALL_MOCK_PAPERS.filter((p) => p.testId === testId);
