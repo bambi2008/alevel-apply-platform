@@ -7,11 +7,13 @@ import { STEP_QUESTIONS } from "@/lib/tests/questions/step";
 import { ESAT_QUESTIONS } from "@/lib/tests/questions/esat";
 import type { Question } from "@/lib/tests/questions/types";
 import { getTestById } from "@/lib/tests";
+import { getAllMockQuestions } from "@/lib/tests/mock-papers";
 
 const ALL_QUESTIONS: Question[] = [
   ...MAT_QUESTIONS,
   ...STEP_QUESTIONS,
   ...ESAT_QUESTIONS,
+  ...getAllMockQuestions(), // 完整模拟卷题目（不进练习库，但回看/分析需可反查）
 ];
 
 // O(1) 检索：questionId -> Question

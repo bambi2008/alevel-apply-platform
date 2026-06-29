@@ -5,6 +5,8 @@ import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { getTestById, type AdmissionsTest } from "@/lib/tests";
 import { getKnowledgeByTopicId } from "@/lib/tests/knowledge";
+import { ExamTimer, getTimerPresets } from "@/components/exam-timer";
+import { getMockPapersForTest } from "@/lib/tests/mock-papers";
 
 export default function TestDetailPage({
   params,
@@ -366,6 +368,33 @@ function PracticeTab({ test }: { test: AdmissionsTest }) {
         </Link>
       </div>
 
+      {/* 完整模拟卷 */}
+      {getMockPapersForTest(test.id).length > 0 && (
+        <div className="rounded-xl border border-indigo-100 bg-indigo-50/50 px-4 py-4">
+          <h4 className="font-semibold text-indigo-900 text-sm mb-1">📝 完整模拟卷（计时考试）</h4>
+          <p className="text-xs text-indigo-700 mb-3">
+            按真实考试结构组卷、分模块独立计时、全新原创题（未在练习中出现），模拟真实考场。
+          </p>
+          <div className="space-y-2">
+            {getMockPapersForTest(test.id).map((paper) => (
+              <Link
+                key={paper.id}
+                href={`/tests/${test.id}/paper/${paper.id}`}
+                className="flex items-center justify-between rounded-lg border border-indigo-200 bg-white px-3 py-2.5 hover:bg-indigo-50 transition group"
+              >
+                <div>
+                  <span className="text-sm font-medium text-indigo-900">{paper.title}</span>
+                  <p className="text-xs text-indigo-500 mt-0.5">
+                    {paper.modules.map((m) => `${m.title} ${Math.round(m.durationSec / 60)}分钟`).join(" · ")}
+                  </p>
+                </div>
+                <span className="text-indigo-400 text-sm group-hover:text-indigo-700">开始 →</span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Past papers */}
       <div className="rounded-xl border border-amber-100 bg-amber-50 px-4 py-4">
         <h4 className="font-semibold text-amber-900 text-sm mb-2">
@@ -404,6 +433,15 @@ function PracticeTab({ test }: { test: AdmissionsTest }) {
             前往官方真题页面 ↗
           </a>
         )}
+      </div>
+
+      {/* 独立计时器：对照官方真题 PDF 限时作答 */}
+      <div className="rounded-xl border border-blue-100 bg-blue-50/40 px-4 py-4">
+        <h4 className="font-semibold text-neutral-800 text-sm mb-1">⏱️ 限时计时器</h4>
+        <p className="text-xs text-neutral-500 mb-3">
+          打开上方官方真题 PDF，选择对应时长开始计时，模拟真实考场节奏（不查资料、一次做完）。
+        </p>
+        <ExamTimer presets={getTimerPresets(test.id)} />
       </div>
 
       <div className="rounded-xl border border-neutral-200 bg-neutral-50 px-4 py-3 text-xs text-neutral-500">
