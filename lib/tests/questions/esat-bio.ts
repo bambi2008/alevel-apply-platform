@@ -1565,5 +1565,788 @@ export const ESAT_BIO_GENETICS: MCQQuestion[] = [
   },
 ];
 
-// 聚合（后续 bio3 在此累加）
-export const ESAT_BIO_QUESTIONS = [...ESAT_BIO_CELL, ...ESAT_BIO_GENETICS];
+// ════════════════════════════════════════════════════════════════════════
+//  esat-bio3 · 生理学与生态学 (Physiology & Ecology) — 40 题
+// ════════════════════════════════════════════════════════════════════════
+export const ESAT_BIO_PHYSIOLOGY: MCQQuestion[] = [
+  // ── 光合作用 (6) ──────────────────────────────────────────────────────
+  {
+    id: "esat-b-081",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "Which word equation correctly summarises photosynthesis?",
+    options: [
+      { key: "A", text: "glucose + oxygen → carbon dioxide + water" },
+      { key: "B", text: "carbon dioxide + water → glucose + oxygen" },
+      { key: "C", text: "glucose → lactate + energy" },
+      { key: "D", text: "carbon dioxide + glucose → water + oxygen" },
+    ],
+    answer: "B",
+    solution:
+      "Photosynthesis uses light energy (absorbed by chlorophyll) to convert carbon dioxide and water into glucose and oxygen: $6CO_2 + 6H_2O \\rightarrow C_6H_{12}O_6 + 6O_2$.",
+  },
+  {
+    id: "esat-b-082",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "In a chloroplast, the light-dependent reactions take place in the:",
+    options: [
+      { key: "A", text: "Stroma" },
+      { key: "B", text: "Thylakoid membranes" },
+      { key: "C", text: "Outer membrane" },
+      { key: "D", text: "Intermembrane space" },
+    ],
+    answer: "B",
+    solution:
+      "The light-dependent reactions occur on the thylakoid membranes (which hold chlorophyll); the light-independent reactions (Calvin cycle) occur in the stroma.",
+  },
+  {
+    id: "esat-b-083",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "A plant is photosynthesising in bright light with plenty of CO₂ at 10 °C. Increasing the temperature to 25 °C raises the rate. The factor that was limiting the rate at 10 °C was most likely:",
+    options: [
+      { key: "A", text: "Light intensity" },
+      { key: "B", text: "Carbon dioxide concentration" },
+      { key: "C", text: "Temperature" },
+      { key: "D", text: "Water" },
+    ],
+    answer: "C",
+    solution:
+      "Light and CO₂ were already plentiful, so they were not limiting. Raising temperature increased the rate, so temperature (affecting enzyme activity in the Calvin cycle) was the limiting factor at 10 °C.",
+  },
+  {
+    id: "esat-b-084",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "What is the main pigment that absorbs light for photosynthesis?",
+    options: [
+      { key: "A", text: "Haemoglobin" },
+      { key: "B", text: "Chlorophyll" },
+      { key: "C", text: "Melanin" },
+      { key: "D", text: "Carotene (only)" },
+    ],
+    answer: "B",
+    solution:
+      "Chlorophyll is the principal photosynthetic pigment, absorbing mainly red and blue light and reflecting green. (Accessory pigments like carotene help but chlorophyll is the main one.)",
+  },
+  {
+    id: "esat-b-085",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "The products of the light-dependent stage that are passed to the light-independent (Calvin) stage are:",
+    options: [
+      { key: "A", text: "Oxygen and water" },
+      { key: "B", text: "ATP and reduced NADP" },
+      { key: "C", text: "Glucose and carbon dioxide" },
+      { key: "D", text: "Carbon dioxide and oxygen" },
+    ],
+    answer: "B",
+    solution:
+      "The light-dependent reactions produce ATP and reduced NADP (NADPH), which supply energy and reducing power to fix CO₂ into carbohydrate in the Calvin cycle. Oxygen is released as a by-product of photolysis.",
+  },
+  {
+    id: "esat-b-086",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Oxygen released during photosynthesis comes from the splitting of which molecule?",
+    options: [
+      { key: "A", text: "Carbon dioxide" },
+      { key: "B", text: "Glucose" },
+      { key: "C", text: "Water (photolysis)" },
+      { key: "D", text: "ATP" },
+    ],
+    answer: "C",
+    solution:
+      "In the light-dependent stage, light energy splits water (photolysis): $2H_2O \\rightarrow 4H^+ + 4e^- + O_2$. The oxygen released is derived from water, not CO₂.",
+  },
+
+  // ── 呼吸作用 (6) ──────────────────────────────────────────────────────
+  {
+    id: "esat-b-087",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "Which equation summarises aerobic respiration?",
+    options: [
+      { key: "A", text: "glucose + oxygen → carbon dioxide + water (+ energy)" },
+      { key: "B", text: "glucose → ethanol + carbon dioxide (+ energy)" },
+      { key: "C", text: "carbon dioxide + water → glucose + oxygen" },
+      { key: "D", text: "glucose → lactate (+ energy)" },
+    ],
+    answer: "A",
+    solution:
+      "Aerobic respiration: $C_6H_{12}O_6 + 6O_2 \\rightarrow 6CO_2 + 6H_2O$, releasing energy used to make ATP. Options B and D are anaerobic; C is photosynthesis.",
+  },
+  {
+    id: "esat-b-088",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Glycolysis, the first stage of respiration, occurs in the … and produces a net gain of … ATP per glucose.",
+    options: [
+      { key: "A", text: "mitochondrion; 2" },
+      { key: "B", text: "cytoplasm; 2" },
+      { key: "C", text: "cytoplasm; 38" },
+      { key: "D", text: "nucleus; 4" },
+    ],
+    answer: "B",
+    solution:
+      "Glycolysis takes place in the cytoplasm, splitting glucose into two pyruvate molecules with a net yield of 2 ATP (and reduced NAD). The later stages occur in the mitochondria.",
+  },
+  {
+    id: "esat-b-089",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Compared with aerobic respiration, anaerobic respiration of glucose releases much less energy because:",
+    options: [
+      { key: "A", text: "Glucose is not used" },
+      { key: "B", text: "The glucose is only partially broken down, leaving energy in lactate or ethanol" },
+      { key: "C", text: "It produces more carbon dioxide" },
+      { key: "D", text: "It occurs in the nucleus" },
+    ],
+    answer: "B",
+    solution:
+      "Without oxygen, glucose is only partly broken down (to lactate in animals, or ethanol + CO₂ in yeast). Much chemical energy remains locked in these products, so only ~2 ATP per glucose is made versus far more aerobically.",
+  },
+  {
+    id: "esat-b-090",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "Anaerobic respiration in human muscle cells produces:",
+    options: [
+      { key: "A", text: "Ethanol and carbon dioxide" },
+      { key: "B", text: "Lactate (lactic acid)" },
+      { key: "C", text: "Glucose and oxygen" },
+      { key: "D", text: "Water only" },
+    ],
+    answer: "B",
+    solution:
+      "In animal cells, anaerobic respiration converts pyruvate to lactate. (Yeast and plants instead produce ethanol and carbon dioxide.)",
+  },
+  {
+    id: "esat-b-091",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "Most of the ATP produced in aerobic respiration is generated by oxidative phosphorylation, which takes place on the:",
+    options: [
+      { key: "A", text: "Cytoplasmic ribosomes" },
+      { key: "B", text: "Inner mitochondrial membrane (cristae)" },
+      { key: "C", text: "Nuclear membrane" },
+      { key: "D", text: "Thylakoid membrane" },
+    ],
+    answer: "B",
+    solution:
+      "Electrons from reduced NAD/FAD pass along the electron transport chain on the inner mitochondrial membrane (cristae), driving chemiosmotic ATP synthesis — the bulk of the cell's ATP.",
+  },
+  {
+    id: "esat-b-092",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "A yeast culture is respiring. When oxygen is removed, the volume of CO₂ produced per minute stays similar but no water is formed and far less ATP is made. This is because the yeast switches to:",
+    options: [
+      { key: "A", text: "Photosynthesis" },
+      { key: "B", text: "Alcoholic (ethanol) fermentation" },
+      { key: "C", text: "Lactate fermentation" },
+      { key: "D", text: "Active transport" },
+    ],
+    answer: "B",
+    solution:
+      "Yeast performs alcoholic fermentation anaerobically: glucose → ethanol + CO₂ + 2 ATP. CO₂ is still released (so the gas volume is similar) but no water forms and the ATP yield is small. Lactate fermentation (no CO₂) occurs in animals, not yeast.",
+  },
+
+  // ── 气体交换 (5) ──────────────────────────────────────────────────────
+  {
+    id: "esat-b-093",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "Gas exchange in the lungs occurs across the:",
+    options: [
+      { key: "A", text: "Trachea" },
+      { key: "B", text: "Bronchi" },
+      { key: "C", text: "Alveoli" },
+      { key: "D", text: "Diaphragm" },
+    ],
+    answer: "C",
+    solution:
+      "The alveoli are the tiny air sacs where oxygen diffuses into the blood and carbon dioxide diffuses out. The trachea and bronchi are conducting airways; the diaphragm is a ventilation muscle.",
+  },
+  {
+    id: "esat-b-094",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Which feature of alveoli does NOT directly increase the rate of gas exchange?",
+    options: [
+      { key: "A", text: "A very large total surface area" },
+      { key: "B", text: "Walls one cell thick (short diffusion distance)" },
+      { key: "C", text: "A dense capillary network maintaining a steep concentration gradient" },
+      { key: "D", text: "A thick layer of cartilage around each alveolus" },
+    ],
+    answer: "D",
+    solution:
+      "Large surface area, thin walls and a good blood supply (steep gradient) all speed diffusion (Fick's law). A thick cartilage layer would increase diffusion distance and slow exchange — alveoli do not have one.",
+  },
+  {
+    id: "esat-b-095",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "According to Fick's law, the rate of diffusion across a surface is increased by:",
+    options: [
+      { key: "A", text: "A smaller surface area" },
+      { key: "B", text: "A greater diffusion distance" },
+      { key: "C", text: "A steeper concentration gradient" },
+      { key: "D", text: "A thicker exchange surface" },
+    ],
+    answer: "C",
+    solution:
+      "Rate of diffusion ∝ (surface area × concentration gradient) ÷ diffusion distance. A steeper gradient increases the rate; larger area and shorter distance also help, while greater distance/thicker surfaces reduce it.",
+  },
+  {
+    id: "esat-b-096",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "During inhalation (breathing in) in humans:",
+    options: [
+      { key: "A", text: "The diaphragm relaxes and moves up" },
+      { key: "B", text: "The diaphragm contracts and flattens, increasing thorax volume" },
+      { key: "C", text: "The rib cage moves down and in" },
+      { key: "D", text: "Pressure in the lungs rises above atmospheric pressure" },
+    ],
+    answer: "B",
+    solution:
+      "On inhalation the diaphragm contracts and flattens and the rib cage moves up and out, increasing thoracic volume. This lowers lung pressure below atmospheric, so air flows in.",
+  },
+  {
+    id: "esat-b-097",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "Insects have a very high surface-area-to-volume ratio in their tracheal system. Why is gas exchange by simple diffusion sufficient for a small insect but not for a large mammal?",
+    options: [
+      { key: "A", text: "Insects do not respire" },
+      { key: "B", text: "Diffusion distances in a small insect are short, so oxygen reaches all cells quickly; a large mammal needs a circulatory system and lungs" },
+      { key: "C", text: "Mammals do not need oxygen" },
+      { key: "D", text: "Insects produce their own oxygen" },
+    ],
+    answer: "B",
+    solution:
+      "In small organisms, diffusion distances are short and the SA:V is high, so direct diffusion (via tracheae) supplies enough oxygen. Large animals have small SA:V and long diffusion distances, requiring specialised gas-exchange surfaces (lungs) plus a transport (circulatory) system.",
+  },
+
+  // ── 循环系统 (6) ──────────────────────────────────────────────────────
+  {
+    id: "esat-b-098",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "Which chamber of the human heart has the thickest muscular wall?",
+    options: [
+      { key: "A", text: "Right atrium" },
+      { key: "B", text: "Left atrium" },
+      { key: "C", text: "Right ventricle" },
+      { key: "D", text: "Left ventricle" },
+    ],
+    answer: "D",
+    solution:
+      "The left ventricle pumps blood at high pressure all around the body, so it has the thickest, most muscular wall. The right ventricle pumps only to the nearby lungs, so its wall is thinner.",
+  },
+  {
+    id: "esat-b-099",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Which blood vessel carries oxygenated blood AWAY from the heart to the body?",
+    options: [
+      { key: "A", text: "Pulmonary artery" },
+      { key: "B", text: "Aorta" },
+      { key: "C", text: "Vena cava" },
+      { key: "D", text: "Pulmonary vein" },
+    ],
+    answer: "B",
+    solution:
+      "The aorta carries oxygenated blood from the left ventricle to the body. The pulmonary artery (deoxygenated) goes to the lungs; the vena cava and pulmonary vein return blood TO the heart.",
+  },
+  {
+    id: "esat-b-100",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Why do veins contain valves whereas arteries generally do not?",
+    options: [
+      { key: "A", text: "Veins carry blood at low pressure, so valves prevent backflow" },
+      { key: "B", text: "Veins carry blood at very high pressure" },
+      { key: "C", text: "Arteries are too narrow for valves" },
+      { key: "D", text: "Valves help arteries stretch" },
+    ],
+    answer: "A",
+    solution:
+      "Blood in veins is at low pressure, so semilunar valves prevent it flowing backwards, aiding return to the heart (helped by skeletal muscle contraction). Arterial blood is at high pressure and flows in one direction, so valves are unnecessary (except at the heart exits).",
+  },
+  {
+    id: "esat-b-101",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Capillaries are well adapted for exchange because they:",
+    options: [
+      { key: "A", text: "Have thick muscular walls" },
+      { key: "B", text: "Have walls one cell thick, giving a short diffusion distance" },
+      { key: "C", text: "Contain valves" },
+      { key: "D", text: "Carry blood at the highest pressure in the body" },
+    ],
+    answer: "B",
+    solution:
+      "Capillary walls are a single endothelial cell thick, minimising diffusion distance for exchange of O₂, CO₂, nutrients and wastes between blood and tissues. Their large total number also provides a big surface area.",
+  },
+  {
+    id: "esat-b-102",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "Mammals have a 'double circulation'. Its main advantage over a single circulation is that:",
+    options: [
+      { key: "A", text: "Blood passes through the heart only once per circuit" },
+      { key: "B", text: "Blood pressure can be kept high in the systemic circuit, delivering oxygen to tissues rapidly" },
+      { key: "C", text: "Less oxygen is needed" },
+      { key: "D", text: "The heart has only two chambers" },
+    ],
+    answer: "B",
+    solution:
+      "In a double circulation blood is returned to the heart and re-pressurised after the lungs, so it can be pumped around the body at high pressure. This allows fast delivery of oxygen and nutrients, supporting the high metabolic rate of mammals.",
+  },
+  {
+    id: "esat-b-103",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "Which component of blood is mainly responsible for transporting oxygen?",
+    options: [
+      { key: "A", text: "Plasma" },
+      { key: "B", text: "Red blood cells (containing haemoglobin)" },
+      { key: "C", text: "White blood cells" },
+      { key: "D", text: "Platelets" },
+    ],
+    answer: "B",
+    solution:
+      "Red blood cells contain haemoglobin, which binds oxygen to form oxyhaemoglobin for transport. White cells fight infection; platelets aid clotting; plasma carries dissolved substances and most CO₂.",
+  },
+
+  // ── 神经系统 (5) ──────────────────────────────────────────────────────
+  {
+    id: "esat-b-104",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "What is the correct order of components in a simple reflex arc?",
+    options: [
+      { key: "A", text: "Receptor → sensory neurone → relay neurone → motor neurone → effector" },
+      { key: "B", text: "Effector → motor neurone → relay neurone → sensory neurone → receptor" },
+      { key: "C", text: "Receptor → motor neurone → sensory neurone → effector" },
+      { key: "D", text: "Sensory neurone → receptor → effector → motor neurone" },
+    ],
+    answer: "A",
+    solution:
+      "A stimulus is detected by a receptor; the impulse passes along a sensory neurone to a relay neurone in the CNS, then along a motor neurone to an effector (muscle or gland) which responds.",
+  },
+  {
+    id: "esat-b-105",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "The myelin sheath around some neurones speeds up nerve impulse conduction by:",
+    options: [
+      { key: "A", text: "Allowing the impulse to 'jump' between nodes of Ranvier (saltatory conduction)" },
+      { key: "B", text: "Releasing more neurotransmitter" },
+      { key: "C", text: "Increasing the diameter of the axon only" },
+      { key: "D", text: "Producing ATP" },
+    ],
+    answer: "A",
+    solution:
+      "Myelin insulates the axon, so the action potential is regenerated only at the gaps (nodes of Ranvier) and effectively jumps from node to node — saltatory conduction — which is much faster than continuous conduction.",
+  },
+  {
+    id: "esat-b-106",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "Why does a nerve impulse cross a synapse in one direction only?",
+    options: [
+      { key: "A", text: "The axon is myelinated" },
+      { key: "B", text: "Only the presynaptic neurone releases neurotransmitter, and only the postsynaptic membrane has the receptors" },
+      { key: "C", text: "The synapse is too narrow for two-way travel" },
+      { key: "D", text: "Neurotransmitter is never broken down" },
+    ],
+    answer: "B",
+    solution:
+      "Neurotransmitter vesicles are present only in the presynaptic neurone, and matching receptors are only on the postsynaptic membrane. So transmission across the synaptic cleft can occur in one direction only.",
+  },
+  {
+    id: "esat-b-107",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "The central nervous system (CNS) consists of the:",
+    options: [
+      { key: "A", text: "Brain and spinal cord" },
+      { key: "B", text: "Sensory and motor neurones" },
+      { key: "C", text: "Heart and lungs" },
+      { key: "D", text: "Receptors and effectors" },
+    ],
+    answer: "A",
+    solution:
+      "The CNS comprises the brain and spinal cord. Neurones connecting the CNS to the rest of the body form the peripheral nervous system.",
+  },
+  {
+    id: "esat-b-108",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "At a synapse, calcium ions (Ca²⁺) entering the presynaptic terminal trigger:",
+    options: [
+      { key: "A", text: "Synthesis of DNA" },
+      { key: "B", text: "Fusion of vesicles with the membrane, releasing neurotransmitter by exocytosis" },
+      { key: "C", text: "Breakdown of the axon" },
+      { key: "D", text: "Active transport of glucose" },
+    ],
+    answer: "B",
+    solution:
+      "When the action potential reaches the synaptic knob, voltage-gated Ca²⁺ channels open; the influx of Ca²⁺ causes neurotransmitter vesicles to fuse with the presynaptic membrane and release their contents into the cleft by exocytosis.",
+  },
+
+  // ── 激素与稳态 (5) ────────────────────────────────────────────────────
+  {
+    id: "esat-b-109",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "Which hormone lowers blood glucose concentration?",
+    options: [
+      { key: "A", text: "Glucagon" },
+      { key: "B", text: "Insulin" },
+      { key: "C", text: "Adrenaline" },
+      { key: "D", text: "Testosterone" },
+    ],
+    answer: "B",
+    solution:
+      "Insulin, secreted by the β-cells of the pancreas, lowers blood glucose by promoting glucose uptake by cells and its conversion to glycogen in the liver. Glucagon raises blood glucose.",
+  },
+  {
+    id: "esat-b-110",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "After a meal high in carbohydrate, blood glucose rises. The body's response is to release insulin, which causes the liver to:",
+    options: [
+      { key: "A", text: "Convert glycogen to glucose" },
+      { key: "B", text: "Convert glucose to glycogen (glycogenesis)" },
+      { key: "C", text: "Stop respiring" },
+      { key: "D", text: "Release glucagon" },
+    ],
+    answer: "B",
+    solution:
+      "Insulin stimulates the liver and muscle cells to take up glucose and store it as glycogen (glycogenesis), lowering blood glucose back toward the set point.",
+  },
+  {
+    id: "esat-b-111",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Homeostatic control of blood glucose is an example of negative feedback. This means that:",
+    options: [
+      { key: "A", text: "A change is amplified, moving further from the set point" },
+      { key: "B", text: "A deviation from the set point triggers a response that reverses the change" },
+      { key: "C", text: "No correction occurs" },
+      { key: "D", text: "The set point is permanently lowered" },
+    ],
+    answer: "B",
+    solution:
+      "In negative feedback, a deviation from the norm is detected and triggers a corrective response that returns the variable toward the set point — e.g. high glucose → insulin → glucose falls.",
+  },
+  {
+    id: "esat-b-112",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "Compared with nervous control, hormonal (endocrine) control is generally:",
+    options: [
+      { key: "A", text: "Faster and shorter-lasting" },
+      { key: "B", text: "Slower but longer-lasting, with widespread effects" },
+      { key: "C", text: "Only used in plants" },
+      { key: "D", text: "Carried along neurones" },
+    ],
+    answer: "B",
+    solution:
+      "Hormones travel in the blood, so responses are slower to begin but tend to be longer-lasting and can affect many target organs. Nervous responses are rapid, brief and localised.",
+  },
+  {
+    id: "esat-b-113",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "In type 1 diabetes the body cannot produce insulin. After a sugary meal, an untreated type 1 diabetic would show blood glucose that:",
+    options: [
+      { key: "A", text: "Falls rapidly below normal" },
+      { key: "B", text: "Rises and stays high for much longer than in a non-diabetic" },
+      { key: "C", text: "Stays exactly constant" },
+      { key: "D", text: "Is unaffected by the meal" },
+    ],
+    answer: "B",
+    solution:
+      "Without insulin, cells cannot take up glucose efficiently and the liver does not store it as glycogen, so blood glucose rises higher and remains elevated for far longer than normal (hyperglycaemia).",
+  },
+
+  // ── 生态学：种群与生态系统 (7) ────────────────────────────────────────
+  {
+    id: "esat-b-114",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "In a food chain, organisms that make their own food by photosynthesis are called:",
+    options: [
+      { key: "A", text: "Producers" },
+      { key: "B", text: "Primary consumers" },
+      { key: "C", text: "Decomposers" },
+      { key: "D", text: "Secondary consumers" },
+    ],
+    answer: "A",
+    solution:
+      "Producers (usually green plants and algae) trap light energy through photosynthesis and form the base of every food chain. Consumers obtain energy by eating other organisms.",
+  },
+  {
+    id: "esat-b-115",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Roughly what percentage of the energy at one trophic level is typically passed on to the next level?",
+    options: [
+      { key: "A", text: "About 90%" },
+      { key: "B", text: "About 50%" },
+      { key: "C", text: "About 10%" },
+      { key: "D", text: "About 1%" },
+    ],
+    answer: "C",
+    solution:
+      "Only around 10% of the energy is transferred between trophic levels; the rest is lost as heat from respiration, in movement, and in undigested/excreted material. This limits food chain length.",
+  },
+  {
+    id: "esat-b-116",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "Producers in a meadow fix $40\\,000\\text{ kJ m}^{-2}\\text{ yr}^{-1}$. Assuming 10% energy transfer at each step, how much energy reaches the secondary consumers?",
+    options: [
+      { key: "A", text: "$4000\\text{ kJ m}^{-2}\\text{ yr}^{-1}$" },
+      { key: "B", text: "$400\\text{ kJ m}^{-2}\\text{ yr}^{-1}$" },
+      { key: "C", text: "$40\\text{ kJ m}^{-2}\\text{ yr}^{-1}$" },
+      { key: "D", text: "$4000\\,000\\text{ kJ m}^{-2}\\text{ yr}^{-1}$" },
+    ],
+    answer: "B",
+    solution:
+      "Producers → primary consumers: $40\\,000 \\times 0.1 = 4000$. Primary → secondary consumers: $4000 \\times 0.1 = 400\\text{ kJ m}^{-2}\\text{ yr}^{-1}$ (two transfer steps).",
+  },
+  {
+    id: "esat-b-117",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "Decomposers such as bacteria and fungi are vital to an ecosystem because they:",
+    options: [
+      { key: "A", text: "Produce all the oxygen" },
+      { key: "B", text: "Break down dead organisms, recycling nutrients back to the soil" },
+      { key: "C", text: "Are the top predators" },
+      { key: "D", text: "Fix all the carbon by photosynthesis" },
+    ],
+    answer: "B",
+    solution:
+      "Decomposers break down dead matter and waste, releasing mineral nutrients (e.g. nitrates) back into the soil for producers to reuse — essential for nutrient cycling.",
+  },
+  {
+    id: "esat-b-118",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 2,
+    marks: 1,
+    question:
+      "The maximum population size that an environment can support sustainably is called the:",
+    options: [
+      { key: "A", text: "Biomass" },
+      { key: "B", text: "Carrying capacity" },
+      { key: "C", text: "Trophic level" },
+      { key: "D", text: "Niche" },
+    ],
+    answer: "B",
+    solution:
+      "Carrying capacity is the maximum population an environment can sustain given limiting factors such as food, space, water and predation. Population growth tends to level off around this value.",
+  },
+  {
+    id: "esat-b-119",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 1,
+    marks: 1,
+    question:
+      "In the nitrogen cycle, the conversion of nitrogen gas (N₂) into ammonia/ammonium by certain bacteria is called:",
+    options: [
+      { key: "A", text: "Nitrification" },
+      { key: "B", text: "Denitrification" },
+      { key: "C", text: "Nitrogen fixation" },
+      { key: "D", text: "Decomposition" },
+    ],
+    answer: "C",
+    solution:
+      "Nitrogen fixation is carried out by nitrogen-fixing bacteria (e.g. Rhizobium in root nodules) that convert atmospheric N₂ into ammonium compounds plants can use. Nitrification converts ammonium → nitrite → nitrate; denitrification returns nitrate to N₂.",
+  },
+  {
+    id: "esat-b-120",
+    type: "mcq",
+    testId: "esat",
+    topicId: "esat-bio3",
+    difficulty: 3,
+    marks: 1,
+    question:
+      "Why is producing food by eating plants (a vegetarian diet) generally more energy-efficient than eating meat from animals fed on those plants?",
+    options: [
+      { key: "A", text: "Plants contain no energy" },
+      { key: "B", text: "Each extra trophic level loses about 90% of the energy, so fewer levels means more energy reaches humans" },
+      { key: "C", text: "Animals photosynthesise" },
+      { key: "D", text: "Meat contains more trophic levels of producers" },
+    ],
+    answer: "B",
+    solution:
+      "Energy is lost (~90%) at each transfer. Eating plants directly involves one fewer trophic step than eating herbivores, so far more of the original captured energy reaches humans — supporting more people per unit area of land.",
+  },
+];
+
+// 聚合（生物三个模块已补齐：bio1 + bio2 + bio3 = 120 题）
+export const ESAT_BIO_QUESTIONS = [
+  ...ESAT_BIO_CELL,
+  ...ESAT_BIO_GENETICS,
+  ...ESAT_BIO_PHYSIOLOGY,
+];
