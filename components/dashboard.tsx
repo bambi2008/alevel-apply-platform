@@ -44,21 +44,28 @@ function MilestoneRow({ m, t }: { m: Milestone; t: ReturnType<typeof useTranslat
 export function Dashboard({ email }: { email?: string | null }) {
   const t = useTranslations();
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [loaded, setLoaded] = useState(false);
   const [upcomingMs, setUpcomingMs] = useState<Milestone[]>([]);
   const [appCount, setAppCount] = useState(0);
   const [guideOpen, setGuideOpen] = useState(true);
 
   useEffect(() => {
-    const p = loadProfile();
-    setProfile(p);
-    if (p) {
-      const year = p.intakeYear ?? new Date().getFullYear() + 1;
-      const regions = p.targetRegions?.length ? p.targetRegions : (["UK", "HK"] as const);
-      const { milestones } = buildTimeline(year, [...regions]);
-      setUpcomingMs(milestones.filter((m) => m.status !== "done").slice(0, 3));
-    }
-    setAppCount(listApplications().length);
+    loadProfile().then((p) => {
+      setProfile(p);
+      if (p) {
+        const year = p.intakeYear ?? new Date().getFullYear() + 1;
+        const regions = p.targetRegions?.length ? p.targetRegions : (["UK", "HK"] as const);
+        const { milestones } = buildTimeline(year, [...regions]);
+        setUpcomingMs(milestones.filter((m) => m.status !== "done").slice(0, 3));
+      }
+      setLoaded(true);
+    });
+    listApplications().then((apps) => setAppCount(apps.length));
   }, []);
+
+  if (!loaded) {
+    return <div className="mx-auto max-w-2xl px-4 py-20 text-center text-neutral-400">…</div>;
+  }
 
   if (!profile) {
     return (

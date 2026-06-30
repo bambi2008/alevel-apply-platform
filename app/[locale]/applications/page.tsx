@@ -32,7 +32,9 @@ export default function ApplicationsPage() {
   const programOf = (id: string) => programs.find((p) => p.id === id);
 
   useEffect(() => {
-    const sync = () => setItems(listApplications());
+    const sync = () => {
+      listApplications().then(setItems);
+    };
     sync();
     setLoaded(true);
     fetch("/api/programs")

@@ -21,9 +21,10 @@ export default function ProfilePage() {
   const [savedAt, setSavedAt] = useState<string | null>(null);
 
   useEffect(() => {
-    const existing = loadProfile();
-    if (existing) setP(existing);
-    setLoaded(true);
+    loadProfile().then((existing) => {
+      if (existing) setP(existing);
+      setLoaded(true);
+    });
   }, []);
 
   const set = (patch: Partial<UserProfile>) => setP((cur) => ({ ...cur, ...patch }));
@@ -50,8 +51,9 @@ export default function ProfilePage() {
         : [...cur.targetRegions, r],
     }));
 
-  const onSave = () => {
-    saveProfile(p);
+  const onSave = async () => {
+    setSavedAt(null);
+    await saveProfile(p);
     setSavedAt(new Date().toLocaleTimeString());
   };
 

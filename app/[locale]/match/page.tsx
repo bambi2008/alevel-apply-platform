@@ -53,14 +53,15 @@ export default function MatchPage() {
   const [ieltsSub, setIeltsSub] = useState<IeltsSubscores | null>(null);
 
   useEffect(() => {
-    const p = loadProfile();
-    if (p && profileHasGrades(p)) {
-      setRows(p.subjects.map((s) => ({ subject: s.subject, grade: s.grade })));
-      setIelts(p.ielts != null ? String(p.ielts) : "");
-      setIeltsSub(p.ieltsSubscores ?? null);
-      setField(guessField(p.intendedMajors ?? []));
-      setFromProfile(true);
-    }
+    loadProfile().then((p) => {
+      if (p && profileHasGrades(p)) {
+        setRows(p.subjects.map((s) => ({ subject: s.subject, grade: s.grade })));
+        setIelts(p.ielts != null ? String(p.ielts) : "");
+        setIeltsSub(p.ieltsSubscores ?? null);
+        setField(guessField(p.intendedMajors ?? []));
+        setFromProfile(true);
+      }
+    });
   }, []);
 
   const [programs, setPrograms] = useState<ProgramWithUniversity[]>([]);

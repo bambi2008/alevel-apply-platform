@@ -44,13 +44,14 @@ export default function TimelinePage() {
   useEffect(() => {
     const loc = document.documentElement.lang || "zh-CN";
     setLocale(loc);
-    const profile = loadProfile();
-    const year = profile?.intakeYear ?? new Date().getFullYear() + 1;
-    const regions = profile?.targetRegions?.length ? profile.targetRegions : (["UK", "HK"] as const);
-    setIntakeYear(year);
-    const { milestones: ms, prepLevel: pl } = buildTimeline(year, [...regions]);
-    setMilestones(ms);
-    setPrepLevel(pl);
+    loadProfile().then((profile) => {
+      const year = profile?.intakeYear ?? new Date().getFullYear() + 1;
+      const regions = profile?.targetRegions?.length ? profile.targetRegions : (["UK", "HK"] as const);
+      setIntakeYear(year);
+      const { milestones: ms, prepLevel: pl } = buildTimeline(year, [...regions]);
+      setMilestones(ms);
+      setPrepLevel(pl);
+    });
   }, []);
 
   if (!intakeYear) {

@@ -1,5 +1,6 @@
 // 文书（UCAS 个人陈述）存储层。2026 入学起 UCAS 改为 3 个结构化问题。
-// 当前 localStorage；接 DB 后改服务端（PersonalStatement 模型），页面不变。
+// 登录用户：Server Actions 读写数据库；匿名用户：回退 localStorage。
+import { getUcasPsAction, saveUcasPsAction } from "./actions";
 
 export interface UcasPsContent {
   q1: string;
@@ -54,7 +55,7 @@ export const emptyUcasPs: UcasPs = {
   updatedAt: 0,
 };
 
-export function loadUcasPs(): UcasPs | null {
+function loadLocalUcasPs(): UcasPs | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = window.localStorage.getItem(KEY);
@@ -64,9 +65,29 @@ export function loadUcasPs(): UcasPs | null {
   }
 }
 
-export function saveUcasPs(content: UcasPsContent): void {
+function saveLocalUcasPs(content: UcasPsContent): void {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(KEY, JSON.stringify({ content, updatedAt: Date.now() }));
+}
+
+export async function loadUcasPs(): Promise<UcasPs | null> {
+  try {
+    const r = await getUcasPsAction();
+    if (r.authed) return r.ps; // 登录：数据库为准（可能尚未建档=null）
+  } catch {
+    /* 回退本地 */
+  }
+  return loadLocalUcasPs();
+}
+
+export async function saveUcasPs(content: UcasPsContent): Promise<void> {
+  try {
+    const r = await saveUcasPsAction(content);
+    if (r.authed) return;
+  } catch {
+    /* 回退本地 */
+  }
+  saveLocalUcasPs(content);
 }
 
 export function totalChars(c: UcasPsContent): number {

@@ -69,6 +69,7 @@ model StudentProfile {
   targetRegions  Region[]
   intendedMajors String[]
   budgetNote     String?
+  guideProgress  Json? // 申请指南清单进度：ModuleProgress[]
   subjects       ALevelSubject[]
   testScores     TestScore[]
   applications   Application[]

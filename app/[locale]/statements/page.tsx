@@ -22,17 +22,19 @@ export default function StatementsPage() {
   const [savedAt, setSavedAt] = useState<string | null>(null);
 
   useEffect(() => {
-    const existing = loadUcasPs();
-    if (existing) setContent(existing.content);
-    setLoaded(true);
+    loadUcasPs().then((existing) => {
+      if (existing) setContent(existing.content);
+      setLoaded(true);
+    });
   }, []);
 
   const total = totalChars(content);
   const overLimit = total > UCAS_TOTAL_LIMIT;
   const pct = Math.min(100, Math.round((total / UCAS_TOTAL_LIMIT) * 100));
 
-  const onSave = () => {
-    saveUcasPs(content);
+  const onSave = async () => {
+    setSavedAt(null);
+    await saveUcasPs(content);
     setSavedAt(new Date().toLocaleTimeString());
   };
 

@@ -1,5 +1,9 @@
-// 学生档案存储层（当前用 localStorage；接入登录/DB 后改为服务端读写，页面不变）。
+// 学生档案存储层。
+// 登录用户：通过 Server Actions 读写数据库（跨设备持久化）。
+// 匿名用户：回退到 localStorage（无账号也能体验）。
+// 类型与 emptyProfile / profileHasGrades 保持不变，页面只需把调用改为 await。
 import type { Region } from "@/lib/data/types";
+import { getProfileAction, saveProfileAction } from "./actions";
 
 export type GradeKind = "PREDICTED" | "ACTUAL" | "AS";
 
@@ -7,6 +11,13 @@ export interface ProfileSubject {
   subject: string;
   grade: string;
   kind: GradeKind;
+}
+
+export interface IeltsSubscores {
+  listening?: number | null;
+  reading?: number | null;
+  writing?: number | null;
+  speaking?: number | null;
 }
 
 export interface UserProfile {
@@ -18,13 +29,6 @@ export interface UserProfile {
   subjects: ProfileSubject[];
   ielts?: number | null;
   ieltsSubscores?: IeltsSubscores | null;
-}
-
-export interface IeltsSubscores {
-  listening?: number | null;
-  reading?: number | null;
-  writing?: number | null;
-  speaking?: number | null;
 }
 
 const KEY = "alevel:profile:v1";
@@ -40,7 +44,8 @@ export const emptyProfile: UserProfile = {
   ielts: 6.5,
 };
 
-export function loadProfile(): UserProfile | null {
+// ---------- localStorage（匿名用户回退） ----------
+function loadLocalProfile(): UserProfile | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = window.localStorage.getItem(KEY);
@@ -51,14 +56,40 @@ export function loadProfile(): UserProfile | null {
   }
 }
 
-export function saveProfile(p: UserProfile): void {
+function saveLocalProfile(p: UserProfile): void {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(KEY, JSON.stringify(p));
 }
 
-export function clearProfile(): void {
+function clearLocalProfile(): void {
   if (typeof window === "undefined") return;
   window.localStorage.removeItem(KEY);
+}
+
+// ---------- 对外 API（异步：DB 优先，匿名回退 localStorage） ----------
+export async function loadProfile(): Promise<UserProfile | null> {
+  try {
+    const res = await getProfileAction();
+    if (res.authed) return res.profile; // 已登录：数据库为准（可能尚未建档=null）
+  } catch {
+    // 忽略，回退到本地
+  }
+  return loadLocalProfile();
+}
+
+export async function saveProfile(p: UserProfile): Promise<void> {
+  try {
+    const res = await saveProfileAction(p);
+    if (res.authed) return; // 已登录：已写入数据库
+  } catch {
+    // 忽略，回退到本地
+  }
+  saveLocalProfile(p);
+}
+
+export async function clearProfile(): Promise<void> {
+  // 仅清理本地缓存；数据库档案由账号管理，不在此处删除。
+  clearLocalProfile();
 }
 
 /** 档案是否已具备可用于选校匹配的成绩。 */

@@ -14,7 +14,9 @@ export function AddToApplication({ programId }: { programId: string }) {
   const t = useTranslations("common");
 
   useEffect(() => {
-    const sync = () => setAdded(hasApplication(programId));
+    const sync = () => {
+      hasApplication(programId).then(setAdded);
+    };
     sync();
     return subscribeApps(sync);
   }, [programId]);
@@ -22,7 +24,12 @@ export function AddToApplication({ programId }: { programId: string }) {
   return (
     <button
       type="button"
-      onClick={() => (added ? removeApplication(programId) : addApplication(programId))}
+      onClick={() => {
+        const next = !added;
+        setAdded(next); // 乐观更新；写入后的事件会再次校正
+        if (next) addApplication(programId);
+        else removeApplication(programId);
+      }}
       className={`text-xs px-2.5 py-1 rounded-md border transition ${
         added
           ? "bg-green-50 text-green-700 border-green-200 hover:bg-green-100"

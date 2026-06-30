@@ -1,4 +1,5 @@
 // UCAS 申请表指导 — 8 个模块数据
+import { getGuideProgressAction, saveGuideProgressAction } from "./actions";
 
 export interface FieldExample {
   field: string;       // 英文字段名 (官方)
@@ -373,7 +374,7 @@ export interface ModuleProgress {
   done: boolean;      // user manually marked as complete
 }
 
-export function loadProgress(): ModuleProgress[] {
+function loadLocalProgress(): ModuleProgress[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = window.localStorage.getItem(APPLY_GUIDE_STORAGE_KEY);
@@ -383,7 +384,27 @@ export function loadProgress(): ModuleProgress[] {
   }
 }
 
-export function saveProgress(data: ModuleProgress[]): void {
+function saveLocalProgress(data: ModuleProgress[]): void {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(APPLY_GUIDE_STORAGE_KEY, JSON.stringify(data));
+}
+
+export async function loadProgress(): Promise<ModuleProgress[]> {
+  try {
+    const r = await getGuideProgressAction();
+    if (r.authed) return r.progress; // 登录：数据库为准
+  } catch {
+    /* 字段尚未迁移或出错 → 回退本地 */
+  }
+  return loadLocalProgress();
+}
+
+export async function saveProgress(data: ModuleProgress[]): Promise<void> {
+  try {
+    const r = await saveGuideProgressAction(data);
+    if (r.authed) return;
+  } catch {
+    /* 回退本地 */
+  }
+  saveLocalProgress(data);
 }

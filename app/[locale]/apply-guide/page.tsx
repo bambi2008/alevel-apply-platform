@@ -32,8 +32,10 @@ export default function ApplyGuidePage() {
   const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
-    setProgress(loadProgress());
-    setLoaded(true);
+    loadProgress().then((p) => {
+      setProgress(p);
+      setLoaded(true);
+    });
   }, []);
 
   const update = useCallback((id: string, patch: Partial<ModuleProgress>) => {

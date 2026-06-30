@@ -1,4 +1,15 @@
-// 申请清单 + Offer 存储层（当前 localStorage；接 DB 后改服务端，页面不变）。
+// 申请清单 + Offer 存储层。
+// 登录用户：Server Actions 读写数据库（跨设备持久化）。
+// 匿名用户：回退 localStorage。
+// 数据读写改为异步；subscribeApps 事件总线保留，写入后统一 notify() 触发重新同步。
+
+import {
+  listApplicationsAction,
+  hasApplicationAction,
+  addApplicationAction,
+  removeApplicationAction,
+  updateApplicationAction,
+} from "./actions";
 
 export type AppStatus =
   | "PLANNING"
@@ -49,7 +60,8 @@ export interface ApplicationItem {
 const KEY = "alevel:applications:v1";
 const EVENT = "alevel:apps";
 
-function read(): ApplicationItem[] {
+// ---------- localStorage（匿名用户回退） ----------
+function readLocal(): ApplicationItem[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = window.localStorage.getItem(KEY);
@@ -59,33 +71,82 @@ function read(): ApplicationItem[] {
   }
 }
 
-function write(items: ApplicationItem[]): void {
+function notify(): void {
+  if (typeof window !== "undefined") window.dispatchEvent(new Event(EVENT));
+}
+
+function writeLocal(items: ApplicationItem[]): void {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(KEY, JSON.stringify(items));
-  window.dispatchEvent(new Event(EVENT));
+  notify();
 }
 
-export function listApplications(): ApplicationItem[] {
-  return read().sort((a, b) => a.addedAt - b.addedAt);
+// ---------- 对外 API（异步：DB 优先，匿名回退 localStorage） ----------
+export async function listApplications(): Promise<ApplicationItem[]> {
+  try {
+    const r = await listApplicationsAction();
+    if (r.authed) return r.items.slice().sort((a, b) => a.addedAt - b.addedAt);
+  } catch {
+    /* 回退本地 */
+  }
+  return readLocal().sort((a, b) => a.addedAt - b.addedAt);
 }
 
-export function hasApplication(programId: string): boolean {
-  return read().some((a) => a.programId === programId);
+export async function hasApplication(programId: string): Promise<boolean> {
+  try {
+    const r = await hasApplicationAction(programId);
+    if (r.authed) return r.has;
+  } catch {
+    /* 回退本地 */
+  }
+  return readLocal().some((a) => a.programId === programId);
 }
 
-export function addApplication(programId: string): void {
-  const items = read();
+export async function addApplication(programId: string): Promise<void> {
+  try {
+    const r = await addApplicationAction(programId);
+    if (r.authed) {
+      notify();
+      return;
+    }
+  } catch {
+    /* 回退本地 */
+  }
+  const items = readLocal();
   if (items.some((a) => a.programId === programId)) return;
   items.push({ programId, addedAt: Date.now(), status: "PLANNING" });
-  write(items);
+  writeLocal(items);
 }
 
-export function removeApplication(programId: string): void {
-  write(read().filter((a) => a.programId !== programId));
+export async function removeApplication(programId: string): Promise<void> {
+  try {
+    const r = await removeApplicationAction(programId);
+    if (r.authed) {
+      notify();
+      return;
+    }
+  } catch {
+    /* 回退本地 */
+  }
+  writeLocal(readLocal().filter((a) => a.programId !== programId));
 }
 
-export function updateApplication(programId: string, patch: Partial<ApplicationItem>): void {
-  write(read().map((a) => (a.programId === programId ? { ...a, ...patch } : a)));
+export async function updateApplication(
+  programId: string,
+  patch: Partial<ApplicationItem>
+): Promise<void> {
+  try {
+    const r = await updateApplicationAction(programId, patch);
+    if (r.authed) {
+      notify();
+      return;
+    }
+  } catch {
+    /* 回退本地 */
+  }
+  writeLocal(
+    readLocal().map((a) => (a.programId === programId ? { ...a, ...patch } : a))
+  );
 }
 
 /** 订阅申请清单变化（同窗口写入 + 跨标签 storage 事件）。返回取消订阅函数。 */
