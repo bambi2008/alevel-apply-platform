@@ -2,6 +2,7 @@ import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
+import { verifyCode } from "@/lib/auth/phone-codes";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: { strategy: "jwt" },
@@ -22,6 +23,33 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const ok = await bcrypt.compare(password, user.passwordHash);
         if (!ok) return null;
         return { id: user.id, email: user.email ?? email, role: user.role };
+      },
+    }),
+    Credentials({
+      id: "phone",
+      name: "Phone",
+      credentials: {
+        phone: { label: "Phone", type: "text" },
+        code: { label: "Code", type: "text" },
+      },
+      authorize: async (creds) => {
+        const phone = String(creds?.phone ?? "").trim();
+        const code = String(creds?.code ?? "").trim();
+        if (!/^1[3-9]\d{9}$/.test(phone) || !/^\d{6}$/.test(code)) return null;
+        if (!verifyCode(phone, code)) return null;
+
+        // 校验通过：已存在则登录，否则自动建号（含隐私同意记录）
+        let user = await db.user.findUnique({ where: { phone } });
+        if (!user) {
+          user = await db.user.create({
+            data: {
+              phone,
+              role: "STUDENT",
+              consents: { create: [{ type: "PRIVACY_PIPL", version: "1.0" }] },
+            },
+          });
+        }
+        return { id: user.id, email: user.email ?? undefined, role: user.role };
       },
     }),
   ],
