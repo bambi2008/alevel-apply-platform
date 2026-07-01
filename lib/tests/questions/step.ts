@@ -1199,4 +1199,435 @@ It suffices to show $(a^2+b^2+c^2)^2\\ge(a+b+c)(ab^2+bc^2+ca^2)$. By AM-GM appli
 (iv) Energy conservation with friction ($\\mu mg$ acting over distance $d$):
 $$\\tfrac{1}{2}mu^2 = \\frac{\\lambda d^2}{2l}+\\mu mgd \\implies u=\\sqrt{\\frac{\\lambda d^2}{ml}+2\\mu gd}.$$`,
   },
+
+  {
+    id: "step-026",
+    type: "long",
+    testId: "step",
+    topicId: "step-pure4",
+    difficulty: 2,
+    totalMarks: 20,
+    context: "This question concerns the complex cube roots of $8$.",
+    parts: [
+      {
+        label: "(i)",
+        marks: 4,
+        question: "Express $1+i$ in modulus–argument form, and hence evaluate $(1+i)^8$.",
+        solutionOutline: "|1+i|=√2, arg=π/4. By De Moivre (1+i)^8=(√2)^8·cis(8·π/4)=16·cis(2π)=16.",
+      },
+      {
+        label: "(ii)",
+        marks: 6,
+        question: "Find the three cube roots of $8$, giving each in the form $a+bi$.",
+        solutionOutline: "z^3=8=8cis0. Roots have modulus 2 and arguments 0, 2π/3, 4π/3: z=2, 2cis(2π/3)=-1+i√3, 2cis(4π/3)=-1-i√3.",
+      },
+      {
+        label: "(iii)",
+        marks: 4,
+        question: "Show that the sum of the three cube roots of $8$ is zero.",
+        solutionOutline: "2+(-1+i√3)+(-1-i√3)=0. (Equivalently z^3-8=0 has no z^2 term, so the sum of roots is 0.)",
+      },
+      {
+        label: "(iv)",
+        marks: 6,
+        question: "The three cube roots are the vertices of a triangle in the Argand diagram. Show that the triangle is equilateral and find its area.",
+        solutionOutline: "All roots have modulus 2 and arguments spaced 120° apart, so they lie on a circle radius 2 equally spaced ⇒ equilateral. For an equilateral triangle with circumradius R, side s=R√3 and area=(√3/4)s²=(3√3/4)R². With R=2: area=(3√3/4)·4=3√3.",
+      },
+    ],
+    fullSolution: `(i) $|1+i|=\\sqrt2$, $\\arg(1+i)=\\tfrac{\\pi}{4}$, so $1+i=\\sqrt2\\,\\operatorname{cis}\\tfrac{\\pi}{4}$. By De Moivre, $(1+i)^8=(\\sqrt2)^8\\operatorname{cis}\\!\\big(8\\cdot\\tfrac{\\pi}{4}\\big)=16\\,\\operatorname{cis}(2\\pi)=16.$
+
+(ii) Writing $8=8\\operatorname{cis}0$, the cube roots have modulus $2$ and arguments $0,\\tfrac{2\\pi}{3},\\tfrac{4\\pi}{3}$:
+$$z_1=2,\\quad z_2=-1+i\\sqrt3,\\quad z_3=-1-i\\sqrt3.$$
+
+(iii) $z_1+z_2+z_3=2+(-1+i\\sqrt3)+(-1-i\\sqrt3)=0.$ (Also immediate since $z^3-8=0$ has zero $z^2$ coefficient.)
+
+(iv) The roots lie on the circle $|z|=2$ with arguments $120^\\circ$ apart, so the triangle is equilateral with circumradius $R=2$. Its area is $\\tfrac{3\\sqrt3}{4}R^2=\\tfrac{3\\sqrt3}{4}\\cdot4=3\\sqrt3.$`,
+  },
+
+  {
+    id: "step-027",
+    type: "long",
+    testId: "step",
+    topicId: "step-pure4",
+    difficulty: 3,
+    totalMarks: 20,
+    context: "",
+    parts: [
+      {
+        label: "(i)",
+        marks: 6,
+        question: "Use De Moivre's theorem to prove that $\\cos 3\\theta = 4\\cos^3\\theta - 3\\cos\\theta$.",
+        solutionOutline: "(cosθ+isinθ)^3=cos3θ+isin3θ. Expand LHS; real part = cos³θ-3cosθsin²θ = cos³θ-3cosθ(1-cos²θ)=4cos³θ-3cosθ. Equate real parts.",
+      },
+      {
+        label: "(ii)",
+        marks: 8,
+        question: "Hence find all solutions of $8\\cos^3\\theta - 6\\cos\\theta = 1$ in the interval $0 \\le \\theta < 2\\pi$.",
+        solutionOutline: "LHS=2(4cos³θ-3cosθ)=2cos3θ. So 2cos3θ=1 ⇒ cos3θ=1/2. With 3θ∈[0,6π): 3θ=π/3,5π/3,7π/3,11π/3,13π/3,17π/3 ⇒ θ=π/9,5π/9,7π/9,11π/9,13π/9,17π/9.",
+      },
+      {
+        label: "(iii)",
+        marks: 6,
+        question: "Deduce the value of $\\cos\\tfrac{\\pi}{9} + \\cos\\tfrac{5\\pi}{9} + \\cos\\tfrac{7\\pi}{9}$.",
+        solutionOutline: "Put c=cosθ. From (ii), 8c³-6c-1=0 has roots cos(π/9), cos(5π/9), cos(7π/9) (three distinct cosθ values). Sum of roots = -(coefficient of c²)/(coefficient of c³)=0. So the sum is 0.",
+      },
+    ],
+    fullSolution: `(i) By De Moivre $(\\cos\\theta+i\\sin\\theta)^3=\\cos3\\theta+i\\sin3\\theta$. Expanding the left side and taking real parts,
+$$\\cos3\\theta=\\cos^3\\theta-3\\cos\\theta\\sin^2\\theta=\\cos^3\\theta-3\\cos\\theta(1-\\cos^2\\theta)=4\\cos^3\\theta-3\\cos\\theta.$$
+
+(ii) $8\\cos^3\\theta-6\\cos\\theta=2(4\\cos^3\\theta-3\\cos\\theta)=2\\cos3\\theta$. So $2\\cos3\\theta=1$, i.e. $\\cos3\\theta=\\tfrac12$. For $0\\le\\theta<2\\pi$ we need $3\\theta\\in[0,6\\pi)$, giving $3\\theta=\\tfrac{\\pi}{3},\\tfrac{5\\pi}{3},\\tfrac{7\\pi}{3},\\tfrac{11\\pi}{3},\\tfrac{13\\pi}{3},\\tfrac{17\\pi}{3}$ and hence
+$$\\theta=\\tfrac{\\pi}{9},\\tfrac{5\\pi}{9},\\tfrac{7\\pi}{9},\\tfrac{11\\pi}{9},\\tfrac{13\\pi}{9},\\tfrac{17\\pi}{9}.$$
+
+(iii) With $c=\\cos\\theta$ the equation is $8c^3-6c-1=0$, whose roots are $\\cos\\tfrac{\\pi}{9},\\cos\\tfrac{5\\pi}{9},\\cos\\tfrac{7\\pi}{9}$. As the $c^2$ coefficient is $0$, the sum of the roots is $0$:
+$$\\cos\\tfrac{\\pi}{9}+\\cos\\tfrac{5\\pi}{9}+\\cos\\tfrac{7\\pi}{9}=0.$$`,
+  },
+
+  {
+    id: "step-028",
+    type: "long",
+    testId: "step",
+    topicId: "step-pure5",
+    difficulty: 2,
+    totalMarks: 20,
+    context: "The matrix $M=\\begin{pmatrix}2&1\\\\1&2\\end{pmatrix}$.",
+    parts: [
+      {
+        label: "(i)",
+        marks: 4,
+        question: "Find $\\det M$ and $M^{-1}$.",
+        solutionOutline: "det=2·2-1·1=3. M^{-1}=(1/3)·[[2,-1],[-1,2]].",
+      },
+      {
+        label: "(ii)",
+        marks: 6,
+        question: "Find the eigenvalues of $M$.",
+        solutionOutline: "det(M-λI)=(2-λ)²-1=λ²-4λ+3=(λ-1)(λ-3)=0 ⇒ λ=1, 3.",
+      },
+      {
+        label: "(iii)",
+        marks: 6,
+        question: "Find an eigenvector corresponding to each eigenvalue.",
+        solutionOutline: "λ=1: (M-I)v=0 ⇒ x+y=0 ⇒ v=(1,-1). λ=3: (M-3I)v=0 ⇒ -x+y=0 ⇒ v=(1,1).",
+      },
+      {
+        label: "(iv)",
+        marks: 4,
+        question: "Verify that the sum of the eigenvalues equals the trace of $M$, and their product equals $\\det M$.",
+        solutionOutline: "Sum=1+3=4=trace(2+2). Product=1·3=3=det. ✓",
+      },
+    ],
+    fullSolution: `(i) $\\det M=2\\cdot2-1\\cdot1=3$. Since $\\det M\\neq0$, $M^{-1}=\\dfrac{1}{3}\\begin{pmatrix}2&-1\\\\-1&2\\end{pmatrix}.$
+
+(ii) $\\det(M-\\lambda I)=\\begin{vmatrix}2-\\lambda&1\\\\1&2-\\lambda\\end{vmatrix}=(2-\\lambda)^2-1=\\lambda^2-4\\lambda+3=(\\lambda-1)(\\lambda-3).$ Eigenvalues $\\lambda=1,3$.
+
+(iii) For $\\lambda=1$: $(M-I)\\mathbf v=\\begin{pmatrix}1&1\\\\1&1\\end{pmatrix}\\mathbf v=\\mathbf 0\\Rightarrow x+y=0$, e.g. $\\mathbf v=(1,-1)^T$. For $\\lambda=3$: $(M-3I)\\mathbf v=\\begin{pmatrix}-1&1\\\\1&-1\\end{pmatrix}\\mathbf v=\\mathbf 0\\Rightarrow y=x$, e.g. $\\mathbf v=(1,1)^T$.
+
+(iv) Trace $=2+2=4=1+3$ (sum of eigenvalues); $\\det M=3=1\\times3$ (product of eigenvalues). ✓`,
+  },
+
+  {
+    id: "step-029",
+    type: "long",
+    testId: "step",
+    topicId: "step-pure5",
+    difficulty: 2,
+    totalMarks: 20,
+    context: "Let $A=\\begin{pmatrix}1&2\\\\3&k\\end{pmatrix}$, where $k$ is a real constant.",
+    parts: [
+      {
+        label: "(i)",
+        marks: 4,
+        question: "Find $\\det A$ in terms of $k$, and state the value of $k$ for which $A$ is singular.",
+        solutionOutline: "det=1·k-2·3=k-6. Singular when det=0 ⇒ k=6.",
+      },
+      {
+        label: "(ii)",
+        marks: 6,
+        question: "For $k=6$, show that the system $A\\mathbf x = \\begin{pmatrix}1\\\\3\\end{pmatrix}$ has infinitely many solutions, and describe them.",
+        solutionOutline: "Equations x+2y=1 and 3x+6y=3; second is 3×first, so consistent and dependent. Solutions x=1-2y, y free.",
+      },
+      {
+        label: "(iii)",
+        marks: 6,
+        question: "For $k=6$, show that the system $A\\mathbf x = \\begin{pmatrix}1\\\\4\\end{pmatrix}$ has no solution.",
+        solutionOutline: "x+2y=1 and 3x+6y=4. But 3(x+2y)=3≠4, contradiction. No solution.",
+      },
+      {
+        label: "(iv)",
+        marks: 4,
+        question: "For $k\\neq 6$, write down $A^{-1}$ and hence state why $A\\mathbf x=\\mathbf b$ has a unique solution.",
+        solutionOutline: "A^{-1}=1/(k-6)·[[k,-2],[-3,1]]. Since det≠0, A invertible ⇒ x=A^{-1}b unique.",
+      },
+    ],
+    fullSolution: `(i) $\\det A=1\\cdot k-2\\cdot3=k-6$. $A$ is singular when $\\det A=0$, i.e. $k=6$.
+
+(ii) For $k=6$ the equations are $x+2y=1$ and $3x+6y=3$. The second is exactly $3\\times$ the first, so the system is consistent with a whole line of solutions: $\\;x=1-2y$ with $y$ arbitrary.
+
+(iii) For $k=6$: $x+2y=1$ and $3x+6y=4$. But $3(x+2y)=3\\neq4$, a contradiction, so there is **no solution**.
+
+(iv) For $k\\neq6$, $\\det A=k-6\\neq0$ and $A^{-1}=\\dfrac{1}{k-6}\\begin{pmatrix}k&-2\\\\-3&1\\end{pmatrix}$. As $A$ is invertible, $A\\mathbf x=\\mathbf b$ has the unique solution $\\mathbf x=A^{-1}\\mathbf b$.`,
+  },
+
+  {
+    id: "step-030",
+    type: "long",
+    testId: "step",
+    topicId: "step-pure5",
+    difficulty: 2,
+    totalMarks: 20,
+    context: "Let $R=\\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}$ and $S=\\begin{pmatrix}1&2\\\\0&1\\end{pmatrix}$.",
+    parts: [
+      {
+        label: "(i)",
+        marks: 5,
+        question: "Describe geometrically the transformation represented by $R$, and find $\\det R$.",
+        solutionOutline: "R rotates points 90° anticlockwise about the origin. det R=0·0-(-1)·1=1.",
+      },
+      {
+        label: "(ii)",
+        marks: 5,
+        question: "The matrix $S$ represents a shear. Find $\\det S$ and explain why $S$ preserves area.",
+        solutionOutline: "det S=1·1-2·0=1. Since |det S|=1, areas are unchanged under S.",
+      },
+      {
+        label: "(iii)",
+        marks: 6,
+        question: "Compute the matrix $RS$ and find $\\det(RS)$.",
+        solutionOutline: "RS=[[0,-1],[1,0]]·[[1,2],[0,1]]=[[0,-1],[1,2]]. det(RS)=0·2-(-1)·1=1.",
+      },
+      {
+        label: "(iv)",
+        marks: 4,
+        question: "Verify that $\\det(RS)=\\det R\\,\\det S$.",
+        solutionOutline: "det(RS)=1=1·1=det R·det S. ✓",
+      },
+    ],
+    fullSolution: `(i) $R$ is an anticlockwise rotation of $90^\\circ$ about the origin (it sends $(1,0)\\mapsto(0,1)$ and $(0,1)\\mapsto(-1,0)$). $\\det R=0\\cdot0-(-1)\\cdot1=1.$
+
+(ii) $\\det S=1\\cdot1-2\\cdot0=1$. Because $|\\det S|=1$, the transformation preserves area.
+
+(iii) $RS=\\begin{pmatrix}0&-1\\\\1&0\\end{pmatrix}\\begin{pmatrix}1&2\\\\0&1\\end{pmatrix}=\\begin{pmatrix}0&-1\\\\1&2\\end{pmatrix}$, so $\\det(RS)=0\\cdot2-(-1)\\cdot1=1.$
+
+(iv) $\\det R\\,\\det S=1\\cdot1=1=\\det(RS)$, confirming the multiplicative property of determinants.`,
+  },
+
+  {
+    id: "step-031",
+    type: "long",
+    testId: "step",
+    topicId: "step-mech",
+    difficulty: 2,
+    totalMarks: 20,
+    context: "A particle is projected from a point $O$ on horizontal ground with speed $u$ at an angle $\\theta$ above the horizontal. Take $g$ as the acceleration due to gravity and ignore air resistance.",
+    parts: [
+      {
+        label: "(i)",
+        marks: 5,
+        question: "Show that the time of flight (until the particle returns to the ground) is $T=\\dfrac{2u\\sin\\theta}{g}$.",
+        solutionOutline: "Vertical: y=ut sinθ-½gt². y=0 ⇒ t(u sinθ-½gt)=0 ⇒ t=0 or t=2u sinθ/g.",
+      },
+      {
+        label: "(ii)",
+        marks: 5,
+        question: "Show that the horizontal range is $R=\\dfrac{u^2\\sin 2\\theta}{g}$.",
+        solutionOutline: "R=(u cosθ)T=u cosθ·2u sinθ/g=u²·2 sinθcosθ/g=u² sin2θ/g.",
+      },
+      {
+        label: "(iii)",
+        marks: 5,
+        question: "Find the greatest height $H$ reached, in terms of $u$, $\\theta$ and $g$.",
+        solutionOutline: "At top vertical speed 0: 0=(u sinθ)²-2gH ⇒ H=u²sin²θ/(2g).",
+      },
+      {
+        label: "(iv)",
+        marks: 5,
+        question: "For fixed $u$, find the angle $\\theta$ that maximises the range, and state the maximum range.",
+        solutionOutline: "R=u²sin2θ/g maximal when sin2θ=1 ⇒ 2θ=90° ⇒ θ=45°. Then R_max=u²/g.",
+      },
+    ],
+    fullSolution: `(i) Vertically (upwards positive) $y=ut\\sin\\theta-\\tfrac12gt^2$. Setting $y=0$ gives $t\\big(u\\sin\\theta-\\tfrac12gt\\big)=0$, so besides $t=0$ the flight time is $T=\\dfrac{2u\\sin\\theta}{g}.$
+
+(ii) Horizontal distance $=u\\cos\\theta\\cdot T=u\\cos\\theta\\cdot\\dfrac{2u\\sin\\theta}{g}=\\dfrac{u^2(2\\sin\\theta\\cos\\theta)}{g}=\\dfrac{u^2\\sin2\\theta}{g}.$
+
+(iii) At the highest point the vertical velocity is zero: $0=(u\\sin\\theta)^2-2gH$, hence $H=\\dfrac{u^2\\sin^2\\theta}{2g}.$
+
+(iv) $R=\\dfrac{u^2\\sin2\\theta}{g}$ is greatest when $\\sin2\\theta=1$, i.e. $\\theta=45^\\circ$, giving $R_{\\max}=\\dfrac{u^2}{g}.$`,
+  },
+
+  {
+    id: "step-032",
+    type: "long",
+    testId: "step",
+    topicId: "step-mech",
+    difficulty: 3,
+    totalMarks: 20,
+    context: "Two smooth spheres $A$ and $B$ of equal mass $m$ move along the same straight line. $A$ moves with speed $u$ towards $B$, which is at rest. They collide, and the coefficient of restitution between them is $e$, where $0\\le e\\le 1$.",
+    parts: [
+      {
+        label: "(i)",
+        marks: 6,
+        question: "Using conservation of momentum and Newton's experimental law, find the speeds of $A$ and $B$ immediately after the collision.",
+        solutionOutline: "Momentum: mu=mv_A+mv_B ⇒ u=v_A+v_B. Restitution: v_B-v_A=e·u. Solve: v_B=u(1+e)/2, v_A=u(1-e)/2.",
+      },
+      {
+        label: "(ii)",
+        marks: 5,
+        question: "Show that $A$ continues to move in the same direction after the collision unless $e=1$.",
+        solutionOutline: "v_A=u(1-e)/2 ≥0, and >0 for e<1; equals 0 only when e=1.",
+      },
+      {
+        label: "(iii)",
+        marks: 5,
+        question: "Show that the fraction of kinetic energy lost in the collision is $\\dfrac{1-e^2}{2}$.",
+        solutionOutline: "KE_i=½mu². KE_f=½m(v_A²+v_B²)=½m·u²[(1-e)²+(1+e)²]/4=½mu²(1+e²)/2. Fraction lost=1-(1+e²)/2=(1-e²)/2.",
+      },
+      {
+        label: "(iv)",
+        marks: 4,
+        question: "Deduce the final speeds and the energy lost in the perfectly elastic case $e=1$.",
+        solutionOutline: "e=1: v_A=0, v_B=u; fraction lost=(1-1)/2=0. A stops, B moves off with speed u, no energy lost.",
+      },
+    ],
+    fullSolution: `(i) Conservation of momentum: $mu=mv_A+mv_B\\Rightarrow u=v_A+v_B$. Newton's law of restitution: $v_B-v_A=e(u-0)=eu$. Adding and subtracting,
+$$v_B=\\tfrac{u(1+e)}{2},\\qquad v_A=\\tfrac{u(1-e)}{2}.$$
+
+(ii) Since $0\\le e\\le1$, $v_A=\\tfrac{u(1-e)}{2}\\ge0$, and $v_A>0$ whenever $e<1$; only when $e=1$ does $A$ stop.
+
+(iii) Initial KE $=\\tfrac12mu^2$. Final KE $=\\tfrac12m(v_A^2+v_B^2)=\\tfrac12m\\cdot\\tfrac{u^2[(1-e)^2+(1+e)^2]}{4}=\\tfrac12mu^2\\cdot\\tfrac{1+e^2}{2}$. The fraction lost is $1-\\dfrac{1+e^2}{2}=\\dfrac{1-e^2}{2}.$
+
+(iv) When $e=1$: $v_A=0$, $v_B=u$, and the fraction of energy lost is $\\tfrac{1-1}{2}=0$ — the collision is perfectly elastic, $A$ stops and $B$ moves off with speed $u$.`,
+  },
+
+  {
+    id: "step-033",
+    type: "long",
+    testId: "step",
+    topicId: "step-stats",
+    difficulty: 2,
+    totalMarks: 20,
+    context: "A discrete random variable $X$ has probability distribution $P(X=x)=kx$ for $x=1,2,3,4$, where $k$ is a constant.",
+    parts: [
+      {
+        label: "(i)",
+        marks: 4,
+        question: "Find the value of $k$.",
+        solutionOutline: "Σ probabilities=k(1+2+3+4)=10k=1 ⇒ k=1/10.",
+      },
+      {
+        label: "(ii)",
+        marks: 6,
+        question: "Find $E(X)$.",
+        solutionOutline: "E(X)=Σ x·kx=k(1+4+9+16)=k·30=30/10=3.",
+      },
+      {
+        label: "(iii)",
+        marks: 6,
+        question: "Find $\\operatorname{Var}(X)$.",
+        solutionOutline: "E(X²)=Σ x²·kx=k(1+8+27+64)=100k=10. Var=E(X²)-[E(X)]²=10-9=1.",
+      },
+      {
+        label: "(iv)",
+        marks: 4,
+        question: "Find $P(X\\ge 3)$.",
+        solutionOutline: "P(3)+P(4)=k·3+k·4=7k=7/10=0.7.",
+      },
+    ],
+    fullSolution: `(i) Probabilities sum to $1$: $k(1+2+3+4)=10k=1$, so $k=\\tfrac{1}{10}.$
+
+(ii) $E(X)=\\sum x\\,P(X=x)=k\\sum x^2=\\tfrac{1}{10}(1+4+9+16)=\\tfrac{30}{10}=3.$
+
+(iii) $E(X^2)=\\sum x^2P(X=x)=k\\sum x^3=\\tfrac{1}{10}(1+8+27+64)=\\tfrac{100}{10}=10$. Hence $\\operatorname{Var}(X)=E(X^2)-[E(X)]^2=10-9=1.$
+
+(iv) $P(X\\ge3)=P(3)+P(4)=\\tfrac{3}{10}+\\tfrac{4}{10}=\\tfrac{7}{10}=0.7.$`,
+  },
+
+  {
+    id: "step-034",
+    type: "long",
+    testId: "step",
+    topicId: "step-stats",
+    difficulty: 3,
+    totalMarks: 20,
+    context: "In a large population, a proportion $0.3$ of people carry a certain gene. A random sample of $4$ people is taken; let $X$ be the number who carry the gene.",
+    parts: [
+      {
+        label: "(i)",
+        marks: 5,
+        question: "State the distribution of $X$ and find $P(X=2)$.",
+        solutionOutline: "X~B(4,0.3). P(X=2)=C(4,2)(0.3)²(0.7)²=6·0.09·0.49=0.2646.",
+      },
+      {
+        label: "(ii)",
+        marks: 5,
+        question: "Find $P(X\\ge 1)$.",
+        solutionOutline: "1-P(0)=1-(0.7)^4=1-0.2401=0.7599.",
+      },
+      {
+        label: "(iii)",
+        marks: 5,
+        question: "Find $E(X)$ and $\\operatorname{Var}(X)$.",
+        solutionOutline: "E(X)=np=4·0.3=1.2. Var=np(1-p)=4·0.3·0.7=0.84.",
+      },
+      {
+        label: "(iv)",
+        marks: 5,
+        question: "Given that at least one person carries the gene, find the probability that exactly two do. Give your answer to 3 significant figures.",
+        solutionOutline: "P(X=2|X≥1)=P(X=2)/P(X≥1)=0.2646/0.7599≈0.348.",
+      },
+    ],
+    fullSolution: `(i) $X\\sim B(4,0.3)$. $P(X=2)=\\binom{4}{2}(0.3)^2(0.7)^2=6\\times0.09\\times0.49=0.2646.$
+
+(ii) $P(X\\ge1)=1-P(X=0)=1-(0.7)^4=1-0.2401=0.7599.$
+
+(iii) $E(X)=np=4\\times0.3=1.2$ and $\\operatorname{Var}(X)=np(1-p)=4\\times0.3\\times0.7=0.84.$
+
+(iv) $P(X=2\\mid X\\ge1)=\\dfrac{P(X=2)}{P(X\\ge1)}=\\dfrac{0.2646}{0.7599}=0.348$ (3 s.f.).`,
+  },
+
+  {
+    id: "step-035",
+    type: "long",
+    testId: "step",
+    topicId: "step-pure3",
+    difficulty: 2,
+    totalMarks: 20,
+    context: "A curve is given parametrically by $x=t^2$, $y=2t$, for $t\\ge 0$.",
+    parts: [
+      {
+        label: "(i)",
+        marks: 4,
+        question: "Find the Cartesian equation of the curve.",
+        solutionOutline: "t=y/2, so x=(y/2)²=y²/4, i.e. y²=4x (a parabola).",
+      },
+      {
+        label: "(ii)",
+        marks: 6,
+        question: "Find $\\dfrac{dy}{dx}$ in terms of $t$, and hence the equation of the tangent at the point where $t=1$.",
+        solutionOutline: "dy/dx=(dy/dt)/(dx/dt)=2/(2t)=1/t. At t=1: point (1,2), slope 1 ⇒ y-2=1(x-1) ⇒ y=x+1.",
+      },
+      {
+        label: "(iii)",
+        marks: 5,
+        question: "Find the area between the curve and the $x$-axis from $x=0$ to $x=4$.",
+        solutionOutline: "On t≥0, y=2√x. Area=∫₀⁴ 2√x dx=2·(2/3)x^{3/2}|₀⁴=(4/3)·8=32/3.",
+      },
+      {
+        label: "(iv)",
+        marks: 5,
+        question: "Verify the area in (iii) by evaluating $\\displaystyle\\int y\\,\\dfrac{dx}{dt}\\,dt$ over the corresponding range of $t$.",
+        solutionOutline: "x:0→4 ⇔ t:0→2. dx/dt=2t, y=2t. ∫₀² (2t)(2t)dt=∫₀²4t²dt=(4/3)t³|₀²=(4/3)·8=32/3. Same value.",
+      },
+    ],
+    fullSolution: `(i) From $y=2t$ we get $t=\\tfrac{y}{2}$, so $x=t^2=\\tfrac{y^2}{4}$, i.e. $y^2=4x$ (a parabola).
+
+(ii) $\\dfrac{dy}{dx}=\\dfrac{dy/dt}{dx/dt}=\\dfrac{2}{2t}=\\dfrac1t$. At $t=1$ the point is $(1,2)$ and the gradient is $1$, so the tangent is $y-2=1\\cdot(x-1)$, i.e. $y=x+1.$
+
+(iii) For $t\\ge0$, $y=2\\sqrt x$. Hence
+$$\\text{Area}=\\int_0^4 2\\sqrt x\\,dx=2\\cdot\\tfrac23x^{3/2}\\Big|_0^4=\\tfrac43\\cdot8=\\tfrac{32}{3}.$$
+
+(iv) As $x$ runs $0\\to4$, $t$ runs $0\\to2$. With $\\dfrac{dx}{dt}=2t$ and $y=2t$,
+$$\\int_0^2 y\\,\\frac{dx}{dt}\\,dt=\\int_0^2 (2t)(2t)\\,dt=\\int_0^2 4t^2\\,dt=\\tfrac43t^3\\Big|_0^2=\\tfrac{32}{3},$$
+confirming the area found in (iii).`,
+  },
+
 ];
