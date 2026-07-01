@@ -2,6 +2,7 @@
 
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
+import { Prisma } from "@prisma/client";
 import type { UcasPs, UcasPsContent } from "./store";
 
 const KIND = "UK_UCAS_3Q" as const;
@@ -56,6 +57,7 @@ export async function saveUcasPsAction(
     (content.q1?.length ?? 0) +
     (content.q2?.length ?? 0) +
     (content.q3?.length ?? 0);
+  const contentJson = content as unknown as Prisma.InputJsonValue;
 
   const existing = await db.personalStatement.findFirst({
     where: { studentId: sp.id, kind: KIND },
@@ -65,11 +67,11 @@ export async function saveUcasPsAction(
   if (existing) {
     await db.personalStatement.update({
       where: { id: existing.id },
-      data: { content, wordCount },
+      data: { content: contentJson, wordCount },
     });
   } else {
     await db.personalStatement.create({
-      data: { studentId: sp.id, kind: KIND, content, wordCount },
+      data: { studentId: sp.id, kind: KIND, content: contentJson, wordCount },
     });
   }
   return { authed: true };

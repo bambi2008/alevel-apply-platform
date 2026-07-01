@@ -2,6 +2,7 @@
 
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
+import { Prisma } from "@prisma/client";
 import type { ModuleProgress } from "./index";
 
 async function currentUserId(): Promise<string | null> {
@@ -30,10 +31,11 @@ export async function saveGuideProgressAction(
   const userId = await currentUserId();
   if (!userId) return { authed: false };
 
+  const json = data as unknown as Prisma.InputJsonValue;
   await db.studentProfile.upsert({
     where: { userId },
-    create: { userId, guideProgress: data },
-    update: { guideProgress: data },
+    create: { userId, guideProgress: json },
+    update: { guideProgress: json },
   });
   return { authed: true };
 }

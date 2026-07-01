@@ -2,6 +2,7 @@
 
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
+import { Prisma } from "@prisma/client";
 import type { UserProfile, GradeKind } from "./store";
 import type { Region } from "@/lib/data/types";
 
@@ -100,7 +101,9 @@ export async function saveProfileAction(
         profileId: sp.id,
         type: "IELTS",
         overall: p.ielts ?? null,
-        subscores: p.ieltsSubscores ?? undefined,
+        subscores: p.ieltsSubscores
+          ? (p.ieltsSubscores as unknown as Prisma.InputJsonValue)
+          : undefined,
       },
     });
   }
