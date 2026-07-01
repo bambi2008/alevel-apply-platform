@@ -888,4 +888,93 @@ export const MAT_STEP_KNOWLEDGE: TopicKnowledge[] = [
       },
     ],
   },
+
+  // ═══════════════════ ESAT 数学2（选修 Module 2） ═══════════════════
+  {
+    topicId: "esat-math2a",
+    overview:
+      "ESAT 数学2（选修 Module 2）之复数与进阶代数：复数的运算与极式、进阶多项式（根与系数）、向量的点积与叉积。适用于工程/数学等选考 Module 2 数学的方向。",
+    concepts: [
+      {
+        name: "复数运算与极式",
+        body: "$z=a+bi$，$i^2=-1$。模 $|z|=\\\\sqrt{a^2+b^2}$，共轭 $\\\\bar z=a-bi$，$z\\\\bar z=|z|^2$。极式 $z=r(\\\\cos\\\\theta+i\\\\sin\\\\theta)$，乘除时模相乘/除、辐角相加/减。",
+        keyPoints: [
+          "$|z_1z_2|=|z_1||z_2|$，辐角相加",
+          "除法乘以共轭把分母实数化",
+          "$(\\\\cos\\\\theta+i\\\\sin\\\\theta)^n=\\\\cos n\\\\theta+i\\\\sin n\\\\theta$（De Moivre）",
+        ],
+      },
+      {
+        name: "进阶多项式",
+        body: "$n$ 次多项式在复数域恰有 $n$ 个根（含重数）。实系数多项式的复根成共轭对出现。韦达定理连接根与系数。",
+        keyPoints: [
+          "实系数方程虚根共轭成对",
+          "根之和 $=-b/a$、根之积（$n$ 次）$=(-1)^n c/a$",
+          "已知根可反构多项式",
+        ],
+      },
+      {
+        name: "向量点积与叉积",
+        body: "点积 $\\\\mathbf a\\\\cdot\\\\mathbf b=|\\\\mathbf a||\\\\mathbf b|\\\\cos\\\\theta$（标量，判垂直：为 0）。叉积 $|\\\\mathbf a\\\\times\\\\mathbf b|=|\\\\mathbf a||\\\\mathbf b|\\\\sin\\\\theta$（向量，判平行：为 0）。",
+        keyPoints: [
+          "点积为 0 ⟺ 垂直",
+          "叉积大小 = 两向量张成平行四边形面积",
+          "点积可求夹角 $\\\\cos\\\\theta=\\\\dfrac{\\\\mathbf a\\\\cdot\\\\mathbf b}{|\\\\mathbf a||\\\\mathbf b|}$",
+        ],
+      },
+    ],
+    workedExamples: [
+      {
+        title: "复数的模",
+        question: "求 $|3+4i|$。",
+        answer: "5",
+        solution: "$|3+4i|=\\\\sqrt{3^2+4^2}=\\\\sqrt{25}=5$。",
+        tip: "模就是复平面上到原点的距离。",
+      },
+    ],
+  },
+  {
+    topicId: "esat-math2b",
+    overview:
+      "ESAT 数学2（选修 Module 2）之微分方程与矩阵：一阶/二阶微分方程、矩阵运算、行列式与特征值。是工程与物理建模的核心工具。",
+    concepts: [
+      {
+        name: "微分方程",
+        body: "可分离变量：$\\\\dfrac{dy}{dx}=f(x)g(y)\\\\Rightarrow\\\\int\\\\dfrac{dy}{g(y)}=\\\\int f(x)\\\\,dx$。$\\\\dfrac{dy}{dx}=ky$ 的解为 $y=Ae^{kx}$（增长/衰减）。",
+        keyPoints: [
+          "先分离变量再两边积分",
+          "别忘任意常数，用初值定出",
+          "$dy/dx=ky$ 是指数模型",
+        ],
+      },
+      {
+        name: "矩阵与行列式",
+        body: "矩阵乘法不可交换。$2\\\\times2$ 行列式 $\\\\det\\\\begin{pmatrix}a&b\\\\\\\\c&d\\\\end{pmatrix}=ad-bc$；$\\\\det=0$ 时矩阵不可逆（奇异）。",
+        keyPoints: [
+          "$\\\\det=0\\\\iff$ 无逆、列线性相关",
+          "$(AB)^{-1}=B^{-1}A^{-1}$",
+          "行列式绝对值 = 线性变换的面积放缩因子",
+        ],
+      },
+      {
+        name: "特征值与特征向量",
+        body: "若 $A\\\\mathbf v=\\\\lambda\\\\mathbf v$（$\\\\mathbf v\\\\neq\\\\mathbf 0$），$\\\\lambda$ 为特征值，由 $\\\\det(A-\\\\lambda I)=0$ 求出。",
+        keyPoints: [
+          "迹 = 特征值之和，行列式 = 特征值之积",
+          "对角/三角矩阵特征值即对角元",
+          "特征向量满足 $(A-\\\\lambda I)\\\\mathbf v=\\\\mathbf 0$",
+        ],
+      },
+    ],
+    workedExamples: [
+      {
+        title: "可分离变量微分方程",
+        question: "解 $\\\\dfrac{dy}{dx}=3y$（$y>0$）的通解。",
+        answer: "y = A e^{3x}",
+        solution:
+          "$\\\\dfrac{dy}{y}=3\\\\,dx\\\\Rightarrow\\\\ln y=3x+C\\\\Rightarrow y=Ae^{3x}$。",
+        tip: "$dy/dx=ky$ 形式直接套 $y=Ae^{kx}$。",
+      },
+    ],
+  },
 ];
