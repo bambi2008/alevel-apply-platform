@@ -667,4 +667,225 @@ export const MAT_STEP_KNOWLEDGE: TopicKnowledge[] = [
       },
     ],
   },
+
+  // ═══════════════════ TMUA ═══════════════════
+  {
+    topicId: "tmua-algebra",
+    overview:
+      "TMUA Paper 1 的代数与函数：方程与不等式、多项式、指数对数、复合函数与二项式。TMUA 全为多选、无负分，重在快速准确判断，避免代数失误。",
+    concepts: [
+      {
+        name: "方程与不等式",
+        body: "二次方程用判别式 $\\\\Delta=b^2-4ac$ 判根的个数；绝对值不等式 $|x|<a\\\\iff -a<x<a$；分式不等式看分子分母同号区间。",
+        keyPoints: [
+          "$\\\\Delta>0$ 两根、$=0$ 重根、$<0$ 无实根",
+          "$|f(x)|<a$ 展开为双边不等式",
+          "分式不等式勿两边直接乘（符号未知）",
+        ],
+      },
+      {
+        name: "指数与对数",
+        body: "对数律 $\\\\log ab=\\\\log a+\\\\log b$、$\\\\log a^n=n\\\\log a$。指数方程化同底或令 $u=a^x$ 化二次。",
+        keyPoints: [
+          "$a^{2x}$ 型方程常令 $u=a^x$",
+          "对数方程回代检验真数 $>0$",
+          "化同底后比较指数",
+        ],
+      },
+      {
+        name: "函数与二项式",
+        body: "复合 $f(g(x))$ 先算内层；二项式一般项 $\\\\binom{n}{r}a^{n-r}b^r$，求特定项只锁 $r$。",
+        keyPoints: [
+          "复合函数从内往外算",
+          "求 $x^k$ 系数令幂次 $=k$ 解 $r$",
+          "注意括号内系数的幂",
+        ],
+      },
+    ],
+    workedExamples: [
+      {
+        title: "指数方程化二次",
+        question: "解 $2^{2x}-5\\\\cdot2^{x}+4=0$。",
+        answer: "x=0 或 x=2",
+        solution:
+          "令 $u=2^x$：$u^2-5u+4=0\\\\Rightarrow(u-1)(u-4)=0$，得 $2^x=1(x=0)$ 或 $2^x=4(x=2)$。",
+        tip: "见 $a^{2x}$ 与 $a^x$ 同现，令 $u=a^x$。",
+      },
+    ],
+  },
+  {
+    topicId: "tmua-calc",
+    overview:
+      "TMUA 微积分：求导（含链式法则）、定积分、驻点与极值、面积。计算须快而准，善用图形直觉排除错误选项。",
+    concepts: [
+      {
+        name: "求导与链式法则",
+        body: "幂法则 $\\\\dfrac{d}{dx}x^n=nx^{n-1}$；链式 $\\\\dfrac{d}{dx}[g(x)]^n=n[g(x)]^{n-1}g'(x)$。",
+        keyPoints: [
+          "复合函数用链式法则",
+          "切线斜率 = 该点导数",
+          "驻点处 $f'(x)=0$",
+        ],
+      },
+      {
+        name: "极值判断",
+        body: "解 $f'(x)=0$ 求驻点，二阶导 $f''>0$ 极小、$f''<0$ 极大。",
+        keyPoints: [
+          "先求驻点再判性质",
+          "三次函数常一极大一极小",
+          "四次可有三个驻点",
+        ],
+      },
+      {
+        name: "定积分与面积",
+        body: "$\\\\int x^n dx=\\\\dfrac{x^{n+1}}{n+1}+c$。曲线与 $x$ 轴围面积先求交点作为上下限。",
+        keyPoints: [
+          "面积题先解交点定限",
+          "对称图形可算一半再乘 2",
+          "曲线在轴下方积分取绝对值",
+        ],
+      },
+    ],
+    workedExamples: [
+      {
+        title: "曲线与轴围成面积",
+        question: "求 $y=4-x^2$ 与 $x$ 轴围成的面积。",
+        answer: "32/3",
+        solution:
+          "交点 $x=\\\\pm2$：$\\\\int_{-2}^{2}(4-x^2)\\\\,dx=\\\\left[4x-\\\\tfrac{x^3}{3}\\\\right]_{-2}^{2}=\\\\tfrac{32}{3}$。",
+        tip: "先求交点当积分上下限。",
+      },
+    ],
+  },
+  {
+    topicId: "tmua-stats",
+    overview:
+      "TMUA 统计与概率：古典概率、条件与独立、期望、排列组合。题目常需快速枚举或用计数公式，避免遗漏样本。",
+    concepts: [
+      {
+        name: "概率基础",
+        body: "古典概率 $P=\\\\dfrac{\\\\text{有利结果}}{\\\\text{总结果}}$。互斥相加，独立相乘 $P(A\\\\cap B)=P(A)P(B)$。",
+        keyPoints: [
+          "独立事件概率相乘",
+          "无放回抽取概率随步变化",
+          "对立事件 $P(\\\\bar A)=1-P(A)$",
+        ],
+      },
+      {
+        name: "期望",
+        body: "$E(X)=\\\\sum xP(x)$。等概率时即算术平均。",
+        keyPoints: [
+          "期望是加权平均",
+          "公平骰子期望 $3.5$",
+          "$E(aX+b)=aE(X)+b$",
+        ],
+      },
+      {
+        name: "排列组合",
+        body: "排列 $n!$（有序）；组合 $\\\\binom{n}{r}=\\\\dfrac{n!}{r!(n-r)!}$（无序）。",
+        keyPoints: [
+          "顺序重要用排列，否则组合",
+          "『握手/连线』类是组合 $\\\\binom{n}{2}$",
+          "分步用乘法、分类用加法",
+        ],
+      },
+    ],
+    workedExamples: [
+      {
+        title: "无放回概率",
+        question: "袋中 3 红 2 蓝，不放回取 2 个，求两个都红的概率。",
+        answer: "3/10",
+        solution: "$\\\\dfrac{3}{5}\\\\times\\\\dfrac{2}{4}=\\\\dfrac{6}{20}=\\\\dfrac{3}{10}$。",
+        tip: "无放回时第二次的分母要减 1。",
+      },
+    ],
+  },
+  {
+    topicId: "tmua-logic",
+    overview:
+      "TMUA Paper 2 数学推理与证明是其特色：命题真伪、逆命题/逆否命题、反例、归纳与反证。重在逻辑严谨，不能凭直觉。",
+    concepts: [
+      {
+        name: "命题与逆否",
+        body: "$P\\\\Rightarrow Q$ 与其逆否 $\\\\lnot Q\\\\Rightarrow\\\\lnot P$ 等价；与逆命题 $Q\\\\Rightarrow P$ 不等价。",
+        keyPoints: [
+          "原命题 ≡ 逆否命题",
+          "逆命题真假需单独判断",
+          "证 $P\\\\Rightarrow Q$ 可改证逆否",
+        ],
+      },
+      {
+        name: "反例与量词",
+        body: "否定全称『所有…』只需一个反例；否定存在『某个…』需证全都不成立。",
+        keyPoints: [
+          "反驳全称命题举一个反例即可",
+          "$\\\\lnot(\\\\forall x\\\\,P)=\\\\exists x\\\\,\\\\lnot P$",
+          "例子不能证明全称，只能否定",
+        ],
+      },
+      {
+        name: "证明方法",
+        body: "直接证明、反证法（假设结论不成立导出矛盾）、数学归纳法（基础步 + 归纳步）。",
+        keyPoints: [
+          "『不存在最大素数』用反证法",
+          "求和/整除命题常用归纳法",
+          "归纳步必须用上归纳假设",
+        ],
+      },
+    ],
+    workedExamples: [
+      {
+        title: "判断逆命题",
+        question: "已知『$x>2\\\\Rightarrow x^2>4$』，其逆命题成立吗？",
+        answer: "不成立",
+        solution:
+          "逆命题为 $x^2>4\\\\Rightarrow x>2$。取 $x=-3$：$x^2=9>4$ 但 $x<2$，故逆命题为假。",
+        tip: "判逆命题真假，优先找反例。",
+      },
+    ],
+  },
+  {
+    topicId: "tmua-discrete",
+    overview:
+      "TMUA 离散数学入门：集合运算、计数、逻辑（真值、De Morgan）、图论基础（度数、边数、完全图）。用结构性论证而非穷举。",
+    concepts: [
+      {
+        name: "集合与计数",
+        body: "容斥 $|A\\\\cup B|=|A|+|B|-|A\\\\cap B|$；$n$ 元集有 $2^n$ 个子集。",
+        keyPoints: [
+          "并集用容斥避免重复计数",
+          "子集数 $2^n$",
+          "$A\\\\subseteq B$ 且 $B\\\\subseteq A\\\\Rightarrow A=B$",
+        ],
+      },
+      {
+        name: "逻辑与真值",
+        body: "De Morgan：$\\\\lnot(A\\\\land B)=\\\\lnot A\\\\lor\\\\lnot B$，$\\\\lnot(A\\\\lor B)=\\\\lnot A\\\\land\\\\lnot B$。$A\\\\lor\\\\lnot A$ 恒真。",
+        keyPoints: [
+          "否定合取变析取（反之亦然）",
+          "$A\\\\lor\\\\lnot A$ 是永真式",
+          "$A\\\\land\\\\lnot A$ 是永假式",
+        ],
+      },
+      {
+        name: "图论基础",
+        body: "握手定理：所有顶点度数之和 $=2\\\\times$ 边数。完全图 $K_n$ 有 $\\\\binom{n}{2}$ 条边。",
+        keyPoints: [
+          "度数之和为偶数（= 2×边数）",
+          "$K_n$ 边数 $\\\\binom{n}{2}$",
+          "$n$ 人两两握手 = $\\\\binom{n}{2}$ 次",
+        ],
+      },
+    ],
+    workedExamples: [
+      {
+        title: "握手定理求边数",
+        question: "一个图有 5 个顶点、每个度数为 2，有多少条边？",
+        answer: "5",
+        solution:
+          "度数之和 $=5\\\\times2=10=2\\\\times$ 边数，故边数 $=5$。",
+        tip: "度数总和永远是边数的两倍。",
+      },
+    ],
+  },
 ];

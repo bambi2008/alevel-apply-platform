@@ -7,6 +7,7 @@ import { getTestById } from "@/lib/tests";
 import { MAT_QUESTIONS } from "@/lib/tests/questions/mat";
 import { STEP_QUESTIONS } from "@/lib/tests/questions/step";
 import { ESAT_QUESTIONS } from "@/lib/tests/questions/esat";
+import { TMUA_QUESTIONS } from "@/lib/tests/questions/tmua";
 import type { Question, MCQQuestion, LongQuestion, GradingResult } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
 import type { GradeRequest, GradeResponse } from "@/app/api/grade-answer/route";
@@ -15,6 +16,7 @@ const QUESTION_BANKS: Record<string, Question[]> = {
   mat: MAT_QUESTIONS,
   step: STEP_QUESTIONS,
   esat: ESAT_QUESTIONS,
+  tmua: TMUA_QUESTIONS,
 };
 
 type ExamState = "briefing" | "running" | "grading" | "results";
