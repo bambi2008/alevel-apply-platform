@@ -59,6 +59,14 @@ async function Header() {
           ))}
           <LocaleSwitcher />
           <MobileNav links={links} />
+          {(session?.user as { role?: string } | undefined)?.role === "ADMIN" && (
+            <Link
+              href="/admin"
+              className="ml-1 px-2.5 py-1.5 rounded-md text-amber-700 bg-amber-50 hover:bg-amber-100 text-sm whitespace-nowrap"
+            >
+              管理后台
+            </Link>
+          )}
           {session?.user ? (
             <form action={logoutAction} className="flex items-center gap-1 ml-1">
               <span className="text-xs text-neutral-500 hidden lg:inline max-w-[140px] truncate">
