@@ -15,6 +15,7 @@
     "freeMatch": "Free Match",
     "timeline": "Timeline",
     "applyGuide": "UCAS Guide",
+    "documents": "Documents",
     "tests": "Test Prep"
   },
   "footer": {
@@ -73,6 +74,7 @@
       "statements": "Statement Studio",
       "universities": "University DB",
       "applyGuide": "UCAS Form Guide",
+      "documents": "Documents",
       "tests": "Test Prep"
     },
     "profileIncomplete": "Your profile is incomplete — matching results may be limited.",
@@ -91,17 +93,70 @@
     "ctaBrowse": "Browse universities",
     "priceNote": "Traditional agents ¥20,000–¥60,000 · QiaoShen ¥299–¥899/yr",
     "features": [
-      { "emoji": "🎯", "href": "/match", "title": "Course Matching", "desc": "Enter your A-Level predictions and get reach / match / safety tiers based on each course's minimum and typical offers." },
-      { "emoji": "🏛️", "href": "/universities", "title": "University Database", "desc": "Entry requirements, tuition and rankings for UK + HK universities and courses — structured and transparent." },
-      { "emoji": "📅", "href": "/match", "title": "Application Tracking", "desc": "Status, document checklists and deadline calendar for each application — never miss a deadline." },
-      { "emoji": "✍️", "href": "/statements", "title": "Statement Tools", "desc": "Structured guidance for the UCAS personal statement plus character / format self-checks (AI assist coming soon)." }
+      {
+        "emoji": "🎯",
+        "href": "/match",
+        "title": "Course Matching",
+        "desc": "Enter your A-Level predictions and get reach / match / safety tiers based on each course's minimum and typical offers."
+      },
+      {
+        "emoji": "🏛️",
+        "href": "/universities",
+        "title": "University Database",
+        "desc": "Entry requirements, tuition and rankings for UK + HK universities and courses — structured and transparent."
+      },
+      {
+        "emoji": "📅",
+        "href": "/match",
+        "title": "Application Tracking",
+        "desc": "Status, document checklists and deadline calendar for each application — never miss a deadline."
+      },
+      {
+        "emoji": "✍️",
+        "href": "/statements",
+        "title": "Statement Tools",
+        "desc": "Structured guidance for the UCAS personal statement plus character / format self-checks (AI assist coming soon)."
+      }
     ],
     "pricingHeading": "Transparent Pricing",
     "pricingSub": "One annual fee covering the full application toolkit",
     "plans": [
-      { "name": "Free", "price": "¥0", "unit": "", "tagline": "Explore", "perks": ["Course matching (top 5 results)", "Basic university info", "1 statement draft"] },
-      { "name": "Standard", "price": "¥299", "unit": "/yr", "tagline": "Budget", "highlight": true, "perks": ["Full course matching", "Full university database", "Application calendar & tasks", "Statement editor"] },
-      { "name": "Pro", "price": "¥899", "unit": "/yr", "tagline": "Most popular", "perks": ["Everything in Standard", "AI statement feedback", "Past-case library", "Offer comparison"] }
+      {
+        "name": "Free",
+        "price": "¥0",
+        "unit": "",
+        "tagline": "Explore",
+        "perks": [
+          "Course matching (top 5 results)",
+          "Basic university info",
+          "1 statement draft"
+        ]
+      },
+      {
+        "name": "Standard",
+        "price": "¥299",
+        "unit": "/yr",
+        "tagline": "Budget",
+        "highlight": true,
+        "perks": [
+          "Full course matching",
+          "Full university database",
+          "Application calendar & tasks",
+          "Statement editor"
+        ]
+      },
+      {
+        "name": "Pro",
+        "price": "¥899",
+        "unit": "/yr",
+        "tagline": "Most popular",
+        "perks": [
+          "Everything in Standard",
+          "AI statement feedback",
+          "Past-case library",
+          "Offer comparison"
+        ]
+      }
     ],
     "pricingNote": "Pricing is a product plan and subject to change at launch. We do not guarantee admission."
   },
@@ -151,12 +206,25 @@
     "decision": "Your decision",
     "conditions": "Conditions (e.g. A*AA)",
     "statuses": {
-      "PLANNING": "Planning", "IN_PROGRESS": "In progress", "SUBMITTED": "Submitted",
-      "INTERVIEW": "Interview", "OFFER": "Offer", "ACCEPTED": "Accepted",
-      "REJECTED": "Rejected", "WITHDRAWN": "Withdrawn"
+      "PLANNING": "Planning",
+      "IN_PROGRESS": "In progress",
+      "SUBMITTED": "Submitted",
+      "INTERVIEW": "Interview",
+      "OFFER": "Offer",
+      "ACCEPTED": "Accepted",
+      "REJECTED": "Rejected",
+      "WITHDRAWN": "Withdrawn"
     },
-    "offerTypes": { "CONDITIONAL": "Conditional", "UNCONDITIONAL": "Unconditional" },
-    "decisions": { "FIRM": "Firm", "INSURANCE": "Insurance", "DECLINE": "Decline", "ACCEPTED": "Accepted" }
+    "offerTypes": {
+      "CONDITIONAL": "Conditional",
+      "UNCONDITIONAL": "Unconditional"
+    },
+    "decisions": {
+      "FIRM": "Firm",
+      "INSURANCE": "Insurance",
+      "DECLINE": "Decline",
+      "ACCEPTED": "Accepted"
+    }
   },
   "statements": {
     "title": "Statement Studio",
@@ -170,9 +238,18 @@
     "save": "Save draft",
     "savedAt": "Saved",
     "questions": [
-      { "title": "Q1 · Why do you want to study this course?", "hint": "Explain where your interest and motivation come from; avoid vague 'always loved it' — back it with specific experiences." },
-      { "title": "Q2 · How have your studies prepared you?", "hint": "Connect your A-Level subjects, topics, reading or projects, and how they built relevant knowledge and skills." },
-      { "title": "Q3 · What have you done outside education, and why is it useful?", "hint": "Competitions, research, internships, volunteering, self-study — focus on what you learned and its relevance." }
+      {
+        "title": "Q1 · Why do you want to study this course?",
+        "hint": "Explain where your interest and motivation come from; avoid vague 'always loved it' — back it with specific experiences."
+      },
+      {
+        "title": "Q2 · How have your studies prepared you?",
+        "hint": "Connect your A-Level subjects, topics, reading or projects, and how they built relevant knowledge and skills."
+      },
+      {
+        "title": "Q3 · What have you done outside education, and why is it useful?",
+        "hint": "Competitions, research, internships, volunteering, self-study — focus on what you learned and its relevance."
+      }
     ],
     "selfCheck": [
       "Original work, not copied or ghost-written (UCAS runs similarity detection)",
@@ -197,9 +274,18 @@
       "future": "Upcoming"
     },
     "prep": {
-      "early": { "label": "Well ahead", "desc": "Plenty of time before the main deadlines — ideal for deep university research and drafting a polished statement." },
-      "on-track": { "label": "On track", "desc": "Following the milestones steadily — focus on personal statement quality and complete documentation." },
-      "late": { "label": "Time is tight", "desc": "Deadlines are close — prioritise getting core materials submitted before any further optimisation." }
+      "early": {
+        "label": "Well ahead",
+        "desc": "Plenty of time before the main deadlines — ideal for deep university research and drafting a polished statement."
+      },
+      "on-track": {
+        "label": "On track",
+        "desc": "Following the milestones steadily — focus on personal statement quality and complete documentation."
+      },
+      "late": {
+        "label": "Time is tight",
+        "desc": "Deadlines are close — prioritise getting core materials submitted before any further optimisation."
+      }
     },
     "ms": {
       "research": {

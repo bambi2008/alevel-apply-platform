@@ -33,6 +33,7 @@ async function Header() {
     { href: "/statements", label: t("statements"), en: "Statement" },
     { href: "/timeline", label: t("timeline"), en: "Timeline" },
     { href: "/apply-guide", label: t("applyGuide"), en: "UCAS Guide" },
+    { href: "/documents", label: t("documents"), en: "Documents" },
     { href: "/tests", label: t("tests"), en: "Test Prep" },
   ];
   return (

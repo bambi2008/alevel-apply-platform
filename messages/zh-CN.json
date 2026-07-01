@@ -15,6 +15,7 @@
     "freeMatch": "免费选校",
     "timeline": "申请时间线",
     "applyGuide": "UCAS 填表指南",
+    "documents": "资料中心",
     "tests": "入学笔试"
   },
   "footer": {
@@ -73,6 +74,7 @@
       "statements": "文书工作台",
       "universities": "院校库",
       "applyGuide": "UCAS 填表指南",
+      "documents": "资料中心",
       "tests": "入学笔试备考"
     },
     "profileIncomplete": "档案未完整填写，选校匹配效果会受影响。",
@@ -91,17 +93,70 @@
     "ctaBrowse": "浏览院校库",
     "priceNote": "传统中介 ¥20,000–¥60,000 · 桥申 ¥299–¥899/年",
     "features": [
-      { "emoji": "🎯", "href": "/match", "title": "选校匹配", "desc": "输入 A-Level 预估成绩，按最低/典型 offer 智能给出冲刺/匹配/稳妥分层。" },
-      { "emoji": "🏛️", "href": "/universities", "title": "院校数据库", "desc": "英国 + 香港院校与专业的入学要求、学费、排名，结构化透明可查。" },
-      { "emoji": "📅", "href": "/match", "title": "申请追踪", "desc": "每所申请的状态、材料清单与截止日历，不再漏 deadline。" },
-      { "emoji": "✍️", "href": "/statements", "title": "文书工具", "desc": "UCAS 个人陈述结构化引导 + 字数/格式自查（AI 辅助即将上线）。" }
+      {
+        "emoji": "🎯",
+        "href": "/match",
+        "title": "选校匹配",
+        "desc": "输入 A-Level 预估成绩，按最低/典型 offer 智能给出冲刺/匹配/稳妥分层。"
+      },
+      {
+        "emoji": "🏛️",
+        "href": "/universities",
+        "title": "院校数据库",
+        "desc": "英国 + 香港院校与专业的入学要求、学费、排名，结构化透明可查。"
+      },
+      {
+        "emoji": "📅",
+        "href": "/match",
+        "title": "申请追踪",
+        "desc": "每所申请的状态、材料清单与截止日历，不再漏 deadline。"
+      },
+      {
+        "emoji": "✍️",
+        "href": "/statements",
+        "title": "文书工具",
+        "desc": "UCAS 个人陈述结构化引导 + 字数/格式自查（AI 辅助即将上线）。"
+      }
     ],
     "pricingHeading": "透明定价",
     "pricingSub": "一次年费，覆盖申请全流程工具",
     "plans": [
-      { "name": "免费版", "price": "¥0", "unit": "", "tagline": "探索期", "perks": ["选校匹配（前 5 结果）", "院校基础信息查询", "1 份文书草稿"] },
-      { "name": "标准版", "price": "¥299", "unit": "/年", "tagline": "预算敏感", "highlight": true, "perks": ["完整选校匹配", "全量院校数据库", "申请日历与任务", "文书编辑器"] },
-      { "name": "专业版", "price": "¥899", "unit": "/年", "tagline": "主流之选", "perks": ["标准版全部", "AI 文书润色", "往届案例库", "Offer 对比分析"] }
+      {
+        "name": "免费版",
+        "price": "¥0",
+        "unit": "",
+        "tagline": "探索期",
+        "perks": [
+          "选校匹配（前 5 结果）",
+          "院校基础信息查询",
+          "1 份文书草稿"
+        ]
+      },
+      {
+        "name": "标准版",
+        "price": "¥299",
+        "unit": "/年",
+        "tagline": "预算敏感",
+        "highlight": true,
+        "perks": [
+          "完整选校匹配",
+          "全量院校数据库",
+          "申请日历与任务",
+          "文书编辑器"
+        ]
+      },
+      {
+        "name": "专业版",
+        "price": "¥899",
+        "unit": "/年",
+        "tagline": "主流之选",
+        "perks": [
+          "标准版全部",
+          "AI 文书润色",
+          "往届案例库",
+          "Offer 对比分析"
+        ]
+      }
     ],
     "pricingNote": "定价为产品规划方案，最终以正式上线为准。本平台不承诺录取结果。"
   },
@@ -151,12 +206,25 @@
     "decision": "你的决定",
     "conditions": "条件（如 A*AA）",
     "statuses": {
-      "PLANNING": "计划中", "IN_PROGRESS": "准备中", "SUBMITTED": "已提交",
-      "INTERVIEW": "面试中", "OFFER": "已获 Offer", "ACCEPTED": "已接受",
-      "REJECTED": "被拒", "WITHDRAWN": "已撤回"
+      "PLANNING": "计划中",
+      "IN_PROGRESS": "准备中",
+      "SUBMITTED": "已提交",
+      "INTERVIEW": "面试中",
+      "OFFER": "已获 Offer",
+      "ACCEPTED": "已接受",
+      "REJECTED": "被拒",
+      "WITHDRAWN": "已撤回"
     },
-    "offerTypes": { "CONDITIONAL": "有条件", "UNCONDITIONAL": "无条件" },
-    "decisions": { "FIRM": "第一志愿 (Firm)", "INSURANCE": "保底 (Insurance)", "DECLINE": "拒绝", "ACCEPTED": "已接受" }
+    "offerTypes": {
+      "CONDITIONAL": "有条件",
+      "UNCONDITIONAL": "无条件"
+    },
+    "decisions": {
+      "FIRM": "第一志愿 (Firm)",
+      "INSURANCE": "保底 (Insurance)",
+      "DECLINE": "拒绝",
+      "ACCEPTED": "已接受"
+    }
   },
   "statements": {
     "title": "文书工作台",
@@ -170,9 +238,18 @@
     "save": "保存草稿",
     "savedAt": "已保存",
     "questions": [
-      { "title": "Q1 · 为什么想学这个专业？", "hint": "说明你对该学科的兴趣来源与动机，避免空泛的『从小就喜欢』，用具体经历支撑。" },
-      { "title": "Q2 · 你的学业如何为之做准备？", "hint": "结合 A-Level 科目、课题、阅读或项目，说明它们如何培养了相关知识与能力。" },
-      { "title": "Q3 · 教育之外做了哪些准备，为何有用？", "hint": "竞赛、科研、实习、志愿、自学等课外经历，重点是『学到了什么 / 与专业的关联』。" }
+      {
+        "title": "Q1 · 为什么想学这个专业？",
+        "hint": "说明你对该学科的兴趣来源与动机，避免空泛的『从小就喜欢』，用具体经历支撑。"
+      },
+      {
+        "title": "Q2 · 你的学业如何为之做准备？",
+        "hint": "结合 A-Level 科目、课题、阅读或项目，说明它们如何培养了相关知识与能力。"
+      },
+      {
+        "title": "Q3 · 教育之外做了哪些准备，为何有用？",
+        "hint": "竞赛、科研、实习、志愿、自学等课外经历，重点是『学到了什么 / 与专业的关联』。"
+      }
     ],
     "selfCheck": [
       "内容为本人原创，未抄袭或代写（UCAS 内置相似度检测）",
@@ -197,9 +274,18 @@
       "future": "待到来"
     },
     "prep": {
-      "early": { "label": "准备充裕", "desc": "距主要截止日还有充足时间，适合深度调研院校与打磨文书。" },
-      "on-track": { "label": "进度正常", "desc": "按节点稳步推进，重点确保个人陈述质量和申请材料完整。" },
-      "late": { "label": "时间紧张", "desc": "距截止日较近，优先保证核心材料完整提交，暂缓非必要优化。" }
+      "early": {
+        "label": "准备充裕",
+        "desc": "距主要截止日还有充足时间，适合深度调研院校与打磨文书。"
+      },
+      "on-track": {
+        "label": "进度正常",
+        "desc": "按节点稳步推进，重点确保个人陈述质量和申请材料完整。"
+      },
+      "late": {
+        "label": "时间紧张",
+        "desc": "距截止日较近，优先保证核心材料完整提交，暂缓非必要优化。"
+      }
     },
     "ms": {
       "research": {
