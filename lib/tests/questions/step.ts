@@ -1630,4 +1630,371 @@ $$\\int_0^2 y\\,\\frac{dx}{dt}\\,dt=\\int_0^2 (2t)(2t)\\,dt=\\int_0^2 4t^2\\,dt=
 confirming the area found in (iii).`,
   },
 
+
+  {
+    id: "step-036",
+    type: "long",
+    testId: "step",
+    topicId: "step-pure3",
+    difficulty: 2,
+    totalMarks: 20,
+    context: "A curve is given in polar coordinates by $r=2\\cos\\theta$, for $-\\tfrac{\\pi}{2}\\le\\theta\\le\\tfrac{\\pi}{2}$.",
+    parts: [
+      {
+        label: "(i)",
+        marks: 6,
+        question: "Show that this curve is a circle, and state its centre and radius.",
+        solutionOutline: "r=2cosθ ⇒ r²=2r cosθ ⇒ x²+y²=2x ⇒ (x-1)²+y²=1. Circle, centre (1,0), radius 1.",
+      },
+      {
+        label: "(ii)",
+        marks: 8,
+        question: "Find the area enclosed by the curve, using the polar area formula $A=\\tfrac12\\displaystyle\\int r^2\\,d\\theta$.",
+        solutionOutline: "A=½∫_{-π/2}^{π/2}4cos²θ dθ=2∫_{-π/2}^{π/2}cos²θ dθ=2·[θ/2+sin2θ/4]_{-π/2}^{π/2}=2·(π/2)=π. (Matches area of a unit circle.)",
+      },
+      {
+        label: "(iii)",
+        marks: 6,
+        question: "Find the Cartesian coordinates of the point on the curve where $\\theta=\\tfrac{\\pi}{3}$, and verify it lies on the circle from part (i).",
+        solutionOutline: "θ=π/3: r=2cos(π/3)=1. Point (r cosθ, r sinθ)=(1·½, 1·√3/2)=(½, √3/2). Check: (½-1)²+(√3/2)²=¼+¾=1. ✓",
+      },
+    ],
+    fullSolution: `(i) From $r=2\\cos\\theta$, multiply by $r$: $r^2=2r\\cos\\theta$, i.e. $x^2+y^2=2x$. Completing the square, $(x-1)^2+y^2=1$ — a circle with centre $(1,0)$ and radius $1$.
+
+(ii) $A=\\tfrac12\\int_{-\\pi/2}^{\\pi/2}(2\\cos\\theta)^2\\,d\\theta=2\\int_{-\\pi/2}^{\\pi/2}\\cos^2\\theta\\,d\\theta=2\\left[\\tfrac{\\theta}{2}+\\tfrac{\\sin2\\theta}{4}\\right]_{-\\pi/2}^{\\pi/2}=2\\cdot\\tfrac{\\pi}{2}=\\pi,$ consistent with a circle of radius $1$.
+
+(iii) At $\\theta=\\tfrac{\\pi}{3}$, $r=2\\cos\\tfrac{\\pi}{3}=1$, so the point is $\\left(\\cos\\tfrac{\\pi}{3},\\sin\\tfrac{\\pi}{3}\\right)=\\left(\\tfrac12,\\tfrac{\\sqrt3}{2}\\right)$. Then $\\left(\\tfrac12-1\\right)^2+\\left(\\tfrac{\\sqrt3}{2}\\right)^2=\\tfrac14+\\tfrac34=1$, so it lies on the circle.`,
+  },
+
+  {
+    id: "step-037",
+    type: "long",
+    testId: "step",
+    topicId: "step-pure3",
+    difficulty: 2,
+    totalMarks: 20,
+    context: "A curve is given parametrically by $x=3\\cos\\theta$, $y=2\\sin\\theta$, for $0\\le\\theta<2\\pi$.",
+    parts: [
+      {
+        label: "(i)",
+        marks: 5,
+        question: "Find the Cartesian equation of the curve and name it.",
+        solutionOutline: "cosθ=x/3, sinθ=y/2 ⇒ x²/9+y²/4=1, an ellipse.",
+      },
+      {
+        label: "(ii)",
+        marks: 7,
+        question: "Find $\\dfrac{dy}{dx}$ in terms of $\\theta$, and the gradient of the tangent at $\\theta=\\tfrac{\\pi}{4}$.",
+        solutionOutline: "dy/dx=(2cosθ)/(-3sinθ)=-2/(3tanθ). At θ=π/4, tanθ=1, gradient=-2/3.",
+      },
+      {
+        label: "(iii)",
+        marks: 8,
+        question: "Using $A=\\tfrac12\\displaystyle\\oint (x\\,dy - y\\,dx)$, show that the area enclosed by the ellipse is $6\\pi$.",
+        solutionOutline: "x dy - y dx = 3cosθ(2cosθ)dθ - 2sinθ(-3sinθ)dθ = (6cos²θ+6sin²θ)dθ=6dθ. A=½∫_0^{2π}6dθ=6π. (=πab=π·3·2.)",
+      },
+    ],
+    fullSolution: `(i) Since $\\cos\\theta=\\tfrac{x}{3}$ and $\\sin\\theta=\\tfrac{y}{2}$, we have $\\tfrac{x^2}{9}+\\tfrac{y^2}{4}=1$, an ellipse.
+
+(ii) $\\dfrac{dy}{dx}=\\dfrac{dy/d\\theta}{dx/d\\theta}=\\dfrac{2\\cos\\theta}{-3\\sin\\theta}=-\\dfrac{2}{3\\tan\\theta}.$ At $\\theta=\\tfrac{\\pi}{4}$, $\\tan\\theta=1$, so the gradient is $-\\tfrac23$.
+
+(iii) With $x=3\\cos\\theta,\\;y=2\\sin\\theta$: $dx=-3\\sin\\theta\\,d\\theta$, $dy=2\\cos\\theta\\,d\\theta$, so
+$$x\\,dy-y\\,dx=(6\\cos^2\\theta+6\\sin^2\\theta)\\,d\\theta=6\\,d\\theta.$$
+Hence $A=\\tfrac12\\int_0^{2\\pi}6\\,d\\theta=6\\pi$ (equal to $\\pi ab=\\pi\\cdot3\\cdot2$).`,
+  },
+
+  {
+    id: "step-038",
+    type: "long",
+    testId: "step",
+    topicId: "step-pure4",
+    difficulty: 3,
+    totalMarks: 20,
+    context: "This question concerns the equation $z^4=-16$.",
+    parts: [
+      {
+        label: "(i)",
+        marks: 8,
+        question: "Find all four solutions of $z^4=-16$, giving each in the form $a+bi$.",
+        solutionOutline: "-16=16cis(π). Roots: modulus 16^{1/4}=2, arguments (π+2kπ)/4=π/4,3π/4,5π/4,7π/4. Roots: √2+i√2, -√2+i√2, -√2-i√2, √2-i√2.",
+      },
+      {
+        label: "(ii)",
+        marks: 6,
+        question: "Show that the four roots are the vertices of a square in the Argand diagram, and find its area.",
+        solutionOutline: "All modulus 2, arguments 90° apart ⇒ square inscribed in circle radius 2. Diagonal=2·2=4 ⇒ area=½·diagonal²=½·16=8. (Or side 2√2, area 8.)",
+      },
+      {
+        label: "(iii)",
+        marks: 6,
+        question: "Taking $w=\\sqrt2+i\\sqrt2$, express $w$ in modulus–argument form and evaluate $w^4$ to verify it satisfies the equation.",
+        solutionOutline: "|w|=√(2+2)=2, arg=π/4. w^4=2^4 cis(4·π/4)=16 cis(π)=-16. ✓",
+      },
+    ],
+    fullSolution: `(i) Write $-16=16\\operatorname{cis}\\pi$. The fourth roots have modulus $16^{1/4}=2$ and arguments $\\tfrac{\\pi+2k\\pi}{4}$ for $k=0,1,2,3$, i.e. $\\tfrac{\\pi}{4},\\tfrac{3\\pi}{4},\\tfrac{5\\pi}{4},\\tfrac{7\\pi}{4}$:
+$$z=\\sqrt2+i\\sqrt2,\\;-\\sqrt2+i\\sqrt2,\\;-\\sqrt2-i\\sqrt2,\\;\\sqrt2-i\\sqrt2.$$
+
+(ii) All four roots have modulus $2$ and arguments $90^\\circ$ apart, so they lie equally spaced on the circle $|z|=2$ — a square. Its diagonal is the diameter $4$, so the area is $\\tfrac12(4)^2=8$.
+
+(iii) $w=\\sqrt2+i\\sqrt2$ has $|w|=\\sqrt{2+2}=2$ and $\\arg w=\\tfrac{\\pi}{4}$. By De Moivre, $w^4=2^4\\operatorname{cis}\\!\\big(4\\cdot\\tfrac{\\pi}{4}\\big)=16\\operatorname{cis}\\pi=-16$, verifying $w^4=-16$.`,
+  },
+
+  {
+    id: "step-039",
+    type: "long",
+    testId: "step",
+    topicId: "step-pure4",
+    difficulty: 3,
+    totalMarks: 20,
+    context: "Let $z=\\cos\\theta+i\\sin\\theta$, so that $z^n+z^{-n}=2\\cos n\\theta$.",
+    parts: [
+      {
+        label: "(i)",
+        marks: 8,
+        question: "Show that $\\cos^4\\theta=\\tfrac18(\\cos4\\theta+4\\cos2\\theta+3)$.",
+        solutionOutline: "(z+1/z)^4=z^4+4z^2+6+4z^{-2}+z^{-4}=2cos4θ+8cos2θ+6. And (z+1/z)^4=(2cosθ)^4=16cos⁴θ. So 16cos⁴θ=2cos4θ+8cos2θ+6 ⇒ cos⁴θ=⅛(cos4θ+4cos2θ+3).",
+      },
+      {
+        label: "(ii)",
+        marks: 6,
+        question: "Hence find $\\displaystyle\\int\\cos^4\\theta\\,d\\theta$.",
+        solutionOutline: "=⅛∫(cos4θ+4cos2θ+3)dθ=⅛(sin4θ/4+2sin2θ+3θ)+C=sin4θ/32+sin2θ/4+3θ/8+C.",
+      },
+      {
+        label: "(iii)",
+        marks: 6,
+        question: "Evaluate $\\displaystyle\\int_0^{\\pi/2}\\cos^4\\theta\\,d\\theta$.",
+        solutionOutline: "[sin4θ/32+sin2θ/4+3θ/8]_0^{π/2}: at π/2, sin2π=0, sinπ=0, 3(π/2)/8=3π/16; at 0, all 0. Result 3π/16.",
+      },
+    ],
+    fullSolution: `(i) With $z+z^{-1}=2\\cos\\theta$,
+$$(z+z^{-1})^4=z^4+4z^2+6+4z^{-2}+z^{-4}=(z^4+z^{-4})+4(z^2+z^{-2})+6=2\\cos4\\theta+8\\cos2\\theta+6.$$
+But $(z+z^{-1})^4=(2\\cos\\theta)^4=16\\cos^4\\theta$, so $16\\cos^4\\theta=2\\cos4\\theta+8\\cos2\\theta+6$, giving $\\cos^4\\theta=\\tfrac18(\\cos4\\theta+4\\cos2\\theta+3).$
+
+(ii) $\\int\\cos^4\\theta\\,d\\theta=\\tfrac18\\int(\\cos4\\theta+4\\cos2\\theta+3)\\,d\\theta=\\dfrac{\\sin4\\theta}{32}+\\dfrac{\\sin2\\theta}{4}+\\dfrac{3\\theta}{8}+C.$
+
+(iii) Evaluating between $0$ and $\\tfrac{\\pi}{2}$: the sine terms vanish at both limits, leaving $\\dfrac{3}{8}\\cdot\\dfrac{\\pi}{2}=\\dfrac{3\\pi}{16}.$`,
+  },
+
+  {
+    id: "step-040",
+    type: "long",
+    testId: "step",
+    topicId: "step-pure5",
+    difficulty: 3,
+    totalMarks: 20,
+    context: "The matrix $M=\\begin{pmatrix}3&1\\\\0&2\\end{pmatrix}$.",
+    parts: [
+      {
+        label: "(i)",
+        marks: 6,
+        question: "Write down the eigenvalues of $M$ and find a corresponding eigenvector for each.",
+        solutionOutline: "Triangular ⇒ eigenvalues are diagonal entries 3 and 2. λ=3: (M-3I)=[[0,1],[0,-1]]⇒y=0⇒(1,0). λ=2: (M-2I)=[[1,1],[0,0]]⇒x+y=0⇒(1,-1).",
+      },
+      {
+        label: "(ii)",
+        marks: 8,
+        question: "Writing $M=PDP^{-1}$, derive a formula for $M^n$.",
+        solutionOutline: "P=[[1,1],[0,-1]], D=diag(3,2). P²=I so P^{-1}=P. M^n=P D^n P=[[3^n,3^n-2^n],[0,2^n]].",
+      },
+      {
+        label: "(iii)",
+        marks: 6,
+        question: "Verify your formula for $M^n$ gives the correct result when $n=1$ and $n=2$.",
+        solutionOutline: "n=1: [[3,3-2],[0,2]]=[[3,1],[0,2]]=M ✓. n=2: [[9,9-4],[0,4]]=[[9,5],[0,4]], and M²=[[9,5],[0,4]] ✓.",
+      },
+    ],
+    fullSolution: `(i) $M$ is upper triangular, so its eigenvalues are the diagonal entries $3$ and $2$. For $\\lambda=3$: $(M-3I)\\mathbf v=\\begin{pmatrix}0&1\\\\0&-1\\end{pmatrix}\\mathbf v=\\mathbf0\\Rightarrow y=0$, e.g. $(1,0)^T$. For $\\lambda=2$: $(M-2I)\\mathbf v=\\begin{pmatrix}1&1\\\\0&0\\end{pmatrix}\\mathbf v=\\mathbf0\\Rightarrow x+y=0$, e.g. $(1,-1)^T$.
+
+(ii) Take $P=\\begin{pmatrix}1&1\\\\0&-1\\end{pmatrix}$, $D=\\begin{pmatrix}3&0\\\\0&2\\end{pmatrix}$. Here $P^2=I$, so $P^{-1}=P$. Then
+$$M^n=PD^nP^{-1}=\\begin{pmatrix}1&1\\\\0&-1\\end{pmatrix}\\begin{pmatrix}3^n&0\\\\0&2^n\\end{pmatrix}\\begin{pmatrix}1&1\\\\0&-1\\end{pmatrix}=\\begin{pmatrix}3^n&3^n-2^n\\\\0&2^n\\end{pmatrix}.$$
+
+(iii) $n=1$: $\\begin{pmatrix}3&3-2\\\\0&2\\end{pmatrix}=\\begin{pmatrix}3&1\\\\0&2\\end{pmatrix}=M$. $n=2$: $\\begin{pmatrix}9&9-4\\\\0&4\\end{pmatrix}=\\begin{pmatrix}9&5\\\\0&4\\end{pmatrix}$, which equals $M^2$. ✓`,
+  },
+
+  {
+    id: "step-041",
+    type: "long",
+    testId: "step",
+    topicId: "step-pure5",
+    difficulty: 2,
+    totalMarks: 20,
+    context: "Let $A=\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}$ and $B=\\begin{pmatrix}-1&0\\\\0&1\\end{pmatrix}$.",
+    parts: [
+      {
+        label: "(i)",
+        marks: 5,
+        question: "Describe geometrically the transformations represented by $A$ and $B$, and find $\\det A$ and $\\det B$.",
+        solutionOutline: "A reflects in the line y=x; B reflects in the y-axis. det A=-1, det B=-1.",
+      },
+      {
+        label: "(ii)",
+        marks: 8,
+        question: "Find the matrix $AB$ and describe the single transformation it represents.",
+        solutionOutline: "AB=[[0,1],[1,0]][[-1,0],[0,1]]=[[0,1],[-1,0]]. Sends (1,0)→(0,-1): rotation 90° clockwise about O.",
+      },
+      {
+        label: "(iii)",
+        marks: 7,
+        question: "Verify that $\\det(AB)=\\det A\\,\\det B$, and explain how this is consistent with $AB$ being a rotation.",
+        solutionOutline: "det(AB)=0·0-1·(-1)=1=(-1)(-1). A rotation has determinant 1 (area- and orientation-preserving), consistent.",
+      },
+    ],
+    fullSolution: `(i) $A$ swaps coordinates, so it reflects points in the line $y=x$; $B$ negates the $x$-coordinate, reflecting in the $y$-axis. $\\det A=0\\cdot0-1\\cdot1=-1$ and $\\det B=-1$.
+
+(ii) $AB=\\begin{pmatrix}0&1\\\\1&0\\end{pmatrix}\\begin{pmatrix}-1&0\\\\0&1\\end{pmatrix}=\\begin{pmatrix}0&1\\\\-1&0\\end{pmatrix}$. Since $(1,0)\\mapsto(0,-1)$ and $(0,1)\\mapsto(1,0)$, this is a rotation of $90^\\circ$ clockwise about the origin.
+
+(iii) $\\det(AB)=0\\cdot0-1\\cdot(-1)=1=(-1)(-1)=\\det A\\,\\det B.$ A rotation preserves area and orientation, so it has determinant $+1$ — consistent with the composition of two reflections being a rotation.`,
+  },
+
+  {
+    id: "step-042",
+    type: "long",
+    testId: "step",
+    topicId: "step-mech",
+    difficulty: 2,
+    totalMarks: 20,
+    context: "Two particles of masses $3m$ and $m$ are connected by a light inextensible string passing over a smooth fixed pulley. The system is released from rest.",
+    parts: [
+      {
+        label: "(i)",
+        marks: 6,
+        question: "Find the acceleration of the particles and the tension in the string, in terms of $m$ and $g$.",
+        solutionOutline: "3m: 3mg-T=3m·a. m: T-mg=m·a. Add: 2mg=4m·a ⇒ a=g/2. Then T=m(a+g)=3mg/2.",
+      },
+      {
+        label: "(ii)",
+        marks: 6,
+        question: "Find the speed of the particles after the heavier mass has descended a distance $d$ from rest.",
+        solutionOutline: "v²=2ad=2(g/2)d=gd ⇒ v=√(gd).",
+      },
+      {
+        label: "(iii)",
+        marks: 8,
+        question: "Verify the speed in part (ii) using conservation of energy.",
+        solutionOutline: "Net PE lost = 3mgd - mgd = 2mgd (heavier falls d, lighter rises d). KE gained=½(4m)v²=2mv². So 2mv²=2mgd ⇒ v²=gd ⇒ v=√(gd). Consistent.",
+      },
+    ],
+    fullSolution: `(i) For the descending mass $3m$: $3mg-T=3m\\,a$. For the rising mass $m$: $T-mg=m\\,a$. Adding, $2mg=4m\\,a$, so $a=\\tfrac{g}{2}$. Then $T=m(a+g)=m\\big(\\tfrac{g}{2}+g\\big)=\\tfrac{3mg}{2}.$
+
+(ii) From rest, $v^2=2ad=2\\cdot\\tfrac{g}{2}\\cdot d=gd$, so $v=\\sqrt{gd}.$
+
+(iii) As the heavier mass falls $d$ and the lighter rises $d$, the net loss in potential energy is $3mgd-mgd=2mgd$. This equals the kinetic energy gained, $\\tfrac12(3m+m)v^2=2mv^2$. Hence $2mv^2=2mgd$, giving $v=\\sqrt{gd}$, as before.`,
+  },
+
+  {
+    id: "step-043",
+    type: "long",
+    testId: "step",
+    topicId: "step-mech",
+    difficulty: 3,
+    totalMarks: 20,
+    context: "A particle moves with simple harmonic motion about the origin $O$, with displacement $x=a\\sin(\\omega t)$ at time $t$, where $a>0$ and $\\omega>0$.",
+    parts: [
+      {
+        label: "(i)",
+        marks: 5,
+        question: "Write down expressions for the velocity and acceleration, and show that the acceleration is $-\\omega^2 x$.",
+        solutionOutline: "v=aω cos(ωt), acc=-aω² sin(ωt)=-ω²·(a sinωt)=-ω²x.",
+      },
+      {
+        label: "(ii)",
+        marks: 7,
+        question: "Show that $v^2=\\omega^2(a^2-x^2)$.",
+        solutionOutline: "v²=a²ω²cos²ωt=a²ω²(1-sin²ωt)=ω²(a²-a²sin²ωt)=ω²(a²-x²).",
+      },
+      {
+        label: "(iii)",
+        marks: 8,
+        question: "The particle has speed $8$ when $x=3$ and speed $6$ when $x=4$. Find $\\omega$ and $a$.",
+        solutionOutline: "64=ω²(a²-9); 36=ω²(a²-16). Subtract: 28=ω²·7 ⇒ ω²=4 ⇒ ω=2. Then 64=4(a²-9) ⇒ a²=25 ⇒ a=5.",
+      },
+    ],
+    fullSolution: `(i) $v=\\dfrac{dx}{dt}=a\\omega\\cos(\\omega t)$ and $\\ddot x=-a\\omega^2\\sin(\\omega t)=-\\omega^2\\big(a\\sin\\omega t\\big)=-\\omega^2x.$
+
+(ii) $v^2=a^2\\omega^2\\cos^2(\\omega t)=a^2\\omega^2\\big(1-\\sin^2\\omega t\\big)=\\omega^2\\big(a^2-a^2\\sin^2\\omega t\\big)=\\omega^2(a^2-x^2).$
+
+(iii) Using $v^2=\\omega^2(a^2-x^2)$: $64=\\omega^2(a^2-9)$ and $36=\\omega^2(a^2-16)$. Subtracting gives $28=7\\omega^2$, so $\\omega^2=4$, $\\omega=2$. Then $64=4(a^2-9)\\Rightarrow a^2=25\\Rightarrow a=5.$`,
+  },
+
+  {
+    id: "step-044",
+    type: "long",
+    testId: "step",
+    topicId: "step-stats",
+    difficulty: 2,
+    totalMarks: 20,
+    context: "A continuous random variable $X$ has probability density function $f(x)=kx^2$ for $0\\le x\\le 3$, and $f(x)=0$ otherwise.",
+    parts: [
+      {
+        label: "(i)",
+        marks: 4,
+        question: "Find the value of $k$.",
+        solutionOutline: "∫_0^3 kx² dx=k[x³/3]_0^3=9k=1 ⇒ k=1/9.",
+      },
+      {
+        label: "(ii)",
+        marks: 6,
+        question: "Find $E(X)$.",
+        solutionOutline: "E(X)=∫_0^3 x·(1/9)x² dx=(1/9)[x⁴/4]_0^3=(1/9)(81/4)=9/4.",
+      },
+      {
+        label: "(iii)",
+        marks: 6,
+        question: "Find $\\operatorname{Var}(X)$.",
+        solutionOutline: "E(X²)=(1/9)∫_0^3 x⁴ dx=(1/9)(243/5)=27/5. Var=27/5-(9/4)²=27/5-81/16=(432-405)/80=27/80.",
+      },
+      {
+        label: "(iv)",
+        marks: 4,
+        question: "Find the median $m$.",
+        solutionOutline: "∫_0^m (1/9)x² dx=½ ⇒ m³/27=½ ⇒ m³=27/2 ⇒ m=3/∛2≈2.38.",
+      },
+    ],
+    fullSolution: `(i) $\\int_0^3 kx^2\\,dx=k\\Big[\\tfrac{x^3}{3}\\Big]_0^3=9k=1$, so $k=\\tfrac19.$
+
+(ii) $E(X)=\\int_0^3 x\\cdot\\tfrac19x^2\\,dx=\\tfrac19\\Big[\\tfrac{x^4}{4}\\Big]_0^3=\\tfrac19\\cdot\\tfrac{81}{4}=\\tfrac94.$
+
+(iii) $E(X^2)=\\tfrac19\\int_0^3 x^4\\,dx=\\tfrac19\\cdot\\tfrac{243}{5}=\\tfrac{27}{5}$. Hence $\\operatorname{Var}(X)=\\tfrac{27}{5}-\\big(\\tfrac94\\big)^2=\\tfrac{27}{5}-\\tfrac{81}{16}=\\tfrac{432-405}{80}=\\tfrac{27}{80}.$
+
+(iv) The median $m$ satisfies $\\int_0^m\\tfrac19x^2\\,dx=\\tfrac12$, i.e. $\\tfrac{m^3}{27}=\\tfrac12$, so $m^3=\\tfrac{27}{2}$ and $m=\\dfrac{3}{\\sqrt[3]{2}}\\approx2.38.$`,
+  },
+
+  {
+    id: "step-045",
+    type: "long",
+    testId: "step",
+    topicId: "step-stats",
+    difficulty: 3,
+    totalMarks: 20,
+    context: "A disease affects $2\\%$ of a population. A diagnostic test gives a positive result for $95\\%$ of people who have the disease, and (falsely) for $10\\%$ of people who do not.",
+    parts: [
+      {
+        label: "(i)",
+        marks: 5,
+        question: "A person is chosen at random. Find the probability that the test is positive.",
+        solutionOutline: "P(+)=P(+|D)P(D)+P(+|D')P(D')=0.95(0.02)+0.10(0.98)=0.019+0.098=0.117.",
+      },
+      {
+        label: "(ii)",
+        marks: 8,
+        question: "Given that a randomly chosen person tests positive, find the probability that they have the disease. Give your answer to 3 significant figures.",
+        solutionOutline: "P(D|+)=P(+|D)P(D)/P(+)=0.019/0.117≈0.162.",
+      },
+      {
+        label: "(iii)",
+        marks: 7,
+        question: "Find the probability that a person who tests negative nevertheless has the disease. Give your answer to 3 significant figures.",
+        solutionOutline: "P(-)=1-0.117=0.883. P(D∩-)=P(-|D)P(D)=0.05·0.02=0.001. P(D|-)=0.001/0.883≈0.00113.",
+      },
+    ],
+    fullSolution: `Let $D$ be the event of having the disease, so $P(D)=0.02$, $P(+\\mid D)=0.95$, $P(+\\mid D')=0.10$.
+
+(i) $P(+)=P(+\\mid D)P(D)+P(+\\mid D')P(D')=0.95(0.02)+0.10(0.98)=0.019+0.098=0.117.$
+
+(ii) By Bayes' theorem, $P(D\\mid+)=\\dfrac{P(+\\mid D)P(D)}{P(+)}=\\dfrac{0.019}{0.117}\\approx0.162.$ Despite a positive test, the chance of actually having the disease is only about $16\\%$ — a consequence of the low base rate.
+
+(iii) $P(-)=1-0.117=0.883$. Also $P(D\\cap-)=P(-\\mid D)P(D)=0.05\\times0.02=0.001$. Hence $P(D\\mid-)=\\dfrac{0.001}{0.883}\\approx0.00113.$`,
+  },
+
 ];
