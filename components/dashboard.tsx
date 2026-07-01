@@ -162,6 +162,7 @@ export function Dashboard({ email }: { email?: string | null }) {
             { href: "/universities", emoji: "🏛️", labelKey: "dashboard.tool.universities", meta: null },
             { href: "/apply-guide", emoji: "📄", labelKey: "dashboard.tool.applyGuide", meta: null },
             { href: "/documents", emoji: "📁", labelKey: "dashboard.tool.documents", meta: null },
+            { href: "/tasks", emoji: "✅", labelKey: "dashboard.tool.tasks", meta: null },
             { href: "/tests", emoji: "📐", labelKey: "dashboard.tool.tests", meta: null },
           ].map((tool) => (
             <Link

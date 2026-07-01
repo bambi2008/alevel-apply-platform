@@ -14,6 +14,7 @@
     "pricing": "定价",
     "freeMatch": "免费选校",
     "timeline": "申请时间线",
+    "tasks": "待办清单",
     "applyGuide": "UCAS 填表指南",
     "documents": "资料中心",
     "tests": "入学笔试"
@@ -75,6 +76,7 @@
       "universities": "院校库",
       "applyGuide": "UCAS 填表指南",
       "documents": "资料中心",
+      "tasks": "待办清单",
       "tests": "入学笔试备考"
     },
     "profileIncomplete": "档案未完整填写，选校匹配效果会受影响。",

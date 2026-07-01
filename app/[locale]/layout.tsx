@@ -32,6 +32,7 @@ async function Header() {
     { href: "/applications", label: t("applications"), en: "Applications" },
     { href: "/statements", label: t("statements"), en: "Statement" },
     { href: "/timeline", label: t("timeline"), en: "Timeline" },
+    { href: "/tasks", label: t("tasks"), en: "To-Do" },
     { href: "/apply-guide", label: t("applyGuide"), en: "UCAS Guide" },
     { href: "/documents", label: t("documents"), en: "Documents" },
     { href: "/tests", label: t("tests"), en: "Test Prep" },

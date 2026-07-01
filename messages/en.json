@@ -14,6 +14,7 @@
     "pricing": "Pricing",
     "freeMatch": "Free Match",
     "timeline": "Timeline",
+    "tasks": "To-Do",
     "applyGuide": "UCAS Guide",
     "documents": "Documents",
     "tests": "Test Prep"
@@ -75,6 +76,7 @@
       "universities": "University DB",
       "applyGuide": "UCAS Form Guide",
       "documents": "Documents",
+      "tasks": "To-Do",
       "tests": "Test Prep"
     },
     "profileIncomplete": "Your profile is incomplete — matching results may be limited.",
