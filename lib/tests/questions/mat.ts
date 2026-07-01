@@ -1490,9 +1490,48 @@ Solutions: $x=1$ and $x=3$.`,
   },
 ];
 
+export const MAT_TOPUP: MCQQuestion[] = [
+  // mat-logic 补充（→ 8）
+  { id: "mat-a-101", type: "mcq", testId: "mat", topicId: "mat-logic", difficulty: 2, marks: 2,
+    question: "How many of the following are true for all integers $n$? (1) if $n$ is even then $n^2$ is even; (2) if $n^2$ is even then $n$ is even; (3) if $n$ is odd then $n^2$ is even.",
+    options: [ {key:"A",text:"$0$"},{key:"B",text:"$1$"},{key:"C",text:"$2$"},{key:"D",text:"$3$"} ],
+    answer: "C", solution: "(1) true; (2) true (contrapositive: odd$\\\\Rightarrow$odd$^2$); (3) false (odd$^2$ is odd). Two are true." },
+  { id: "mat-a-102", type: "mcq", testId: "mat", topicId: "mat-logic", difficulty: 2, marks: 2,
+    question: "The contrapositive of ‘if $x>0$ then $x^3>0$’ is:",
+    options: [ {key:"A",text:"if $x^3>0$ then $x>0$"},{key:"B",text:"if $x^3\\\\le0$ then $x\\\\le0$"},{key:"C",text:"if $x\\\\le0$ then $x^3\\\\le0$"},{key:"D",text:"if $x>0$ then $x^3\\\\le0$"} ],
+    answer: "B", solution: "Contrapositive of $P\\\\Rightarrow Q$ is $\\\\lnot Q\\\\Rightarrow\\\\lnot P$: ‘if $x^3\\\\le0$ then $x\\\\le0$’." },
+  { id: "mat-a-103", type: "mcq", testId: "mat", topicId: "mat-logic", difficulty: 3, marks: 2,
+    question: "Which is a counter-example to ‘for all real $x$, if $x^2>x$ then $x>1$’?",
+    options: [ {key:"A",text:"$x=2$"},{key:"B",text:"$x=\\\\tfrac12$"},{key:"C",text:"$x=-2$"},{key:"D",text:"$x=1$"} ],
+    answer: "C", solution: "At $x=-2$: $x^2=4>-2=x$ holds, but $x>1$ is false. So it is a counter-example." },
+
+  // mat-cs 补充（→ 8）
+  { id: "mat-a-111", type: "mcq", testId: "mat", topicId: "mat-cs", difficulty: 2, marks: 2,
+    question: "Two nested loops each run from $1$ to $n$, doing constant work inside. The time complexity is:",
+    options: [ {key:"A",text:"$O(n)$"},{key:"B",text:"$O(n\\\\log n)$"},{key:"C",text:"$O(n^2)$"},{key:"D",text:"$O(2^n)$"} ],
+    answer: "C", solution: "$n\\\\times n=n^2$ constant-work steps, so $O(n^2)$." },
+  { id: "mat-a-112", type: "mcq", testId: "mat", topicId: "mat-cs", difficulty: 2, marks: 2,
+    question: "Binary search on a sorted array of $n$ elements has worst-case time complexity:",
+    options: [ {key:"A",text:"$O(1)$"},{key:"B",text:"$O(\\\\log n)$"},{key:"C",text:"$O(n)$"},{key:"D",text:"$O(n^2)$"} ],
+    answer: "B", solution: "Each step halves the search range, giving about $\\\\log_2 n$ steps: $O(\\\\log n)$." },
+  { id: "mat-a-113", type: "mcq", testId: "mat", topicId: "mat-cs", difficulty: 2, marks: 2,
+    question: "A loop has $i$ running from $1$ to $n$, and for each $i$ an inner loop runs $i$ times. The total number of inner iterations is:",
+    options: [ {key:"A",text:"$n$"},{key:"B",text:"$n^2$"},{key:"C",text:"$\\\\tfrac{n(n+1)}{2}$"},{key:"D",text:"$2^n$"} ],
+    answer: "C", solution: "$1+2+\\\\cdots+n=\\\\dfrac{n(n+1)}{2}$." },
+  { id: "mat-a-114", type: "mcq", testId: "mat", topicId: "mat-cs", difficulty: 2, marks: 2,
+    question: "By De Morgan’s law, $\\\\lnot(A\\\\land B)$ is equivalent to:",
+    options: [ {key:"A",text:"$\\\\lnot A\\\\land\\\\lnot B$"},{key:"B",text:"$\\\\lnot A\\\\lor\\\\lnot B$"},{key:"C",text:"$A\\\\lor B$"},{key:"D",text:"$A\\\\land\\\\lnot B$"} ],
+    answer: "B", solution: "$\\\\lnot(A\\\\land B)=\\\\lnot A\\\\lor\\\\lnot B$." },
+  { id: "mat-a-115", type: "mcq", testId: "mat", topicId: "mat-cs", difficulty: 1, marks: 2,
+    question: "The binary number $1011_2$ equals which decimal value?",
+    options: [ {key:"A",text:"$9$"},{key:"B",text:"$11$"},{key:"C",text:"$13$"},{key:"D",text:"$23$"} ],
+    answer: "B", solution: "$1\\\\cdot8+0\\\\cdot4+1\\\\cdot2+1\\\\cdot1=11$." },
+];
+
 export const MAT_QUESTIONS = [
   ...MAT_PART_A,
   ...MAT_PART_A_EXTRA,
+  ...MAT_TOPUP,
   ...MAT_PART_B,
   ...MAT_PART_B_EXTRA,
 ];

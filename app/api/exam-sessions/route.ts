@@ -1,23 +1,29 @@
 import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 
-export interface SaveSessionRequest {
-  testId: string;
-  mode: "practice" | "mock";
-  totalEarned: number;
-  totalMax: number;
-  timeUsedSec?: number;
-  answers: {
-    questionId: string;
-    type: "mcq" | "long";
-    selected?: string;
-    work?: Record<string, string>;
-    earned: number;
-    max: number;
-    feedback?: unknown;
-  }[];
-}
+// 严格校验写入体，避免脏数据导致 500 或写入垃圾。
+const answerSchema = z.object({
+  questionId: z.string().min(1).max(100),
+  type: z.enum(["mcq", "long"]),
+  selected: z.string().max(20).optional(),
+  work: z.record(z.string()).optional(),
+  earned: z.number().int().min(0).max(1000),
+  max: z.number().int().min(0).max(1000),
+  feedback: z.unknown().optional(),
+});
+
+const saveSessionSchema = z.object({
+  testId: z.string().min(1).max(40),
+  mode: z.enum(["practice", "mock", "paper"]),
+  totalEarned: z.number().int().min(0).max(100000),
+  totalMax: z.number().int().min(0).max(100000),
+  timeUsedSec: z.number().int().min(0).max(86400).optional(),
+  answers: z.array(answerSchema).max(300),
+});
+
+export type SaveSessionRequest = z.infer<typeof saveSessionSchema>;
 
 export async function POST(req: NextRequest) {
   const session = await auth();
@@ -26,16 +32,23 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  let body: SaveSessionRequest;
+  let raw: unknown;
   try {
-    body = await req.json();
+    raw = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
 
-  // 自动建档：用户档案目前仍存在前端（localStorage），尚未整体迁库。
-  // 这里按需创建一条空 StudentProfile，使笔试成绩能正常入库；
-  // 待档案模块迁库后，此 upsert 天然兼容（已存在则不改动）。
+  const parsed = saveSessionSchema.safeParse(raw);
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: "Invalid request", details: parsed.error.issues.slice(0, 5) },
+      { status: 400 }
+    );
+  }
+  const body = parsed.data;
+
+  // 自动建档：确保有一条 StudentProfile，使笔试成绩能入库。
   const profile = await db.studentProfile.upsert({
     where: { userId },
     update: {},
