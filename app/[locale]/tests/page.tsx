@@ -35,7 +35,7 @@ export default function TestsPage() {
         <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-800">
           <span className="font-semibold">📌 使用说明：</span>
           点击任一考试进入详情页，查看考试结构、完整备考计划、知识点练习和模拟考试。
-          MAT、STEP、ENGAA 提供 AI 题库练习（由 Claude 生成，经多 AI 审核）。
+          MAT、STEP、ESAT 提供 AI 题库练习（由 Claude 生成，经多 AI 审核）。
         </div>
       </div>
 

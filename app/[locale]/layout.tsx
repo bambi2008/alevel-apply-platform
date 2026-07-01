@@ -5,6 +5,7 @@ import { getMessages, getTranslations, setRequestLocale } from "next-intl/server
 import { Link } from "@/i18n/navigation";
 import { routing, type AppLocale } from "@/i18n/routing";
 import { LocaleSwitcher } from "@/components/locale-switcher";
+import { MobileNav } from "@/components/mobile-nav";
 import { auth } from "@/auth";
 import { logoutAction } from "@/lib/auth/actions";
 import "../globals.css";
@@ -55,6 +56,7 @@ async function Header() {
             </Link>
           ))}
           <LocaleSwitcher />
+          <MobileNav links={links} />
           {session?.user ? (
             <form action={logoutAction} className="flex items-center gap-1 ml-1">
               <span className="text-xs text-neutral-500 hidden lg:inline max-w-[140px] truncate">

@@ -38,7 +38,7 @@ export interface GradeResponse {
   modelSolution: string;
 }
 
-const GRADE_SYSTEM_PROMPT = `You are an expert mathematics examiner for UK university admissions tests (MAT, STEP, ENGAA).
+const GRADE_SYSTEM_PROMPT = `You are an expert mathematics examiner for UK university admissions tests (MAT, STEP, ESAT).
 Your task is to grade a student's handwritten/typed solution against the marking scheme.
 
 Rules:
