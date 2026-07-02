@@ -17,7 +17,13 @@
     "tasks": "待办清单",
     "applyGuide": "UCAS 填表指南",
     "documents": "资料中心",
-    "tests": "入学笔试"
+    "background": "背景提升",
+    "tests": "入学笔试",
+    "more": "更多",
+    "adminConsole": "管理后台",
+    "groupApply": "申请流程",
+    "groupPrep": "备考与提升",
+    "groupTools": "工具"
   },
   "footer": {
     "rights": "桥申 · 仅供参考，院校要求以官方为准",
@@ -76,13 +82,15 @@
       "universities": "院校库",
       "applyGuide": "UCAS 填表指南",
       "documents": "资料中心",
+      "background": "背景提升",
       "tasks": "待办清单",
       "tests": "入学笔试备考"
     },
     "profileIncomplete": "档案未完整填写，选校匹配效果会受影响。",
-    "completeProfile": "去完善",
+    "completeProfile": "完善我的档案",
     "noProfile": "还没有建立档案，先填写一下基本信息和成绩。",
-    "buildProfile": "建立我的档案"
+    "buildProfile": "建立我的档案",
+    "startMatch": "开始选校匹配"
   },
   "home": {
     "badge": "A-Level 专属 · 英国 UCAS + 香港直申",

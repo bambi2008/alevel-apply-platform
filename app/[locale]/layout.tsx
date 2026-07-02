@@ -2,12 +2,9 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
-import { Link } from "@/i18n/navigation";
 import { routing, type AppLocale } from "@/i18n/routing";
-import { LocaleSwitcher } from "@/components/locale-switcher";
-import { MobileNav } from "@/components/mobile-nav";
+import { SiteNav } from "@/components/site-nav";
 import { auth } from "@/auth";
-import { logoutAction } from "@/lib/auth/actions";
 import "../globals.css";
 
 export async function generateMetadata({
@@ -21,81 +18,14 @@ export async function generateMetadata({
 }
 
 async function Header() {
-  const t = await getTranslations("nav");
-  const ta = await getTranslations("auth");
   const session = await auth();
-  const links = [
-    { href: "/", label: t("home"), en: "Home" },
-    { href: "/match", label: t("match"), en: "Match" },
-    { href: "/universities", label: t("universities"), en: "Universities" },
-    { href: "/profile", label: t("profile"), en: "Profile" },
-    { href: "/applications", label: t("applications"), en: "Applications" },
-    { href: "/statements", label: t("statements"), en: "Statement" },
-    { href: "/timeline", label: t("timeline"), en: "Timeline" },
-    { href: "/tasks", label: t("tasks"), en: "To-Do" },
-    { href: "/apply-guide", label: t("applyGuide"), en: "UCAS Guide" },
-    { href: "/documents", label: t("documents"), en: "Documents" },
-    { href: "/tests", label: t("tests"), en: "Test Prep" },
-  ];
+  const user = session?.user as { role?: string; email?: string } | undefined;
   return (
-    <header className="border-b border-neutral-200 bg-white/90 backdrop-blur sticky top-0 z-10">
-      <div className="mx-auto max-w-6xl px-4 h-14 flex items-center justify-between">
-        <Link href="/" className="font-bold text-lg tracking-tight whitespace-nowrap">
-          桥申<span className="text-blue-600">·</span>
-          <span className="text-sm font-normal text-neutral-500 ml-1 hidden sm:inline">
-            {t("brandSuffix")}
-          </span>
-        </Link>
-        <nav className="flex items-center gap-0.5 text-sm">
-          {links.map((l) => (
-            <Link
-              key={l.href}
-              href={l.href}
-              className="px-2.5 py-1.5 rounded-md text-neutral-600 hover:text-neutral-900 hover:bg-neutral-100 hidden md:flex flex-col items-center leading-tight"
-            >
-              <span className="text-sm">{l.label}</span>
-              <span className="text-[10px] text-neutral-400">{l.en}</span>
-            </Link>
-          ))}
-          <LocaleSwitcher />
-          <MobileNav links={links} />
-          {(session?.user as { role?: string } | undefined)?.role === "ADMIN" && (
-            <Link
-              href="/admin"
-              className="ml-1 px-2.5 py-1.5 rounded-md text-amber-700 bg-amber-50 hover:bg-amber-100 text-sm whitespace-nowrap"
-            >
-              管理后台
-            </Link>
-          )}
-          {session?.user ? (
-            <form action={logoutAction} className="flex items-center gap-1 ml-1">
-              <span className="text-xs text-neutral-500 hidden lg:inline max-w-[140px] truncate">
-                {session.user.email}
-              </span>
-              <button
-                type="submit"
-                className="px-2.5 py-1.5 rounded-md text-neutral-600 hover:bg-neutral-100"
-              >
-                {ta("logout")}
-              </button>
-            </form>
-          ) : (
-            <Link
-              href="/login"
-              className="ml-1 px-2.5 py-1.5 rounded-md text-neutral-600 hover:bg-neutral-100"
-            >
-              {ta("login")}
-            </Link>
-          )}
-          <Link
-            href="/match"
-            className="ml-1 px-3 py-1.5 rounded-md bg-blue-600 text-white hover:bg-blue-700"
-          >
-            {t("freeMatch")}
-          </Link>
-        </nav>
-      </div>
-    </header>
+    <SiteNav
+      userEmail={user?.email ?? null}
+      isAdmin={user?.role === "ADMIN"}
+      isLoggedIn={!!session?.user}
+    />
   );
 }
 
@@ -128,8 +58,10 @@ export default async function LocaleLayout({
       <body className="min-h-full flex flex-col bg-white text-neutral-900">
         <NextIntlClientProvider messages={messages}>
           {await Header()}
-          <main className="flex-1">{children}</main>
-          {await Footer()}
+          <div className="lg:pl-60">
+            <main className="flex-1">{children}</main>
+            {await Footer()}
+          </div>
         </NextIntlClientProvider>
       </body>
     </html>

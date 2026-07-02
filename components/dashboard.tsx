@@ -83,13 +83,48 @@ export function Dashboard({ email }: { email?: string | null }) {
   const majors = profile.intendedMajors ?? [];
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10 space-y-6">
-      {/* Greeting */}
-      <div>
-        <h1 className="text-2xl font-bold mb-1">
-          {t("dashboard.greeting", { name: profile.fullName || email || t("dashboard.student") })}
-        </h1>
-        <p className="text-sm text-neutral-500">{t("dashboard.subtitle")}</p>
+    <div className="mx-auto max-w-5xl px-4 py-8 sm:py-10 space-y-6">
+      {/* Hero */}
+      <div className="relative overflow-hidden rounded-3xl bg-brand-soft border border-[var(--border)] px-6 py-8 sm:px-9 sm:py-10">
+        <svg
+          className="absolute -right-8 -top-10 w-80 h-80 opacity-20 pointer-events-none"
+          viewBox="0 0 200 200"
+          aria-hidden="true"
+        >
+          <defs>
+            <linearGradient id="heroArc" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stopColor="#4f46e5" />
+              <stop offset="1" stopColor="#22d3ee" />
+            </linearGradient>
+          </defs>
+          <path d="M8 150 A 92 92 0 0 1 192 150" stroke="url(#heroArc)" strokeWidth="3" fill="none" strokeLinecap="round" />
+          <line x1="45" y1="150" x2="45" y2="182" stroke="url(#heroArc)" strokeWidth="2.5" strokeLinecap="round" />
+          <line x1="100" y1="128" x2="100" y2="182" stroke="url(#heroArc)" strokeWidth="2.5" strokeLinecap="round" />
+          <line x1="155" y1="150" x2="155" y2="182" stroke="url(#heroArc)" strokeWidth="2.5" strokeLinecap="round" />
+        </svg>
+        <div className="relative">
+          <p className="text-xs font-semibold text-[var(--indigo)] uppercase tracking-[0.2em] mb-2">
+            A-Level · 申英港
+          </p>
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[var(--ink)]">
+            {t("dashboard.greeting", { name: profile.fullName || email || t("dashboard.student") })}
+          </h1>
+          <p className="mt-2 text-[var(--ink-soft)]">{t("dashboard.subtitle")}</p>
+          <div className="mt-5 flex flex-wrap gap-3">
+            <Link
+              href="/match"
+              className="px-5 py-2.5 rounded-xl bg-brand text-white text-sm font-medium hover:opacity-90 transition-opacity shadow-sm shadow-indigo-500/20"
+            >
+              {t("dashboard.startMatch")}
+            </Link>
+            <Link
+              href="/profile"
+              className="px-5 py-2.5 rounded-xl bg-white border border-[var(--border)] text-[var(--ink)] text-sm font-medium hover:bg-[var(--surface)] transition-colors"
+            >
+              {t("dashboard.completeProfile")}
+            </Link>
+          </div>
+        </div>
       </div>
 
       {/* Full process overview */}
@@ -148,7 +183,7 @@ export function Dashboard({ email }: { email?: string | null }) {
 
       {/* Tools grid */}
       <div>
-        <p className="font-semibold mb-3">{t("dashboard.tools")}</p>
+        <p className="font-semibold mb-3 text-[var(--ink)]">{t("dashboard.tools")}</p>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
           {[
             { href: "/match", emoji: "🎯", labelKey: "dashboard.tool.match", meta: null },
@@ -162,17 +197,20 @@ export function Dashboard({ email }: { email?: string | null }) {
             { href: "/universities", emoji: "🏛️", labelKey: "dashboard.tool.universities", meta: null },
             { href: "/apply-guide", emoji: "📄", labelKey: "dashboard.tool.applyGuide", meta: null },
             { href: "/documents", emoji: "📁", labelKey: "dashboard.tool.documents", meta: null },
+            { href: "/background", emoji: "🌟", labelKey: "dashboard.tool.background", meta: null },
             { href: "/tasks", emoji: "✅", labelKey: "dashboard.tool.tasks", meta: null },
             { href: "/tests", emoji: "📐", labelKey: "dashboard.tool.tests", meta: null },
           ].map((tool) => (
             <Link
               key={tool.href}
               href={tool.href}
-              className="flex flex-col items-center justify-center gap-1.5 rounded-xl border border-neutral-200 bg-white p-4 hover:border-blue-300 hover:shadow-sm transition text-center"
+              className="card-hover group flex flex-col items-center justify-center gap-2 rounded-2xl border border-[var(--border)] bg-white p-4 hover:border-indigo-200 hover:shadow-md hover:shadow-indigo-500/5 text-center"
             >
-              <span className="text-2xl">{tool.emoji}</span>
-              <span className="text-xs font-medium text-neutral-700">{t(tool.labelKey as never)}</span>
-              {tool.meta && <span className="text-xs text-blue-500">{tool.meta}</span>}
+              <span className="flex items-center justify-center w-12 h-12 rounded-xl bg-brand-soft text-2xl group-hover:scale-105 transition-transform">
+                {tool.emoji}
+              </span>
+              <span className="text-sm font-medium text-[var(--ink)]">{t(tool.labelKey as never)}</span>
+              {tool.meta && <span className="text-xs text-[var(--indigo)]">{tool.meta}</span>}
             </Link>
           ))}
         </div>

@@ -17,7 +17,13 @@
     "tasks": "To-Do",
     "applyGuide": "UCAS Guide",
     "documents": "Documents",
-    "tests": "Test Prep"
+    "background": "Background",
+    "tests": "Test Prep",
+    "more": "More",
+    "adminConsole": "Admin",
+    "groupApply": "Application",
+    "groupPrep": "Prep & Boost",
+    "groupTools": "Tools"
   },
   "footer": {
     "rights": "QiaoShen · For reference only; verify requirements with official sources",
@@ -76,13 +82,15 @@
       "universities": "University DB",
       "applyGuide": "UCAS Form Guide",
       "documents": "Documents",
+      "background": "Background",
       "tasks": "To-Do",
       "tests": "Test Prep"
     },
     "profileIncomplete": "Your profile is incomplete — matching results may be limited.",
-    "completeProfile": "Complete it",
+    "completeProfile": "Complete profile",
     "noProfile": "No profile yet — fill in your grades and goals to get started.",
-    "buildProfile": "Build my profile"
+    "buildProfile": "Build my profile",
+    "startMatch": "Start matching"
   },
   "home": {
     "badge": "Built for A-Level · UK UCAS + HK Direct",
