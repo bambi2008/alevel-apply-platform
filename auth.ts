@@ -36,7 +36,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         const phone = String(creds?.phone ?? "").trim();
         const code = String(creds?.code ?? "").trim();
         if (!/^1[3-9]\d{9}$/.test(phone) || !/^\d{6}$/.test(code)) return null;
-        if (!verifyCode(phone, code)) return null;
+        if (!(await verifyCode(phone, code))) return null;
 
         // 校验通过：已存在则登录，否则自动建号（含隐私同意记录）
         let user = await db.user.findUnique({ where: { phone } });

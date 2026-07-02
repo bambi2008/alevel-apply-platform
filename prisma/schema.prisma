@@ -76,6 +76,7 @@ model StudentProfile {
   statements     PersonalStatement[]
   tasks          Task[]
   examSessions   ExamSession[]
+  backgroundItems BackgroundItem[]
   createdAt      DateTime            @default(now())
   updatedAt      DateTime            @updatedAt
 }
@@ -444,3 +445,28 @@ model ExamAnswer {
 // model Reference { ... }         // 推荐信
 // model Notification { ... }      // 通知记录
 // model Embedding { ... }         // pgvector 向量（RAG）
+
+model BackgroundItem {
+  id         String         @id @default(cuid())
+  studentId  String
+  student    StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  catalogId  String? // 指向推荐目录项；自定义项为空
+  title      String
+  category   String // COMPETITION / RESEARCH / ACTIVITY / SUMMER_SCHOOL
+  field      String? // CS_ENG / ECON / MATH / SCIENCE / MED
+  status     String         @default("PLANNED") // PLANNED / IN_PROGRESS / DONE
+  notes      String?
+  targetDate DateTime?
+  createdAt  DateTime       @default(now())
+
+  @@index([studentId])
+}
+
+model PhoneCode {
+  phone      String   @id
+  code       String
+  expiresAt  DateTime
+  lastSentAt DateTime
+  createdAt  DateTime @default(now())
+}
+

@@ -26,12 +26,12 @@ export async function requestPhoneCodeAction(
   const p = String(phone || "").trim();
   if (!PHONE_RE.test(p)) return { ok: false, error: "INVALID_PHONE" };
 
-  if (!canSend(p)) {
-    return { ok: false, error: "COOLDOWN", cooldown: cooldownRemaining(p) };
+  if (!(await canSend(p))) {
+    return { ok: false, error: "COOLDOWN", cooldown: await cooldownRemaining(p) };
   }
 
   const code = generateCode();
-  saveCode(p, code);
+  await saveCode(p, code);
 
   const sms = getSms();
   await sms.sendCode(p, code);
