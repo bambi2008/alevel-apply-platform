@@ -217,6 +217,7 @@ model Program {
   intlStudentRatio    Float?
   mainlandChinaCohort Int?
   dataYear            Int?
+  verifiedAt          DateTime? // 最后由管理员核对官方来源的时间
 
   requirementsText String?
   applications     Application[]
