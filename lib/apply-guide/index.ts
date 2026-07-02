@@ -15,6 +15,7 @@ export interface GuideModule {
   title: string;        // 中文标题
   titleEn: string;      // 英文官方名称
   icon: string;
+  region: "UK" | "HK";
   officialUrl: string;
   summary: string;      // 一句话说明
   overview: string;     // 2-3 句详细说明
@@ -27,10 +28,11 @@ export const APPLY_GUIDE_MODULES: GuideModule[] = [
   {
     id: "personal-details",
     num: 1,
+    region: "UK",
     title: "个人信息",
     titleEn: "Personal Details",
     icon: "👤",
-    officialUrl: "https://www.ucas.com/undergraduate/applying-university/ucas-undergraduate-what-goes-your-ucas-application",
+    officialUrl: "https://www.ucas.com/undergraduate/applying-university",
     summary: "填写你的基本身份信息，包括姓名、出生日期、地址和联系方式。",
     overview: "个人信息模块是 UCAS 申请的基础部分。所有信息必须与护照完全一致，任何不符都可能导致签证或入学手续出现麻烦。大陆学生的姓名应填写护照上的拼音全名。",
     fields: [
@@ -85,10 +87,11 @@ export const APPLY_GUIDE_MODULES: GuideModule[] = [
   {
     id: "education",
     num: 2,
+    region: "UK",
     title: "教育经历",
     titleEn: "Education",
     icon: "🎓",
-    officialUrl: "https://www.ucas.com/undergraduate/applying-university/filling-your-ucas-undergraduate-application/your-education",
+    officialUrl: "https://www.ucas.com/undergraduate/applying-university",
     summary: "填写所有在读或已毕业的学校、GCSE/IGCSE 和 A-Level 课程与成绩。",
     overview: "教育经历模块需要列出从中学开始的所有学校，并逐科填写 GCSE/IGCSE 已考成绩和 A-Level 已考/预估成绩。大陆学生需特别注意学校英文名称和资质代码的填写。",
     fields: [
@@ -132,10 +135,11 @@ export const APPLY_GUIDE_MODULES: GuideModule[] = [
   {
     id: "employment",
     num: 3,
+    region: "UK",
     title: "工作 / 实习经历",
     titleEn: "Employment",
     icon: "💼",
-    officialUrl: "https://www.ucas.com/undergraduate/applying-university/filling-your-ucas-undergraduate-application/your-employment",
+    officialUrl: "https://www.ucas.com/undergraduate/applying-university",
     summary: "填写有薪或无薪的工作、实习、志愿服务经历（非强制，但相关经历有帮助）。",
     overview: "Employment 模块是可选的，但如果你有与目标专业相关的实习、科研助手、志愿服务或兼职经历，强烈建议填写，并在个人陈述中呼应。无相关经历的学生直接跳过即可，不会扣分。",
     fields: [
@@ -176,10 +180,11 @@ export const APPLY_GUIDE_MODULES: GuideModule[] = [
   {
     id: "personal-statement",
     num: 4,
+    region: "UK",
     title: "个人陈述",
     titleEn: "Personal Statement",
     icon: "✍️",
-    officialUrl: "https://www.ucas.com/undergraduate/applying-university/writing-personal-statement",
+    officialUrl: "https://www.ucas.com/undergraduate/applying-university",
     summary: "2026 年入学起改为 3 个结构化问题，总计约 4000 字符，须由学生本人撰写。",
     overview: "个人陈述（Personal Statement）是 UCAS 申请中权重最高的主观材料，院校据此判断你对专业的热情与准备程度。2026 年起 UCAS 将原来的自由文章形式改为 3 个结构化问题，每题各有字数上限。内容必须本人原创——UCAS 内置相似度检测系统，代写风险极高。",
     fields: [
@@ -214,10 +219,11 @@ export const APPLY_GUIDE_MODULES: GuideModule[] = [
   {
     id: "reference",
     num: 5,
+    region: "UK",
     title: "推荐信",
     titleEn: "Reference",
     icon: "📝",
-    officialUrl: "https://www.ucas.com/undergraduate/applying-university/filling-your-ucas-undergraduate-application/reference-ucas-undergraduate-application",
+    officialUrl: "https://www.ucas.com/undergraduate/applying-university",
     summary: "由学校老师或辅导员在 UCAS 系统中直接提交，学生不参与撰写也无法查看内容。",
     overview: "UCAS 推荐信由学校指定的推荐人（Referee，通常是班主任或学科老师）通过 UCAS 系统直接提交，学生无法自行修改或查看具体内容。推荐信的字数上限为 4000 字符，内容应涵盖：学术能力、学习态度、课外表现及适合该专业的理由。",
     fields: [
@@ -247,10 +253,11 @@ export const APPLY_GUIDE_MODULES: GuideModule[] = [
   {
     id: "finance",
     num: 6,
+    region: "UK",
     title: "学费与资助",
     titleEn: "Finance",
     icon: "💰",
-    officialUrl: "https://www.ucas.com/undergraduate/applying-university/filling-your-ucas-undergraduate-application/financial-support",
+    officialUrl: "https://www.ucas.com/undergraduate/applying-university",
     summary: "填写学费缴纳方式和费用状态，大陆学生统一选 Overseas（海外）费率。",
     overview: "Finance 模块主要用于确定你的学费身份（Home/EU 还是 Overseas），以及是否申请英国政府助学贷款（Student Finance）。持中国护照在大陆就读的学生属于 Overseas 学生，学费按国际生收费，无法申请英国政府助学贷款。",
     fields: [
@@ -285,10 +292,11 @@ export const APPLY_GUIDE_MODULES: GuideModule[] = [
   {
     id: "choices",
     num: 7,
+    region: "UK",
     title: "志愿选择",
     titleEn: "Choices",
     icon: "🎯",
-    officialUrl: "https://www.ucas.com/undergraduate/applying-university/filling-your-ucas-undergraduate-application/your-choices",
+    officialUrl: "https://www.ucas.com/undergraduate/applying-university",
     summary: "最多填写 5 个志愿，牛津剑桥只能二选一。志愿之间无排名，院校看不到彼此。",
     overview: "UCAS 允许最多填写 5 所院校的 5 个专业（每所仅 1 个专业），但可以填写同一院校的不同专业。志愿列表对院校保密——每所院校只知道你申请了自己，不知道你同时申请了哪些其他学校。牛津和剑桥只能申请其中一所（不能同时申请牛津 + 剑桥）。",
     fields: [
@@ -332,10 +340,11 @@ export const APPLY_GUIDE_MODULES: GuideModule[] = [
   {
     id: "declaration",
     num: 8,
+    region: "UK",
     title: "声明与提交",
     titleEn: "Declaration",
     icon: "✅",
-    officialUrl: "https://www.ucas.com/undergraduate/applying-university/filling-your-ucas-undergraduate-application/declaration",
+    officialUrl: "https://www.ucas.com/undergraduate/applying-university",
     summary: "确认所有信息真实准确后，由学生签署声明，学校检查后最终提交至 UCAS。",
     overview: "Declaration 是 UCAS 申请的最后一步。你需要确认所有填写的信息真实、准确，并同意 UCAS 的条款。之后申请发送至学校（你的推荐人），由老师/升学顾问最终审核并提交至 UCAS。一旦提交给院校后，基本信息和志愿选择不可更改。",
     fields: [
@@ -364,6 +373,152 @@ export const APPLY_GUIDE_MODULES: GuideModule[] = [
     ],
     chinaNote: "提交后通过 UCAS Track 追踪申请状态。院校收到申请后会发邮件确认。等待期间定期查看注册邮箱，不要错过院校发出的笔试邀请或面试通知。",
   },
+
+  // ═══════════ 香港直申指南（轻量版；具体字段/截止以各校官网为准）═══════════
+  {
+    id: "hk-overview",
+    num: 101,
+    region: "HK",
+    title: "香港直申总览",
+    titleEn: "HK Direct Application Overview",
+    icon: "🇭🇰",
+    officialUrl: "https://www.hku.hk",
+    summary: "香港高校本科不走 UCAS，需通过各校自己的国际生 / 非联招申请系统分别申请。",
+    overview:
+      "与英国统一的 UCAS 不同，香港三所主要大学（港大 HKU、科大 HKUST、中大 CUHK）各自有独立的国际生招生门户。持 A-Level 成绩的大陆学生一般走 International / Non-JUPAS 途径，需对每所目标院校单独注册、单独申请、单独缴费。没有 UCAS 的「5 个志愿」上限，但每校的可选专业数各有规定。",
+    fields: [
+      {
+        field: "Application route",
+        fieldZh: "申请途径",
+        example: "International Students / Non-JUPAS（A-Level 考生适用）",
+        note: "香港本地考生走 JUPAS 联招；持 A-Level 等国际课程的大陆学生走 International 或 Non-JUPAS 途径，通过各校国际招生页申请。",
+      },
+      {
+        field: "Application portals",
+        fieldZh: "各校申请门户",
+        example: "港大、科大、中大各有独立在线申请系统",
+        note: "分别在三校的「本科招生 / International Admissions」页面注册账号申请。以官网为准：hku.hk、hkust.edu.hk、cuhk.edu.hk。",
+        warning: "三校系统互相独立，账号与申请材料需分别提交，不能一次通投。",
+      },
+      {
+        field: "Application fee",
+        fieldZh: "申请费",
+        example: "各校单独收取申请费（金额以官网为准）",
+        note: "每所院校单独缴纳申请费，通常线上信用卡支付。",
+      },
+      {
+        field: "Deadlines",
+        fieldZh: "截止时间",
+        example: "多在入学前一年的秋冬至次年春季；部分为滚动录取",
+        note: "港校普遍设有 Early round（早申，常在 11 月前后）与 Main round，早申通常更有优势。具体日期每年不同，务必查当年官网。",
+        warning: "部分热门专业名额有限、滚动录取，越早申请越好，别拖到最后。",
+      },
+      {
+        field: "Number of choices",
+        fieldZh: "可选专业数",
+        example: "每校可选若干志愿（规则各校不同）",
+        note: "不同于 UCAS 全国 5 个志愿的上限，港校是「每校单独申请、每校内可填若干志愿」，具体上限看各校规定。",
+      },
+    ],
+    checklist: [
+      "已确认走 International / Non-JUPAS 途径",
+      "已在每所目标院校的招生门户分别注册",
+      "已了解各校申请费与缴费方式",
+      "已查清当年各校 Early / Main round 截止日期",
+      "已了解各校可填志愿数规则",
+    ],
+    chinaNote:
+      "港校对 A-Level 大陆学生非常友好，但「每校单独申请」这一点和英国差异很大，务必给每所院校单独留出准备时间。早申（Early round）通常竞争压力较小，建议优先。",
+  },
+  {
+    id: "hk-grades",
+    num: 102,
+    region: "HK",
+    title: "成绩与材料",
+    titleEn: "Grades & Documents",
+    icon: "📄",
+    officialUrl: "https://www.hkust.edu.hk",
+    summary: "港校接受预估成绩申请，录取多为 conditional offer，凭最终成绩换 unconditional。",
+    overview:
+      "香港高校普遍接受以预估成绩（predicted grades）申请，先发有条件录取（conditional offer），待 A-Level 最终成绩达标后转为正式录取。需准备成绩单、护照、英语能力证明等材料。",
+    fields: [
+      {
+        field: "Predicted / actual grades",
+        fieldZh: "预估 / 实际成绩",
+        example: "以学校开具的预估成绩申请；出分后补交正式成绩",
+        note: "多数港校接受预估成绩发 conditional offer。最终 A-Level 成绩需达到 offer 条件方可入学。",
+      },
+      {
+        field: "Transcript",
+        fieldZh: "成绩单",
+        example: "学校盖章的官方成绩单（中英文）",
+        note: "含 AS/A-Level 已考科目成绩与在读证明。",
+      },
+      {
+        field: "Passport / ID",
+        fieldZh: "护照 / 身份证明",
+        example: "有效护照或港澳通行证",
+        note: "用于身份核验，姓名须与申请信息一致。",
+      },
+      {
+        field: "English proficiency",
+        fieldZh: "英语能力",
+        example: "IELTS / TOEFL，或 A-Level English 成绩",
+        note: "多数港校可用 A-Level 中的 English 成绩或雅思托福满足语言要求，具体门槛以各校专业为准。",
+      },
+    ],
+    checklist: [
+      "已取得学校开具的预估成绩",
+      "已准备中英文官方成绩单",
+      "护照在有效期内且姓名一致",
+      "已确认目标专业的英语要求并达标",
+    ],
+    chinaNote:
+      "香港与英国都接受预估成绩，材料可复用。注意港校 conditional offer 的换取条件（最终成绩）要盯紧出分时间。",
+  },
+  {
+    id: "hk-essay-interview",
+    num: 103,
+    region: "HK",
+    title: "文书 · 推荐 · 面试",
+    titleEn: "Essay, Referee & Interview",
+    icon: "🎤",
+    officialUrl: "https://www.cuhk.edu.hk",
+    summary: "港校多要求个人陈述 / essay 与推荐人；医学、法律、商科等热门专业常设面试。",
+    overview:
+      "香港高校的申请通常包含个人陈述或短文（要求因校而异，不能直接套用 UCAS 的三题 PS）、推荐人信息，以及针对热门专业的面试。面试是港校录取的重要环节，尤其医学、法律、商科、部分工程专业。",
+    fields: [
+      {
+        field: "Personal statement / Essay",
+        fieldZh: "个人陈述 / 短文",
+        example: "按各校题目与字数要求撰写（与 UCAS PS 不同）",
+        note: "港校的文书题目、字数与 UCAS 不同，需针对各校单独准备；有的要求回答特定问题，有的是开放式短文。",
+        warning: "不要直接把 UCAS 的三题个人陈述原样提交给港校，题目与侧重点不一样。",
+      },
+      {
+        field: "Referee / Recommendation",
+        fieldZh: "推荐人 / 推荐信",
+        example: "任课老师或升学指导，提供推荐或作为 referee",
+        note: "部分港校在申请中填写推荐人信息，由校方联系；也有要求上传推荐信的。",
+      },
+      {
+        field: "Interview",
+        fieldZh: "面试",
+        example: "医学 / 法律 / 商科 / 部分工程专业常设面试",
+        note: "面试形式包括线上单面、小组面试等，考查沟通、逻辑与专业兴趣。收到面试邀请后应认真准备。",
+        warning: "热门专业面试往往是录取的关键环节，别只顾成绩而忽视面试准备。",
+      },
+    ],
+    checklist: [
+      "已针对每所港校单独准备文书（未套用 UCAS PS）",
+      "已确认各校对推荐人 / 推荐信的要求",
+      "已了解目标专业是否需要面试",
+      "收到面试邀请后已做针对性准备",
+    ],
+    chinaNote:
+      "桥申的文书工作台（/statements）与背景提升（/background）可以帮你准备文书素材与面试谈资，但港校文书要按各校题目重新组织，不能直接复用英国 PS。",
+  },
+
 ];
 
 export const APPLY_GUIDE_STORAGE_KEY = "alevel:apply-guide:v1";

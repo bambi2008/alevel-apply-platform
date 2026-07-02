@@ -19,17 +19,17 @@ function patchProgress(data: ModuleProgress[], id: string, patch: Partial<Module
   return [...data.filter((d) => d.moduleId !== id), updated];
 }
 
-function completedCount(data: ModuleProgress[]): number {
-  return APPLY_GUIDE_MODULES.filter((m) => {
-    const p = progressOf(data, m.id);
-    return p.done;
-  }).length;
-}
-
 export default function ApplyGuidePage() {
   const [progress, setProgress] = useState<ModuleProgress[]>([]);
   const [activeId, setActiveId] = useState<string | null>(APPLY_GUIDE_MODULES[0].id);
   const [loaded, setLoaded] = useState(false);
+  const [activeRegion, setActiveRegion] = useState<"UK" | "HK">("UK");
+
+  const switchRegion = (r: "UK" | "HK") => {
+    setActiveRegion(r);
+    const first = APPLY_GUIDE_MODULES.find((m) => m.region === r);
+    if (first) setActiveId(first.id);
+  };
 
   useEffect(() => {
     loadProgress().then((p) => {
@@ -59,10 +59,11 @@ export default function ApplyGuidePage() {
     update(moduleId, { done: !p.done });
   };
 
-  const done = completedCount(progress);
-  const total = APPLY_GUIDE_MODULES.length;
+  const modules = APPLY_GUIDE_MODULES.filter((m) => m.region === activeRegion);
+  const done = modules.filter((m) => progressOf(progress, m.id).done).length;
+  const total = modules.length;
 
-  const activeModule = APPLY_GUIDE_MODULES.find((m) => m.id === activeId) ?? APPLY_GUIDE_MODULES[0];
+  const activeModule = modules.find((m) => m.id === activeId) ?? modules[0];
 
   if (!loaded) {
     return <div className="mx-auto max-w-5xl px-4 py-10 text-neutral-400">加载中…</div>;
@@ -72,10 +73,29 @@ export default function ApplyGuidePage() {
     <div className="mx-auto max-w-6xl px-4 py-10">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">UCAS 申请表填写指南</h1>
+        <h1 className="text-3xl font-bold">申请表填写指南</h1>
         <p className="mt-2 text-neutral-600">
-          UCAS Application Form Guide — 8 个模块 · 逐项说明 · 大陆学生特别提示
+          {activeRegion === "UK"
+            ? "UCAS 申请表填写指南 — 逐项说明 · 大陆学生特别提示"
+            : "香港直申填写指南 — 港校独立申请 · 与 UCAS 的差异提示"}
         </p>
+        {/* 地区切换 */}
+        <div className="mt-4 inline-flex rounded-lg border border-neutral-200 p-0.5 bg-neutral-50">
+          <button
+            type="button"
+            onClick={() => switchRegion("UK")}
+            className={`px-4 py-1.5 rounded-md text-sm transition ${activeRegion === "UK" ? "bg-white shadow-sm font-medium text-blue-700" : "text-neutral-500 hover:text-neutral-700"}`}
+          >
+            🇬🇧 英国 UCAS
+          </button>
+          <button
+            type="button"
+            onClick={() => switchRegion("HK")}
+            className={`px-4 py-1.5 rounded-md text-sm transition ${activeRegion === "HK" ? "bg-white shadow-sm font-medium text-blue-700" : "text-neutral-500 hover:text-neutral-700"}`}
+          >
+            🇭🇰 香港直申
+          </button>
+        </div>
         <div className="mt-4 flex items-center gap-4">
           <div className="flex-1 h-2 bg-neutral-100 rounded-full overflow-hidden max-w-xs">
             <div
@@ -93,7 +113,7 @@ export default function ApplyGuidePage() {
         {/* Sidebar */}
         <aside className="w-52 shrink-0 hidden md:block">
           <nav className="space-y-1 sticky top-20">
-            {APPLY_GUIDE_MODULES.map((m) => {
+            {modules.map((m) => {
               const p = progressOf(progress, m.id);
               const isActive = m.id === activeId;
               return (
@@ -127,7 +147,7 @@ export default function ApplyGuidePage() {
             value={activeId ?? ""}
             onChange={(e) => setActiveId(e.target.value)}
           >
-            {APPLY_GUIDE_MODULES.map((m) => (
+            {modules.map((m) => (
               <option key={m.id} value={m.id}>
                 {m.num}. {m.title} {m.titleEn}
               </option>
@@ -142,13 +162,13 @@ export default function ApplyGuidePage() {
           onToggleCheck={toggleCheck}
           onToggleDone={toggleDone}
           onNext={() => {
-            const idx = APPLY_GUIDE_MODULES.findIndex((m) => m.id === activeId);
-            if (idx < APPLY_GUIDE_MODULES.length - 1) {
-              setActiveId(APPLY_GUIDE_MODULES[idx + 1].id);
+            const idx = modules.findIndex((m) => m.id === activeId);
+            if (idx < modules.length - 1) {
+              setActiveId(modules[idx + 1].id);
               window.scrollTo({ top: 0, behavior: "smooth" });
             }
           }}
-          hasNext={APPLY_GUIDE_MODULES.findIndex((m) => m.id === activeId) < APPLY_GUIDE_MODULES.length - 1}
+          hasNext={modules.findIndex((m) => m.id === activeId) < modules.length - 1}
         />
       </div>
     </div>
