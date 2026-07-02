@@ -102,4 +102,18 @@ describe("evaluateMatch", () => {
     expect(r.eligible).toBe(false);
     expect(r.reasons.some((x) => x.includes("不计入"))).toBe(true);
   });
+
+  it("does NOT let a high grade compensate an unacceptably low one (position-wise)", () => {
+    // A*A*C 总分(6+6+3=15) 等于 AAA(15)，但第三科 C 达不到 A → 不应判为达标
+    const r = evaluateMatch({ ...grades("A*", "A*", "C"), ielts: 7 }, req);
+    expect(r.meetsTypical).toBe(false);
+    expect(r.meetsMinimumGrades).toBe(false);
+    expect(r.category).toBe("reach");
+  });
+
+  it("safety requires clearing typical on every subject", () => {
+    const r = evaluateMatch({ ...grades("A*", "A*", "A"), ielts: 7.5 }, req);
+    expect(r.meetsTypical).toBe(true);
+    expect(r.category).toBe("safety");
+  });
 });

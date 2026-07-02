@@ -84,14 +84,6 @@ export function parseOffer(offer: string): string[] {
 
 const norm = (s: string) => s.trim().toLowerCase();
 
-function offerPoints(offer: string): { points: number; count: number } {
-  const grades = parseOffer(offer);
-  return {
-    points: grades.reduce((sum, g) => sum + gradePoints(g), 0),
-    count: grades.length,
-  };
-}
-
 /** 取学生最好的 n 门成绩点数之和（已剔除不接受科目）。 */
 function topPoints(grades: StudentGrade[], n: number, excluded: Set<string>): number {
   return grades
@@ -100,6 +92,40 @@ function topPoints(grades: StudentGrade[], n: number, excluded: Set<string>): nu
     .sort((a, b) => b - a)
     .slice(0, n)
     .reduce((sum, p) => sum + p, 0);
+}
+
+/**
+ * 逐科（排序后按位）比较学生成绩与 offer。
+ * 真实 A-Level offer 是「每一科都要达到对应等级」，而非总分达标——
+ * 因此把学生与 offer 各自降序排列后逐位比较，避免高分科目补偿过低科目
+ * （例如 A*A*C 的总分等于 AAA，但第三科 C 达不到 A，不应判为达标）。
+ * @returns met 是否逐位达标；shortfall 各位缺口之和（等级点数）；surplus 各位盈余之和
+ */
+function comparePositionwise(
+  studentGrades: StudentGrade[],
+  offerGrades: string[],
+  excluded: Set<string>,
+): { met: boolean; shortfall: number; surplus: number } {
+  const studentPts = studentGrades
+    .filter((g) => !excluded.has(norm(g.subject)))
+    .map((g) => gradePoints(g.grade))
+    .sort((a, b) => b - a);
+  const offerPts = offerGrades.map(gradePoints).sort((a, b) => b - a);
+
+  let met = true;
+  let shortfall = 0;
+  let surplus = 0;
+  for (let i = 0; i < offerPts.length; i++) {
+    const s = studentPts[i] ?? 0; // 学生缺这门 → 记 0 分
+    const o = offerPts[i];
+    if (s < o) {
+      met = false;
+      shortfall += o - s;
+    } else {
+      surplus += s - o;
+    }
+  }
+  return { met, shortfall, surplus };
 }
 
 /**
@@ -125,25 +151,35 @@ export function evaluateMatch(
     );
   }
 
-  // 1) 成绩点数（典型 / 最低）
+  // 1) 成绩：逐科（排序后按位）比较，避免高分科目补偿过低科目
   const typicalStr = req.typicalOffer || req.minimumOffer || "";
   const minimumStr = req.minimumOffer || req.typicalOffer || "";
-  const typical = typicalStr ? offerPoints(typicalStr) : { points: 0, count: 0 };
-  const minimum = minimumStr ? offerPoints(minimumStr) : { points: 0, count: 0 };
+  const typicalGrades = typicalStr ? parseOffer(typicalStr) : [];
+  const minimumGrades = minimumStr ? parseOffer(minimumStr) : [];
+  const typical = {
+    points: typicalGrades.reduce((s, g) => s + gradePoints(g), 0),
+    count: typicalGrades.length,
+  };
+  const minimum = {
+    points: minimumGrades.reduce((s, g) => s + gradePoints(g), 0),
+    count: minimumGrades.length,
+  };
   const n = typical.count || minimum.count || 3;
   const studentPoints = topPoints(student.grades, n, excluded);
 
-  const meetsTypical = typical.count === 0 ? true : studentPoints >= typical.points;
-  const meetsMinimumGrades = minimum.count === 0 ? true : studentPoints >= minimum.points;
+  const typicalCmp = comparePositionwise(student.grades, typicalGrades, excluded);
+  const minimumCmp = comparePositionwise(student.grades, minimumGrades, excluded);
+  const meetsTypical = typical.count === 0 ? true : typicalCmp.met;
+  const meetsMinimumGrades = minimum.count === 0 ? true : minimumCmp.met;
 
   if (typical.count === 0 && minimum.count === 0) {
     reasons.push("该专业未提供结构化成绩要求，仅供参考");
   } else if (meetsTypical) {
-    reasons.push(`成绩达到典型要求：你最好 ${n} 门 ${studentPoints} 分 ≥ ${typicalStr}（${typical.points} 分）`);
+    reasons.push(`成绩逐科达到典型要求 ${typicalStr}`);
   } else if (meetsMinimumGrades) {
-    reasons.push(`成绩达到最低要求 ${minimumStr}（${minimum.points} 分），但低于典型 ${typicalStr}`);
+    reasons.push(`成绩达到最低要求 ${minimumStr}，但未达典型 ${typicalStr}`);
   } else {
-    reasons.push(`成绩 ${studentPoints} 分 < 最低要求 ${minimumStr}（${minimum.points} 分），差 ${minimum.points - studentPoints} 分`);
+    reasons.push(`成绩未达最低要求 ${minimumStr}（约差 ${minimumCmp.shortfall} 个等级）`);
   }
 
   // 2) 先修科目
@@ -199,16 +235,16 @@ export function evaluateMatch(
     }
   }
 
-  // 4) 综合分类
+  // 4) 综合分类（基于逐科比较的余量 / 差距）
   const eligible = meetsMinimumGrades && meetsSubjects && meetsEnglish;
-  const minGap = minimum.points - studentPoints;
   let category: MatchCategory;
   if (meetsTypical && meetsSubjects && meetsEnglish) {
-    category = studentPoints >= typical.points + 1 ? "safety" : "match";
+    // 逐科均达典型；若整体还有 ≥1 个等级的富余则更稳妥
+    category = typicalCmp.surplus >= 1 ? "safety" : "match";
   } else if (eligible) {
     category = "reach"; // 达到最低但未达典型
-  } else if (meetsSubjects && meetsEnglish && minGap <= 1) {
-    category = "reach"; // 接近最低
+  } else if (meetsSubjects && meetsEnglish && minimumCmp.shortfall <= 1) {
+    category = "reach"; // 接近最低（约差 1 个等级）
   } else {
     category = "out_of_reach";
   }
