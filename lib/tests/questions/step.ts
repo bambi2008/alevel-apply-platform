@@ -1997,4 +1997,265 @@ $$M^n=PD^nP^{-1}=\\begin{pmatrix}1&1\\\\0&-1\\end{pmatrix}\\begin{pmatrix}3^n&0\
 (iii) $P(-)=1-0.117=0.883$. Also $P(D\\cap-)=P(-\\mid D)P(D)=0.05\\times0.02=0.001$. Hence $P(D\\mid-)=\\dfrac{0.001}{0.883}\\approx0.00113.$`,
   },
 
+
+  {
+    id: "step-046",
+    type: "long",
+    testId: "step",
+    topicId: "step-pure1",
+    difficulty: 2,
+    totalMarks: 20,
+    context: "The cubic polynomial $f(x)=x^3-6x^2+11x-6$.",
+    parts: [
+      { label: "(i)", marks: 5, question: "Show that $x=1$ is a root of $f(x)$, and hence factorise $f(x)$ completely.", solutionOutline: "f(1)=1-6+11-6=0 ✓. Divide by (x-1): f(x)=(x-1)(x²-5x+6)=(x-1)(x-2)(x-3)." },
+      { label: "(ii)", marks: 7, question: "Write down the three roots and verify that their sum is $6$, their pairwise-product sum is $11$, and their product is $6$, consistent with the coefficients of $f$.", solutionOutline: "Roots 1,2,3. Sum=6=-(-6). Pairwise 1·2+1·3+2·3=11=coeff of x. Product=6=-(-6)." },
+      { label: "(iii)", marks: 8, question: "Find a cubic equation (in expanded form) whose roots are each $1$ greater than the roots of $f$.", solutionOutline: "New roots 2,3,4: sum 9, pairwise 26, product 24 ⇒ x³-9x²+26x-24=0. (= (x-2)(x-3)(x-4).)" },
+    ],
+    fullSolution: `(i) $f(1)=1-6+11-6=0$, so $(x-1)$ is a factor. Dividing, $f(x)=(x-1)(x^2-5x+6)=(x-1)(x-2)(x-3).$
+
+(ii) The roots are $1,2,3$. Sum $=6=-(-6)$; pairwise sum $=1\\cdot2+1\\cdot3+2\\cdot3=11$; product $=6$. These match $-b$, $c$, $-d$ for $x^3+bx^2+cx+d$.
+
+(iii) The new roots are $2,3,4$, with sum $9$, pairwise sum $2\\cdot3+2\\cdot4+3\\cdot4=26$ and product $24$. Hence $x^3-9x^2+26x-24=0.$`,
+  },
+
+  {
+    id: "step-047",
+    type: "long",
+    testId: "step",
+    topicId: "step-pure2",
+    difficulty: 2,
+    totalMarks: 20,
+    context: "",
+    parts: [
+      { label: "(i)", marks: 6, question: "Using integration by parts, find $\\displaystyle\\int x e^{x}\\,dx$.", solutionOutline: "u=x, dv=e^x dx ⇒ xe^x-∫e^x dx=(x-1)e^x+C." },
+      { label: "(ii)", marks: 6, question: "Hence evaluate $\\displaystyle\\int_0^1 x e^{x}\\,dx$.", solutionOutline: "[(x-1)e^x]_0^1=(0)e-(-1)(1)=1." },
+      { label: "(iii)", marks: 8, question: "Find the area of the region between $y=xe^{x}$ and the $x$-axis from $x=0$ to $x=2$.", solutionOutline: "xe^x≥0 on [0,2]. Area=[(x-1)e^x]_0^2=e²-(-1)=e²+1." },
+    ],
+    fullSolution: `(i) With $u=x$, $dv=e^x\\,dx$: $\\int xe^x\\,dx=xe^x-\\int e^x\\,dx=(x-1)e^x+C.$
+
+(ii) $\\int_0^1 xe^x\\,dx=\\big[(x-1)e^x\\big]_0^1=(0)e^1-(-1)e^0=1.$
+
+(iii) Since $xe^x\\ge0$ on $[0,2]$, the area is $\\big[(x-1)e^x\\big]_0^2=(1)e^2-(-1)(1)=e^2+1.$`,
+  },
+
+  {
+    id: "step-048",
+    type: "long",
+    testId: "step",
+    topicId: "step-pure3",
+    difficulty: 2,
+    totalMarks: 20,
+    context: "The curve $C$ has equation $y=x^2-4x+3$.",
+    parts: [
+      { label: "(i)", marks: 5, question: "Find the coordinates of the points where $C$ crosses the $x$-axis.", solutionOutline: "x²-4x+3=(x-1)(x-3)=0 ⇒ (1,0),(3,0)." },
+      { label: "(ii)", marks: 7, question: "Find the equation of the tangent to $C$ at the point where $x=0$.", solutionOutline: "y'=2x-4; at x=0, y=3, slope=-4 ⇒ y=-4x+3." },
+      { label: "(iii)", marks: 8, question: "Find the equation of the normal to $C$ at $x=0$, and the area of the triangle it forms with the coordinate axes.", solutionOutline: "Normal slope 1/4: y=x/4+3. x-int (-12,0), y-int (0,3). Area=½·12·3=18." },
+    ],
+    fullSolution: `(i) $x^2-4x+3=(x-1)(x-3)=0$, so $C$ crosses the $x$-axis at $(1,0)$ and $(3,0)$.
+
+(ii) $\\dfrac{dy}{dx}=2x-4$. At $x=0$, $y=3$ and the gradient is $-4$, so the tangent is $y=-4x+3.$
+
+(iii) The normal at $x=0$ has gradient $\\tfrac14$: $y=\\tfrac14x+3$. It meets the axes at $(-12,0)$ and $(0,3)$, giving a right triangle of area $\\tfrac12\\cdot12\\cdot3=18.$`,
+  },
+
+  {
+    id: "step-049",
+    type: "long",
+    testId: "step",
+    topicId: "step-pure4",
+    difficulty: 2,
+    totalMarks: 20,
+    context: "Let $z_1=2+2i$ and $z_2=1-i\\sqrt3$.",
+    parts: [
+      { label: "(i)", marks: 6, question: "Express $z_1$ and $z_2$ in modulus–argument form.", solutionOutline: "|z1|=2√2, arg π/4 ⇒ 2√2 cis(π/4). |z2|=2, arg -π/3 ⇒ 2 cis(-π/3)." },
+      { label: "(ii)", marks: 7, question: "Find $z_1 z_2$ and $\\dfrac{z_1}{z_2}$ in modulus–argument form.", solutionOutline: "z1z2=4√2 cis(π/4-π/3)=4√2 cis(-π/12). z1/z2=√2 cis(π/4+π/3)=√2 cis(7π/12)." },
+      { label: "(iii)", marks: 7, question: "Describe geometrically the locus of points $z$ in the Argand diagram satisfying $|z-z_1|=2$.", solutionOutline: "Circle, centre z1=(2,2), radius 2." },
+    ],
+    fullSolution: `(i) $|z_1|=\\sqrt{8}=2\\sqrt2$ and $\\arg z_1=\\tfrac{\\pi}{4}$, so $z_1=2\\sqrt2\\,\\operatorname{cis}\\tfrac{\\pi}{4}$. $|z_2|=\\sqrt{1+3}=2$ and (fourth quadrant) $\\arg z_2=-\\tfrac{\\pi}{3}$, so $z_2=2\\,\\operatorname{cis}\\!\\big(-\\tfrac{\\pi}{3}\\big).$
+
+(ii) $z_1z_2=2\\sqrt2\\cdot2\\,\\operatorname{cis}\\!\\big(\\tfrac{\\pi}{4}-\\tfrac{\\pi}{3}\\big)=4\\sqrt2\\,\\operatorname{cis}\\!\\big(-\\tfrac{\\pi}{12}\\big)$ and $\\dfrac{z_1}{z_2}=\\dfrac{2\\sqrt2}{2}\\,\\operatorname{cis}\\!\\big(\\tfrac{\\pi}{4}+\\tfrac{\\pi}{3}\\big)=\\sqrt2\\,\\operatorname{cis}\\tfrac{7\\pi}{12}.$
+
+(iii) $|z-z_1|=2$ is the set of points at distance $2$ from $z_1$ — a circle with centre $(2,2)$ and radius $2$.`,
+  },
+
+  {
+    id: "step-050",
+    type: "long",
+    testId: "step",
+    topicId: "step-pure4",
+    difficulty: 3,
+    totalMarks: 20,
+    context: "This question concerns the equation $z^3=27i$.",
+    parts: [
+      { label: "(i)", marks: 8, question: "Find the three solutions in modulus–argument form.", solutionOutline: "27i=27 cis(π/2). Modulus 3, args (π/2+2kπ)/3 = π/6, 5π/6, 3π/2: 3cis(π/6),3cis(5π/6),3cis(3π/2)." },
+      { label: "(ii)", marks: 6, question: "Express each solution in the form $a+bi$.", solutionOutline: "3cis(π/6)=(3√3/2)+(3/2)i; 3cis(5π/6)=-(3√3/2)+(3/2)i; 3cis(3π/2)=-3i." },
+      { label: "(iii)", marks: 6, question: "Show that the three solutions lie on a circle and that their sum is zero.", solutionOutline: "All modulus 3 ⇒ circle radius 3. Sum: real parts cancel, 3/2i+3/2i-3i=0." },
+    ],
+    fullSolution: `(i) Write $27i=27\\operatorname{cis}\\tfrac{\\pi}{2}$. The cube roots have modulus $27^{1/3}=3$ and arguments $\\tfrac{\\pi/2+2k\\pi}{3}$, i.e. $\\tfrac{\\pi}{6},\\tfrac{5\\pi}{6},\\tfrac{3\\pi}{2}$: $\\;3\\operatorname{cis}\\tfrac{\\pi}{6},\\,3\\operatorname{cis}\\tfrac{5\\pi}{6},\\,3\\operatorname{cis}\\tfrac{3\\pi}{2}.$
+
+(ii) $3\\operatorname{cis}\\tfrac{\\pi}{6}=\\tfrac{3\\sqrt3}{2}+\\tfrac32i$, $\\;3\\operatorname{cis}\\tfrac{5\\pi}{6}=-\\tfrac{3\\sqrt3}{2}+\\tfrac32i$, $\\;3\\operatorname{cis}\\tfrac{3\\pi}{2}=-3i.$
+
+(iii) All three have modulus $3$, so they lie on the circle $|z|=3$. Their sum is $\\big(\\tfrac{3\\sqrt3}{2}-\\tfrac{3\\sqrt3}{2}\\big)+\\big(\\tfrac32+\\tfrac32-3\\big)i=0.$`,
+  },
+
+  {
+    id: "step-051",
+    type: "long",
+    testId: "step",
+    topicId: "step-pure5",
+    difficulty: 2,
+    totalMarks: 20,
+    context: "The matrix $A=\\begin{pmatrix}2&3\\\\1&2\\end{pmatrix}$.",
+    parts: [
+      { label: "(i)", marks: 5, question: "Find $\\det A$ and $A^{-1}$.", solutionOutline: "det=4-3=1. A^{-1}=[[2,-3],[-1,2]]." },
+      { label: "(ii)", marks: 7, question: "Hence solve $A\\mathbf x=\\begin{pmatrix}8\\\\5\\end{pmatrix}$.", solutionOutline: "x=A^{-1}b=[[2,-3],[-1,2]](8,5)^T=(16-15,-8+10)=(1,2)." },
+      { label: "(iii)", marks: 8, question: "The transformation with matrix $A$ maps the unit square to a parallelogram. State its area, and find the image of the point $(1,1)$.", solutionOutline: "Area=|det A|=1. Image of (1,1): A(1,1)^T=(5,3)." },
+    ],
+    fullSolution: `(i) $\\det A=2\\cdot2-3\\cdot1=1$, so $A^{-1}=\\begin{pmatrix}2&-3\\\\-1&2\\end{pmatrix}.$
+
+(ii) $\\mathbf x=A^{-1}\\begin{pmatrix}8\\\\5\\end{pmatrix}=\\begin{pmatrix}2\\cdot8-3\\cdot5\\\\-8+2\\cdot5\\end{pmatrix}=\\begin{pmatrix}1\\\\2\\end{pmatrix}$, i.e. $x=1,\\;y=2.$
+
+(iii) The area scales by $|\\det A|=1$, so the parallelogram has area $1$. The image of $(1,1)$ is $A\\begin{pmatrix}1\\\\1\\end{pmatrix}=\\begin{pmatrix}5\\\\3\\end{pmatrix}.$`,
+  },
+
+  {
+    id: "step-052",
+    type: "long",
+    testId: "step",
+    topicId: "step-pure5",
+    difficulty: 3,
+    totalMarks: 20,
+    context: "The matrix $M=\\begin{pmatrix}1&2\\\\2&1\\end{pmatrix}$.",
+    parts: [
+      { label: "(i)", marks: 6, question: "Find the eigenvalues of $M$ and a corresponding eigenvector for each.", solutionOutline: "det(M-λI)=(1-λ)²-4=λ²-2λ-3=(λ-3)(λ+1). λ=3:(1,1); λ=-1:(1,-1)." },
+      { label: "(ii)", marks: 8, question: "Compute $M^2$ directly, and state its eigenvalues.", solutionOutline: "M²=[[5,4],[4,5]]. Eigenvalues 3²=9 and (-1)²=1." },
+      { label: "(iii)", marks: 6, question: "Verify that the trace of $M^2$ equals the sum of its eigenvalues.", solutionOutline: "trace(M²)=5+5=10=9+1. ✓" },
+    ],
+    fullSolution: `(i) $\\det(M-\\lambda I)=(1-\\lambda)^2-4=\\lambda^2-2\\lambda-3=(\\lambda-3)(\\lambda+1)$. For $\\lambda=3$: $(M-3I)\\mathbf v=\\mathbf0\\Rightarrow y=x$, e.g. $(1,1)^T$. For $\\lambda=-1$: $x+y=0$, e.g. $(1,-1)^T$.
+
+(ii) $M^2=\\begin{pmatrix}1&2\\\\2&1\\end{pmatrix}^2=\\begin{pmatrix}5&4\\\\4&5\\end{pmatrix}$, with eigenvalues $3^2=9$ and $(-1)^2=1$.
+
+(iii) $\\operatorname{tr}(M^2)=5+5=10=9+1$, the sum of the eigenvalues of $M^2$. ✓`,
+  },
+
+  {
+    id: "step-053",
+    type: "long",
+    testId: "step",
+    topicId: "step-mech",
+    difficulty: 2,
+    totalMarks: 20,
+    context: "A car accelerates uniformly from rest and reaches a speed of $20\\,\\text{m s}^{-1}$ after $8\\,\\text{s}$.",
+    parts: [
+      { label: "(i)", marks: 5, question: "Find the acceleration.", solutionOutline: "a=(v-u)/t=(20-0)/8=2.5 m/s²." },
+      { label: "(ii)", marks: 7, question: "Find the distance travelled during these $8$ seconds.", solutionOutline: "s=½(u+v)t=½·20·8=80 m." },
+      { label: "(iii)", marks: 8, question: "The car then travels at a constant $20\\,\\text{m s}^{-1}$ for $12\\,\\text{s}$, and finally decelerates uniformly to rest in a further $5\\,\\text{s}$. Find the total distance travelled from the start.", solutionOutline: "Const: 20·12=240. Decel: ½·20·5=50. Total=80+240+50=370 m." },
+    ],
+    fullSolution: `(i) $a=\\dfrac{v-u}{t}=\\dfrac{20-0}{8}=2.5\\,\\text{m s}^{-2}.$
+
+(ii) $s=\\tfrac12(u+v)t=\\tfrac12(0+20)(8)=80\\,\\text{m}.$
+
+(iii) Constant phase: $20\\times12=240\\,\\text{m}$. Deceleration phase: $\\tfrac12(20+0)(5)=50\\,\\text{m}$. Total $=80+240+50=370\\,\\text{m}.$`,
+  },
+
+  {
+    id: "step-054",
+    type: "long",
+    testId: "step",
+    topicId: "step-mech",
+    difficulty: 2,
+    totalMarks: 20,
+    context: "A block of mass $5\\,\\text{kg}$ rests on a rough plane inclined at $30^\\circ$ to the horizontal. Take $g=9.8\\,\\text{m s}^{-2}$.",
+    parts: [
+      { label: "(i)", marks: 6, question: "Find the component of the weight acting down the slope.", solutionOutline: "mg sin30=5·9.8·0.5=24.5 N." },
+      { label: "(ii)", marks: 6, question: "The block is on the point of slipping down. Find the coefficient of friction.", solutionOutline: "μ=mg sin30/(mg cos30)=tan30=1/√3≈0.577." },
+      { label: "(iii)", marks: 8, question: "A force $P$ is applied up the slope so the block moves up at constant speed. Find $P$.", solutionOutline: "P=mg sin30+μ mg cos30=24.5+24.5=49 N (since μ mg cos30=mg sin30)." },
+    ],
+    fullSolution: `(i) Down-slope weight component $=mg\\sin30^\\circ=5\\times9.8\\times0.5=24.5\\,\\text{N}.$
+
+(ii) On the point of slipping, friction $=\\mu N=\\mu mg\\cos30^\\circ$ balances $mg\\sin30^\\circ$, so $\\mu=\\tan30^\\circ=\\tfrac{1}{\\sqrt3}\\approx0.577.$
+
+(iii) Moving up at constant speed, $P=mg\\sin30^\\circ+\\mu mg\\cos30^\\circ$. Here $\\mu mg\\cos30^\\circ=mg\\sin30^\\circ=24.5\\,\\text{N}$, so $P=24.5+24.5=49\\,\\text{N}.$`,
+  },
+
+  {
+    id: "step-055",
+    type: "long",
+    testId: "step",
+    topicId: "step-mech",
+    difficulty: 3,
+    totalMarks: 20,
+    context: "A particle $A$ of mass $2\\,\\text{kg}$ moving at $5\\,\\text{m s}^{-1}$ collides with a stationary particle $B$ of mass $3\\,\\text{kg}$. After the collision they move together. Take $g=10\\,\\text{m s}^{-2}$.",
+    parts: [
+      { label: "(i)", marks: 6, question: "Find their common velocity after the collision.", solutionOutline: "Momentum: 2·5=(2+3)v ⇒ v=2 m/s." },
+      { label: "(ii)", marks: 6, question: "Find the kinetic energy lost in the collision.", solutionOutline: "KE_i=½·2·25=25 J; KE_f=½·5·4=10 J; lost=15 J." },
+      { label: "(iii)", marks: 8, question: "The combined particle then slides on a rough horizontal surface with coefficient of friction $0.2$ until it stops. Find the distance it travels.", solutionOutline: "a=μg=2 m/s². 0=v²-2as ⇒ s=4/(2·2)=1 m." },
+    ],
+    fullSolution: `(i) Conservation of momentum: $2(5)=(2+3)v$, so $v=2\\,\\text{m s}^{-1}.$
+
+(ii) $\\text{KE}_i=\\tfrac12(2)(5^2)=25\\,\\text{J}$; $\\text{KE}_f=\\tfrac12(5)(2^2)=10\\,\\text{J}$. Energy lost $=15\\,\\text{J}.$
+
+(iii) Friction gives deceleration $a=\\mu g=0.2\\times10=2\\,\\text{m s}^{-2}$. Using $v^2=u^2-2as$ with final speed $0$: $0=2^2-2(2)s$, so $s=1\\,\\text{m}.$`,
+  },
+
+  {
+    id: "step-056",
+    type: "long",
+    testId: "step",
+    topicId: "step-stats",
+    difficulty: 2,
+    totalMarks: 20,
+    context: "A discrete random variable $X$ has distribution $P(X=0)=0.1$, $P(X=1)=0.3$, $P(X=2)=0.4$, $P(X=3)=0.2$.",
+    parts: [
+      { label: "(i)", marks: 4, question: "Verify that this is a valid probability distribution.", solutionOutline: "All ≥0 and sum=0.1+0.3+0.4+0.2=1." },
+      { label: "(ii)", marks: 8, question: "Find $E(X)$ and $\\operatorname{Var}(X)$.", solutionOutline: "E(X)=0.3+0.8+0.6=1.7. E(X²)=0.3+1.6+1.8=3.7. Var=3.7-1.7²=0.81." },
+      { label: "(iii)", marks: 8, question: "Find $P(X\\ge 2)$ and $E(2X+1)$.", solutionOutline: "P(X≥2)=0.4+0.2=0.6. E(2X+1)=2·1.7+1=4.4." },
+    ],
+    fullSolution: `(i) Each probability is $\\ge0$ and $0.1+0.3+0.4+0.2=1$, so it is a valid distribution.
+
+(ii) $E(X)=0(0.1)+1(0.3)+2(0.4)+3(0.2)=1.7$. $E(X^2)=0+0.3+1.6+1.8=3.7$, so $\\operatorname{Var}(X)=3.7-1.7^2=0.81.$
+
+(iii) $P(X\\ge2)=0.4+0.2=0.6$. $E(2X+1)=2E(X)+1=2(1.7)+1=4.4.$`,
+  },
+
+  {
+    id: "step-057",
+    type: "long",
+    testId: "step",
+    topicId: "step-stats",
+    difficulty: 2,
+    totalMarks: 20,
+    context: "A biased coin shows heads with probability $0.4$. It is tossed $6$ times; let $X$ be the number of heads.",
+    parts: [
+      { label: "(i)", marks: 5, question: "State the distribution of $X$ and find $P(X=3)$.", solutionOutline: "X~B(6,0.4). P(X=3)=C(6,3)(0.4)³(0.6)³=20·0.064·0.216≈0.2765." },
+      { label: "(ii)", marks: 7, question: "Find $P(X\\le 1)$.", solutionOutline: "(0.6)^6+6(0.4)(0.6)^5=0.046656+0.186624=0.23328." },
+      { label: "(iii)", marks: 8, question: "Find $E(X)$, $\\operatorname{Var}(X)$, and the most likely number of heads.", solutionOutline: "E=2.4, Var=1.44. P(X=2)=0.311 > P(X=3)=0.276 ⇒ mode=2." },
+    ],
+    fullSolution: `(i) $X\\sim B(6,0.4)$. $P(X=3)=\\binom{6}{3}(0.4)^3(0.6)^3=20(0.064)(0.216)\\approx0.2765.$
+
+(ii) $P(X\\le1)=(0.6)^6+\\binom{6}{1}(0.4)(0.6)^5=0.046656+0.186624=0.23328.$
+
+(iii) $E(X)=np=2.4$; $\\operatorname{Var}(X)=np(1-p)=6(0.4)(0.6)=1.44$. Since $P(X=2)=\\binom{6}{2}(0.4)^2(0.6)^4\\approx0.311$ exceeds $P(X=3)\\approx0.276$, the most likely number of heads is $2.$`,
+  },
+
+  {
+    id: "step-058",
+    type: "long",
+    testId: "step",
+    topicId: "step-stats",
+    difficulty: 3,
+    totalMarks: 20,
+    context: "A continuous random variable $X$ is uniformly distributed with pdf $f(x)=\\tfrac12$ for $1\\le x\\le3$, and $0$ otherwise.",
+    parts: [
+      { label: "(i)", marks: 4, question: "Verify that $f$ is a valid probability density function.", solutionOutline: "f≥0 and ∫_1^3 ½ dx=½·2=1." },
+      { label: "(ii)", marks: 6, question: "Find $E(X)$ and $\\operatorname{Var}(X)$.", solutionOutline: "E(X)=2 (midpoint). Var=(b-a)²/12=4/12=1/3." },
+      { label: "(iii)", marks: 10, question: "Find the cumulative distribution function $F(x)$ for $1\\le x\\le3$, and hence $P(1.5\\le X\\le2.5)$.", solutionOutline: "F(x)=½(x-1). P=F(2.5)-F(1.5)=0.75-0.25=0.5." },
+    ],
+    fullSolution: `(i) $f(x)=\\tfrac12\\ge0$ and $\\int_1^3\\tfrac12\\,dx=\\tfrac12\\cdot2=1$, so $f$ is a valid pdf.
+
+(ii) $E(X)=\\int_1^3 x\\cdot\\tfrac12\\,dx=\\tfrac12\\big[\\tfrac{x^2}{2}\\big]_1^3=\\tfrac12\\cdot4=2$. For a uniform distribution $\\operatorname{Var}(X)=\\tfrac{(b-a)^2}{12}=\\tfrac{4}{12}=\\tfrac13.$
+
+(iii) For $1\\le x\\le3$, $F(x)=\\int_1^x\\tfrac12\\,dt=\\tfrac12(x-1)$. Hence $P(1.5\\le X\\le2.5)=F(2.5)-F(1.5)=0.75-0.25=0.5.$`,
+  },
+
 ];

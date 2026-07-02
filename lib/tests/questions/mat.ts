@@ -1528,10 +1528,98 @@ export const MAT_TOPUP: MCQQuestion[] = [
     answer: "B", solution: "$1\\\\cdot8+0\\\\cdot4+1\\\\cdot2+1\\\\cdot1=11$." },
 ];
 
+export const MAT_ENTRY: MCQQuestion[] = [
+  {
+    id: "mat-e-001", type: "mcq", testId: "mat", topicId: "mat-poly", difficulty: 1, marks: 4,
+    question: "Which of the following is a factor of $x^2-5x+6$?",
+    options: [{ key: "A", text: "$(x-2)$" }, { key: "B", text: "$(x+2)$" }, { key: "C", text: "$(x-6)$" }, { key: "D", text: "$(x+1)$" }],
+    answer: "A",
+    solution: "$x^2-5x+6=(x-2)(x-3)$, so $(x-2)$ is a factor.",
+  },
+  {
+    id: "mat-e-002", type: "mcq", testId: "mat", topicId: "mat-poly", difficulty: 1, marks: 4,
+    question: "What is the remainder when $x^2+3x+5$ is divided by $(x-1)$?",
+    options: [{ key: "A", text: "$5$" }, { key: "B", text: "$9$" }, { key: "C", text: "$1$" }, { key: "D", text: "$3$" }],
+    answer: "B",
+    solution: "By the remainder theorem, the remainder is $f(1)=1+3+5=9$.",
+  },
+  {
+    id: "mat-e-003", type: "mcq", testId: "mat", topicId: "mat-trig", difficulty: 1, marks: 4,
+    question: "What is the exact value of $\\sin 30^\\circ$?",
+    options: [{ key: "A", text: "$\\tfrac12$" }, { key: "B", text: "$\\tfrac{\\sqrt3}{2}$" }, { key: "C", text: "$1$" }, { key: "D", text: "$\\tfrac{\\sqrt2}{2}$" }],
+    answer: "A",
+    solution: "$\\sin 30^\\circ=\\tfrac12$.",
+  },
+  {
+    id: "mat-e-004", type: "mcq", testId: "mat", topicId: "mat-trig", difficulty: 1, marks: 4,
+    question: "Simplify $\\sin^2\\theta+\\cos^2\\theta$.",
+    options: [{ key: "A", text: "$0$" }, { key: "B", text: "$1$" }, { key: "C", text: "$2$" }, { key: "D", text: "$\\sin\\theta\\cos\\theta$" }],
+    answer: "B",
+    solution: "The Pythagorean identity gives $\\sin^2\\theta+\\cos^2\\theta=1$.",
+  },
+  {
+    id: "mat-e-005", type: "mcq", testId: "mat", topicId: "mat-calc", difficulty: 1, marks: 4,
+    question: "Differentiate $y=x^3$ with respect to $x$.",
+    options: [{ key: "A", text: "$3x^2$" }, { key: "B", text: "$x^2$" }, { key: "C", text: "$3x$" }, { key: "D", text: "$\\tfrac{x^4}{4}$" }],
+    answer: "A",
+    solution: "$\\dfrac{dy}{dx}=3x^{2}$ by the power rule.",
+  },
+  {
+    id: "mat-e-006", type: "mcq", testId: "mat", topicId: "mat-calc", difficulty: 1, marks: 4,
+    question: "Find $\\displaystyle\\int 2x\\,dx$.",
+    options: [{ key: "A", text: "$x^2+C$" }, { key: "B", text: "$2+C$" }, { key: "C", text: "$\\tfrac{x^2}{2}+C$" }, { key: "D", text: "$2x^2+C$" }],
+    answer: "A",
+    solution: "$\\int 2x\\,dx=x^2+C$.",
+  },
+  {
+    id: "mat-e-007", type: "mcq", testId: "mat", topicId: "mat-log", difficulty: 1, marks: 4,
+    question: "Evaluate $\\log_2 8$.",
+    options: [{ key: "A", text: "$2$" }, { key: "B", text: "$3$" }, { key: "C", text: "$4$" }, { key: "D", text: "$8$" }],
+    answer: "B",
+    solution: "$2^3=8$, so $\\log_2 8=3$.",
+  },
+  {
+    id: "mat-e-008", type: "mcq", testId: "mat", topicId: "mat-geo", difficulty: 1, marks: 4,
+    question: "What is the gradient of the line through $(0,0)$ and $(2,6)$?",
+    options: [{ key: "A", text: "$3$" }, { key: "B", text: "$\\tfrac13$" }, { key: "C", text: "$2$" }, { key: "D", text: "$6$" }],
+    answer: "A",
+    solution: "Gradient $=\\dfrac{6-0}{2-0}=3$.",
+  },
+  {
+    id: "mat-e-009", type: "mcq", testId: "mat", topicId: "mat-seq", difficulty: 1, marks: 4,
+    question: "What is the 5th term of the arithmetic sequence $2,\\,5,\\,8,\\,\\dots$?",
+    options: [{ key: "A", text: "$11$" }, { key: "B", text: "$14$" }, { key: "C", text: "$17$" }, { key: "D", text: "$20$" }],
+    answer: "B",
+    solution: "$a=2$, $d=3$, so the 5th term is $2+4(3)=14$.",
+  },
+  {
+    id: "mat-e-010", type: "mcq", testId: "mat", topicId: "mat-seq", difficulty: 1, marks: 4,
+    question: "What is the sum of the first three terms of the geometric sequence $3,\\,6,\\,12,\\,\\dots$?",
+    options: [{ key: "A", text: "$18$" }, { key: "B", text: "$21$" }, { key: "C", text: "$24$" }, { key: "D", text: "$12$" }],
+    answer: "B",
+    solution: "$3+6+12=21$.",
+  },
+  {
+    id: "mat-e-011", type: "mcq", testId: "mat", topicId: "mat-logic", difficulty: 1, marks: 4,
+    question: "What is the negation of the statement $x>5$?",
+    options: [{ key: "A", text: "$x<5$" }, { key: "B", text: "$x\\le 5$" }, { key: "C", text: "$x\\ge 5$" }, { key: "D", text: "$x=5$" }],
+    answer: "B",
+    solution: "The negation of $x>5$ is $x\\le5$ (everything that is not greater than 5).",
+  },
+  {
+    id: "mat-e-012", type: "mcq", testId: "mat", topicId: "mat-cs", difficulty: 1, marks: 4,
+    question: "A loop runs for $i=1,2,\\dots,5$ inclusive, executing its body once each time. How many times does the body run?",
+    options: [{ key: "A", text: "$4$" }, { key: "B", text: "$5$" }, { key: "C", text: "$6$" }, { key: "D", text: "$1$" }],
+    answer: "B",
+    solution: "The values $i=1,2,3,4,5$ give $5$ executions.",
+  },
+];
+
 export const MAT_QUESTIONS = [
   ...MAT_PART_A,
   ...MAT_PART_A_EXTRA,
   ...MAT_TOPUP,
+  ...MAT_ENTRY,
   ...MAT_PART_B,
   ...MAT_PART_B_EXTRA,
 ];
