@@ -17,18 +17,6 @@ export async function generateMetadata({
   return { title: t("title"), description: t("description") };
 }
 
-async function Header() {
-  const session = await auth();
-  const user = session?.user as { role?: string; email?: string } | undefined;
-  return (
-    <SiteNav
-      userEmail={user?.email ?? null}
-      isAdmin={user?.role === "ADMIN"}
-      isLoggedIn={!!session?.user}
-    />
-  );
-}
-
 async function Footer() {
   const t = await getTranslations("footer");
   return (
@@ -53,12 +41,21 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
   const messages = await getMessages();
 
+  const session = await auth();
+  const user = session?.user as { role?: string; email?: string } | undefined;
+  const isLoggedIn = !!session?.user;
+
   return (
     <html lang={locale} className="h-full antialiased">
       <body className="min-h-full flex flex-col bg-white text-neutral-900">
         <NextIntlClientProvider messages={messages}>
-          {await Header()}
-          <div className="lg:pl-60">
+          <SiteNav
+            userEmail={user?.email ?? null}
+            isAdmin={user?.role === "ADMIN"}
+            isLoggedIn={isLoggedIn}
+          />
+          {/* 登录后有左侧栏，内容右移；未登录（落地页）满屏不偏移 */}
+          <div className={isLoggedIn ? "lg:pl-60" : ""}>
             <main className="flex-1">{children}</main>
             {await Footer()}
           </div>

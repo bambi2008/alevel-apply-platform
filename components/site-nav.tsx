@@ -183,6 +183,32 @@ export function SiteNav({
     </div>
   );
 
+  // 未登录（落地页）：顶部简洁导航条，不显示侧边栏
+  if (!isLoggedIn) {
+    return (
+      <header className="glass sticky top-0 z-30 border-b border-[var(--border)]">
+        <div className="mx-auto max-w-6xl px-4 h-16 flex items-center gap-3">
+          <Brand />
+          <div className="ml-auto flex items-center gap-2">
+            <LocaleSwitcher />
+            <Link
+              href="/login"
+              className="px-3 py-1.5 rounded-lg text-sm text-[var(--ink-soft)] hover:bg-[var(--surface)] transition-colors"
+            >
+              {ta("login")}
+            </Link>
+            <Link
+              href="/match"
+              className="px-4 py-2 rounded-lg bg-brand text-white text-sm font-medium hover:opacity-90 transition-opacity shadow-sm shadow-indigo-500/20"
+            >
+              {t("freeMatch")}
+            </Link>
+          </div>
+        </div>
+      </header>
+    );
+  }
+
   return (
     <>
       {/* 桌面固定侧边栏 */}
