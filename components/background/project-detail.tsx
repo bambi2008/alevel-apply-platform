@@ -10,6 +10,8 @@ import {
   getStageProgress,
   saveStageProgress,
   computeProjectPercent,
+  getReflectionNotes,
+  saveReflectionNotes,
   type StageProgress,
   type ProjectAttachment,
 } from "@/lib/background/project-store";
@@ -23,12 +25,51 @@ export function ProjectDetail({ project }: { project: OnlineProject }) {
   const [prog, setProg] = useState<Record<number, StageProgress>>({});
   const [percent, setPercent] = useState(0);
   const [copied, setCopied] = useState(false);
+  const [reflectionNotes, setReflectionNotes] = useState("");
 
   type Feedback = { strengths: string[]; suggestions: string[]; questions: string[]; summary: string };
   const [fb, setFb] = useState<Record<number, { loading?: boolean; data?: Feedback; error?: string }>>({});
 
   const [uploading, setUploading] = useState<Record<number, boolean>>({});
   const [uploadErr, setUploadErr] = useState<Record<number, string>>({});
+
+  const [refFb, setRefFb] = useState<{ loading?: boolean; data?: Feedback; error?: string }>({});
+
+  const getReflectionFeedback = async () => {
+    if (!reflectionNotes.trim()) {
+      setRefFb({ error: "请先写下你的反思，AI 才能帮你打磨成 PS 素材。" });
+      return;
+    }
+    setRefFb({ loading: true });
+    try {
+      const res = await fetch("/api/project-feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          mode: "reflection",
+          projectTitle: project.title,
+          stageTitle: "reflection",
+          stageTask: "",
+          stageDeliverable: "",
+          rubric: [],
+          metrics: [],
+          baseline: project.baseline,
+          challenge: project.challenge,
+          submission: reflectionNotes,
+          reflectionQuestions: project.reflection,
+          psUse: project.psUse,
+        }),
+      });
+      if (!res.ok) {
+        const e = await res.json().catch(() => ({}));
+        throw new Error(e.error || "反馈生成失败");
+      }
+      const data = (await res.json()) as Feedback;
+      setRefFb({ data });
+    } catch (e) {
+      setRefFb({ error: e instanceof Error ? e.message : "反馈生成失败" });
+    }
+  };
 
   const UPLOAD_ERR: Record<string, string> = {
     too_large: "文件超过 10MB 上限。",
@@ -119,6 +160,7 @@ export function ProjectDetail({ project }: { project: OnlineProject }) {
     for (const s of project.stages) map[s.num] = getStageProgress(project.id, s.num);
     setProg(map);
     setPercent(computeProjectPercent(project.id, total));
+    setReflectionNotes(getReflectionNotes(project.id));
     setOpenStage(project.stages[0]?.num ?? null);
   }, [project.id, total, project.stages]);
 
@@ -163,6 +205,11 @@ export function ProjectDetail({ project }: { project: OnlineProject }) {
       if (sp?.attachments && sp.attachments.length > 0) {
         lines.push(`上传文件：${sp.attachments.map((a) => a.name).join("、")}`);
       }
+      lines.push("");
+    }
+    if (reflectionNotes.trim()) {
+      lines.push("【反思与延伸】");
+      lines.push(reflectionNotes.trim());
       lines.push("");
     }
     lines.push("— 由桥申平台记录，产出为学生本人完成。");
@@ -232,6 +279,10 @@ export function ProjectDetail({ project }: { project: OnlineProject }) {
       <div className="space-y-4 mb-8">
         <Section title="课题情境">{project.scenario}</Section>
         <Section title="为什么有含金量">{project.whyValuable}</Section>
+        <div className="rounded-xl border border-violet-200 bg-violet-50/40 p-4">
+          <p className="text-xs font-semibold text-[var(--violet)] mb-1">🎓 这个课题如何帮你申请（英国 / 港校）</p>
+          <p className="text-sm text-[var(--ink)] leading-relaxed">{project.psUse}</p>
+        </div>
         <div className="grid sm:grid-cols-2 gap-4">
           <div className="rounded-xl border border-[var(--border)] p-4">
             <p className="text-xs font-semibold text-[var(--ink-soft)] mb-2">贴近专业</p>
@@ -474,6 +525,72 @@ export function ProjectDetail({ project }: { project: OnlineProject }) {
             </div>
           );
         })}
+      </div>
+
+      {/* 反思与延伸（英国招生官最看重的部分） */}
+      <div className="mt-8 rounded-2xl border border-[var(--border)] bg-white p-5">
+        <p className="text-sm font-semibold text-[var(--ink)] mb-1">🤔 反思与延伸</p>
+        <p className="text-xs text-[var(--ink-soft)] mb-4">
+          英国招生官最看重的不是"你做了什么"，而是"你从中思考了什么"。认真作答下面的问题——这些反思正是你个人陈述（PS）里最有分量的素材。
+        </p>
+        <ul className="space-y-2 mb-4">
+          {project.reflection.map((q, i) => (
+            <li key={i} className="flex items-start gap-2 text-sm text-[var(--ink)]">
+              <span className="text-[var(--violet)] shrink-0 font-semibold">{i + 1}.</span>
+              <span>{q}</span>
+            </li>
+          ))}
+        </ul>
+        <textarea
+          value={reflectionNotes}
+          onChange={(e) => {
+            setReflectionNotes(e.target.value);
+            if (!enrolled) {
+              enrollProject(project.id);
+              setEnrolled(true);
+            }
+            saveReflectionNotes(project.id, e.target.value);
+          }}
+          rows={5}
+          placeholder="在这里写下你的反思（可逐条回应上面的问题）。这些文字将进入你的完成记录，未来可直接用于个人陈述。"
+          className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm"
+        />
+        <div className="mt-3">
+          <button
+            onClick={getReflectionFeedback}
+            disabled={refFb.loading}
+            className="px-4 py-1.5 rounded-lg bg-white border border-violet-200 text-[var(--violet)] text-sm font-medium hover:bg-violet-50 transition-colors disabled:opacity-60"
+          >
+            {refFb.loading ? "生成中…" : "🎓 让 AI 文书教练点评我的反思"}
+          </button>
+          <p className="text-[11px] text-[var(--ink-soft)] mt-1.5">
+            AI 会像文书教练一样帮你把反思想得更深、更适合写进个人陈述（不代写、不给可照抄的文字）。
+          </p>
+
+          {refFb.error && (
+            <p className="mt-3 text-sm text-amber-700 bg-amber-50 rounded-lg px-3 py-2">{refFb.error}</p>
+          )}
+
+          {refFb.data && (
+            <div className="mt-3 space-y-3 rounded-xl border border-violet-200 bg-violet-50/40 p-4">
+              {refFb.data.summary && (
+                <p className="text-sm font-medium text-[var(--ink)]">{refFb.data.summary}</p>
+              )}
+              {refFb.data.strengths.length > 0 && (
+                <FbList title="✅ 值得写进 PS" items={refFb.data.strengths} color="text-green-700" />
+              )}
+              {refFb.data.suggestions.length > 0 && (
+                <FbList title="💡 可以更深入" items={refFb.data.suggestions} color="text-[var(--indigo)]" />
+              )}
+              {refFb.data.questions.length > 0 && (
+                <FbList title="🤔 再想一想" items={refFb.data.questions} color="text-[var(--violet)]" />
+              )}
+              <p className="text-[11px] text-[var(--ink-soft)] pt-1 border-t border-violet-200">
+                这些是教练建议。个人陈述必须是你本人的真实想法与文字（UCAS 有相似度检测）。
+              </p>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* 完成产出 + 导出 */}

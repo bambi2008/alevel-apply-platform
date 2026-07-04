@@ -25,6 +25,7 @@ export interface StageProgress {
 export interface ProjectProgress {
   projectId: string;
   enrolledAt: number;
+  reflectionNotes?: string; // 学生的反思与延伸作答（最能体现智识投入，可写入 PS）
   stages: StageProgress[];
 }
 
@@ -117,4 +118,19 @@ export function computeProjectPercent(projectId: string, totalStages: number): n
 
 export function isProjectComplete(projectId: string, totalStages: number): boolean {
   return computeProjectPercent(projectId, totalStages) >= 100;
+}
+
+export function getReflectionNotes(projectId: string): string {
+  return getProjectProgress(projectId)?.reflectionNotes ?? "";
+}
+
+export function saveReflectionNotes(projectId: string, text: string): void {
+  const all = loadAll();
+  let proj = all.find((p) => p.projectId === projectId);
+  if (!proj) {
+    proj = { projectId, enrolledAt: Date.now(), stages: [] };
+    all.push(proj);
+  }
+  proj.reflectionNotes = text;
+  saveAll(all);
 }
