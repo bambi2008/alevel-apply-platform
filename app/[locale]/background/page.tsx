@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "@/i18n/navigation";
 import {
   BACKGROUND_CATALOG,
   BG_FIELDS,
@@ -86,6 +87,23 @@ export default function BackgroundPage() {
       <p className="text-sm text-neutral-500 mb-6">
         围绕你的目标专业规划竞赛、科研、活动与夏校，让申请更有竞争力。推荐已根据你的档案个性化排序。
       </p>
+
+      {/* 在线课题入口（平台自有、可完成的高含金量课题） */}
+      <Link
+        href="/background/projects"
+        className="card-hover block rounded-2xl bg-brand-soft border border-[var(--border)] p-5 mb-8 hover:border-indigo-200 hover:shadow-md hover:shadow-indigo-500/5"
+      >
+        <div className="flex items-center gap-4">
+          <span className="flex items-center justify-center w-12 h-12 rounded-xl bg-white text-2xl shrink-0">🛠️</span>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-[var(--ink)]">在线课题 · 做出真实产出</p>
+            <p className="text-sm text-[var(--ink-soft)]">
+              贴近专业、分阶段引导的高含金量课题（工程方向已上线）——比「给个题自己做」更扎实，产出可写入文书与作品集。
+            </p>
+          </div>
+          <span className="text-[var(--indigo)] shrink-0">→</span>
+        </div>
+      </Link>
 
       {/* 进度提醒 */}
       {reminders.length > 0 && (
