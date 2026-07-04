@@ -12,9 +12,13 @@ const client = new OpenAI({
 type QKey = "q1" | "q2" | "q3";
 
 interface CoachRequest {
-  question: QKey;
-  text: string;
+  mode?: "single" | "overall"; // single=单题点评；overall=三题整体统读
+  question?: QKey;
+  text?: string;
   subject?: string; // 意向专业（可选）
+  q1?: string; // overall 模式：三题内容
+  q2?: string;
+  q3?: string;
 }
 
 // 每题的真实评判标准（据 UCAS 官方 + 招生官/机构实战经验）
@@ -48,7 +52,7 @@ const SYSTEM_PROMPT = `你是一位资深的英国大学申请文书教练（UCA
 4. 反馈要基于英国招生官的真实标准（下面会给出本题的标准）。
 5. 用中文回复。只返回合法 JSON，不要 markdown、不要多余文字。`;
 
-const buildPrompt = (r: CoachRequest) => `
+const buildPrompt = (r: CoachRequest & { question: QKey; text: string }) => `
 ${Q_GUIDE[r.question]}
 
 ${r.subject ? `学生意向专业：${r.subject}` : ""}
@@ -72,6 +76,47 @@ ${r.text || "（学生尚未填写）"}
 - issues 要具体，最好引用学生的原话或点出具体位置，而不是泛泛而谈。
 - 绝不提供可照抄的成句。`;
 
+const SYSTEM_PROMPT_OVERALL = `你是一位资深的英国大学申请文书教练。学生已写完 UCAS 2026 新版三问个人陈述，现在请你把三题当作「一个整体」来通读点评——因为招生官正是把三题合起来当一份完整文书来读的。
+
+请重点检查分题点评看不到的整体问题：
+1. 重复：三题之间有没有重复的内容、例子或表述（招生官反感重复，浪费宝贵字符）。
+2. 篇幅分配：Q2（学术准备）是最重要的一题、通常应占最大篇幅；检查是否 Q2 够充实、有没有哪一题过于单薄或过长。
+3. 整体连贯：三题合起来是否呈现出一个连贯、可信、有说服力的申请者形象；动机（Q1）、学术准备（Q2）、课外（Q3）之间是否互相呼应。
+4. 整体印象：作为一个整体，这份文书离一份「强文书」还差什么。
+
+绝对红线：
+1. 绝不代写、不提供可照抄的成段文字，只做诊断、给方向、提追问。
+2. 提醒学生文书必须是本人真实文字（UCAS 有相似度检测）。
+3. 用中文；只返回合法 JSON，不要 markdown。`;
+
+const buildOverallPrompt = (r: CoachRequest) => `
+${r.subject ? `学生意向专业：${r.subject}\n` : ""}
+学生的三题作答：
+
+【Q1 · 为什么想学这个专业】
+"""
+${r.q1 || "（空）"}
+"""
+
+【Q2 · 学业如何为之准备】
+"""
+${r.q2 || "（空）"}
+"""
+
+【Q3 · 教育之外做了什么准备】
+"""
+${r.q3 || "（空）"}
+"""
+
+请把三题当作一个整体通读点评。只返回如下 JSON（不要其它文字、不要 markdown）：
+{
+  "strengths": ["整体上做得好的地方1", "2"],
+  "issues": ["整体问题：重复/篇幅/连贯等，尽量具体1", "2"],
+  "suggestions": ["整体改进方向1", "2", "3"],
+  "questions": ["帮学生想得更深的追问1", "2"],
+  "summary": "一句话总结：作为整体，这份文书离一份强文书还差什么"
+}`;
+
 export async function POST(req: NextRequest) {
   if (!process.env.DEEPSEEK_API_KEY) {
     return NextResponse.json({ error: "AI 暂未配置（缺少 DEEPSEEK_API_KEY）" }, { status: 503 });
@@ -83,18 +128,19 @@ export async function POST(req: NextRequest) {
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
-  if (!body.question || !["q1", "q2", "q3"].includes(body.question)) {
+  const isOverall = body.mode === "overall";
+  if (!isOverall && (!body.question || !["q1", "q2", "q3"].includes(body.question))) {
     return NextResponse.json({ error: "缺少题号" }, { status: 400 });
   }
 
   try {
     const completion = await client.chat.completions.create({
       model: "deepseek-chat",
-      max_tokens: 1600,
+      max_tokens: 1800,
       response_format: { type: "json_object" },
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
-        { role: "user", content: buildPrompt(body) },
+        { role: "system", content: isOverall ? SYSTEM_PROMPT_OVERALL : SYSTEM_PROMPT },
+        { role: "user", content: isOverall ? buildOverallPrompt(body) : buildPrompt(body as Required<Pick<CoachRequest, "question" | "text">> & CoachRequest) },
       ],
     });
 

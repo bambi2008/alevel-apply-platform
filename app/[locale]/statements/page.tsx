@@ -11,6 +11,7 @@ import {
   emptyUcasPs,
   type UcasPsContent,
 } from "@/lib/statements/store";
+import { ImportFromProjects } from "@/components/statements/import-from-projects";
 
 const KEYS: (keyof UcasPsContent)[] = ["q1", "q2", "q3"];
 
@@ -29,6 +30,7 @@ export default function StatementsPage() {
   const [loaded, setLoaded] = useState(false);
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [fb, setFb] = useState<Record<string, { loading?: boolean; data?: Coach; error?: string }>>({});
+  const [overall, setOverall] = useState<{ loading?: boolean; data?: Coach; error?: string }>({});
 
   useEffect(() => {
     loadUcasPs().then((existing) => {
@@ -68,6 +70,29 @@ export default function StatementsPage() {
       setFb((f) => ({ ...f, [key]: { data } }));
     } catch (e) {
       setFb((f) => ({ ...f, [key]: { error: e instanceof Error ? e.message : "点评失败" } }));
+    }
+  };
+
+  const getOverall = async () => {
+    if (!content.q1.trim() && !content.q2.trim() && !content.q3.trim()) {
+      setOverall({ error: "请先写点内容再做整体点评。" });
+      return;
+    }
+    setOverall({ loading: true });
+    try {
+      const res = await fetch("/api/ps-coach", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode: "overall", q1: content.q1, q2: content.q2, q3: content.q3 }),
+      });
+      if (!res.ok) {
+        const e = await res.json().catch(() => ({}));
+        throw new Error(e.error || "点评失败");
+      }
+      const data = (await res.json()) as Coach;
+      setOverall({ data });
+    } catch (e) {
+      setOverall({ error: e instanceof Error ? e.message : "点评失败" });
     }
   };
 
@@ -152,6 +177,44 @@ export default function StatementsPage() {
           );
         })}
       </div>
+
+      {/* 从我的课题导入素材 */}
+      <ImportFromProjects content={content} />
+
+      {/* 整体统读点评 */}
+      <section className="mt-8 rounded-xl border border-indigo-200 bg-indigo-50/30 p-5">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h2 className="font-semibold text-neutral-800">📋 整体点评</h2>
+            <p className="text-sm text-neutral-500 mt-0.5">把三题当一个整体通读：查重复、篇幅分配、整体连贯（招生官正是这样读的）。</p>
+          </div>
+          <button
+            type="button"
+            onClick={getOverall}
+            disabled={overall.loading}
+            className="shrink-0 text-sm px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 disabled:opacity-60"
+          >
+            {overall.loading ? "点评中…" : "通读三题·整体点评"}
+          </button>
+        </div>
+
+        {overall.error && (
+          <p className="mt-3 text-sm text-amber-700 bg-amber-50 rounded-lg px-3 py-2">{overall.error}</p>
+        )}
+
+        {overall.data && (
+          <div className="mt-3 space-y-3 rounded-xl border border-indigo-100 bg-white p-4">
+            {overall.data.summary && <p className="text-sm font-medium text-neutral-800">{overall.data.summary}</p>}
+            <FbList title="✅ 整体优点" items={overall.data.strengths} color="text-green-700" />
+            <FbList title="⚠️ 整体问题（重复 / 篇幅 / 连贯）" items={overall.data.issues} color="text-amber-700" />
+            <FbList title="💡 改进方向" items={overall.data.suggestions} color="text-indigo-700" />
+            <FbList title="🤔 深入追问" items={overall.data.questions} color="text-violet-700" />
+            <p className="text-[11px] text-neutral-400 pt-1 border-t border-indigo-100">
+              这些是教练建议。文书必须是你本人的真实想法与文字（UCAS 有相似度检测）。
+            </p>
+          </div>
+        )}
+      </section>
 
       {/* Self-check */}
       <section className="mt-8 rounded-xl border border-neutral-200 p-5">
