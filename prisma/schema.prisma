@@ -29,6 +29,7 @@ model User {
   profile      StudentProfile?
   consents     Consent[]
   documents    Document[]
+  studentProjects StudentProject[]
   auditLogs    AuditLog[]
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
@@ -321,6 +322,30 @@ model ApplicationDocument {
   document      Document    @relation(fields: [documentId], references: [id], onDelete: Cascade)
 
   @@id([applicationId, documentId])
+}
+
+// ---------- 学生自提课题（AI 辅助结构化） ----------
+enum StudentProjectStatus {
+  DRAFT
+  ACTIVE
+  COMPLETE
+}
+
+model StudentProject {
+  id         String               @id @default(cuid())
+  ownerId    String
+  owner      User                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  title      String
+  field      String               // 专业领域（ProjectField 值或自由文本）
+  summary    String?
+  ideaInputs Json                 // 学生填写的原始想法（研究问题/动机/方法/变量）
+  structure  Json?                // AI 生成并经学生编辑的课题结构（阶段/指标/反思/psUse）
+  progress   Json?                // 学生进度（每阶段提交/文件/反思笔记）
+  status     StudentProjectStatus @default(DRAFT)
+  createdAt  DateTime             @default(now())
+  updatedAt  DateTime             @updatedAt
+
+  @@index([ownerId])
 }
 
 // ---------- 文书 ----------

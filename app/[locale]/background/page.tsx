@@ -105,6 +105,23 @@ export default function BackgroundPage() {
         </div>
       </Link>
 
+      {/* 自提课题入口 */}
+      <Link
+        href="/background/my-projects"
+        className="card-hover block rounded-2xl border border-[var(--border)] p-5 mb-8 hover:border-indigo-200 hover:shadow-md hover:shadow-indigo-500/5"
+      >
+        <div className="flex items-center gap-4">
+          <span className="flex items-center justify-center w-12 h-12 rounded-xl bg-[var(--surface)] text-2xl shrink-0">💡</span>
+          <div className="flex-1 min-w-0">
+            <p className="font-semibold text-[var(--ink)]">我的自提课题 · 提交你自己的研究</p>
+            <p className="text-sm text-[var(--ink-soft)]">
+              有自己的研究想法？把它交给平台，AI 帮你梳理成规范课题，记录过程、产出个人陈述素材。
+            </p>
+          </div>
+          <span className="text-[var(--indigo)] shrink-0">→</span>
+        </div>
+      </Link>
+
       {/* 进度提醒 */}
       {reminders.length > 0 && (
         <section className="mb-8 rounded-xl border border-amber-200 bg-amber-50/60 p-4">
