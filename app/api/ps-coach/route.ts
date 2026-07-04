@@ -12,13 +12,14 @@ const client = new OpenAI({
 type QKey = "q1" | "q2" | "q3";
 
 interface CoachRequest {
-  mode?: "single" | "overall"; // single=单题点评；overall=三题整体统读
+  mode?: "single" | "overall" | "hk"; // single=单题；overall=三题整体；hk=港校单篇
   question?: QKey;
   text?: string;
   subject?: string; // 意向专业（可选）
-  q1?: string; // overall 模式：三题内容
+  q1?: string; // overall 模式
   q2?: string;
   q3?: string;
+  targetUni?: string; // hk 模式：目标院校
 }
 
 // 每题的真实评判标准（据 UCAS 官方 + 招生官/机构实战经验）
@@ -28,12 +29,14 @@ const Q_GUIDE: Record<QKey, string> = {
 - 忌复述 A-Level 大纲（如「我着迷于生物，尤其喜欢遗传与进化」）——这没有提供 UCAS 表格之外的任何信息。
 - 应有一个具体的「火花」：某本书、某篇文章、某场讲座、某个研究或某个具体瞬间，让学生想在大学层面钻研这门学科。
 - 应体现真正的智识动机（这门学科的什么问题吸引你），而非空泛的「passion」。
+- 高标准：最强的开头能让人看出你已经在「像这个专业的人一样思考」（如像工程师一样想问题、像经济学家一样审慎），而不只是说学科「有趣」。
 - 忌提及具体大学名（文书会发给全部 5 个志愿）。
 - 想提职业方向可以，但要融入动机。`,
   q2: `第 2 题「学业如何为之做准备」是最重要的一题（约占一半篇幅），评判标准：
 - 招生官在这里找「超出学校要求的真正智识投入」的证据——这是区分「能在顶尖大学立足」和「合格但未准备好」的关键。
 - 应有具体的超课程证据：读过的书/论文/期刊、做过的项目/课题，并说明「从中想到/学到了什么」。
 - 核心是「反思」而非「罗列」：不是列出做了什么，而是「读了 X → 引发了什么思考 → 如何联系到更大的学科图景」。
+- 最高标准（招生官最想看到的）：学生展示出自己「已经在像这个专业的人一样思考」——用具体的实验/研究/分析的例子，体现分析性、专业性的思维方式，而不是泛泛说学科「迷人」或「重要」。
 - 可结合 A-Level 科目/课题，说明它们如何培养了相关能力，并连回所申专业。
 - 忌堆砌事实教招生官（他们是专家）；忌把一句话塞进两三个以上的例子（清单式）。`,
   q3: `第 3 题「教育之外做了什么准备、为何有用」的评判标准：
@@ -117,6 +120,40 @@ ${r.q3 || "（空）"}
   "summary": "一句话总结：作为整体，这份文书离一份强文书还差什么"
 }`;
 
+const SYSTEM_PROMPT_HK = `你是一位香港大学申请文书教练，帮助学生打磨申请港校（港大 HKU / 中大 CUHK / 科大 HKUST 等）的单篇个人陈述（personal statement / essay）。
+
+港校文书和英国 UCAS 不同，评判要点：
+1. 必须写清「为什么选这所学校、这个专业」——港校明确看重这一点（和英国相反，英国忌提校名）。要结合该校的课程、师资、特色、机会。
+2. 综合评估（holistic）：可以写研究项目、实习、领导力、社区服务等，但关键是把它们连回「个人成长与洞察」，而非罗列。
+3. 可以、也应该点明未来目标，以及你能为学校/项目贡献什么。
+4. 别只写自己，也要谈这个专业/学校能给你什么、你为何契合。
+5. 忌讳：套模板/复制粘贴（招生官易识别）、只堆事实、夸大或撒谎、提到你在考虑的其它学校、冗长空泛。
+
+绝对红线：
+1. 绝不代写、不提供可照抄的成段文字，只做诊断、给方向、提追问。
+2. 提醒学生文书必须原创、是本人真实文字。
+3. 用中文；只返回合法 JSON，不要 markdown。`;
+
+const buildHkPrompt = (r: CoachRequest) => `
+${r.targetUni ? `目标院校：${r.targetUni}` : ""}
+${r.subject ? `意向专业：${r.subject}` : ""}
+
+学生的港校个人陈述：
+"""
+${r.text || "（学生尚未填写）"}
+"""
+
+请基于港校的真实标准点评。只返回如下 JSON（不要其它文字、不要 markdown）：
+{
+  "strengths": ["写得好的地方1", "2"],
+  "issues": ["具体问题1（可引用原话，如：没写为何选该校/只在罗列经历/太空泛等）", "2"],
+  "suggestions": ["改进方向1", "2", "3"],
+  "questions": ["帮学生想得更深的追问1", "2"],
+  "summary": "一句话总结：这篇离一份强港校文书还差什么"
+}
+
+注意：若作答空白或太短，strengths 可指出内容太少，把重点放在 suggestions 与 questions。绝不提供可照抄的成句。`;
+
 export async function POST(req: NextRequest) {
   if (!process.env.DEEPSEEK_API_KEY) {
     return NextResponse.json({ error: "AI 暂未配置（缺少 DEEPSEEK_API_KEY）" }, { status: 503 });
@@ -129,9 +166,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
   const isOverall = body.mode === "overall";
-  if (!isOverall && (!body.question || !["q1", "q2", "q3"].includes(body.question))) {
+  const isHk = body.mode === "hk";
+  if (!isOverall && !isHk && (!body.question || !["q1", "q2", "q3"].includes(body.question))) {
     return NextResponse.json({ error: "缺少题号" }, { status: 400 });
   }
+
+  const system = isHk ? SYSTEM_PROMPT_HK : isOverall ? SYSTEM_PROMPT_OVERALL : SYSTEM_PROMPT;
+  const userPrompt = isHk
+    ? buildHkPrompt(body)
+    : isOverall
+    ? buildOverallPrompt(body)
+    : buildPrompt(body as CoachRequest & { question: QKey; text: string });
 
   try {
     const completion = await client.chat.completions.create({
@@ -139,8 +184,8 @@ export async function POST(req: NextRequest) {
       max_tokens: 1800,
       response_format: { type: "json_object" },
       messages: [
-        { role: "system", content: isOverall ? SYSTEM_PROMPT_OVERALL : SYSTEM_PROMPT },
-        { role: "user", content: isOverall ? buildOverallPrompt(body) : buildPrompt(body as Required<Pick<CoachRequest, "question" | "text">> & CoachRequest) },
+        { role: "system", content: system },
+        { role: "user", content: userPrompt },
       ],
     });
 

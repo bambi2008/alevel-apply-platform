@@ -12,6 +12,7 @@ import {
   type UcasPsContent,
 } from "@/lib/statements/store";
 import { ImportFromProjects } from "@/components/statements/import-from-projects";
+import { HkEssayEditor } from "@/components/statements/hk-essay-editor";
 
 const KEYS: (keyof UcasPsContent)[] = ["q1", "q2", "q3"];
 
@@ -31,6 +32,7 @@ export default function StatementsPage() {
   const [savedAt, setSavedAt] = useState<string | null>(null);
   const [fb, setFb] = useState<Record<string, { loading?: boolean; data?: Coach; error?: string }>>({});
   const [overall, setOverall] = useState<{ loading?: boolean; data?: Coach; error?: string }>({});
+  const [region, setRegion] = useState<"uk" | "hk">("uk");
 
   useEffect(() => {
     loadUcasPs().then((existing) => {
@@ -105,6 +107,43 @@ export default function StatementsPage() {
     <div className="mx-auto max-w-3xl px-4 py-10">
       <h1 className="text-3xl font-bold">{t("title")}</h1>
       <p className="mt-2 text-neutral-600">{t("intro")}</p>
+
+      {/* 英国 / 香港 切换 */}
+      <div className="mt-4 inline-flex rounded-lg border border-neutral-200 p-1 bg-neutral-50">
+        <button
+          type="button"
+          onClick={() => setRegion("uk")}
+          className={`px-4 py-1.5 rounded-md text-sm font-medium ${region === "uk" ? "bg-white shadow text-neutral-900" : "text-neutral-500"}`}
+        >
+          🇬🇧 英国 UCAS（三问）
+        </button>
+        <button
+          type="button"
+          onClick={() => setRegion("hk")}
+          className={`px-4 py-1.5 rounded-md text-sm font-medium ${region === "hk" ? "bg-white shadow text-neutral-900" : "text-neutral-500"}`}
+        >
+          🇭🇰 香港（单篇）
+        </button>
+      </div>
+
+      {/* 参考资源（学生自学，不代写） */}
+      <div className="mt-4 text-sm rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-neutral-600">
+        📚 想看各专业优秀文书长什么样？可参考{" "}
+        <a
+          href="https://firstclasseducation.org.uk/guides/category/Personal+Statement"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-indigo-600 hover:underline font-medium"
+        >
+          First Class Education 各专业 PS 指南
+        </a>
+        （含工程 / CS / 经济 / 数学 / 生物 / 物理等，附最新牛剑录取数据）。仅供学习参考——请务必用自己的话原创，切勿照搬（UCAS 有相似度检测）。
+      </div>
+
+      {region === "hk" && <HkEssayEditor />}
+
+      {region === "uk" && (
+        <>
       <div className="mt-3 text-sm bg-amber-50 text-amber-800 rounded-lg px-3 py-2">{t("aiNotice")}</div>
 
       {/* Total character progress */}
@@ -239,6 +278,8 @@ export default function StatementsPage() {
         </button>
         {savedAt && <span className="text-sm text-green-600">✓ {t("savedAt")}（{savedAt}）</span>}
       </div>
+        </>
+      )}
     </div>
   );
 }

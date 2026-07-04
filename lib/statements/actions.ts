@@ -76,3 +76,72 @@ export async function saveUcasPsAction(
   }
   return { authed: true };
 }
+
+// ---------- 香港 essay（单篇） ----------
+const HK_KIND = "HK_ESSAY" as const;
+
+export interface HkEssayContent {
+  body: string;
+  targetUni?: string; // 目标院校（HKU/CUHK/HKUST/其它）
+}
+
+export async function getHkEssayAction(): Promise<{
+  authed: boolean;
+  content: HkEssayContent | null;
+  updatedAt: number | null;
+}> {
+  const userId = await currentUserId();
+  if (!userId) return { authed: false, content: null, updatedAt: null };
+
+  const sp = await db.studentProfile.findUnique({
+    where: { userId },
+    select: { id: true },
+  });
+  if (!sp) return { authed: true, content: null, updatedAt: null };
+
+  const row = await db.personalStatement.findFirst({
+    where: { studentId: sp.id, kind: HK_KIND },
+  });
+  if (!row) return { authed: true, content: null, updatedAt: null };
+
+  const c = (row.content as Partial<HkEssayContent>) ?? {};
+  return {
+    authed: true,
+    content: { body: c.body ?? "", targetUni: c.targetUni ?? "" },
+    updatedAt: row.updatedAt.getTime(),
+  };
+}
+
+export async function saveHkEssayAction(
+  content: HkEssayContent
+): Promise<{ authed: boolean }> {
+  const userId = await currentUserId();
+  if (!userId) return { authed: false };
+
+  const sp = await db.studentProfile.upsert({
+    where: { userId },
+    create: { userId },
+    update: {},
+    select: { id: true },
+  });
+
+  const wordCount = content.body?.length ?? 0;
+  const contentJson = content as unknown as Prisma.InputJsonValue;
+
+  const existing = await db.personalStatement.findFirst({
+    where: { studentId: sp.id, kind: HK_KIND },
+    select: { id: true },
+  });
+
+  if (existing) {
+    await db.personalStatement.update({
+      where: { id: existing.id },
+      data: { content: contentJson, wordCount },
+    });
+  } else {
+    await db.personalStatement.create({
+      data: { studentId: sp.id, kind: HK_KIND, content: contentJson, wordCount },
+    });
+  }
+  return { authed: true };
+}
