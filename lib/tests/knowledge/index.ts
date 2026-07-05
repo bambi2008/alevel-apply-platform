@@ -1,10 +1,12 @@
 import { ESAT_KNOWLEDGE, type TopicKnowledge } from "./esat";
 import { ESAT_BIO_CHEM_KNOWLEDGE } from "./esat-bio-chem";
+import { ESAT_PHYS_EXTRA_KNOWLEDGE } from "./esat-phys-extra";
 import { MAT_STEP_KNOWLEDGE } from "./mat-step";
 
 const ALL_KNOWLEDGE: TopicKnowledge[] = [
   ...ESAT_KNOWLEDGE,
   ...ESAT_BIO_CHEM_KNOWLEDGE,
+  ...ESAT_PHYS_EXTRA_KNOWLEDGE,
   ...MAT_STEP_KNOWLEDGE,
 ];
 
