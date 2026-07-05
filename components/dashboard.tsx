@@ -7,6 +7,7 @@ import { loadProfile, type UserProfile } from "@/lib/profile/store";
 import { listApplications } from "@/lib/applications/store";
 import { buildTimeline, type Milestone } from "@/lib/timeline";
 import { ProcessOverview } from "@/components/process-overview";
+import { RoadmapTree } from "@/components/roadmap-tree";
 
 function fmt(date: Date) {
   return date.toLocaleDateString("zh-CN", { month: "short", day: "numeric" });
@@ -84,6 +85,9 @@ export function Dashboard({ email }: { email?: string | null }) {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:py-10 space-y-6">
+      {/* 申请路线图（科技树）——一进来就看到全局 + 我在哪 + 下一步 */}
+      <RoadmapTree />
+
       {/* Hero */}
       <div className="relative overflow-hidden rounded-3xl bg-brand-soft border border-[var(--border)] px-6 py-8 sm:px-9 sm:py-10">
         <svg

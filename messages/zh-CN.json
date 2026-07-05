@@ -182,7 +182,13 @@
         "num": "UCAS + 港校",
         "label": "双申请体系"
       }
-    ]
+    ],
+    "capEyebrow": "平台能力",
+    "capTitle": "从背景到提交，全程自己掌控",
+    "capSub": "六大模块环环相扣，覆盖英国 UCAS 与香港申请的每一步。",
+    "processEyebrow": "申请流程",
+    "processTitle": "四步，清清楚楚",
+    "pricingEyebrow": "定价"
   },
   "match": {
     "title": "选校匹配",

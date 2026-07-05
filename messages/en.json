@@ -182,7 +182,13 @@
         "num": "UCAS + HK",
         "label": "Dual application systems"
       }
-    ]
+    ],
+    "capEyebrow": "Capabilities",
+    "capTitle": "From background to submission — in your own hands",
+    "capSub": "Six connected modules covering every step of UK UCAS and Hong Kong applications.",
+    "processEyebrow": "Process",
+    "processTitle": "Four clear steps",
+    "pricingEyebrow": "Pricing"
   },
   "match": {
     "title": "Course Matching",

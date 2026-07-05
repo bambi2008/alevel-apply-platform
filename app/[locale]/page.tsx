@@ -21,104 +21,100 @@ function Landing({ t, t2 }: { t: Awaited<ReturnType<typeof getTranslations<"home
   const heroStats = t.raw("heroStats") as { num: string; label: string }[];
 
   return (
-    <div>
-      {/* Hero — gradient mesh, no photo (更时髦、无版权风险) */}
-      <section className="mesh-hero grain relative overflow-hidden">
-        {/* 漂浮的柔光球点缀 */}
-        <div className="pointer-events-none absolute -top-24 -left-24 w-96 h-96 rounded-full bg-[radial-gradient(circle,rgba(124,58,237,0.25),transparent_70%)] floaty" />
-        <div className="pointer-events-none absolute top-10 right-0 w-80 h-80 rounded-full bg-[radial-gradient(circle,rgba(34,211,238,0.22),transparent_70%)] floaty-slow" />
+    <div className="bg-white">
+      {/* ── Hero ───────────────────────────────────────────── */}
+      <section className="relative overflow-hidden border-b border-[var(--border-soft)]">
+        {/* 极淡的单色光晕，只占顶部（Stripe 手法） */}
+        <div className="pointer-events-none absolute inset-x-0 -top-40 h-[40rem] bg-[radial-gradient(60rem_32rem_at_50%_0%,rgba(79,70,229,0.07),transparent_70%)]" />
 
-        <div className="relative mx-auto max-w-6xl px-6 w-full pt-20 pb-16 sm:pt-28 sm:pb-20">
-          <div className="max-w-3xl">
-            <p className="rise-in inline-flex items-center gap-2 text-xs font-semibold text-[var(--indigo)] bg-white/70 backdrop-blur rounded-full px-3.5 py-1.5 mb-7 border border-[var(--border)] shadow-sm">
-              <span className="w-1.5 h-1.5 rounded-full bg-[var(--cyan)]" />
-              {t("badge")}
-            </p>
-            <h1 className="rise-in text-[2.6rem] sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.05] text-[var(--ink)]">
-              {t("titleLine1")}
-              <br />
-              {t("titleBefore")}
-              <span className="text-gradient">{t("titleHighlight")}</span>
-              {t("titleAfter")}
-            </h1>
-            <p className="rise-in-2 mt-6 text-[var(--ink-soft)] text-lg max-w-2xl leading-relaxed">{t("subtitle")}</p>
-            <div className="rise-in-2 mt-9 flex items-center gap-3 flex-wrap">
-              <Link href="/match" className="btn-glow px-7 py-3.5 rounded-2xl font-semibold">
-                {t("ctaTry")}
-              </Link>
-              <Link
-                href="/universities"
-                className="px-7 py-3.5 rounded-2xl bg-white/70 backdrop-blur text-[var(--ink)] font-medium border border-[var(--border)] hover:border-indigo-200 hover:bg-white transition-colors"
-              >
-                {t("ctaBrowse")}
-              </Link>
-            </div>
+        <div className="relative mx-auto max-w-5xl px-6 pt-24 pb-24 sm:pt-32 sm:pb-28 text-center">
+          <p className="rise-in inline-flex items-center gap-2 rounded-full border border-[var(--border)] bg-white px-3.5 py-1.5 text-xs font-medium text-[var(--ink-soft)] shadow-[var(--shadow-sm)]">
+            <span className="h-1.5 w-1.5 rounded-full bg-[var(--indigo)]" />
+            {t("badge")}
+          </p>
 
-            {/* 信任数据条 */}
-            <div className="rise-in-3 mt-11 flex flex-wrap gap-x-10 gap-y-4">
-              {heroStats.map((s) => (
-                <div key={s.label}>
-                  <div className="text-2xl sm:text-3xl font-extrabold stat-num">{s.num}</div>
-                  <div className="text-xs text-[var(--ink-soft)] mt-0.5">{s.label}</div>
-                </div>
-              ))}
-            </div>
-            <p className="rise-in-3 mt-8 text-sm text-[var(--ink-soft)]">{t("priceNote")}</p>
+          <h1 className="rise-in mx-auto mt-7 max-w-4xl text-[clamp(2.6rem,6.4vw,4.75rem)] font-extrabold leading-[1.03] tracking-[-0.04em] text-[var(--ink)]">
+            {t("titleLine1")}
+            <br className="hidden sm:block" />
+            {t("titleBefore")}
+            <span className="text-[var(--indigo)]">{t("titleHighlight")}</span>
+            {t("titleAfter")}
+          </h1>
+
+          <p className="rise-in-2 mx-auto mt-7 max-w-2xl text-lg leading-8 text-[var(--ink-soft)]">
+            {t("subtitle")}
+          </p>
+
+          <div className="rise-in-2 mt-9 flex items-center justify-center gap-3 flex-wrap">
+            <Link href="/match" className="btn btn-primary">{t("ctaTry")}</Link>
+            <Link href="/universities" className="btn btn-secondary">{t("ctaBrowse")}</Link>
+          </div>
+
+          <p className="rise-in-3 mt-5 t-caption">{t("priceNote")}</p>
+
+          {/* 信任数据：tabular 数字 + 细分隔 */}
+          <div className="rise-in-3 mt-14 flex items-stretch justify-center divide-x divide-[var(--border)]">
+            {heroStats.map((s) => (
+              <div key={s.label} className="px-6 sm:px-9 first:pl-0 last:pr-0">
+                <div className="text-3xl sm:text-4xl font-extrabold tracking-[-0.02em] text-[var(--ink)] tabular-nums">{s.num}</div>
+                <div className="mt-1 t-caption">{s.label}</div>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      {/* Process overview */}
-      <section className="mx-auto max-w-6xl px-4 py-16">
-        <div className="max-w-2xl mx-auto">
+      {/* ── Process ────────────────────────────────────────── */}
+      <section className="mx-auto max-w-5xl px-6 py-24">
+        <SectionHead eyebrow={t("processEyebrow")} title={t("processTitle")} />
+        <div className="mt-12 max-w-2xl mx-auto">
           <ProcessOverview />
         </div>
       </section>
 
-      {/* Features — bento 网格 */}
-      <section className="mx-auto max-w-6xl px-4 pb-10">
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          {features.map((f, i) => (
-            <Link
-              key={f.title}
-              href={f.href}
-              className={`bento-card group block p-6 ${i === 0 ? "sm:col-span-2 lg:col-span-2" : ""}`}
-            >
-              <div className="w-12 h-12 rounded-2xl bg-brand-soft flex items-center justify-center text-2xl mb-4 group-hover:scale-110 transition-transform">
-                {f.emoji}
-              </div>
-              <h3 className="font-semibold mb-1.5 text-[var(--ink)] flex items-center gap-1.5">
-                {f.title}
-                <span className="opacity-0 group-hover:opacity-100 group-hover:translate-x-0.5 transition-all text-[var(--indigo)]">→</span>
-              </h3>
-              <p className="text-sm text-[var(--ink-soft)] leading-relaxed">{f.desc}</p>
-            </Link>
-          ))}
+      {/* ── Capabilities ───────────────────────────────────── */}
+      <section className="border-y border-[var(--border-soft)] bg-[var(--surface)]">
+        <div className="mx-auto max-w-6xl px-6 py-24">
+          <SectionHead eyebrow={t("capEyebrow")} title={t("capTitle")} sub={t("capSub")} />
+          <div className="mt-14 grid sm:grid-cols-2 lg:grid-cols-3 gap-px overflow-hidden rounded-2xl border border-[var(--border)] bg-[var(--border)]">
+            {features.map((f) => (
+              <Link key={f.title} href={f.href} className="group relative bg-white p-7 transition-colors hover:bg-[var(--surface)]">
+                <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-[var(--surface)] text-xl ring-1 ring-[var(--border)]">
+                  {f.emoji}
+                </div>
+                <h3 className="mt-5 h-section flex items-center gap-1.5">
+                  {f.title}
+                  <span className="opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-[var(--indigo)]">→</span>
+                </h3>
+                <p className="mt-2 text-sm leading-relaxed text-[var(--ink-soft)]">{f.desc}</p>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* Pricing */}
-      <section id="pricing" className="mx-auto max-w-6xl px-4 py-16 scroll-mt-16">
-        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-2 text-[var(--ink)]">{t("pricingHeading")}</h2>
-        <p className="text-center text-[var(--ink-soft)] mb-8">{t("pricingSub")}</p>
-        <div className="grid sm:grid-cols-3 gap-4 max-w-4xl mx-auto">
+      {/* ── Pricing ────────────────────────────────────────── */}
+      <section id="pricing" className="mx-auto max-w-5xl px-6 py-24 scroll-mt-16">
+        <SectionHead eyebrow={t("pricingEyebrow")} title={t("pricingHeading")} sub={t("pricingSub")} />
+        <div className="mt-14 grid sm:grid-cols-3 gap-5">
           {plans.map((p) => (
             <div
               key={p.name}
-              className={`rounded-2xl border p-6 ${p.highlight ? "border-transparent ring-2 ring-[var(--indigo)] bg-brand-soft" : "border-[var(--border)] bg-white"}`}
+              className={`relative rounded-2xl p-7 ${p.highlight ? "bg-[var(--ink)] text-white shadow-[var(--shadow-lg)]" : "bg-white border border-[var(--border)] shadow-[var(--shadow-sm)]"}`}
             >
-              <div className="flex items-baseline justify-between">
-                <h3 className="font-semibold text-[var(--ink)]">{p.name}</h3>
-                <span className="text-xs text-[var(--ink-soft)]">{p.tagline}</span>
+              {p.highlight && (
+                <span className="absolute top-5 right-5 badge badge-brand !bg-white/15 !text-white">推荐</span>
+              )}
+              <h3 className={`font-semibold ${p.highlight ? "text-white" : "text-[var(--ink)]"}`}>{p.name}</h3>
+              <p className={`text-xs mt-0.5 ${p.highlight ? "text-white/60" : "text-[var(--ink-faint)]"}`}>{p.tagline}</p>
+              <div className="mt-5 mb-6 flex items-baseline gap-1">
+                <span className={`text-4xl font-extrabold tracking-[-0.02em] tabular-nums ${p.highlight ? "text-white" : "text-[var(--ink)]"}`}>{p.price}</span>
+                {p.unit && <span className={p.highlight ? "text-white/60" : "text-[var(--ink-faint)]"}>{p.unit}</span>}
               </div>
-              <div className="mt-3 mb-4">
-                <span className="text-3xl font-extrabold text-[var(--ink)]">{p.price}</span>
-                {p.unit && <span className="text-[var(--ink-soft)]">{p.unit}</span>}
-              </div>
-              <ul className="space-y-2 text-sm text-[var(--ink-soft)]">
+              <ul className="space-y-2.5 text-sm">
                 {p.perks.map((perk) => (
-                  <li key={perk} className="flex gap-2">
-                    <span className="text-[var(--indigo)]">✓</span>
+                  <li key={perk} className={`flex gap-2.5 ${p.highlight ? "text-white/85" : "text-[var(--ink-soft)]"}`}>
+                    <span className={p.highlight ? "text-white" : "text-[var(--indigo)]"}>✓</span>
                     {perk}
                   </li>
                 ))}
@@ -126,28 +122,35 @@ function Landing({ t, t2 }: { t: Awaited<ReturnType<typeof getTranslations<"home
             </div>
           ))}
         </div>
-        <p className="text-center text-xs text-[var(--ink-soft)] mt-6">{t("pricingNote")}</p>
+        <p className="text-center t-caption mt-8">{t("pricingNote")}</p>
       </section>
 
-      {/* Story strip — 父子故事（写在最后） */}
-      <section className="mx-auto max-w-6xl px-4 pb-20">
-        <div className="bento-card grid md:grid-cols-2 gap-8 items-center p-8 sm:p-10">
+      {/* ── Story ──────────────────────────────────────────── */}
+      <section className="border-t border-[var(--border-soft)] bg-[var(--surface)]">
+        <div className="mx-auto max-w-5xl px-6 py-24 grid md:grid-cols-2 gap-12 items-center">
           <div>
-            <p className="text-xs font-semibold text-[var(--indigo)] tracking-wide uppercase mb-3">{t2("eyebrow")}</p>
-            <h2 className="text-2xl sm:text-3xl font-bold text-[var(--ink)] leading-snug">{t2("titleLine")}</h2>
-            <p className="mt-4 text-[var(--ink-soft)] leading-relaxed">{t2("short")}</p>
-            <Link
-              href="/about"
-              className="mt-6 inline-flex items-center gap-1.5 text-[var(--indigo)] font-medium hover:gap-2.5 transition-all"
-            >
+            <p className="t-caption font-semibold uppercase tracking-[0.14em] text-[var(--ink-faint)]">{t2("eyebrow")}</p>
+            <h2 className="mt-3 h-title">{t2("titleLine")}</h2>
+            <p className="mt-5 t-body">{t2("short")}</p>
+            <Link href="/about" className="mt-7 inline-flex items-center gap-1.5 font-medium text-[var(--indigo)] hover:gap-2.5 transition-all">
               {t2("cta")} <span>→</span>
             </Link>
           </div>
           <div className="order-first md:order-last">
-            <StoryIllustration className="w-full h-auto floaty-slow" />
+            <StoryIllustration className="w-full h-auto" />
           </div>
         </div>
       </section>
+    </div>
+  );
+}
+
+function SectionHead({ eyebrow, title, sub }: { eyebrow: string; title: string; sub?: string }) {
+  return (
+    <div className="text-center max-w-2xl mx-auto">
+      <p className="t-caption font-semibold uppercase tracking-[0.14em] text-[var(--indigo)]">{eyebrow}</p>
+      <h2 className="mt-3 h-title">{title}</h2>
+      {sub && <p className="mt-4 t-body">{sub}</p>}
     </div>
   );
 }
