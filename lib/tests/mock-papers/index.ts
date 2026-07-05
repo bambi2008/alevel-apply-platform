@@ -9,6 +9,7 @@ import { ESAT_MK6_MATH, ESAT_MK6_PHYS } from "./esat-mock-6";
 import { ESAT_MK7_MATH, ESAT_MK7_PHYS } from "./esat-mock-7";
 import { ESAT_MK8_MATH, ESAT_MK8_CHEM } from "./esat-mock-8";
 import { ESAT_MK9_MATH, ESAT_MK9_BIO } from "./esat-mock-9";
+import { ESAT_MK10_MAG, ESAT_MK10_SCI } from "./esat-mock-10";
 
 export interface MockModule {
   id: string;
@@ -204,7 +205,20 @@ export const ESAT_MOCK_9: MockPaper = {
   ],
 };
 
-const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9];
+export const ESAT_MOCK_10: MockPaper = {
+  id: "esat-mock-10",
+  testId: "esat",
+  title: "ESAT 模拟卷十（物理考纲补全卷 · 磁学 + 热/物质/波/放射性）",
+  titleEn: "ESAT Mock Paper 10 (Physics spec completion)",
+  description:
+    "对照官方 ESAT 物理考纲（P1–P7）审计题库后补齐薄弱考点的专项卷：模块一为磁学与电磁（官方 P2，此前完全缺失），模块二覆盖热物理、物质、波与放射性。各 27 题、每模块 40 分钟、五选一、无负分。题目全新原创，仅以官方考纲做结构校准，未照搬任何指南或真题。",
+  modules: [
+    { id: "magnetism", title: "磁学与电磁", titleEn: "Magnetism & Electromagnetism", durationSec: 40 * 60, questions: ESAT_MK10_MAG },
+    { id: "science", title: "热 / 物质 / 波 / 放射性", titleEn: "Thermal / Matter / Waves / Radioactivity", durationSec: 40 * 60, questions: ESAT_MK10_SCI },
+  ],
+};
+
+const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10];
 
 export function getMockPapersForTest(testId: string): MockPaper[] {
   return ALL_MOCK_PAPERS.filter((p) => p.testId === testId);

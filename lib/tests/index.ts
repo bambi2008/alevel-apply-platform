@@ -222,7 +222,8 @@ export const ADMISSIONS_TESTS: AdmissionsTest[] = [
       "帝国理工 EEE/ME 方向也使用 ESAT，备考思路与剑桥工程完全相同。",
     ],
     pastPaperLinks: [
-      { label: "官方 ESAT 备考资料（含历年 ENGAA / NSAA 真题）", url: "https://esat-tmua.ac.uk/esat-preparation-materials/", note: "UAT 官方页面：ESAT 指南 + 历年 ENGAA / NSAA 真题（已标注哪些题不在 ESAT 范围）。ESAT 自 2024/25 起取代 ENGAA / NSAA，历年真题仍是最佳练习素材。" },
+      { label: "官方 ESAT 学科指南（数学 / 物理 / 化学 / 生物，完全免费）", url: "https://esat-tmua.ac.uk/esat-preparation-materials/", note: "UAT 官方发布的各科备考指南（对应官方考纲逐节讲解）+ ESAT 规范说明。官方明确：所有备考资源均免费，且不推荐、不背书任何付费课程。" },
+      { label: "官方 ESAT 备考资料（含历年 ENGAA / NSAA 真题）", url: "https://esat-tmua.ac.uk/esat-preparation-materials/", note: "含历年 ENGAA / NSAA 真题（已标注哪些题不在 ESAT 范围）。ESAT 自 2024/25 起取代 ENGAA / NSAA，历年真题仍是最佳练习素材。" },
       { label: "ESAT / ENGAA 真题与解析（免费下载，含答案与评分标准）", url: "https://firstclasseducation.org.uk/esat-past-papers", note: "含 2016–2023 ENGAA / NSAA 真题与详解，适合计时模考与自我批改。" },
     ],
   },
