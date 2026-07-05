@@ -168,7 +168,21 @@
         ]
       }
     ],
-    "pricingNote": "Pricing is a product plan and subject to change at launch. We do not guarantee admission."
+    "pricingNote": "Pricing is a product plan and subject to change at launch. We do not guarantee admission.",
+    "heroStats": [
+      {
+        "num": "18+",
+        "label": "Online research projects"
+      },
+      {
+        "num": "10",
+        "label": "Original timed mock papers"
+      },
+      {
+        "num": "UCAS + HK",
+        "label": "Dual application systems"
+      }
+    ]
   },
   "match": {
     "title": "Course Matching",
@@ -365,5 +379,44 @@
     "interview": "Interview",
     "test": "Test",
     "toMatch": "→ Match with my grades"
+  },
+  "story": {
+    "eyebrow": "A note at the end",
+    "titleLine": "A father and son who turned the potholes they hit into your path",
+    "short": "Our child studies at SCIE (Shenzhen College of International Education) and is heading into A2 after this summer. Walking the application journey with him, we hit plenty of potholes and wasted plenty of money. So, with AI, the two of us built this platform: it doesn't apply for you — it helps you do it well yourself.",
+    "cta": "Read our story",
+    "aboutTitle": "About us",
+    "aboutSubtitle": "A father and son on the study-abroad road — and the platform we wish we'd had.",
+    "paras": [
+      "Our child studies at SCIE (Shenzhen College of International Education) and moves into A2 after this summer. Over the past few years we walked the whole application journey with him — subject choices, background building, admissions tests, personal statements, university choices, forms.",
+      "Honestly, there were a lot of potholes. Information was opaque; agencies were full of tactics and charged anywhere from ¥80,000 to ¥120,000 — yet much of what they 'did for you' was work the student could and should have done themselves. Worst of all, the abilities that actually decide outcomes were what no one really taught.",
+      "After all that, our clearest conviction became this: the application should be something the student controls. The job of parents and tools is to help them learn, not to do it for them.",
+      "So, with AI, the two of us built this platform. Our son understands what A-Level students actually face; I turned it into something dependable, transparent and usable.",
+      "It doesn't apply for you — it helps you do it well yourself: how to build your background, prepare for tests, write a statement that's honest and strong, and fill in every field. Transparent, low-cost, like someone who's walked the road before you — because we have."
+    ],
+    "valuesTitle": "What we stand for",
+    "values": [
+      {
+        "icon": "🧭",
+        "title": "Empower, don't replace",
+        "desc": "No ghost-writing, no logging in for you, no submitting for you. The ability is what you keep."
+      },
+      {
+        "icon": "💡",
+        "title": "Been there",
+        "desc": "Every feature maps to a real pothole we hit ourselves."
+      },
+      {
+        "icon": "🔍",
+        "title": "Transparent and low-cost",
+        "desc": "Agency-level help, handed to you clearly for a few hundred RMB."
+      },
+      {
+        "icon": "🤖",
+        "title": "AI-powered, human-checked",
+        "desc": "AI makes you faster; direction, judgement and honesty stay with people."
+      }
+    ],
+    "signoff": "— The \"Kitty\" father & son"
   }
 }
