@@ -1,5 +1,7 @@
 "use client";
 
+import { PageHeader } from "@/components/page-header";
+
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { buildTimeline, type Milestone, type PrepLevel } from "@/lib/timeline";
@@ -67,12 +69,11 @@ export default function TimelinePage() {
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
       {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold mb-1">{t("title")}</h1>
-        <p className="text-neutral-500 text-sm">
-          {t("intakeNote", { year: intakeYear })}
-        </p>
-      </div>
+      <PageHeader
+        title={t("title")}
+        subtitle={t("intakeNote", { year: intakeYear })}
+        icon="🗓️"
+      />
 
       {/* Prep level banner */}
       <div className={`rounded-xl border px-4 py-3 mb-8 text-sm ${PREP_COLOR[prepLevel]}`}>

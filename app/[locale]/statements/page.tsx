@@ -1,5 +1,7 @@
 "use client";
 
+import { PageHeader } from "@/components/page-header";
+
 import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
@@ -105,8 +107,7 @@ export default function StatementsPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
-      <h1 className="text-3xl font-bold">{t("title")}</h1>
-      <p className="mt-2 text-neutral-600">{t("intro")}</p>
+      <PageHeader title={t("title")} subtitle={t("intro")} icon="✍️" />
 
       {/* 英国 / 香港 切换 */}
       <div className="mt-4 inline-flex rounded-lg border border-neutral-200 p-1 bg-neutral-50">

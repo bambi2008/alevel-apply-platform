@@ -1,5 +1,7 @@
 "use client";
 
+import { PageHeader } from "@/components/page-header";
+
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 import {
@@ -27,13 +29,14 @@ export default function TestsPage() {
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
       {/* Header */}
+      <PageHeader
+        title="入学笔试备考中心"
+        subtitle="9 种考试 · 结构说明 · 备考计划 · 知识点练习 · 计时模考"
+        icon="📐"
+      />
       <div className="mb-8">
-        <h1 className="text-3xl font-bold">入学笔试备考中心</h1>
-        <p className="mt-2 text-neutral-600">
-          Admissions Test Prep Center — 9 种考试 · 结构说明 · 备考计划 · 知识点练习
-        </p>
-        <div className="mt-4 rounded-xl border border-blue-100 bg-blue-50 px-4 py-3 text-sm text-blue-800">
-          <span className="font-semibold">📌 使用说明：</span>
+        <div className="mt-0 rounded-xl border border-indigo-100 bg-brand-soft px-4 py-3 text-sm text-[var(--ink-soft)]">
+          <span className="font-semibold text-[var(--indigo)]">📌 使用说明：</span>
           点击任一考试进入详情页，查看考试结构、完整备考计划、知识点练习和模拟考试。
           MAT、STEP、ESAT 提供 AI 题库练习（由 Claude 生成，经多 AI 审核）。
         </div>

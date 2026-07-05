@@ -1,5 +1,7 @@
 "use client";
 
+import { PageHeader } from "@/components/page-header";
+
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import {
@@ -83,10 +85,7 @@ export default function BackgroundPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
-      <h1 className="text-2xl font-bold mb-1">背景提升</h1>
-      <p className="text-sm text-neutral-500 mb-6">
-        围绕你的目标专业规划竞赛、科研、活动与夏校，让申请更有竞争力。推荐已根据你的档案个性化排序。
-      </p>
+      <PageHeader title="背景提升" subtitle="围绕你的目标专业规划竞赛、科研、活动与夏校，让申请更有竞争力。推荐已根据你的档案个性化排序。" icon="🌟" />
 
       {/* 在线课题入口（平台自有、可完成的高含金量课题） */}
       <Link

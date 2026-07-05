@@ -1,5 +1,7 @@
 "use client";
 
+import { PageHeader } from "@/components/page-header";
+
 import { useEffect, useState } from "react";
 import {
   listTasks,
@@ -58,10 +60,7 @@ export default function TasksPage() {
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-8">
-      <h1 className="text-2xl font-bold mb-1">待办清单</h1>
-      <p className="text-sm text-neutral-500 mb-6">
-        记录申请路上的每一项待办，登录后自动跨设备保存。
-      </p>
+      <PageHeader title="待办清单" subtitle="记录申请路上的每一项待办，登录后自动跨设备保存。" icon="✅" />
 
       {/* 添加 */}
       <div className="rounded-2xl border border-neutral-200 bg-white p-4 mb-6">
