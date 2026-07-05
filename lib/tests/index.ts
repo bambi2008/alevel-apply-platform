@@ -222,15 +222,8 @@ export const ADMISSIONS_TESTS: AdmissionsTest[] = [
       "帝国理工 EEE/ME 方向也使用 ESAT，备考思路与剑桥工程完全相同。",
     ],
     pastPaperLinks: [
-      { label: "ENGAA 2023（最新一年，推荐首做）", url: "https://www.undergraduate.study.cam.ac.uk/applying/admissions-tests", note: "进入页面后点击 ENGAA 下载 2023 年真题" },
-      { label: "ENGAA 2022", url: "https://www.undergraduate.study.cam.ac.uk/applying/admissions-tests" },
-      { label: "ENGAA 2021", url: "https://www.undergraduate.study.cam.ac.uk/applying/admissions-tests" },
-      { label: "ENGAA 2020", url: "https://www.undergraduate.study.cam.ac.uk/applying/admissions-tests" },
-      { label: "ENGAA 2019", url: "https://www.undergraduate.study.cam.ac.uk/applying/admissions-tests" },
-      { label: "ENGAA 2018", url: "https://www.undergraduate.study.cam.ac.uk/applying/admissions-tests" },
-      { label: "ENGAA 2017", url: "https://www.undergraduate.study.cam.ac.uk/applying/admissions-tests" },
-      { label: "ENGAA 2016（最早年份）", url: "https://www.undergraduate.study.cam.ac.uk/applying/admissions-tests" },
-      { label: "ESAT 2024 Specimen Paper（官方样题）", url: "https://www.undergraduate.study.cam.ac.uk/applying/admissions-tests", note: "ESAT 第一份官方样题，格式参考用" },
+      { label: "官方 ESAT 备考资料（含历年 ENGAA / NSAA 真题）", url: "https://esat-tmua.ac.uk/esat-preparation-materials/", note: "UAT 官方页面：ESAT 指南 + 历年 ENGAA / NSAA 真题（已标注哪些题不在 ESAT 范围）。ESAT 自 2024/25 起取代 ENGAA / NSAA，历年真题仍是最佳练习素材。" },
+      { label: "ESAT / ENGAA 真题与解析（免费下载，含答案与评分标准）", url: "https://firstclasseducation.org.uk/esat-past-papers", note: "含 2016–2023 ENGAA / NSAA 真题与详解，适合计时模考与自我批改。" },
     ],
   },
 

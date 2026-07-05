@@ -4,6 +4,11 @@ import { ESAT_MK1_MATH, ESAT_MK1_PHYS } from "./esat-mock-1";
 import { ESAT_MK2_MATH, ESAT_MK2_PHYS } from "./esat-mock-2";
 import { ESAT_MK3_MATH, ESAT_MK3_CHEM } from "./esat-mock-3";
 import { ESAT_MK4_MATH, ESAT_MK4_BIO } from "./esat-mock-4";
+import { ESAT_MK5_MATH, ESAT_MK5_PHYS } from "./esat-mock-5";
+import { ESAT_MK6_MATH, ESAT_MK6_PHYS } from "./esat-mock-6";
+import { ESAT_MK7_MATH, ESAT_MK7_PHYS } from "./esat-mock-7";
+import { ESAT_MK8_MATH, ESAT_MK8_CHEM } from "./esat-mock-8";
+import { ESAT_MK9_MATH, ESAT_MK9_BIO } from "./esat-mock-9";
 
 export interface MockModule {
   id: string;
@@ -122,7 +127,84 @@ export const ESAT_MOCK_4: MockPaper = {
   ],
 };
 
-const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4];
+export const ESAT_MOCK_5: MockPaper = {
+  id: "esat-mock-5",
+  testId: "esat",
+  title: "ESAT 模拟卷五（工程方向 · 对标 ENGAA）",
+  titleEn: "ESAT Mock Paper 5 (Engineering)",
+  description:
+    "工程方向完整模拟卷，参照剑桥 ENGAA 真题的题型、考点与难度校准（题目全新原创，未照搬真题，也不与练习题库及其他模拟卷重复）。数学 + 物理各 27 题、每模块 40 分钟独立计时、五选一、无负分。",
+  modules: [
+    {
+      id: "math",
+      title: "数学（含进阶）",
+      titleEn: "Mathematics (incl. advanced)",
+      durationSec: 40 * 60,
+      questions: ESAT_MK5_MATH,
+    },
+    {
+      id: "physics",
+      title: "物理（含进阶）",
+      titleEn: "Physics (incl. advanced)",
+      durationSec: 40 * 60,
+      questions: ESAT_MK5_PHYS,
+    },
+  ],
+};
+
+export const ESAT_MOCK_6: MockPaper = {
+  id: "esat-mock-6",
+  testId: "esat",
+  title: "ESAT 模拟卷六（后期趋势卷 · 对标 2019–2023）",
+  titleEn: "ESAT Mock Paper 6 (Recent-trend)",
+  description:
+    "依据 ENGAA 2016–2023 真题演变设计：出题人自 2019 年将卷子由 54 题/80 分钟改为 40 题/60 分钟，以「少而精、多步推理」的更硬题目补偿，并加重进阶数学与电路/波/热。本卷据此校准，难度偏高、综合多步题为主。数学 + 物理各 27 题、每模块 40 分钟、五选一、无负分。题目全新原创，与真题及其他卷均不重复。",
+  modules: [
+    { id: "math", title: "数学（含进阶）", titleEn: "Mathematics (incl. advanced)", durationSec: 40 * 60, questions: ESAT_MK6_MATH },
+    { id: "physics", title: "物理（含进阶）", titleEn: "Physics (incl. advanced)", durationSec: 40 * 60, questions: ESAT_MK6_PHYS },
+  ],
+};
+
+export const ESAT_MOCK_7: MockPaper = {
+  id: "esat-mock-7",
+  testId: "esat",
+  title: "ESAT 模拟卷七（高频核心卷 · 跨 2016–2023）",
+  titleEn: "ESAT Mock Paper 7 (High-frequency core)",
+  description:
+    "提取 ENGAA 2016–2023 八年真题中跨年稳定、几乎每年必考的「高频核心」考点，组成的打基本功均衡卷（与偏难的卷六互补）。数学 + 物理各 27 题、每模块 40 分钟、五选一、无负分。难度以基础—中等为主。题目全新原创，与真题及其他卷均不重复。",
+  modules: [
+    { id: "math", title: "数学（高频核心）", titleEn: "Mathematics (core)", durationSec: 40 * 60, questions: ESAT_MK7_MATH },
+    { id: "physics", title: "物理（高频核心）", titleEn: "Physics (core)", durationSec: 40 * 60, questions: ESAT_MK7_PHYS },
+  ],
+};
+
+export const ESAT_MOCK_8: MockPaper = {
+  id: "esat-mock-8",
+  testId: "esat",
+  title: "ESAT 模拟卷八（自然科学方向 · 数学 + 化学 · 对标 NSAA）",
+  titleEn: "ESAT Mock Paper 8 (Natural Sciences · Chemistry)",
+  description:
+    "依据 NSAA 2016–2023 真题校准的自然科学方向卷，补足化学（与工程卷五/六/七的数理侧互补）。数学 + 化学各 27 题、每模块 40 分钟、五选一、无负分。题目全新原创，与真题及其他卷均不重复。",
+  modules: [
+    { id: "math", title: "数学", titleEn: "Mathematics", durationSec: 40 * 60, questions: ESAT_MK8_MATH },
+    { id: "chemistry", title: "化学", titleEn: "Chemistry", durationSec: 40 * 60, questions: ESAT_MK8_CHEM },
+  ],
+};
+
+export const ESAT_MOCK_9: MockPaper = {
+  id: "esat-mock-9",
+  testId: "esat",
+  title: "ESAT 模拟卷九（自然科学方向 · 数学 + 生物 · 对标 NSAA）",
+  titleEn: "ESAT Mock Paper 9 (Natural Sciences · Biology)",
+  description:
+    "依据 NSAA 2016–2023 真题校准的自然科学方向卷，补足生物（与化学卷八、工程卷共同构成完整科目覆盖）。数学 + 生物各 27 题、每模块 40 分钟、五选一、无负分。题目全新原创，与真题及其他卷均不重复。",
+  modules: [
+    { id: "math", title: "数学", titleEn: "Mathematics", durationSec: 40 * 60, questions: ESAT_MK9_MATH },
+    { id: "biology", title: "生物", titleEn: "Biology", durationSec: 40 * 60, questions: ESAT_MK9_BIO },
+  ],
+};
+
+const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9];
 
 export function getMockPapersForTest(testId: string): MockPaper[] {
   return ALL_MOCK_PAPERS.filter((p) => p.testId === testId);
