@@ -123,10 +123,10 @@ export default function BackgroundPage() {
 
       {/* 进度提醒 */}
       {reminders.length > 0 && (
-        <section className="mb-8 rounded-xl border border-amber-200 bg-amber-50/60 p-4">
+        <section className="mb-8 rounded-xl border border-[color:var(--warning)]/25 bg-[var(--warning-bg)] p-4">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-base">🔔</span>
-            <h2 className="text-sm font-semibold text-amber-900">进度提醒（{reminders.length}）</h2>
+            <h2 className="text-sm font-semibold text-[var(--warning)]">进度提醒（{reminders.length}）</h2>
           </div>
           <ul className="space-y-1.5">
             {reminders.map((r) => (
@@ -134,9 +134,9 @@ export default function BackgroundPage() {
                 <span
                   className={`text-[11px] rounded px-1.5 py-0.5 shrink-0 ${
                     r.severity === "high"
-                      ? "bg-red-100 text-red-700"
+                      ? "bg-[var(--danger-bg)] text-[var(--danger)]"
                       : r.severity === "medium"
-                      ? "bg-amber-100 text-amber-800"
+                      ? "bg-[var(--warning-bg)] text-[var(--warning)]"
                       : "bg-neutral-100 text-neutral-500"
                   }`}
                 >
@@ -157,7 +157,7 @@ export default function BackgroundPage() {
           <div className="flex gap-1 text-xs flex-wrap">
             <button
               onClick={() => setActiveField("AUTO")}
-              className={`px-2.5 py-1 rounded-full ${activeField === "AUTO" ? "bg-blue-600 text-white" : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"}`}
+              className={`px-2.5 py-1 rounded-full ${activeField === "AUTO" ? "bg-[var(--indigo)] text-white" : "bg-[var(--surface-2)] text-[var(--ink-soft)] hover:bg-[var(--border)]"}`}
             >
               为我推荐
             </button>
@@ -165,7 +165,7 @@ export default function BackgroundPage() {
               <button
                 key={f.value}
                 onClick={() => setActiveField(f.value)}
-                className={`px-2.5 py-1 rounded-full ${activeField === f.value ? "bg-blue-600 text-white" : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"}`}
+                className={`px-2.5 py-1 rounded-full ${activeField === f.value ? "bg-[var(--indigo)] text-white" : "bg-[var(--surface-2)] text-[var(--ink-soft)] hover:bg-[var(--border)]"}`}
               >
                 {f.label}
               </button>
@@ -174,7 +174,7 @@ export default function BackgroundPage() {
         </div>
 
         {activeField === "AUTO" && profile.intendedMajors.length === 0 && (
-          <p className="text-xs text-amber-700 bg-amber-50 rounded px-3 py-2 mb-3">
+          <p className="text-xs text-[var(--warning)] bg-[var(--warning-bg)] rounded px-3 py-2 mb-3">
             提示：在「我的档案」里填写目标专业后，推荐会更贴合你的方向。当前按通用方向展示。
           </p>
         )}
@@ -199,14 +199,14 @@ export default function BackgroundPage() {
                 {reasons.length > 0 && (
                   <div className="flex gap-1 flex-wrap mt-2">
                     {reasons.map((r, i) => (
-                      <span key={i} className="text-[11px] text-blue-700 bg-blue-50 rounded px-1.5 py-0.5">{r}</span>
+                      <span key={i} className="text-[11px] text-[var(--indigo)] bg-[var(--info-bg)] rounded px-1.5 py-0.5">{r}</span>
                     ))}
                   </div>
                 )}
                 <button
                   onClick={() => onAdd(c)}
                   disabled={added}
-                  className={`mt-3 text-sm rounded-lg py-1.5 ${added ? "bg-neutral-100 text-neutral-400 cursor-default" : "bg-blue-600 text-white hover:bg-blue-700"}`}
+                  className={`mt-3 text-sm rounded-lg py-1.5 ${added ? "bg-[var(--surface-2)] text-[var(--ink-faint)] cursor-default" : "bg-[var(--indigo)] text-white hover:bg-[var(--indigo-hover)]"}`}
                 >
                   {added ? "已加入规划" : "加入规划"}
                 </button>
@@ -275,10 +275,10 @@ export default function BackgroundPage() {
                     <option key={s.value} value={s.value}>{s.label}</option>
                   ))}
                 </select>
-                <button onClick={() => toTask(i)} className="text-xs text-blue-600 hover:underline shrink-0" title="在待办清单中创建一条">
+                <button onClick={() => toTask(i)} className="text-xs text-[var(--indigo)] hover:underline shrink-0" title="在待办清单中创建一条">
                   转为待办
                 </button>
-                <button onClick={() => deleteBackground(i.id)} className="text-xs text-neutral-300 hover:text-red-600 shrink-0">
+                <button onClick={() => deleteBackground(i.id)} className="text-xs text-[var(--ink-faint)] hover:text-[var(--danger)] shrink-0">
                   删除
                 </button>
               </div>

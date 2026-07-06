@@ -20,9 +20,9 @@ type Row = { subject: string; grade: string };
 
 const CATEGORY_ORDER: MatchCategory[] = ["safety", "match", "reach", "out_of_reach"];
 const CATEGORY_STYLE: Record<MatchCategory, string> = {
-  safety: "bg-green-50 text-green-700 border-green-200",
-  match: "bg-blue-50 text-blue-700 border-blue-200",
-  reach: "bg-amber-50 text-amber-700 border-amber-200",
+  safety: "bg-[var(--success-bg)] text-[var(--success)] border-[color:var(--success)]/20",
+  match: "bg-[var(--info-bg)] text-[var(--indigo)] border-[color:var(--indigo)]/20",
+  reach: "bg-[var(--warning-bg)] text-[var(--warning)] border-[color:var(--warning)]/20",
   out_of_reach: "bg-neutral-100 text-neutral-500 border-neutral-200",
 };
 
@@ -113,7 +113,7 @@ export default function MatchPage() {
       {fromProfile && (
         <Link
           href="/profile"
-          className="mt-3 block text-sm text-blue-700 bg-blue-50 rounded-lg px-3 py-2 hover:bg-blue-100"
+          className="mt-3 block text-sm text-[var(--indigo)] bg-[var(--info-bg)] rounded-lg px-3 py-2 hover:bg-[var(--surface-2)]"
         >
           {t("fromProfile")}
         </Link>
@@ -159,7 +159,7 @@ export default function MatchPage() {
                 type="button"
                 onClick={() => removeRow(i)}
                 disabled={rows.length <= 1}
-                className="px-2 py-2 text-neutral-400 hover:text-red-500 disabled:opacity-30"
+                className="px-2 py-2 text-[var(--ink-faint)] hover:text-[var(--danger)] disabled:opacity-30"
                 aria-label="remove"
               >
                 ✕
@@ -173,7 +173,7 @@ export default function MatchPage() {
             type="button"
             onClick={addRow}
             disabled={rows.length >= 4}
-            className="text-sm text-blue-600 hover:underline disabled:opacity-40"
+            className="text-sm text-[var(--indigo)] hover:underline disabled:opacity-40"
           >
             + {t("addSubject")}
           </button>
@@ -194,7 +194,7 @@ export default function MatchPage() {
         <button
           type="button"
           onClick={() => setSubmitted(true)}
-          className="mt-5 w-full rounded-lg bg-blue-600 text-white py-2.5 font-medium hover:bg-blue-700"
+          className="mt-5 w-full btn btn-primary"
         >
           {t("start")}
         </button>
@@ -256,7 +256,7 @@ export default function MatchPage() {
         ))}
 
       <p className="mt-8 text-sm text-neutral-500">
-        <Link href="/universities" className="text-blue-600 hover:underline">
+        <Link href="/universities" className="text-[var(--indigo)] hover:underline">
           {t("toUniversities")}
         </Link>
       </p>

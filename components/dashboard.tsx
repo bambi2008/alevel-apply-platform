@@ -15,15 +15,15 @@ function fmt(date: Date) {
 }
 
 const STATUS_CHIP: Record<string, string> = {
-  done: "bg-neutral-100 text-neutral-400",
-  urgent: "bg-red-100 text-red-600",
-  upcoming: "bg-amber-100 text-amber-700",
-  future: "bg-blue-50 text-blue-600",
+  done: "bg-[var(--surface-2)] text-[var(--ink-faint)]",
+  urgent: "bg-[var(--danger-bg)] text-[var(--danger)]",
+  upcoming: "bg-[var(--warning-bg)] text-[var(--warning)]",
+  future: "bg-[var(--info-bg)] text-[var(--indigo)]",
 };
 
 function GoalTag({ children }: { children: React.ReactNode }) {
   return (
-    <span className="inline-block text-xs bg-blue-50 text-blue-700 rounded-full px-2.5 py-0.5 font-medium">
+    <span className="inline-block text-xs bg-[var(--info-bg)] text-[var(--indigo)] rounded-full px-2.5 py-0.5 font-medium">
       {children}
     </span>
   );
@@ -31,13 +31,13 @@ function GoalTag({ children }: { children: React.ReactNode }) {
 
 function MilestoneRow({ m, t }: { m: Milestone; t: ReturnType<typeof useTranslations> }) {
   return (
-    <div className="flex items-start gap-3 py-2.5 border-b border-neutral-100 last:border-0">
+    <div className="flex items-start gap-3 py-2.5 border-b border-[var(--border-soft)] last:border-0">
       <span className={`shrink-0 text-xs px-2 py-0.5 rounded-full font-medium mt-0.5 ${STATUS_CHIP[m.status]}`}>
         {t(`timeline.status.${m.status}`)}
       </span>
       <div className="min-w-0">
-        <p className="text-sm font-medium text-neutral-900 truncate">{t(m.titleKey as never)}</p>
-        <p className="text-xs text-neutral-400">{fmt(m.date)}</p>
+        <p className="text-sm font-medium text-[var(--ink)] truncate">{t(m.titleKey as never)}</p>
+        <p className="text-xs text-[var(--ink-faint)]">{fmt(m.date)}</p>
       </div>
     </div>
   );
@@ -66,14 +66,14 @@ export function Dashboard({ email }: { email?: string | null }) {
   }, []);
 
   if (!loaded) {
-    return <div className="mx-auto max-w-2xl px-4 py-20 text-center text-neutral-400">…</div>;
+    return <div className="mx-auto max-w-2xl px-4 py-20 text-center text-[var(--ink-faint)]">…</div>;
   }
 
   if (!profile) {
     return (
       <div className="mx-auto max-w-2xl px-4 py-20 text-center">
-        <p className="text-neutral-500 mb-4">{t("dashboard.noProfile")}</p>
-        <Link href="/profile" className="inline-block px-5 py-2.5 rounded-lg bg-blue-600 text-white font-medium hover:bg-blue-700">
+        <p className="text-[var(--ink-soft)] mb-4">{t("dashboard.noProfile")}</p>
+        <Link href="/profile" className="btn btn-primary">
           {t("dashboard.buildProfile")}
         </Link>
       </div>
@@ -136,28 +136,28 @@ export function Dashboard({ email }: { email?: string | null }) {
       </div>
 
       {/* Full process overview */}
-      <div className="rounded-2xl border border-blue-100 bg-white overflow-hidden">
+      <div className="rounded-2xl border border-[var(--border)] bg-white overflow-hidden">
         <button
           type="button"
           onClick={() => setGuideOpen((v) => !v)}
           className="w-full flex items-center justify-between px-5 py-4 text-left"
         >
           <div>
-            <span className="font-semibold text-blue-700">申请全流程说明</span>
-            <span className="ml-2 text-xs text-neutral-400">UK & HK Application Guide</span>
+            <span className="font-semibold text-[var(--ink)]">申请全流程说明</span>
+            <span className="ml-2 text-xs text-[var(--ink-faint)]">UK & HK Application Guide</span>
           </div>
-          <span className="text-xs text-blue-400">{guideOpen ? "收起 ▲" : "展开 ▼"}</span>
+          <span className="text-xs text-[var(--ink-faint)]">{guideOpen ? "收起 ▲" : "展开 ▼"}</span>
         </button>
         {guideOpen && (
-          <div className="px-5 pb-6 pt-2 border-t border-blue-50">
+          <div className="px-5 pb-6 pt-2 border-t border-[var(--border-soft)]">
             <ProcessOverview forceExpand />
           </div>
         )}
       </div>
 
       {/* Goal card */}
-      <div className="rounded-2xl border border-blue-100 bg-gradient-to-br from-blue-50 to-white p-5">
-        <p className="text-xs text-blue-500 font-semibold uppercase tracking-wide mb-3">{t("dashboard.yourGoal")}</p>
+      <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-5">
+        <p className="text-xs text-[var(--indigo)] font-semibold uppercase tracking-wide mb-3">{t("dashboard.yourGoal")}</p>
         <div className="flex flex-wrap gap-2">
           <GoalTag>{t("dashboard.intakeYear", { year: intakeYear })}</GoalTag>
           {regions.map((r) => (
@@ -167,7 +167,7 @@ export function Dashboard({ email }: { email?: string | null }) {
             <GoalTag key={m}>{m}</GoalTag>
           ))}
           {majors.length === 0 && (
-            <Link href="/profile" className="text-xs text-neutral-400 underline">
+            <Link href="/profile" className="text-xs text-[var(--ink-faint)] underline">
               {t("dashboard.addMajors")}
             </Link>
           )}
@@ -175,15 +175,15 @@ export function Dashboard({ email }: { email?: string | null }) {
       </div>
 
       {/* Timeline preview */}
-      <div className="rounded-2xl border border-neutral-200 bg-white p-5">
+      <div className="card p-5">
         <div className="flex items-center justify-between mb-3">
           <p className="font-semibold">{t("dashboard.nextSteps")}</p>
-          <Link href="/timeline" className="text-xs text-blue-600 hover:underline">
+          <Link href="/timeline" className="text-xs text-[var(--indigo)] hover:underline">
             {t("dashboard.fullTimeline")} →
           </Link>
         </div>
         {upcomingMs.length === 0 ? (
-          <p className="text-sm text-neutral-400">{t("dashboard.timelineDone")}</p>
+          <p className="text-sm text-[var(--ink-faint)]">{t("dashboard.timelineDone")}</p>
         ) : (
           upcomingMs.map((m) => <MilestoneRow key={m.id} m={m} t={t} />)
         )}
@@ -226,7 +226,7 @@ export function Dashboard({ email }: { email?: string | null }) {
 
       {/* Profile completeness hint */}
       {(!profile.ielts || profile.subjects.length === 0) && (
-        <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800 flex items-center justify-between gap-4">
+        <div className="rounded-xl border border-[color:var(--warning)]/25 bg-[var(--warning-bg)] px-4 py-3 text-sm text-[var(--warning)] flex items-center justify-between gap-4">
           <span>{t("dashboard.profileIncomplete")}</span>
           <Link href="/profile" className="shrink-0 text-xs font-medium underline">
             {t("dashboard.completeProfile")}
