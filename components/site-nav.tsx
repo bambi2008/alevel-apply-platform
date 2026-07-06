@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { LocaleSwitcher } from "@/components/locale-switcher";
+import { NavIcon } from "@/components/nav-icons";
 import { logoutAction } from "@/lib/auth/actions";
 
 type NavItem = { href: string; label: string; en: string; icon: string };
@@ -32,7 +33,7 @@ function Brand() {
     <Link href="/" className="flex items-center gap-2">
       <BridgeMark />
       <span className="flex items-baseline">
-        <span className="font-extrabold text-lg tracking-tight text-gradient">桥申</span>
+        <span className="font-extrabold text-lg tracking-tight text-[var(--ink)]">桥申</span>
       </span>
     </Link>
   );
@@ -58,30 +59,30 @@ export function SiteNav({
     {
       title: t("groupApply"),
       items: [
-        { href: "/", label: t("home"), en: "Home", icon: "🏠" },
-        { href: "/match", label: t("match"), en: "Match", icon: "🎯" },
-        { href: "/universities", label: t("universities"), en: "Universities", icon: "🏛️" },
-        { href: "/profile", label: t("profile"), en: "Profile", icon: "👤" },
-        { href: "/applications", label: t("applications"), en: "Applications", icon: "📋" },
-        { href: "/timeline", label: t("timeline"), en: "Timeline", icon: "🗓️" },
-        { href: "/apply-guide", label: t("applyGuide"), en: "UCAS Guide", icon: "📄" },
+        { href: "/", label: t("home"), en: "Home", icon: "home" },
+        { href: "/match", label: t("match"), en: "Match", icon: "target" },
+        { href: "/universities", label: t("universities"), en: "Universities", icon: "building" },
+        { href: "/profile", label: t("profile"), en: "Profile", icon: "user" },
+        { href: "/applications", label: t("applications"), en: "Applications", icon: "clipboard" },
+        { href: "/timeline", label: t("timeline"), en: "Timeline", icon: "calendar" },
+        { href: "/apply-guide", label: t("applyGuide"), en: "UCAS Guide", icon: "file" },
       ],
     },
     {
       title: t("groupPrep"),
       items: [
-        { href: "/tests", label: t("tests"), en: "Test Prep", icon: "📐" },
-        { href: "/interview", label: "面试准备", en: "Interview", icon: "🎙️" },
-        { href: "/background", label: t("background"), en: "Background", icon: "🌟" },
-        { href: "/statements", label: t("statements"), en: "Statement", icon: "✍️" },
-        { href: "/apply-prep", label: "填表助手", en: "Application", icon: "📋" },
+        { href: "/tests", label: t("tests"), en: "Test Prep", icon: "compass" },
+        { href: "/interview", label: "面试准备", en: "Interview", icon: "mic" },
+        { href: "/background", label: t("background"), en: "Background", icon: "star" },
+        { href: "/statements", label: t("statements"), en: "Statement", icon: "pen" },
+        { href: "/apply-prep", label: "填表助手", en: "Application", icon: "listChecks" },
       ],
     },
     {
       title: t("groupTools"),
       items: [
-        { href: "/tasks", label: t("tasks"), en: "To-Do", icon: "✅" },
-        { href: "/documents", label: t("documents"), en: "Documents", icon: "📁" },
+        { href: "/tasks", label: t("tasks"), en: "To-Do", icon: "check" },
+        { href: "/documents", label: t("documents"), en: "Documents", icon: "folder" },
       ],
     },
   ];
@@ -100,30 +101,35 @@ export function SiteNav({
     setUserOpen(false);
   }, [pathname]);
 
-  const NavRow = ({ l, onNavigate }: { l: NavItem; onNavigate?: () => void }) => (
-    <Link
-      href={l.href}
-      onClick={onNavigate}
-      className={`relative flex items-center gap-3 px-3 py-2.5 rounded-xl text-[15px] transition-colors ${
-        isActive(l.href)
-          ? "bg-brand-soft text-[var(--indigo)] font-semibold"
-          : "text-[var(--ink)] font-medium hover:bg-[var(--surface)]"
-      }`}
-    >
-      {isActive(l.href) && (
-        <span className="absolute left-0 top-1.5 bottom-1.5 w-1 rounded-full bg-brand" />
-      )}
-      <span className="text-xl leading-none w-6 text-center">{l.icon}</span>
-      <span className="truncate">{l.label}</span>
-    </Link>
-  );
+  const NavRow = ({ l, onNavigate }: { l: NavItem; onNavigate?: () => void }) => {
+    const active = isActive(l.href);
+    return (
+      <Link
+        href={l.href}
+        onClick={onNavigate}
+        aria-current={active ? "page" : undefined}
+        className={`group relative flex items-center gap-2.5 px-3 py-2 rounded-lg text-[13.5px] transition-colors ${
+          active
+            ? "bg-[var(--info-bg)] text-[var(--indigo)] font-semibold"
+            : "text-[var(--ink-soft)] font-medium hover:bg-[var(--surface)] hover:text-[var(--ink)]"
+        }`}
+      >
+        {active && <span className="absolute left-0 top-1.5 bottom-1.5 w-[3px] rounded-full bg-[var(--indigo)]" />}
+        <NavIcon
+          name={l.icon}
+          className={active ? "text-[var(--indigo)]" : "text-[var(--ink-faint)] group-hover:text-[var(--ink-soft)]"}
+        />
+        <span className="truncate">{l.label}</span>
+      </Link>
+    );
+  };
 
   // 侧边栏内部内容（桌面与抽屉共用）
   const NavBody = ({ onNavigate }: { onNavigate?: () => void }) => (
     <nav className="flex-1 overflow-y-auto px-3 py-3 space-y-5">
       {groups.map((g) => (
         <div key={g.title}>
-          <p className="px-3 mb-1.5 text-xs font-semibold uppercase tracking-wider text-[var(--ink-soft)]">
+          <p className="px-3 mb-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-faint)]">
             {g.title}
           </p>
           <div className="space-y-0.5">
@@ -221,9 +227,9 @@ export function SiteNav({
         <div className="px-3 pt-3">
           <Link
             href="/match"
-            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-brand text-white text-sm font-medium hover:opacity-90 transition-opacity shadow-sm shadow-indigo-500/20"
+            className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-[var(--indigo)] text-white text-[13.5px] font-semibold hover:bg-[var(--indigo-hover)] transition-colors"
           >
-            ✨ {t("freeMatch")}
+            <NavIcon name="sparkle" width={16} height={16} /> {t("freeMatch")}
           </Link>
         </div>
         <NavBody />
