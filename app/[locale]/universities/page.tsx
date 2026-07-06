@@ -8,17 +8,18 @@ import { AddToApplication } from "@/components/add-to-application";
 export default async function UniversitiesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ region?: string }>;
+  searchParams: Promise<{ region?: string; q?: string }>;
 }) {
-  const { region: regionParam } = await searchParams;
+  const { region: regionParam, q: qParam } = await searchParams;
   const region = regionParam === "UK" || regionParam === "HK" ? (regionParam as Region) : undefined;
+  const q = (qParam ?? "").trim().toLowerCase();
 
   const t = await getTranslations("universities");
   const tc = await getTranslations("common");
   const locale = await getLocale();
   const isEn = locale === "en";
 
-  const universities = await getUniversities(region);
+  const allUniversities = await getUniversities(region);
   const programs = await getPrograms({ region });
   const programsByUni = new Map<string, typeof programs>();
   for (const p of programs) {
@@ -26,6 +27,29 @@ export default async function UniversitiesPage({
     arr.push(p);
     programsByUni.set(p.universityId, arr);
   }
+
+  // 全局搜索：按院校名/英文名/城市，或其专业名匹配
+  const universities = q
+    ? allUniversities.filter((u) => {
+        const hay = [
+          (u as { name?: string }).name,
+          (u as { nameEn?: string }).nameEn,
+          (u as { city?: string }).city,
+        ]
+          .filter(Boolean)
+          .join(" ")
+          .toLowerCase();
+        const inUni = hay.includes(q);
+        const inProg = (programsByUni.get(u.id) ?? []).some((p) =>
+          [(p as { name?: string }).name, (p as { nameEn?: string }).nameEn]
+            .filter(Boolean)
+            .join(" ")
+            .toLowerCase()
+            .includes(q)
+        );
+        return inUni || inProg;
+      })
+    : allUniversities;
 
   const tabs: { key: Region | "ALL"; label: string }[] = [
     { key: "ALL", label: t("tabAll") },
@@ -58,6 +82,17 @@ export default async function UniversitiesPage({
           {t("summary", { unis: universities.length, programs: programs.length })}
         </span>
       </div>
+
+      {/* 搜索状态提示 */}
+      {q && (
+        <div className="mt-4 flex items-center gap-2 text-sm">
+          <span className="badge badge-brand">搜索：{qParam}</span>
+          <span className="text-[var(--ink-faint)]">找到 {universities.length} 所院校</span>
+          <Link href={region ? `/universities?region=${region}` : "/universities"} className="text-[var(--indigo)] hover:underline ml-1">
+            清除
+          </Link>
+        </div>
+      )}
 
       {/* University list */}
       <div className="mt-6 space-y-4">

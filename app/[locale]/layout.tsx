@@ -12,6 +12,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { routing, type AppLocale } from "@/i18n/routing";
 import { SiteNav } from "@/components/site-nav";
+import { TopBar } from "@/components/top-bar";
 import { auth } from "@/auth";
 import "../globals.css";
 
@@ -64,6 +65,7 @@ export default async function LocaleLayout({
           />
           {/* 登录后有左侧栏，内容右移；未登录（落地页）满屏不偏移 */}
           <div className={isLoggedIn ? "lg:pl-60" : ""}>
+            {isLoggedIn && <TopBar userEmail={user?.email ?? null} />}
             <main className="flex-1">{children}</main>
             {await Footer()}
           </div>
