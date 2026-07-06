@@ -64,7 +64,7 @@ export default async function LocaleLayout({
             isLoggedIn={isLoggedIn}
           />
           {/* 登录后有左侧栏，内容右移；未登录（落地页）满屏不偏移 */}
-          <div className={isLoggedIn ? "lg:pl-60" : ""}>
+          <div className={isLoggedIn ? "lg:pl-60 bg-[var(--surface)] min-h-screen" : ""}>
             {isLoggedIn && <TopBar userEmail={user?.email ?? null} />}
             <main className="flex-1">{children}</main>
             {await Footer()}

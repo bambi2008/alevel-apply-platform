@@ -88,8 +88,7 @@ export function RoadmapTree() {
   const activeNode = NODES.find((n) => statuses[n.id] === "active");
 
   return (
-    <div className="mesh-hero grain relative overflow-hidden rounded-3xl border border-[var(--border)] p-6 sm:p-8 mb-8">
-      <div className="pointer-events-none absolute -top-16 right-0 w-72 h-72 rounded-full bg-[radial-gradient(circle,rgba(124,58,237,0.14),transparent_70%)] floaty-slow" />
+    <div className="card relative overflow-hidden p-6 sm:p-8">
 
       {/* 顶部：总进度 + 下一步提示 */}
       <div className="relative flex items-end justify-between gap-4 flex-wrap mb-7">
@@ -105,7 +104,7 @@ export function RoadmapTree() {
           )}
         </div>
         <div className="w-full sm:w-56">
-          <div className="h-2 rounded-full bg-white/60 overflow-hidden">
+          <div className="h-2 rounded-full bg-[var(--surface-2)] overflow-hidden">
             <div className="h-full bg-brand transition-all duration-700" style={{ width: `${overall}%` }} />
           </div>
         </div>
@@ -136,7 +135,7 @@ export function RoadmapTree() {
                     ? "border-[var(--violet)] bg-white shadow-[0_10px_30px_-12px_rgba(124,58,237,0.5)] ring-2 ring-[var(--violet)]/20"
                     : st === "done"
                     ? "border-green-200 bg-green-50/40 hover:bg-white"
-                    : "border-[var(--border)] bg-white/60 hover:bg-white hover:border-indigo-200"
+                    : "border-[var(--border)] bg-[var(--surface)] hover:bg-white hover:border-indigo-200"
                 } ${n.branch ? "sm:ml-10" : ""}`}
               >
                 <ProgressRing pct={pct} status={st} icon={n.icon} />

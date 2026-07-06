@@ -2,6 +2,7 @@
 
 import { PageHeader } from "@/components/page-header";
 import { StatusBadge, appStatusMeta } from "@/components/status-badge";
+import { SceneCompass } from "@/components/illustrations";
 
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
@@ -66,7 +67,8 @@ export default function ApplicationsPage() {
       </div>
 
       {items.length === 0 ? (
-        <div className="mt-8 rounded-2xl border border-dashed border-[var(--border)] p-10 text-center">
+        <div className="mt-8 rounded-2xl border border-dashed border-[var(--border)] p-10 text-center flex flex-col items-center">
+          <SceneCompass className="w-48 h-auto rounded-xl mb-5 opacity-90" />
           <p className="text-[var(--ink-soft)]">{t("empty")}</p>
           <p className="mt-3 flex items-center justify-center gap-3">
             <Link href="/match" className="btn btn-primary text-sm">{tnav("match")}</Link>
