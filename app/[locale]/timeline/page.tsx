@@ -8,24 +8,28 @@ import { buildTimeline, type Milestone, type PrepLevel } from "@/lib/timeline";
 import { loadProfile } from "@/lib/profile/store";
 import { Link } from "@/i18n/navigation";
 
-const STATUS_COLOR: Record<string, string> = {
-  done: "bg-neutral-200 text-neutral-500",
-  urgent: "bg-red-500 text-white",
-  upcoming: "bg-amber-400 text-white",
-  future: "bg-blue-100 text-blue-700",
+import { StatusBadge, type StatusKind } from "@/components/status-badge";
+
+// 里程碑状态 → 统一状态标签
+const STATUS_MAP: Record<string, { kind: StatusKind; key: string }> = {
+  done: { kind: "done", key: "status.done" },
+  urgent: { kind: "danger", key: "status.urgent" },
+  upcoming: { kind: "warning", key: "status.upcoming" },
+  future: { kind: "todo", key: "status.future" },
 };
 
-const STATUS_RING: Record<string, string> = {
-  done: "border-neutral-300 bg-neutral-100",
-  urgent: "border-red-400 bg-red-50",
-  upcoming: "border-amber-400 bg-amber-50",
-  future: "border-blue-200 bg-white",
+// 时间轴节点颜色
+const NODE_STYLE: Record<string, string> = {
+  done: "border-[var(--success)] bg-[var(--success-bg)]",
+  urgent: "border-[var(--danger)] bg-[var(--danger-bg)]",
+  upcoming: "border-[var(--warning)] bg-[var(--warning-bg)]",
+  future: "border-[var(--border)] bg-white",
 };
 
 const PREP_COLOR: Record<PrepLevel, string> = {
-  early: "bg-green-50 border-green-200 text-green-800",
-  "on-track": "bg-blue-50 border-blue-200 text-blue-800",
-  late: "bg-red-50 border-red-200 text-red-800",
+  early: "bg-[var(--success-bg)] border-[color:var(--success)]/20 text-[var(--success)]",
+  "on-track": "bg-[var(--info-bg)] border-[color:var(--indigo)]/20 text-[var(--indigo)]",
+  late: "bg-[var(--danger-bg)] border-[color:var(--danger)]/20 text-[var(--danger)]",
 };
 
 function fmt(date: Date, locale: string) {
@@ -82,59 +86,62 @@ export default function TimelinePage() {
         {t(`prep.${prepLevel}.desc`)}
       </div>
 
-      {/* Next up */}
+      {/* Next up — 深色强调，最高优先级 */}
       {next && (
-        <div className="mb-8 rounded-xl border border-blue-200 bg-blue-50 px-4 py-3">
-          <p className="text-xs text-blue-500 font-medium mb-0.5">{t("nextUp")}</p>
-          <p className="font-semibold text-blue-900">{t(next.titleKey as never)}</p>
-          <p className="text-xs text-blue-600 mt-0.5">{fmt(next.date, locale)}</p>
+        <div className="mb-8 rounded-2xl bg-[var(--ink)] text-white px-5 py-4">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-white/50">{t("nextUp")}</p>
+          <p className="font-bold mt-1">{t(next.titleKey as never)}</p>
+          <p className="text-sm text-white/60 mt-0.5">{fmt(next.date, locale)}</p>
         </div>
       )}
 
       {/* Timeline */}
-      <ol className="relative border-l border-neutral-200 ml-3">
-        {milestones.map((m) => (
-          <li key={m.id} className="mb-8 ml-6">
-            {/* dot */}
-            <span
-              className={`absolute -left-3 flex h-6 w-6 items-center justify-center rounded-full border-2 ${STATUS_RING[m.status]}`}
-            >
-              {m.status === "done" && (
-                <svg className="w-3 h-3 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                </svg>
-              )}
-              {m.status === "urgent" && <span className="w-2 h-2 rounded-full bg-red-500" />}
-              {m.status === "upcoming" && <span className="w-2 h-2 rounded-full bg-amber-400" />}
-              {m.status === "future" && <span className="w-2 h-2 rounded-full bg-blue-300" />}
-            </span>
-
-            <div className="flex items-start justify-between gap-2">
-              <div>
-                <h3
-                  className={`font-semibold text-sm ${
-                    m.status === "done" ? "text-neutral-400 line-through" : "text-neutral-900"
-                  }`}
-                >
-                  {t(m.titleKey as never)}
-                </h3>
-                <p className="text-xs text-neutral-500 mt-0.5">{fmt(m.date, locale)}</p>
-                <p className="text-sm text-neutral-600 mt-1">{t(m.descKey as never)}</p>
-                {m.tip && (
-                  <p className="text-xs mt-1.5 text-blue-600 bg-blue-50 rounded px-2 py-1">
-                    {t(m.tip as never)}
-                  </p>
+      <ol className="relative border-l-2 border-[var(--border)] ml-3">
+        {milestones.map((m) => {
+          const sm = STATUS_MAP[m.status] ?? STATUS_MAP.future;
+          const isNext = next && m.id === next.id;
+          return (
+            <li key={m.id} className="mb-7 ml-6">
+              {/* node */}
+              <span
+                className={`absolute -left-[13px] flex h-6 w-6 items-center justify-center rounded-full border-2 ${NODE_STYLE[m.status]} ${isNext ? "ring-4 ring-[color:var(--indigo)]/15" : ""}`}
+              >
+                {m.status === "done" ? (
+                  <svg className="w-3 h-3 text-[var(--success)]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                  </svg>
+                ) : (
+                  <span
+                    className={`w-2 h-2 rounded-full ${
+                      m.status === "urgent" ? "bg-[var(--danger)]" : m.status === "upcoming" ? "bg-[var(--warning)]" : "bg-[var(--ink-faint)]"
+                    }`}
+                  />
                 )}
-              </div>
-              <span className={`shrink-0 text-xs px-2 py-0.5 rounded-full font-medium ${STATUS_COLOR[m.status]}`}>
-                {t(`status.${m.status}`)}
               </span>
-            </div>
-          </li>
-        ))}
+
+              <div className={`rounded-xl border p-4 transition-colors ${isNext ? "border-[color:var(--indigo)]/30 bg-[var(--info-bg)]" : "border-[var(--border)] bg-white"}`}>
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <h3 className={`font-semibold text-sm ${m.status === "done" ? "text-[var(--ink-faint)] line-through" : "text-[var(--ink)]"}`}>
+                      {t(m.titleKey as never)}
+                    </h3>
+                    <p className="text-xs text-[var(--ink-faint)] mt-0.5">{fmt(m.date, locale)}</p>
+                    <p className="text-sm text-[var(--ink-soft)] mt-1.5">{t(m.descKey as never)}</p>
+                    {m.tip && (
+                      <p className="text-xs mt-2 text-[var(--indigo)] bg-[var(--info-bg)] rounded-lg px-2.5 py-1.5">
+                        💡 {t(m.tip as never)}
+                      </p>
+                    )}
+                  </div>
+                  <StatusBadge kind={sm.kind} label={t(sm.key as never)} />
+                </div>
+              </div>
+            </li>
+          );
+        })}
       </ol>
 
-      <p className="text-xs text-neutral-400 text-center mt-4">
+      <p className="text-xs text-[var(--ink-faint)] text-center mt-4">
         {t("disclaimer")}{" "}
         <Link href="/profile" className="underline">
           {t("editProfile")}
