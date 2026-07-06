@@ -11,8 +11,7 @@ const inter = Inter({
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { routing, type AppLocale } from "@/i18n/routing";
-import { SiteNav } from "@/components/site-nav";
-import { TopBar } from "@/components/top-bar";
+import { TopNav } from "@/components/top-nav";
 import { auth } from "@/auth";
 import "../globals.css";
 
@@ -29,10 +28,20 @@ export async function generateMetadata({
 async function Footer() {
   const t = await getTranslations("footer");
   return (
-    <footer className="border-t border-neutral-200 mt-16">
-      <div className="mx-auto max-w-6xl px-4 py-8 text-sm text-neutral-500 flex flex-col sm:flex-row justify-between gap-2">
-        <span>© {new Date().getFullYear()} {t("rights")}</span>
-        <span>{t("disclaimer")}</span>
+    <footer className="mt-20 bg-[var(--ink-950)] text-white/70">
+      <div className="mx-auto max-w-6xl px-6 py-10">
+        <div className="flex items-center gap-2 mb-5">
+          <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-white/10">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round">
+              <path d="M4 15 A 8 8 0 0 1 20 15" />
+            </svg>
+          </span>
+          <span className="font-extrabold text-white tracking-tight">桥申</span>
+        </div>
+        <div className="flex flex-col sm:flex-row justify-between gap-3 text-sm">
+          <span>© {new Date().getFullYear()} {t("rights")}</span>
+          <span className="text-white/50">{t("disclaimer")}</span>
+        </div>
       </div>
     </footer>
   );
@@ -58,14 +67,12 @@ export default async function LocaleLayout({
     <html lang={locale} className={`h-full antialiased ${inter.variable}`}>
       <body className="min-h-full flex flex-col bg-white text-neutral-900">
         <NextIntlClientProvider messages={messages}>
-          <SiteNav
+          <TopNav
             userEmail={user?.email ?? null}
             isAdmin={user?.role === "ADMIN"}
             isLoggedIn={isLoggedIn}
           />
-          {/* 登录后有左侧栏，内容右移；未登录（落地页）满屏不偏移 */}
-          <div className={isLoggedIn ? "lg:pl-60 bg-[var(--surface)] min-h-screen" : ""}>
-            {isLoggedIn && <TopBar userEmail={user?.email ?? null} />}
+          <div className="bg-white min-h-screen">
             <main className="flex-1">{children}</main>
             {await Footer()}
           </div>
