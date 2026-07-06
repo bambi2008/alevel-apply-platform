@@ -71,6 +71,7 @@ export function SiteNav({
       title: t("groupPrep"),
       items: [
         { href: "/tests", label: t("tests"), en: "Test Prep", icon: "📐" },
+        { href: "/interview", label: "面试准备", en: "Interview", icon: "🎙️" },
         { href: "/background", label: t("background"), en: "Background", icon: "🌟" },
         { href: "/statements", label: t("statements"), en: "Statement", icon: "✍️" },
         { href: "/apply-prep", label: "填表助手", en: "Application", icon: "📋" },
