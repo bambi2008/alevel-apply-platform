@@ -8,6 +8,7 @@ import { listApplications } from "@/lib/applications/store";
 import { buildTimeline, type Milestone } from "@/lib/timeline";
 import { ProcessOverview } from "@/components/process-overview";
 import { RoadmapTree } from "@/components/roadmap-tree";
+import { NextActionBar } from "@/components/next-action-bar";
 
 function fmt(date: Date) {
   return date.toLocaleDateString("zh-CN", { month: "short", day: "numeric" });
@@ -85,6 +86,9 @@ export function Dashboard({ email }: { email?: string | null }) {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:py-10 space-y-6">
+      {/* 下一步行动条：最高优先级，一进来就知道该做什么 */}
+      <NextActionBar />
+
       {/* 申请路线图（科技树）——一进来就看到全局 + 我在哪 + 下一步 */}
       <RoadmapTree />
 

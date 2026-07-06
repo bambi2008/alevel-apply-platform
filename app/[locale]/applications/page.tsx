@@ -1,6 +1,7 @@
 "use client";
 
 import { PageHeader } from "@/components/page-header";
+import { StatusBadge, appStatusMeta } from "@/components/status-badge";
 
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
@@ -46,7 +47,6 @@ export default function ApplicationsPage() {
     return subscribeApps(sync);
   }, []);
 
-  const statusOf = (s: AppStatus) => APP_STATUSES.find((x) => x.value === s);
   const offerCount = items.filter((i) => i.status === "OFFER" || i.status === "ACCEPTED").length;
 
   if (!loaded) return <div className="mx-auto max-w-4xl px-4 py-10 text-neutral-400">{tc("loading")}</div>;
@@ -66,12 +66,11 @@ export default function ApplicationsPage() {
       </div>
 
       {items.length === 0 ? (
-        <div className="mt-8 rounded-xl border border-dashed border-neutral-300 p-10 text-center text-neutral-500">
-          <p>{t("empty")}</p>
-          <p className="mt-2">
-            <Link href="/match" className="text-blue-600 hover:underline">{tnav("match")}</Link>
-            {" · "}
-            <Link href="/universities" className="text-blue-600 hover:underline">{tnav("universities")}</Link>
+        <div className="mt-8 rounded-2xl border border-dashed border-[var(--border)] p-10 text-center">
+          <p className="text-[var(--ink-soft)]">{t("empty")}</p>
+          <p className="mt-3 flex items-center justify-center gap-3">
+            <Link href="/match" className="btn btn-primary text-sm">{tnav("match")}</Link>
+            <Link href="/universities" className="btn btn-secondary text-sm">{tnav("universities")}</Link>
           </p>
         </div>
       ) : (
@@ -80,28 +79,25 @@ export default function ApplicationsPage() {
             const p = programOf(item.programId);
             const showOffer = item.status === "OFFER" || item.status === "ACCEPTED";
             return (
-              <div key={item.programId} className="rounded-xl border border-neutral-200 p-4">
+              <div key={item.programId} className="card p-5">
                 <div className="flex justify-between gap-3 flex-wrap">
                   <div>
-                    <div className="font-medium">
+                    <div className="font-semibold text-[var(--ink)]">
                       {p ? `${p.university.nameZh} · ${p.nameZh}` : item.programId}
                     </div>
                     {p && (
-                      <div className="text-xs text-neutral-400 mt-0.5">
+                      <div className="text-xs text-[var(--ink-faint)] mt-0.5">
                         {p.university.name} — {p.name}
                         {p.alevelOfferTypical ? ` · ${p.alevelOfferTypical}` : ""}
                       </div>
                     )}
                   </div>
                   <div className="flex items-center gap-2">
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${statusOf(item.status)?.color ?? ""}`}>
-                      {statusOf(item.status)?.label}
-                      <span className="ml-1 opacity-60">{statusOf(item.status)?.en}</span>
-                    </span>
+                    <StatusBadge {...appStatusMeta(item.status)} />
                     <button
                       type="button"
                       onClick={() => removeApplication(item.programId)}
-                      className="text-neutral-400 hover:text-red-500 text-sm"
+                      className="text-[var(--ink-faint)] hover:text-[var(--danger)] text-sm"
                       aria-label="remove"
                     >
                       ✕
