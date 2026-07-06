@@ -99,11 +99,13 @@ function MockInterview({
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [started, setStarted] = useState(false);
+  const [feedback, setFeedback] = useState<string | null>(null);
+  const [feedbackLoading, setFeedbackLoading] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [msgs, loading]);
+  }, [msgs, loading, feedback]);
 
   async function callApi(payload: object): Promise<string | null> {
     setLoading(true);
@@ -125,14 +127,58 @@ function MockInterview({
     }
   }
 
+  async function getFeedback() {
+    if (msgs.length < 2 || feedbackLoading) return;
+    setFeedbackLoading(true);
+    try {
+      const res = await fetch("/api/interview-mock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ mode: "feedback", subject: subjectName, history: msgs }),
+      });
+      const data = await res.json();
+      setFeedback(res.ok ? (data.feedback as string) : data?.error || "复盘生成失败");
+    } catch {
+      setFeedback("网络错误，请稍后再试");
+    } finally {
+      setFeedbackLoading(false);
+    }
+  }
+
+  function restart() {
+    setMsgs([]);
+    setFeedback(null);
+    setInput("");
+    setStarted(false);
+  }
+
   async function start(useSeed: boolean) {
     setStarted(true);
     const seed = useSeed && seedQuestions.length > 0
       ? seedQuestions[Math.floor(Math.random() * seedQuestions.length)].prompt
       : undefined;
     const opening = await callApi({ subject: subjectName, question: seed, history: [] });
-    if (opening) setMsgs([{ role: "interviewer", content: opening }]);
+    if (opening) {
+      // 题库开场题补上「第1个问题」标记，与 AI 后续换题保持一致的进度感
+      const marked = seed && !opening.includes("【第") ? `【第1个问题】${opening}` : opening;
+      setMsgs([{ role: "interviewer", content: marked }]);
+    }
   }
+
+  // 从面试官消息里识别当前进行到第几个核心问题（默认 1，上限 3）
+  const currentQ = Math.min(
+    3,
+    Math.max(
+      1,
+      ...msgs
+        .filter((m) => m.role === "interviewer")
+        .map((m) => {
+          const match = m.content.match(/【第\s*([1-3])\s*个问题】/);
+          return match ? parseInt(match[1], 10) : 0;
+        })
+        .concat([1])
+    )
+  );
 
   async function send() {
     const reply = input.trim();
@@ -167,6 +213,18 @@ function MockInterview({
 
   return (
     <div className="card p-5">
+      {/* 进度：真实一场约深挖 2-3 个核心问题 */}
+      <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center gap-1.5">
+          {[1, 2, 3].map((n) => (
+            <span
+              key={n}
+              className={`h-1.5 rounded-full transition-all ${n <= currentQ ? "w-6 bg-[var(--indigo)]" : "w-3 bg-[var(--border)]"}`}
+            />
+          ))}
+          <span className="ml-2 text-xs text-[var(--ink-faint)]">核心问题 {currentQ} / 3（真实一场约 25-30 分钟）</span>
+        </div>
+      </div>
       <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
         {msgs.map((m, i) => (
           <div key={i} className={`flex ${m.role === "student" ? "justify-end" : "justify-start"}`}>
@@ -190,6 +248,14 @@ function MockInterview({
         <div ref={endRef} />
       </div>
 
+      {/* 复盘反馈面板 */}
+      {feedback && (
+        <div className="mt-4 rounded-xl border border-[var(--indigo)]/30 bg-[var(--info-bg)] p-4">
+          <p className="text-sm font-semibold text-[var(--indigo)] mb-2">📋 面试复盘</p>
+          <div className="text-sm text-[var(--ink)] leading-relaxed whitespace-pre-wrap">{feedback}</div>
+        </div>
+      )}
+
       <div className="mt-4 flex gap-2 items-end">
         <textarea
           className="input min-h-11 resize-none flex-1"
@@ -205,7 +271,22 @@ function MockInterview({
           回答
         </button>
       </div>
-      <p className="mt-2 text-xs text-[var(--ink-faint)]">Ctrl/⌘ + Enter 发送。AI 模拟仅供练习，真实面试风格因学院与导师而异。</p>
+
+      {/* 结束并复盘 / 重新开始 */}
+      <div className="mt-3 flex items-center gap-3 flex-wrap">
+        <button
+          type="button"
+          onClick={getFeedback}
+          disabled={feedbackLoading || msgs.length < 2}
+          className="btn btn-secondary text-sm"
+        >
+          {feedbackLoading ? "生成复盘中…" : "结束并让 AI 复盘我的表现"}
+        </button>
+        <button type="button" onClick={restart} className="btn btn-ghost text-sm">
+          换一题重新开始
+        </button>
+      </div>
+      <p className="mt-2 text-xs text-[var(--ink-faint)]">Ctrl/⌘ + Enter 发送。答到你觉得差不多时，点"结束并复盘"看 AI 对你表现的诚实评价。真实面试风格因学院与导师而异。</p>
     </div>
   );
 }
