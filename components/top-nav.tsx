@@ -45,8 +45,8 @@ export function TopNav({
       key: "apply",
       title: t("groupApply"),
       items: [
-        { href: "/match", label: t("match"), icon: "target", desc: "AI 匹配你的目标院校" },
-        { href: "/universities", label: t("universities"), icon: "building", desc: "筛选、对比英港院校专业" },
+        { href: "/match", label: t("match"), icon: "target", desc: "选科能申什么·要考哪些笔试" },
+        { href: "/universities", label: t("universities"), icon: "building", desc: "院校信息去哪查（含 Cialfo/UCAS）" },
         { href: "/applications", label: t("applications"), icon: "clipboard", desc: "追踪每一所志愿状态" },
         { href: "/timeline", label: t("timeline"), icon: "calendar", desc: "关键日期与截止提醒" },
       ],
