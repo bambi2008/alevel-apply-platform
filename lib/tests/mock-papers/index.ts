@@ -12,6 +12,15 @@ import { ESAT_MK9_MATH, ESAT_MK9_BIO } from "./esat-mock-9";
 import { ESAT_MK10_MAG, ESAT_MK10_SCI } from "./esat-mock-10";
 import { TMUA_MK1_P1, TMUA_MK1_P2 } from "./tmua-mock-1";
 import { MAT_MK1_MCQ } from "./mat-mock-1";
+import { TMUA_MK2_P1, TMUA_MK2_P2 } from "./tmua-mock-2";
+import { TMUA_MK3_P1, TMUA_MK3_P2 } from "./tmua-mock-3";
+import { TMUA_MK4_P1, TMUA_MK4_P2 } from "./tmua-mock-4";
+import { TMUA_MK5_P1, TMUA_MK5_P2 } from "./tmua-mock-5";
+import { TMUA_MK6_P1, TMUA_MK6_P2 } from "./tmua-mock-6";
+import { TMUA_MK7_P1, TMUA_MK7_P2 } from "./tmua-mock-7";
+import { TMUA_MK8_P1, TMUA_MK8_P2 } from "./tmua-mock-8";
+import { TMUA_MK9_P1, TMUA_MK9_P2 } from "./tmua-mock-9";
+import { TMUA_MK10_P1, TMUA_MK10_P2 } from "./tmua-mock-10";
 
 export interface MockModule {
   id: string;
@@ -232,6 +241,123 @@ export const MAT_MOCK_1: MockPaper = {
   ],
 };
 
+export const TMUA_MOCK_2: MockPaper = {
+  id: "tmua-mock-2",
+  testId: "tmua",
+  title: "TMUA 模拟卷二（数学应用 + 数学推理）",
+  titleEn: "TMUA Mock Paper 2 (Applications + Reasoning)",
+  description:
+    "第二套完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与模拟卷一、练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
+  modules: [
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK2_P1 },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK2_P2 },
+  ],
+};
+
+export const TMUA_MOCK_3: MockPaper = {
+  id: "tmua-mock-3",
+  testId: "tmua",
+  title: "TMUA 模拟卷三（数学应用 + 数学推理）",
+  titleEn: "TMUA Mock Paper 3 (Applications + Reasoning)",
+  description:
+    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
+  modules: [
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK3_P1 },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK3_P2 },
+  ],
+};
+
+export const TMUA_MOCK_4: MockPaper = {
+  id: "tmua-mock-4",
+  testId: "tmua",
+  title: "TMUA 模拟卷四（数学应用 + 数学推理）",
+  titleEn: "TMUA Mock Paper 4 (Applications + Reasoning)",
+  description:
+    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
+  modules: [
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK4_P1 },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK4_P2 },
+  ],
+};
+
+export const TMUA_MOCK_5: MockPaper = {
+  id: "tmua-mock-5",
+  testId: "tmua",
+  title: "TMUA 模拟卷五（数学应用 + 数学推理）",
+  titleEn: "TMUA Mock Paper 5 (Applications + Reasoning)",
+  description:
+    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
+  modules: [
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK5_P1 },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK5_P2 },
+  ],
+};
+
+export const TMUA_MOCK_6: MockPaper = {
+  id: "tmua-mock-6",
+  testId: "tmua",
+  title: "TMUA 模拟卷六（数学应用 + 数学推理）",
+  titleEn: "TMUA Mock Paper 6 (Applications + Reasoning)",
+  description:
+    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
+  modules: [
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK6_P1 },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK6_P2 },
+  ],
+};
+
+export const TMUA_MOCK_7: MockPaper = {
+  id: "tmua-mock-7",
+  testId: "tmua",
+  title: "TMUA 模拟卷七（数学应用 + 数学推理）",
+  titleEn: "TMUA Mock Paper 7 (Applications + Reasoning)",
+  description:
+    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
+  modules: [
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK7_P1 },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK7_P2 },
+  ],
+};
+
+export const TMUA_MOCK_8: MockPaper = {
+  id: "tmua-mock-8",
+  testId: "tmua",
+  title: "TMUA 模拟卷八（数学应用 + 数学推理）",
+  titleEn: "TMUA Mock Paper 8 (Applications + Reasoning)",
+  description:
+    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
+  modules: [
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK8_P1 },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK8_P2 },
+  ],
+};
+
+export const TMUA_MOCK_9: MockPaper = {
+  id: "tmua-mock-9",
+  testId: "tmua",
+  title: "TMUA 模拟卷九（数学应用 + 数学推理）",
+  titleEn: "TMUA Mock Paper 9 (Applications + Reasoning)",
+  description:
+    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
+  modules: [
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK9_P1 },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK9_P2 },
+  ],
+};
+
+export const TMUA_MOCK_10: MockPaper = {
+  id: "tmua-mock-10",
+  testId: "tmua",
+  title: "TMUA 模拟卷十（数学应用 + 数学推理）",
+  titleEn: "TMUA Mock Paper 10 (Applications + Reasoning)",
+  description:
+    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
+  modules: [
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK10_P1 },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK10_P2 },
+  ],
+};
+
 export const TMUA_MOCK_1: MockPaper = {
   id: "tmua-mock-1",
   testId: "tmua",
@@ -245,7 +371,7 @@ export const TMUA_MOCK_1: MockPaper = {
   ],
 };
 
-const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, MAT_MOCK_1];
+const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1];
 
 export function getMockPapersForTest(testId: string): MockPaper[] {
   return ALL_MOCK_PAPERS.filter((p) => p.testId === testId);

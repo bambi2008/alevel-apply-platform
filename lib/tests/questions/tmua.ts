@@ -4,6 +4,7 @@
 
 import type { MCQQuestion } from "@/lib/tests/questions/types";
 import { TMUA_HARD } from "@/lib/tests/questions/tmua-hard";
+import { TMUA_EXPANSION } from "@/lib/tests/questions/tmua-expansion";
 
 export const TMUA_BASE: MCQQuestion[] = [
   // ── 代数与函数 ────────────────────────────────────────────────
@@ -261,4 +262,4 @@ export const TMUA_BASE: MCQQuestion[] = [
     answer: "A", solution: "$\\binom{5}{2}=\\dfrac{5\\cdot4}{2}=10$." },
 ];
 
-export const TMUA_QUESTIONS: MCQQuestion[] = [...TMUA_BASE, ...TMUA_HARD];
+export const TMUA_QUESTIONS: MCQQuestion[] = [...TMUA_BASE, ...TMUA_HARD, ...TMUA_EXPANSION];
