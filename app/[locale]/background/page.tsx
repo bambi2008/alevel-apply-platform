@@ -1,6 +1,7 @@
 "use client";
 
 import { PageHeader } from "@/components/page-header";
+import { SceneGrowth } from "@/components/illustrations";
 
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "@/i18n/navigation";
@@ -85,7 +86,12 @@ export default function BackgroundPage() {
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-8">
-      <PageHeader title="背景提升" subtitle="围绕你的目标专业规划竞赛、科研、活动与夏校，让申请更有竞争力。推荐已根据你的档案个性化排序。" icon="🌟" />
+      <div className="grid lg:grid-cols-[1fr_auto] gap-8 items-center mb-8">
+        <div className="[&>div]:mb-0">
+          <PageHeader title="背景提升" subtitle="围绕你的目标专业规划竞赛、科研、活动与夏校，让申请更有竞争力。推荐已根据你的档案个性化排序。" icon="🌟" />
+        </div>
+        <SceneGrowth className="hidden lg:block w-[280px] h-auto rounded-2xl" />
+      </div>
 
       {/* 在线课题入口（平台自有、可完成的高含金量课题） */}
       <Link
