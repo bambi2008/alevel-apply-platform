@@ -3,6 +3,7 @@
 // Part B: 大题 (6 题, 每题 15 分, 从中选 4 题)
 // 内容范围: A-Level Core/Pure Maths（不含 Statistics/Mechanics）
 
+import { MAT_HARD } from "./mat-hard";
 import type { MCQQuestion, LongQuestion } from "./types";
 
 // ── Part A: Multiple Choice ──────────────────────────────────────────────
@@ -1622,4 +1623,5 @@ export const MAT_QUESTIONS = [
   ...MAT_ENTRY,
   ...MAT_PART_B,
   ...MAT_PART_B_EXTRA,
+  ...MAT_HARD,
 ];

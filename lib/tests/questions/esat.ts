@@ -6,6 +6,7 @@
 import type { MCQQuestion } from "./types";
 import { ESAT_BIO_QUESTIONS } from "./esat-bio";
 import { ESAT_TOPUP_QUESTIONS } from "./esat-topup";
+import { ESAT_HARD_QUESTIONS } from "./esat-hard";
 
 export const ESAT_MATH: MCQQuestion[] = [
   // ── 代数与函数 (esat-math1) ──────────────────────────────────────────────
@@ -5114,4 +5115,4 @@ export const ESAT_CHALLENGE: MCQQuestion[] = [
     answer: "A", solution: "Producers (e.g. plants) synthesise their own food by photosynthesis." },
 ];
 
-export const ESAT_QUESTIONS = [...ESAT_MATH, ...ESAT_MATH_2, ...ESAT_PHYSICS, ...ESAT_PHYSICS_2, ...ESAT_MATH2A, ...ESAT_MATH2B, ...ESAT_CHEM, ...ESAT_BIO_QUESTIONS, ...ESAT_TOPUP_QUESTIONS, ...ESAT_CHALLENGE];
+export const ESAT_QUESTIONS = [...ESAT_MATH, ...ESAT_MATH_2, ...ESAT_PHYSICS, ...ESAT_PHYSICS_2, ...ESAT_MATH2A, ...ESAT_MATH2B, ...ESAT_CHEM, ...ESAT_BIO_QUESTIONS, ...ESAT_TOPUP_QUESTIONS, ...ESAT_CHALLENGE, ...ESAT_HARD_QUESTIONS];

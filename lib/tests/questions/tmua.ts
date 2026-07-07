@@ -3,8 +3,9 @@
 // 与其它题库不重复。id 前缀 tmua-*。
 
 import type { MCQQuestion } from "@/lib/tests/questions/types";
+import { TMUA_HARD } from "@/lib/tests/questions/tmua-hard";
 
-export const TMUA_QUESTIONS: MCQQuestion[] = [
+export const TMUA_BASE: MCQQuestion[] = [
   // ── 代数与函数 ────────────────────────────────────────────────
   { id: "tmua-alg-01", type: "mcq", testId: "tmua", topicId: "tmua-algebra", difficulty: 1, marks: 1,
     question: "Solve $|2x-1|<5$.",
@@ -259,3 +260,5 @@ export const TMUA_QUESTIONS: MCQQuestion[] = [
     options: [ {key:"A",text:"$10$"},{key:"B",text:"$20$"},{key:"C",text:"$25$"},{key:"D",text:"$7$"},{key:"E",text:"$5$"} ],
     answer: "A", solution: "$\\binom{5}{2}=\\dfrac{5\\cdot4}{2}=10$." },
 ];
+
+export const TMUA_QUESTIONS: MCQQuestion[] = [...TMUA_BASE, ...TMUA_HARD];

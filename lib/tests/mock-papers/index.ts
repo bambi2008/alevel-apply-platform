@@ -10,6 +10,8 @@ import { ESAT_MK7_MATH, ESAT_MK7_PHYS } from "./esat-mock-7";
 import { ESAT_MK8_MATH, ESAT_MK8_CHEM } from "./esat-mock-8";
 import { ESAT_MK9_MATH, ESAT_MK9_BIO } from "./esat-mock-9";
 import { ESAT_MK10_MAG, ESAT_MK10_SCI } from "./esat-mock-10";
+import { TMUA_MK1_P1, TMUA_MK1_P2 } from "./tmua-mock-1";
+import { MAT_MK1_MCQ } from "./mat-mock-1";
 
 export interface MockModule {
   id: string;
@@ -218,7 +220,32 @@ export const ESAT_MOCK_10: MockPaper = {
   ],
 };
 
-const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10];
+export const MAT_MOCK_1: MockPaper = {
+  id: "mat-mock-1",
+  testId: "mat",
+  title: "MAT 模拟卷一（选择部分 25 题 · 对标真实 MAT 结构）",
+  titleEn: "MAT Mock Paper 1 (25 multiple-choice)",
+  description:
+    "对标真实 Oxford MAT：25 道五选一（A–E）、每题 2–3 分、无负分。真实 MAT 另含 2 道长题（Q26/27，共 30 分），因模考模块仅支持选择题，长题请到 MAT 练习库单独训练。题目全新原创，仅以官方结构与考纲做校准，未照搬任何真题。",
+  modules: [
+    { id: "mcq", title: "选择题（25 题 / 90 分钟）", titleEn: "Multiple Choice (Q1–25)", durationSec: 90 * 60, questions: MAT_MK1_MCQ },
+  ],
+};
+
+export const TMUA_MOCK_1: MockPaper = {
+  id: "tmua-mock-1",
+  testId: "tmua",
+  title: "TMUA 模拟卷一（数学应用 + 数学推理 · 对标真实两卷结构）",
+  titleEn: "TMUA Mock Paper 1 (Applications + Reasoning)",
+  description:
+    "对标真实 TMUA：两卷各 20 题、各 75 分钟、五选一（A–E）、无负分、无计算器。Paper 1 考数学应用，Paper 2 考数学推理与逻辑（命题/逆否/必要充分/反例/证明）。题目全新原创，仅以官方考纲与结构做校准，未照搬任何真题。",
+  modules: [
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK1_P1 },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK1_P2 },
+  ],
+};
+
+const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, MAT_MOCK_1];
 
 export function getMockPapersForTest(testId: string): MockPaper[] {
   return ALL_MOCK_PAPERS.filter((p) => p.testId === testId);
