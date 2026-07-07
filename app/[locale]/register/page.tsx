@@ -4,50 +4,49 @@ import { useActionState } from "react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { registerAction, type AuthState } from "@/lib/auth/actions";
+import { SceneGrowth } from "@/components/illustrations";
 
 export default function RegisterPage() {
   const t = useTranslations("auth");
   const [state, formAction, pending] = useActionState<AuthState, FormData>(registerAction, {});
 
   return (
-    <div className="mx-auto max-w-sm px-4 py-16">
-      <h1 className="text-2xl font-bold mb-6">{t("registerTitle")}</h1>
-      <form action={formAction} className="space-y-3">
-        <input
-          name="email"
-          type="email"
-          required
-          placeholder={t("email")}
-          className="w-full rounded-md border border-neutral-300 px-3 py-2"
-        />
-        <input
-          name="password"
-          type="password"
-          required
-          minLength={6}
-          placeholder={t("password")}
-          className="w-full rounded-md border border-neutral-300 px-3 py-2"
-        />
-        <label className="flex items-start gap-2 text-sm text-neutral-600">
-          <input name="consent" type="checkbox" required className="mt-1" />
-          <span>{t("consent")}</span>
-        </label>
-        <label className="flex items-start gap-2 text-sm text-neutral-600">
-          <input name="guardian" type="checkbox" className="mt-1" />
-          <span>{t("guardian")}</span>
-        </label>
-        {state.error && <p className="text-sm text-red-600">{t(`errors.${state.error}`)}</p>}
-        <button
-          type="submit"
-          disabled={pending}
-          className="w-full rounded-lg bg-blue-600 text-white py-2.5 font-medium hover:bg-blue-700 disabled:opacity-50"
-        >
-          {t("registerBtn")}
-        </button>
-      </form>
-      <p className="mt-4 text-sm text-neutral-500">
-        <Link href="/login" className="text-blue-600 hover:underline">{t("toLogin")}</Link>
-      </p>
+    <div className="mx-auto max-w-6xl px-5 py-12 lg:py-20 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+      {/* 左：品牌 + 插画 */}
+      <div className="hidden lg:block">
+        <span className="ucas-accent-bar" />
+        <h1 className="ucas-title" style={{ fontSize: "clamp(2rem,3vw,2.8rem)" }}>
+          开始你的<br />申请之旅
+        </h1>
+        <p className="mt-4 text-lg text-[var(--ink-soft)] max-w-md">
+          注册即可免费试用选校匹配、院校数据库与备考工具，全流程透明可控。
+        </p>
+        <SceneGrowth className="mt-8 w-full max-w-md h-auto rounded-2xl" />
+      </div>
+
+      {/* 右：注册表单 */}
+      <div className="w-full max-w-sm mx-auto">
+        <h2 className="text-2xl font-bold text-[var(--ink)] mb-6">{t("registerTitle")}</h2>
+        <form action={formAction} className="space-y-3">
+          <input name="email" type="email" required placeholder={t("email")} className="input" />
+          <input name="password" type="password" required minLength={6} placeholder={t("password")} className="input" />
+          <label className="flex items-start gap-2 text-sm text-[var(--ink-soft)]">
+            <input name="consent" type="checkbox" required className="mt-1 accent-[var(--indigo)]" />
+            <span>{t("consent")}</span>
+          </label>
+          <label className="flex items-start gap-2 text-sm text-[var(--ink-soft)]">
+            <input name="guardian" type="checkbox" className="mt-1 accent-[var(--indigo)]" />
+            <span>{t("guardian")}</span>
+          </label>
+          {state.error && <p className="text-sm text-[var(--danger)]">{t(`errors.${state.error}`)}</p>}
+          <button type="submit" disabled={pending} className="w-full btn btn-primary disabled:opacity-50">
+            {t("registerBtn")}
+          </button>
+        </form>
+        <p className="mt-4 text-sm text-[var(--ink-soft)]">
+          <Link href="/login" className="link-blue">{t("toLogin")}</Link>
+        </p>
+      </div>
     </div>
   );
 }
