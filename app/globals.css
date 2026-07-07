@@ -4,34 +4,38 @@
    路线 A：克制 · 轻奢 · 商业质感（参考 Apple / Linear / Stripe）。
    单一品牌主色（靛蓝），紫/青仅作极少点缀；语义色统一；中性偏冷、精致。 */
 :root {
-  /* 文字 */
-  --ink: #0b0d18;          /* 主文字：近黑冷调，比纯黑高级 */
-  --ink-soft: #52586e;     /* 次要文字 */
-  --ink-faint: #8a90a3;    /* 辅助/说明文字 */
+  /* 文字：UCAS 用近纯黑标题 + 中灰正文 */
+  --ink: #12141a;          /* 主文字/大标题：近黑 */
+  --ink-soft: #464b57;     /* 正文次要文字 */
+  --ink-faint: #6b7180;    /* 辅助/说明文字 */
 
-  /* 品牌主色（唯一强调色） */
-  --indigo: #4f46e5;
-  --indigo-hover: #4338ca;
+  /* 品牌强调色：UCAS 式柔和蓝（点睛，不做大色块） */
+  --indigo: #3b5bdb;       /* 主强调（链接/当前项/主按钮） */
+  --indigo-hover: #2f49b2;
+  --accent-bar: #5b7fd4;   /* 标题下的细蓝横线 */
   --violet: #7c3aed;       /* 极少点缀 */
   --cyan: #22d3ee;         /* 极少点缀 */
 
-  /* 中性与表面（偏冷的高级灰白） */
-  --surface: #f7f8fa;      /* 浅灰底 */
-  --surface-2: #eef0f4;    /* 次级底 */
-  --border: #e7e9f0;       /* 常规边框 */
-  --border-soft: #eef0f5;  /* 更淡的分隔线 */
+  /* 深色（仅页脚/极少强调块）——UCAS 深藏青 */
+  --ink-950: #0e1420;
 
-  /* 语义色（全站唯一来源，替代即兴 blue/green/red/amber） */
-  --success: #0f9d63;
-  --success-bg: #e9f7f0;
-  --warning: #b7791f;
-  --warning-bg: #fdf5e6;
-  --danger: #dc2626;
-  --danger-bg: #fdeaea;
-  --info: #4f46e5;
-  --info-bg: #eef0fe;
+  /* 中性与表面：以纯白为主，灰只作极浅分区 */
+  --surface: #f6f7f9;      /* 极浅灰分区底 */
+  --surface-2: #eceef2;    /* 次级底 */
+  --border: #e3e6ec;       /* 常规边框 */
+  --border-soft: #eef0f4;  /* 更淡的分隔线 */
 
-  /* 阴影（克制的层级） */
+  /* 语义色 */
+  --success: #1a8a55;
+  --success-bg: #e7f5ee;
+  --warning: #b0791a;
+  --warning-bg: #fbf3e3;
+  --danger: #d64242;
+  --danger-bg: #fcebeb;
+  --info: #3b5bdb;
+  --info-bg: #eaf0fe;
+
+  /* 阴影（克制） */
   --shadow-sm: 0 1px 2px rgba(15, 18, 38, 0.05);
   --shadow-md: 0 6px 20px -8px rgba(15, 18, 38, 0.12);
   --shadow-lg: 0 18px 40px -20px rgba(15, 18, 38, 0.20);
@@ -47,11 +51,16 @@
 
 html {
   scroll-behavior: smooth;
+  /* 基础字号提到 18px（112.5%）：所有 rem 尺寸连带放大，
+     正文更易读，rem 制的容器宽度也随之变宽，屏幕利用率更高（贴近 UCAS 阅读体验）。 */
+  font-size: 112.5%;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+  font-size: 1rem;
+  line-height: 1.6;
   font-family: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
     "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB",
     sans-serif;
@@ -257,3 +266,47 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .floaty, .floaty-slow { animation: none !important; }
 }
+
+/* ============ UCAS 白底风工具类 ============ */
+
+/* 超大黑标题 + 蓝色细横线（UCAS 招牌页头） */
+.ucas-title {
+  font-size: clamp(2.4rem, 5.5vw, 4rem);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.02;
+  color: var(--ink);
+}
+.ucas-accent-bar {
+  display: block;
+  width: 3.5rem;
+  height: 4px;
+  border-radius: 2px;
+  background: var(--accent-bar);
+  margin-bottom: 1.75rem;
+}
+
+/* 标签式子导航（Hub / For you / Favourites 那种 pill tab 行） */
+.tabrow { display: flex; gap: 0.25rem; background: var(--surface); border-radius: 12px; padding: 4px; }
+.tab {
+  display: inline-flex; align-items: center; gap: 0.4rem;
+  padding: 0.5rem 0.9rem; border-radius: 9px; font-size: 0.875rem; font-weight: 600;
+  color: var(--ink-soft); transition: background 0.16s, color 0.16s; white-space: nowrap;
+}
+.tab:hover { color: var(--ink); }
+.tab-active { background: #fff; color: var(--indigo); box-shadow: var(--shadow-sm); }
+
+/* 媒体卡（图片在上、白底大圆角、极轻边框）——UCAS featured 卡 */
+.media-card {
+  background: #fff; border: 1px solid var(--border); border-radius: 16px; overflow: hidden;
+  transition: box-shadow 0.2s ease, transform 0.2s cubic-bezier(0.2,0.7,0.2,1), border-color 0.2s ease;
+}
+.media-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: #d3d7e0; }
+
+/* 面包屑 */
+.crumbs { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8125rem; color: var(--ink-faint); }
+.crumbs a:hover { color: var(--indigo); }
+
+/* 链接（UCAS 蓝、带下划线感） */
+.link-blue { color: var(--indigo); font-weight: 600; }
+.link-blue:hover { text-decoration: underline; }
