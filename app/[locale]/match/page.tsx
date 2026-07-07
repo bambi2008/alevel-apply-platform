@@ -68,7 +68,7 @@ export default function DecisionAssistantPage() {
   }, [submitted, rows, field]);
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-10">
+    <div className="mx-auto max-w-5xl px-4 py-10">
       <PageHeader
         title={isEn ? "Decision Assistant" : "选校决策助手"}
         subtitle={
@@ -251,7 +251,7 @@ export default function DecisionAssistantPage() {
                     <Link
                       key={tst.abbr}
                       href={`/tests/${tst.id}`}
-                      className="flex items-center gap-3 rounded-xl border border-[var(--border)] p-3 hover:border-[color:var(--indigo)]/30 hover:shadow-sm transition bg-white group"
+                      className="flex items-center gap-3 notion-lift rounded-xl border border-[var(--border)] p-3 bg-white group"
                     >
                       <span className="text-sm font-semibold text-[var(--indigo)] w-14 shrink-0">{tst.abbr}</span>
                       <span className="text-sm text-[var(--ink-soft)]">{tst.note}</span>

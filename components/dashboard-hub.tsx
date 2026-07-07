@@ -20,6 +20,8 @@ const STEPS: { id: string; label: string; href: string }[] = [
   { id: "submit", label: "申请提交", href: "/applications" },
 ];
 
+const TINTS = ["tile-blue","tile-green","tile-yellow","tile-pink","tile-purple","tile-orange","tile-red","tile-brown","tile-gray"];
+
 const TILES: { id?: string; label: string; href: string; icon: string }[] = [
   { id: "profile", label: "我的档案", href: "/profile", icon: "user" },
   { id: "match", label: "选校匹配", href: "/match", icon: "target" },
@@ -95,7 +97,7 @@ export function DashboardHub({
             </div>
           )}
         </div>
-        <HeroBridge className="hidden lg:block w-[300px] h-auto rounded-2xl" />
+        <div className="hidden lg:block tile tile-blue notion-zoom rounded-2xl"><HeroBridge className="w-[300px] h-auto" /></div>
       </header>
 
       {/* 进度卡 */}
@@ -123,7 +125,7 @@ export function DashboardHub({
           </div>
           <div className="grid sm:grid-cols-3 gap-4">
             {milestones.map(({ m, title, statusLabel }) => (
-              <Link key={m.id} href="/timeline" className="media-card p-4 block">
+              <Link key={m.id} href="/timeline" className="media-card notion-lift p-4 block">
                 <div className="flex items-center justify-between gap-2">
                   <span className="text-sm font-semibold text-[var(--ink)] tabular-nums">
                     {m.date.toLocaleDateString("zh-CN", { month: "short", day: "numeric" })}
@@ -143,13 +145,14 @@ export function DashboardHub({
       <section>
         <h2 className="text-xl font-extrabold tracking-tight text-[var(--ink)] mb-3">全部模块</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-          {TILES.map((tile) => {
+          {TILES.map((tile, i) => {
+            const tint = TINTS[i % TINTS.length];
             const pct = tile.id ? nodes[tile.id]?.pct : undefined;
             const meta = tile.href === "/applications" && appCount > 0 ? `${appCount} 个志愿` : undefined;
             return (
-              <Link key={tile.href} href={tile.href} className="group media-card p-5 flex flex-col">
+              <Link key={tile.href} href={tile.href} className={`group ${tint} notion-lift rounded-xl p-5 flex flex-col border border-black/5`}>
                 <div className="flex items-center justify-between">
-                  <span className="flex items-center justify-center w-11 h-11 rounded-xl bg-[var(--info-bg)] text-[var(--indigo)] transition-transform group-hover:scale-105">
+                  <span className="flex items-center justify-center w-11 h-11 rounded-xl bg-white/70 text-[var(--ink)] transition-transform group-hover:scale-105">
                     <NavIcon name={tile.icon} />
                   </span>
                   {typeof pct === "number" && (

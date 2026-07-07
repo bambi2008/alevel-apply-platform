@@ -80,7 +80,7 @@ export default async function UniversitiesPage({
   const isEn = locale === "en";
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10">
+    <div className="mx-auto max-w-7xl px-4 py-10">
       <div className="grid lg:grid-cols-[1fr_auto] gap-6 items-center [&>div]:mb-0">
         <PageHeader
           title={isEn ? "Where to research universities" : "择校信息源"}
@@ -121,7 +121,7 @@ export default async function UniversitiesPage({
                     href={s.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block rounded-2xl border border-[var(--border)] p-5 hover:border-[color:var(--indigo)]/30 hover:shadow-sm transition bg-white group"
+                    className="block notion-lift rounded-2xl border border-[var(--border)] p-5 bg-white group"
                   >
                     <div className="flex items-center gap-2 mb-1.5">
                       <span className="font-semibold text-[var(--ink)] group-hover:text-[var(--indigo)]">{s.name}</span>

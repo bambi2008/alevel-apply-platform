@@ -16,6 +16,9 @@ type Plan = {
   perks: string[];
 };
 
+const TILE = ["tile-blue", "tile-yellow", "tile-green", "tile-pink", "tile-purple", "tile-orange"];
+const SCENES = [SceneCompass, SceneDocs, SceneChat, SceneGrowth];
+
 function Landing({ t, t2 }: { t: Awaited<ReturnType<typeof getTranslations<"home">>>; t2: Awaited<ReturnType<typeof getTranslations<"story">>> }) {
   const features = t.raw("features") as Feature[];
   const plans = t.raw("plans") as Plan[];
@@ -23,11 +26,10 @@ function Landing({ t, t2 }: { t: Awaited<ReturnType<typeof getTranslations<"home
 
   return (
     <div className="bg-white">
-      {/* ── Hero：UCAS 式左文右插画 ─────────────────────────── */}
+      {/* ── Hero：左文 + 右漫画色块 ─────────────────────────── */}
       <section className="border-b border-[var(--border-soft)]">
-        <div className="relative mx-auto max-w-6xl px-6 pt-16 pb-16 sm:pt-20 sm:pb-20 grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
+        <div className="relative mx-auto max-w-7xl px-6 pt-16 pb-16 sm:pt-20 sm:pb-20 grid lg:grid-cols-2 gap-10 lg:gap-14 items-center">
           <div>
-            <span className="ucas-accent-bar rise-in" />
             <h1 className="rise-in ucas-title">
               {t("titleLine1")}
               <br className="hidden sm:block" />
@@ -39,14 +41,22 @@ function Landing({ t, t2 }: { t: Awaited<ReturnType<typeof getTranslations<"home
               {t("subtitle")}
             </p>
             <div className="rise-in-2 mt-8 flex items-center gap-3 flex-wrap">
-              <Link href="/match" className="btn btn-primary">{t("ctaTry")}</Link>
+              <Link href="/match" className="btn btn-primary group">
+                {t("ctaTry")}<span className="notion-arrow">→</span>
+              </Link>
               <Link href="/universities" className="btn btn-secondary">{t("ctaBrowse")}</Link>
             </div>
-            <p className="rise-in-3 mt-4 t-caption">{t("priceNote")}</p>
+            {/* Notion callout：招牌 emoji + 软色底提示 */}
+            <div className="rise-in-3 mt-6 callout callout-blue max-w-md">
+              <span className="callout-emoji">💡</span>
+              <p className="text-sm leading-relaxed text-[var(--ink-soft)]">{t("priceNote")}</p>
+            </div>
           </div>
 
-          <div className="rise-in-2 relative">
-            <HeroBridge className="w-full h-auto drop-shadow-[0_20px_40px_rgba(59,91,219,0.12)]" />
+          <div className="rise-in-2">
+            <div className="tile tile-blue notion-zoom rounded-2xl">
+              <HeroBridge className="w-full h-auto" />
+            </div>
           </div>
         </div>
 
@@ -71,23 +81,28 @@ function Landing({ t, t2 }: { t: Awaited<ReturnType<typeof getTranslations<"home
         </div>
       </section>
 
-      {/* ── Capabilities ───────────────────────────────────── */}
+      {/* ── Capabilities：Notion 色块 bento 拼贴 ─────────────── */}
       <section className="border-y border-[var(--border-soft)] bg-[var(--surface)]">
         <div className="mx-auto max-w-6xl px-6 py-20">
           <SectionHead eyebrow={t("capEyebrow")} title={t("capTitle")} sub={t("capSub")} />
           <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {features.map((f, i) => {
-              const Scene = [SceneCompass, SceneDocs, SceneChat, SceneGrowth][i % 4];
+              const Scene = SCENES[i % SCENES.length];
               return (
-                <Link key={f.title} href={f.href} className="group media-card flex flex-col overflow-hidden">
-                  <Scene className="w-full h-40 object-cover" />
-                  <div className="p-6 border-t border-[var(--border)]">
-                    <h3 className="h-section flex items-center gap-1.5">
-                      {f.title}
-                      <span className="opacity-0 -translate-x-1 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-[var(--indigo)]">→</span>
-                    </h3>
-                    <p className="mt-2 text-sm leading-relaxed text-[var(--ink-soft)]">{f.desc}</p>
+                <Link
+                  key={f.title}
+                  href={f.href}
+                  className={`group tile ${TILE[i % TILE.length]} notion-lift flex flex-col`}
+                >
+                  <div className="notion-zoom rounded-xl bg-white/70 border border-black/5 mb-4">
+                    <Scene className="w-full h-36" />
                   </div>
+                  <h3 className="h-section flex items-center gap-2">
+                    <span className="text-xl">{f.emoji}</span>
+                    {f.title}
+                    <span className="notion-arrow ml-auto text-[var(--ink-faint)]">→</span>
+                  </h3>
+                  <p className="mt-2 text-sm leading-relaxed text-[var(--ink-soft)]">{f.desc}</p>
                 </Link>
               );
             })}
@@ -102,21 +117,25 @@ function Landing({ t, t2 }: { t: Awaited<ReturnType<typeof getTranslations<"home
           {plans.map((p) => (
             <div
               key={p.name}
-              className={`relative rounded-2xl p-7 ${p.highlight ? "bg-[var(--ink)] text-white shadow-[var(--shadow-lg)]" : "bg-white border border-[var(--border)] shadow-[var(--shadow-sm)]"}`}
+              className={`relative notion-lift rounded-2xl p-7 border ${
+                p.highlight
+                  ? "tile-blue border-[color:var(--on-blue)]/25"
+                  : "bg-white border-[var(--border)]"
+              }`}
             >
               {p.highlight && (
-                <span className="absolute top-5 right-5 badge badge-brand !bg-white/15 !text-white">推荐</span>
+                <span className="absolute top-5 right-5 badge" style={{ background: "var(--on-blue)", color: "#fff" }}>推荐</span>
               )}
-              <h3 className={`font-semibold ${p.highlight ? "text-white" : "text-[var(--ink)]"}`}>{p.name}</h3>
-              <p className={`text-xs mt-0.5 ${p.highlight ? "text-white/60" : "text-[var(--ink-faint)]"}`}>{p.tagline}</p>
+              <h3 className="font-semibold text-[var(--ink)]">{p.name}</h3>
+              <p className="text-xs mt-0.5 text-[var(--ink-faint)]">{p.tagline}</p>
               <div className="mt-5 mb-6 flex items-baseline gap-1">
-                <span className={`text-4xl font-extrabold tracking-[-0.02em] tabular-nums ${p.highlight ? "text-white" : "text-[var(--ink)]"}`}>{p.price}</span>
-                {p.unit && <span className={p.highlight ? "text-white/60" : "text-[var(--ink-faint)]"}>{p.unit}</span>}
+                <span className="text-4xl font-extrabold tracking-[-0.02em] tabular-nums text-[var(--ink)]">{p.price}</span>
+                {p.unit && <span className="text-[var(--ink-faint)]">{p.unit}</span>}
               </div>
               <ul className="space-y-2.5 text-sm">
                 {p.perks.map((perk) => (
-                  <li key={perk} className={`flex gap-2.5 ${p.highlight ? "text-white/85" : "text-[var(--ink-soft)]"}`}>
-                    <span className={p.highlight ? "text-white" : "text-[var(--indigo)]"}>✓</span>
+                  <li key={perk} className="flex gap-2.5 text-[var(--ink-soft)]">
+                    <span className="text-[var(--indigo)]">✓</span>
                     {perk}
                   </li>
                 ))}
@@ -134,12 +153,14 @@ function Landing({ t, t2 }: { t: Awaited<ReturnType<typeof getTranslations<"home
             <p className="t-caption font-semibold uppercase tracking-[0.14em] text-[var(--ink-faint)]">{t2("eyebrow")}</p>
             <h2 className="mt-3 h-title">{t2("titleLine")}</h2>
             <p className="mt-5 t-body">{t2("short")}</p>
-            <Link href="/about" className="mt-7 inline-flex items-center gap-1.5 font-medium text-[var(--indigo)] hover:gap-2.5 transition-all">
-              {t2("cta")} <span>→</span>
+            <Link href="/about" className="group mt-7 inline-flex items-center gap-1.5 font-medium text-[var(--indigo)]">
+              {t2("cta")} <span className="notion-arrow">→</span>
             </Link>
           </div>
           <div className="order-first md:order-last">
-            <StoryIllustration className="w-full h-auto" />
+            <div className="tile tile-yellow notion-zoom rounded-2xl">
+              <StoryIllustration className="w-full h-auto" />
+            </div>
           </div>
         </div>
       </section>

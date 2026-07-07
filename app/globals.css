@@ -4,41 +4,41 @@
    路线 A：克制 · 轻奢 · 商业质感（参考 Apple / Linear / Stripe）。
    单一品牌主色（靛蓝），紫/青仅作极少点缀；语义色统一；中性偏冷、精致。 */
 :root {
-  /* 文字：UCAS 用近纯黑标题 + 中灰正文 */
-  --ink: #12141a;          /* 主文字/大标题：近黑 */
-  --ink-soft: #464b57;     /* 正文次要文字 */
-  --ink-faint: #6b7180;    /* 辅助/说明文字 */
+  /* Notion 风：暖调近黑文字（非纯黑），是 Notion 的招牌 */
+  --ink: #37352f;                   /* 主文字/标题 rgb(55,53,47) */
+  --ink-soft: rgba(55,53,47,0.65);  /* 次要文字 */
+  --ink-faint: rgba(55,53,47,0.4);  /* 辅助/说明文字 */
 
-  /* 品牌强调色：UCAS 式柔和蓝（点睛，不做大色块） */
-  --indigo: #3b5bdb;       /* 主强调（链接/当前项/主按钮） */
-  --indigo-hover: #2f49b2;
-  --accent-bar: #5b7fd4;   /* 标题下的细蓝横线 */
-  --violet: #7c3aed;       /* 极少点缀 */
-  --cyan: #22d3ee;         /* 极少点缀 */
+  /* 强调色：Notion 蓝 */
+  --indigo: #2383e2;       /* 主强调（链接/当前项/主按钮） */
+  --indigo-hover: #1a6dc0;
+  --accent-bar: #2383e2;
+  --violet: #9065b0;       /* Notion 紫，极少点缀 */
+  --cyan: #529cca;         /* Notion 蓝灰，极少点缀 */
 
-  /* 深色（仅页脚/极少强调块）——UCAS 深藏青 */
-  --ink-950: #0e1420;
+  /* 深色（仅页脚）——暖炭色，非藏青 */
+  --ink-950: #2b2a28;
 
-  /* 中性与表面：以纯白为主，灰只作极浅分区 */
-  --surface: #f6f7f9;      /* 极浅灰分区底 */
-  --surface-2: #eceef2;    /* 次级底 */
-  --border: #e3e6ec;       /* 常规边框 */
-  --border-soft: #eef0f4;  /* 更淡的分隔线 */
+  /* 中性与表面：暖白 + 暖灰（Notion 招牌暖灰 rgb 247,246,243） */
+  --surface: #f7f6f3;      /* 暖灰分区底/callout */
+  --surface-2: #efefed;    /* hover 灰 */
+  --border: #e9e9e7;       /* Notion 极浅边框 rgb(233,233,231) */
+  --border-soft: #f1f0ee;  /* 更淡分隔线 */
 
-  /* 语义色 */
-  --success: #1a8a55;
-  --success-bg: #e7f5ee;
-  --warning: #b0791a;
-  --warning-bg: #fbf3e3;
-  --danger: #d64242;
-  --danger-bg: #fcebeb;
-  --info: #3b5bdb;
-  --info-bg: #eaf0fe;
+  /* 语义色：Notion callout 低饱和配色 */
+  --success: #448361;
+  --success-bg: #edf3ec;
+  --warning: #cb7b29;
+  --warning-bg: #faebdd;
+  --danger: #e03e3e;
+  --danger-bg: #fbe4e4;
+  --info: #2383e2;
+  --info-bg: #e7f3f8;      /* Notion 蓝色 callout 底 */
 
-  /* 阴影（克制） */
-  --shadow-sm: 0 1px 2px rgba(15, 18, 38, 0.05);
-  --shadow-md: 0 6px 20px -8px rgba(15, 18, 38, 0.12);
-  --shadow-lg: 0 18px 40px -20px rgba(15, 18, 38, 0.20);
+  /* 阴影：Notion 近乎扁平、极轻 */
+  --shadow-sm: 0 1px 2px rgba(15, 15, 15, 0.06);
+  --shadow-md: 0 4px 12px -4px rgba(15, 15, 15, 0.12);
+  --shadow-lg: 0 12px 28px -12px rgba(15, 15, 15, 0.18);
 
   --background: #ffffff;
   --foreground: var(--ink);
@@ -51,9 +51,9 @@
 
 html {
   scroll-behavior: smooth;
-  /* 基础字号提到 18px（112.5%）：所有 rem 尺寸连带放大，
+  /* 基础字号提到 19px（118.75%）：所有 rem 尺寸连带放大，
      正文更易读，rem 制的容器宽度也随之变宽，屏幕利用率更高（贴近 UCAS 阅读体验）。 */
-  font-size: 112.5%;
+  font-size: 118.75%;
 }
 
 body {
@@ -61,12 +61,12 @@ body {
   color: var(--foreground);
   font-size: 1rem;
   line-height: 1.6;
-  font-family: var(--font-inter), ui-sans-serif, system-ui, -apple-system,
-    "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB",
-    sans-serif;
+  font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont,
+    "Segoe UI Variable Display", "Segoe UI", Helvetica,
+    "PingFang SC", "Microsoft YaHei", "Hiragino Sans GB", Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  letter-spacing: -0.011em; /* Inter 紧字距更精致（Stripe/Linear 手法） */
+  letter-spacing: normal; /* Notion 用常规字距 */
 }
 
 /* 品牌强调文字：降噪为两色靛→紫的克制渐变（去青色，仅用于 logo/少数强调） */
@@ -221,7 +221,7 @@ body {
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
   font-weight: 600; font-size: 0.9375rem; line-height: 1;
-  padding: 0.7rem 1.15rem; border-radius: 10px;
+  padding: 0.6rem 1rem; border-radius: 6px;
   transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease, box-shadow 0.2s ease, transform 0.12s ease;
   cursor: pointer; white-space: nowrap; min-height: 2.6rem;
 }
@@ -235,20 +235,20 @@ body {
 
 /* —— 卡片：细边框 + 轻阴影 + 大圆角 —— */
 .card {
-  background: #fff; border: 1px solid var(--border); border-radius: 16px;
-  box-shadow: var(--shadow-sm);
+  background: #fff; border: 1px solid var(--border); border-radius: 8px;
+  box-shadow: none;
   transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.2s cubic-bezier(0.2,0.7,0.2,1);
 }
-.card-interactive:hover { box-shadow: var(--shadow-md); border-color: #d9dbe6; transform: translateY(-2px); }
+.card-interactive:hover { background: var(--surface); border-color: var(--border); }
 
 /* —— 表单输入：清晰 focus 反馈 —— */
 .input {
-  width: 100%; background: #fff; border: 1px solid var(--border); border-radius: 10px;
+  width: 100%; background: #fff; border: 1px solid var(--border); border-radius: 6px;
   padding: 0.6rem 0.85rem; font-size: 0.9375rem; color: var(--ink);
   transition: border-color 0.16s ease, box-shadow 0.16s ease;
 }
 .input::placeholder { color: var(--ink-faint); }
-.input:focus { outline: none; border-color: var(--indigo); box-shadow: 0 0 0 3px rgba(79,70,229,0.12); }
+.input:focus { outline: none; border-color: var(--indigo); box-shadow: 0 0 0 3px rgba(35,131,226,0.22); }
 
 /* —— 徽章 / 语义状态标签（全站唯一来源） —— */
 .badge { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 999px; }
@@ -271,19 +271,14 @@ body {
 
 /* 超大黑标题 + 蓝色细横线（UCAS 招牌页头） */
 .ucas-title {
-  font-size: clamp(2.4rem, 5.5vw, 4rem);
-  font-weight: 800;
-  letter-spacing: -0.035em;
-  line-height: 1.02;
+  font-size: clamp(1.9rem, 4vw, 2.6rem);
+  font-weight: 700;
+  letter-spacing: -0.018em;
+  line-height: 1.1;
   color: var(--ink);
 }
 .ucas-accent-bar {
-  display: block;
-  width: 3.5rem;
-  height: 4px;
-  border-radius: 2px;
-  background: var(--accent-bar);
-  margin-bottom: 1.75rem;
+  display: none; /* Notion 风：移除标题上方蓝色横线 */
 }
 
 /* 标签式子导航（Hub / For you / Favourites 那种 pill tab 行） */
@@ -298,10 +293,10 @@ body {
 
 /* 媒体卡（图片在上、白底大圆角、极轻边框）——UCAS featured 卡 */
 .media-card {
-  background: #fff; border: 1px solid var(--border); border-radius: 16px; overflow: hidden;
-  transition: box-shadow 0.2s ease, transform 0.2s cubic-bezier(0.2,0.7,0.2,1), border-color 0.2s ease;
+  background: #fff; border: 1px solid var(--border); border-radius: 8px; overflow: hidden;
+  transition: box-shadow 0.18s var(--ease-notion), transform 0.18s var(--ease-notion), border-color 0.18s ease;
 }
-.media-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); border-color: #d3d7e0; }
+.media-card:hover { transform: translateY(-3px); box-shadow: 0 10px 28px -12px rgba(15,15,15,0.22); border-color: var(--border); }
 
 /* 面包屑 */
 .crumbs { display: flex; align-items: center; gap: 0.5rem; font-size: 0.8125rem; color: var(--ink-faint); }
@@ -310,3 +305,85 @@ body {
 /* 链接（UCAS 蓝、带下划线感） */
 .link-blue { color: var(--indigo); font-weight: 600; }
 .link-blue:hover { text-decoration: underline; }
+
+
+/* Notion 圆角收敛：全站大圆角卡片改成 Notion 小圆角（源序靠后即可覆盖 Tailwind 工具类，无需 !important） */
+.rounded-3xl { border-radius: 10px; }
+.rounded-2xl { border-radius: 8px; }
+.rounded-xl  { border-radius: 6px; }
+
+/* ============================================================
+   Notion 设计工具箱（色块拼贴 + callout + 微交互）
+   ============================================================ */
+:root {
+  /* Notion callout 九色（低饱和 tint 底 + 对应文字色） */
+  --tint-gray:   #f1f1ef;  --on-gray:   #37352f;
+  --tint-brown:  #f4eeee;  --on-brown:  #9f6b53;
+  --tint-orange: #faebdd;  --on-orange: #d9730d;
+  --tint-yellow: #fbf3db;  --on-yellow: #cb912f;
+  --tint-green:  #edf3ec;  --on-green:  #448361;
+  --tint-blue:   #e7f3f8;  --on-blue:   #337ea9;
+  --tint-purple: #f0e9f7;  --on-purple: #9065b0;
+  --tint-pink:   #f9e8f0;  --on-pink:   #c14c8a;
+  --tint-red:    #fbe4e4;  --on-red:    #d44c47;
+
+  /* Notion 手感缓动 */
+  --ease-notion: cubic-bezier(0.2, 0.65, 0.2, 1);
+}
+
+/* —— 色块 tile：bento 拼贴用的九色软背景 —— */
+.tile        { border-radius: 12px; padding: 1.5rem; border: 1px solid transparent; }
+.tile-gray   { background: var(--tint-gray); }
+.tile-brown  { background: var(--tint-brown); }
+.tile-orange { background: var(--tint-orange); }
+.tile-yellow { background: var(--tint-yellow); }
+.tile-green  { background: var(--tint-green); }
+.tile-blue   { background: var(--tint-blue); }
+.tile-purple { background: var(--tint-purple); }
+.tile-pink   { background: var(--tint-pink); }
+.tile-red    { background: var(--tint-red); }
+
+/* —— callout：Notion 招牌「emoji + 软色底」提示块 —— */
+.callout {
+  display: flex; gap: 0.75rem; align-items: flex-start;
+  border-radius: 8px; padding: 1rem 1.15rem;
+  background: var(--tint-gray);
+}
+.callout-blue   { background: var(--tint-blue); }
+.callout-green  { background: var(--tint-green); }
+.callout-yellow { background: var(--tint-yellow); }
+.callout-purple { background: var(--tint-purple); }
+.callout-emoji  { font-size: 1.3rem; line-height: 1.5; flex-shrink: 0; }
+
+/* —— Notion 微交互 —— */
+/* 卡片轻抬升（比原来更克制、缓动更 Notion） */
+.notion-lift {
+  transition: transform 0.18s var(--ease-notion),
+              box-shadow 0.18s var(--ease-notion),
+              background 0.18s ease, border-color 0.18s ease;
+  will-change: transform;
+}
+.notion-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px -12px rgba(15, 15, 15, 0.22);
+}
+/* 图片/插画在卡片 hover 时轻微放大（含在 overflow-hidden 容器里） */
+.notion-zoom { overflow: hidden; }
+.notion-zoom img, .notion-zoom svg { transition: transform 0.4s var(--ease-notion); }
+.notion-lift:hover .notion-zoom img,
+.notion-lift:hover .notion-zoom svg,
+.notion-zoom:hover img, .notion-zoom:hover svg { transform: scale(1.045); }
+/* 行内 hover 高亮（Notion 列表项那种整块淡灰底） */
+.notion-row { border-radius: 6px; transition: background 0.14s ease; }
+.notion-row:hover { background: var(--tint-gray); }
+/* 箭头随 hover 位移 */
+.notion-arrow { display: inline-block; transition: transform 0.18s var(--ease-notion); }
+.group:hover .notion-arrow { transform: translateX(3px); }
+
+/* 手绘插画描边统一（配合原创漫画风 SVG） */
+.ink-stroke { stroke: var(--ink); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; fill: none; }
+
+@media (prefers-reduced-motion: reduce) {
+  .notion-lift, .notion-zoom img, .notion-zoom svg, .notion-arrow { transition: none !important; }
+  .notion-lift:hover { transform: none; }
+}

@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 
-// 统一的内页页头（内嵌式圆角块，放在页面容器内，只替换原标题区即可）。
-// 浅色渐变网格 + 渐变标题，让各功能页与新首页视觉一致。
+// 统一内页页头（UCAS 白底风）：蓝色细横线 + 超大黑标题 + 大留白，无深色块、无渐变。
 export function PageHeader({
   title,
   subtitle,
@@ -18,21 +17,23 @@ export function PageHeader({
   className?: string;
 }) {
   return (
-    <div
-      className={`mesh-hero grain relative overflow-hidden rounded-3xl border border-[var(--border)] px-6 py-8 sm:px-8 sm:py-9 mb-8 ${className}`}
-    >
-      <div className="pointer-events-none absolute -top-12 right-0 w-60 h-60 rounded-full bg-[radial-gradient(circle,rgba(124,58,237,0.16),transparent_70%)] floaty-slow" />
-      <div className="relative flex items-start justify-between gap-4 flex-wrap">
+    <div className={`mb-8 ${className}`}>
+      <span className="ucas-accent-bar" />
+      <div className="flex items-start justify-between gap-4 flex-wrap">
         <div className="min-w-0">
           {eyebrow && (
-            <p className="text-xs font-semibold text-[var(--indigo)] tracking-wide uppercase mb-2">{eyebrow}</p>
+            <p className="text-xs font-semibold text-[var(--indigo)] tracking-[0.14em] uppercase mb-2">{eyebrow}</p>
           )}
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight leading-tight flex items-center gap-2.5">
-            {icon && <span className="text-3xl shrink-0">{icon}</span>}
-            <span className="text-gradient">{title}</span>
+          {icon && (
+            <span className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-[var(--tint-blue)] text-2xl mb-3">
+              {icon}
+            </span>
+          )}
+          <h1 className="ucas-title">
+            <span>{title}</span>
           </h1>
           {subtitle && (
-            <p className="mt-3 text-[var(--ink-soft)] leading-relaxed max-w-2xl">{subtitle}</p>
+            <p className="mt-3 text-lg text-[var(--ink-soft)] leading-relaxed max-w-2xl">{subtitle}</p>
           )}
         </div>
         {actions && <div className="shrink-0">{actions}</div>}
