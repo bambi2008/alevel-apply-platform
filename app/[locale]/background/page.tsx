@@ -82,38 +82,40 @@ export default function BackgroundPage() {
 
   const reasonOf = (id: string) => scored.find((s) => s.item.id === id)?.reasons ?? [];
 
-  // 专业实践块内的两个课题入口（在线课题 / 自提课题）
+  // 专业实践块内的两个课题入口（在线课题 / 自提课题）—— 大号显眼
   const projectEntries = (
-    <div className="space-y-2 mb-3">
+    <div className="grid sm:grid-cols-2 gap-3 mb-4">
       <Link
         href="/background/projects"
-        className="card-hover block rounded-xl bg-brand-soft border border-[var(--border)] p-4 hover:border-indigo-200 hover:shadow-md hover:shadow-indigo-500/5"
+        className="card-hover block rounded-2xl border-2 border-[var(--indigo)] bg-brand-soft p-5 hover:shadow-lg hover:shadow-indigo-500/10"
       >
-        <div className="flex items-center gap-3">
-          <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-white text-xl shrink-0">🛠️</span>
+        <div className="flex items-center gap-3 mb-1">
+          <span className="flex items-center justify-center w-14 h-14 rounded-xl bg-white text-3xl shrink-0">🛠️</span>
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-sm text-[var(--ink)]">在线课题 · 做出真实产出</p>
-            <p className="text-xs text-[var(--ink-soft)]">
-              贴近专业、分阶段引导的高含金量课题（工程方向已上线）——比「给个题自己做」更扎实，产出可写入文书与作品集。
-            </p>
+            <p className="text-[10px] font-bold text-[var(--indigo)] tracking-wide">平台特色 · 强烈推荐</p>
+            <p className="text-lg font-bold text-[var(--ink)] leading-tight">在线课题 · 做出真实产出</p>
           </div>
-          <span className="text-[var(--indigo)] shrink-0">→</span>
+          <span className="text-[var(--indigo)] text-xl shrink-0">→</span>
         </div>
+        <p className="text-sm text-[var(--ink-soft)]">
+          贴近专业、分阶段引导的高含金量课题（工程方向已上线）——比「给个题自己做」更扎实，产出可写入文书与作品集。
+        </p>
       </Link>
       <Link
         href="/background/my-projects"
-        className="card-hover block rounded-xl border border-[var(--border)] p-4 hover:border-indigo-200 hover:shadow-md hover:shadow-indigo-500/5"
+        className="card-hover block rounded-2xl border-2 border-[var(--indigo)] bg-white p-5 hover:shadow-lg hover:shadow-indigo-500/10"
       >
-        <div className="flex items-center gap-3">
-          <span className="flex items-center justify-center w-10 h-10 rounded-lg bg-[var(--surface)] text-xl shrink-0">💡</span>
+        <div className="flex items-center gap-3 mb-1">
+          <span className="flex items-center justify-center w-14 h-14 rounded-xl bg-[var(--surface)] text-3xl shrink-0">💡</span>
           <div className="flex-1 min-w-0">
-            <p className="font-semibold text-sm text-[var(--ink)]">我的自提课题 · 提交你自己的研究</p>
-            <p className="text-xs text-[var(--ink-soft)]">
-              有自己的研究想法？把它交给平台，AI 帮你梳理成规范课题，记录过程、产出个人陈述素材。
-            </p>
+            <p className="text-[10px] font-bold text-[var(--indigo)] tracking-wide">有想法就交给平台</p>
+            <p className="text-lg font-bold text-[var(--ink)] leading-tight">我的自提课题 · 提交你自己的研究</p>
           </div>
-          <span className="text-[var(--indigo)] shrink-0">→</span>
+          <span className="text-[var(--indigo)] text-xl shrink-0">→</span>
         </div>
+        <p className="text-sm text-[var(--ink-soft)]">
+          有自己的研究想法？把它交给平台，AI 帮你梳理成规范课题，记录过程、产出个人陈述素材。
+        </p>
       </Link>
     </div>
   );
@@ -198,11 +200,11 @@ export default function BackgroundPage() {
           </div>
         </div>
 
-        {/* 顶层两大类：竞赛 / 实践 */}
-        <div className="flex items-center gap-1.5 flex-wrap mb-3 text-xs">
+        {/* 顶层两大类：竞赛 / 专业实践（大号显眼） */}
+        <div className="flex items-center gap-3 flex-wrap mb-2">
           <button
             onClick={() => setActiveGroup("ALL")}
-            className={`px-3 py-1 rounded-full font-medium ${activeGroup === "ALL" ? "bg-[var(--ink)] text-white" : "bg-[var(--surface-2)] text-[var(--ink-soft)] hover:bg-[var(--border)]"}`}
+            className={`px-6 py-3 rounded-xl text-lg font-bold transition ${activeGroup === "ALL" ? "bg-[var(--ink)] text-white shadow-md" : "bg-[var(--surface-2)] text-[var(--ink-soft)] hover:bg-[var(--border)]"}`}
           >
             全部
           </button>
@@ -210,17 +212,18 @@ export default function BackgroundPage() {
             <button
               key={g.value}
               onClick={() => setActiveGroup(g.value)}
-              className={`px-3 py-1 rounded-full font-medium ${activeGroup === g.value ? "bg-[var(--ink)] text-white" : "bg-[var(--surface-2)] text-[var(--ink-soft)] hover:bg-[var(--border)]"}`}
+              className={`px-6 py-3 rounded-xl text-lg font-bold transition ${activeGroup === g.value ? "bg-[var(--indigo)] text-white shadow-md" : "bg-[var(--surface-2)] text-[var(--ink-soft)] hover:bg-[var(--border)]"}`}
             >
-              {g.emoji} {g.label}
+              <span className="text-2xl mr-1 align-middle">{g.emoji}</span>
+              {g.label}
             </button>
           ))}
-          {activeGroup !== "ALL" && (
-            <span className="text-[var(--ink-faint)] ml-1">
-              {BG_GROUPS.find((g) => g.value === activeGroup)?.desc}
-            </span>
-          )}
         </div>
+        {activeGroup !== "ALL" && (
+          <p className="text-sm text-[var(--ink-faint)] mb-3">
+            {BG_GROUPS.find((g) => g.value === activeGroup)?.desc}
+          </p>
+        )}
 
         {activeField === "AUTO" && profile.intendedMajors.length === 0 && (
           <p className="text-xs text-[var(--warning)] bg-[var(--warning-bg)] rounded px-3 py-2 mb-3">
