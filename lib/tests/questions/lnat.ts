@@ -2,6 +2,7 @@
 // 无可计算答案：答案由文章内容锁定，经结构自检与严谨自审。id 前缀 lnat-ex-*。
 import type { MCQQuestion } from "./types";
 import { LNAT_EXPANSION_2 } from "./lnat-batch2";
+import { LNAT_EXPANSION_3 } from "./lnat-batch3";
 
 const LNAT_BATCH_1: MCQQuestion[] = [
   { id: "lnat-ex-001", type: "mcq", testId: "lnat", topicId: "lnat-analyse", difficulty: 2, marks: 1,
@@ -130,4 +131,4 @@ const LNAT_BATCH_1: MCQQuestion[] = [
     answer: "A", solution: "The author separates mere audibility from real understanding, cautioning that being heard widely does not mean being genuinely understood." },
 ];
 
-export const LNAT_QUESTIONS: MCQQuestion[] = [...LNAT_BATCH_1, ...LNAT_EXPANSION_2];
+export const LNAT_QUESTIONS: MCQQuestion[] = [...LNAT_BATCH_1, ...LNAT_EXPANSION_2, ...LNAT_EXPANSION_3];
