@@ -82,38 +82,38 @@ export default function BackgroundPage() {
 
   const reasonOf = (id: string) => scored.find((s) => s.item.id === id)?.reasons ?? [];
 
-  // 专业实践块内的两个课题入口（在线课题 / 自提课题）—— 大号显眼
+  // 专业实践块内的两个课题入口（在线课题 / 自提课题）—— 鲜亮渐变底图
   const projectEntries = (
     <div className="grid sm:grid-cols-2 gap-3 mb-4">
       <Link
         href="/background/projects"
-        className="card-hover block rounded-2xl border-2 border-[var(--indigo)] bg-brand-soft p-5 hover:shadow-lg hover:shadow-indigo-500/10"
+        className="card-hover block rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white p-5 shadow-lg shadow-indigo-500/20 hover:shadow-xl hover:shadow-indigo-500/30"
       >
         <div className="flex items-center gap-3 mb-1">
-          <span className="flex items-center justify-center w-14 h-14 rounded-xl bg-white text-3xl shrink-0">🛠️</span>
+          <span className="flex items-center justify-center w-14 h-14 rounded-xl bg-white/20 text-3xl shrink-0">🛠️</span>
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] font-bold text-[var(--indigo)] tracking-wide">平台特色 · 强烈推荐</p>
-            <p className="text-lg font-bold text-[var(--ink)] leading-tight">在线课题 · 做出真实产出</p>
+            <p className="text-[11px] font-bold text-white/80 tracking-wide">平台特色 · 强烈推荐</p>
+            <p className="text-lg font-bold leading-tight">在线课题 · 做出真实产出</p>
           </div>
-          <span className="text-[var(--indigo)] text-xl shrink-0">→</span>
+          <span className="text-white text-2xl shrink-0">→</span>
         </div>
-        <p className="text-sm text-[var(--ink-soft)]">
+        <p className="text-sm text-white/90">
           贴近专业、分阶段引导的高含金量课题（工程方向已上线）——比「给个题自己做」更扎实，产出可写入文书与作品集。
         </p>
       </Link>
       <Link
         href="/background/my-projects"
-        className="card-hover block rounded-2xl border-2 border-[var(--indigo)] bg-white p-5 hover:shadow-lg hover:shadow-indigo-500/10"
+        className="card-hover block rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 text-white p-5 shadow-lg shadow-orange-500/20 hover:shadow-xl hover:shadow-orange-500/30"
       >
         <div className="flex items-center gap-3 mb-1">
-          <span className="flex items-center justify-center w-14 h-14 rounded-xl bg-[var(--surface)] text-3xl shrink-0">💡</span>
+          <span className="flex items-center justify-center w-14 h-14 rounded-xl bg-white/25 text-3xl shrink-0">💡</span>
           <div className="flex-1 min-w-0">
-            <p className="text-[10px] font-bold text-[var(--indigo)] tracking-wide">有想法就交给平台</p>
-            <p className="text-lg font-bold text-[var(--ink)] leading-tight">我的自提课题 · 提交你自己的研究</p>
+            <p className="text-[11px] font-bold text-white/90 tracking-wide">有想法就交给平台</p>
+            <p className="text-lg font-bold leading-tight">我的自提课题 · 提交你自己的研究</p>
           </div>
-          <span className="text-[var(--indigo)] text-xl shrink-0">→</span>
+          <span className="text-white text-2xl shrink-0">→</span>
         </div>
-        <p className="text-sm text-[var(--ink-soft)]">
+        <p className="text-sm text-white/95">
           有自己的研究想法？把它交给平台，AI 帮你梳理成规范课题，记录过程、产出个人陈述素材。
         </p>
       </Link>
@@ -200,24 +200,31 @@ export default function BackgroundPage() {
           </div>
         </div>
 
-        {/* 顶层两大类：竞赛 / 专业实践（大号显眼） */}
+        {/* 顶层两大类：竞赛 / 专业实践（鲜亮实色底图） */}
         <div className="flex items-center gap-3 flex-wrap mb-2">
           <button
             onClick={() => setActiveGroup("ALL")}
-            className={`px-6 py-3 rounded-xl text-lg font-bold transition ${activeGroup === "ALL" ? "bg-[var(--ink)] text-white shadow-md" : "bg-[var(--surface-2)] text-[var(--ink-soft)] hover:bg-[var(--border)]"}`}
+            className={`px-5 py-3 rounded-xl text-lg font-bold transition ${activeGroup === "ALL" ? "bg-[var(--ink)] text-white shadow-md" : "bg-[var(--surface-2)] text-[var(--ink-soft)] hover:bg-[var(--border)]"}`}
           >
             全部
           </button>
-          {BG_GROUPS.map((g) => (
-            <button
-              key={g.value}
-              onClick={() => setActiveGroup(g.value)}
-              className={`px-6 py-3 rounded-xl text-lg font-bold transition ${activeGroup === g.value ? "bg-[var(--indigo)] text-white shadow-md" : "bg-[var(--surface-2)] text-[var(--ink-soft)] hover:bg-[var(--border)]"}`}
-            >
-              <span className="text-2xl mr-1 align-middle">{g.emoji}</span>
-              {g.label}
-            </button>
-          ))}
+          {BG_GROUPS.map((g) => {
+            const bright =
+              g.value === "COMPETITION"
+                ? "bg-amber-400 hover:bg-amber-500"
+                : "bg-indigo-500 hover:bg-indigo-600";
+            const ring = g.value === "COMPETITION" ? "ring-amber-200" : "ring-indigo-200";
+            return (
+              <button
+                key={g.value}
+                onClick={() => setActiveGroup(g.value)}
+                className={`px-6 py-3 rounded-xl text-lg font-bold text-white transition ${bright} ${activeGroup === g.value ? `ring-4 ${ring} shadow-lg` : "opacity-90 hover:opacity-100"}`}
+              >
+                <span className="text-2xl mr-1.5 align-middle">{g.emoji}</span>
+                {g.label}
+              </button>
+            );
+          })}
         </div>
         {activeGroup !== "ALL" && (
           <p className="text-sm text-[var(--ink-faint)] mb-3">
