@@ -4,6 +4,8 @@
 // 内容范围: A-Level Core/Pure Maths（不含 Statistics/Mechanics）
 
 import { MAT_HARD } from "./mat-hard";
+import { MAT_EXPANSION } from "./mat-expansion";
+import { MAT_CLEVER } from "./mat-clever";
 import type { MCQQuestion, LongQuestion } from "./types";
 
 // ── Part A: Multiple Choice ──────────────────────────────────────────────
@@ -1624,4 +1626,6 @@ export const MAT_QUESTIONS = [
   ...MAT_PART_B,
   ...MAT_PART_B_EXTRA,
   ...MAT_HARD,
+  ...MAT_EXPANSION,
+  ...MAT_CLEVER,
 ];

@@ -12,6 +12,9 @@ import { ESAT_MK9_MATH, ESAT_MK9_BIO } from "./esat-mock-9";
 import { ESAT_MK10_MAG, ESAT_MK10_SCI } from "./esat-mock-10";
 import { TMUA_MK1_P1, TMUA_MK1_P2 } from "./tmua-mock-1";
 import { MAT_MK1_MCQ } from "./mat-mock-1";
+import { MAT_MK2_MCQ } from "./mat-mock-2";
+import { MAT_MK3_MCQ } from "./mat-mock-3";
+import { MAT_MK4_MCQ } from "./mat-mock-4";
 import { TMUA_MK2_P1, TMUA_MK2_P2 } from "./tmua-mock-2";
 import { TMUA_MK3_P1, TMUA_MK3_P2 } from "./tmua-mock-3";
 import { TMUA_MK4_P1, TMUA_MK4_P2 } from "./tmua-mock-4";
@@ -241,6 +244,42 @@ export const MAT_MOCK_1: MockPaper = {
   ],
 };
 
+export const MAT_MOCK_2: MockPaper = {
+  id: "mat-mock-2",
+  testId: "mat",
+  title: "MAT 模拟卷2（选择部分 25 题）",
+  titleEn: "MAT Mock Paper 2 (25 multiple-choice)",
+  description:
+    "对标真实 Oxford MAT 结构：25 道五选一（A–E）、每题 2–3 分、无负分。题目由生成器出题、sympy 计算答案，经多轮独立复核；仅以官方结构与考纲做校准，未照搬任何真题。",
+  modules: [
+    { id: "mcq", title: "选择题（25 题 / 90 分钟）", titleEn: "Multiple Choice (Q1–25)", durationSec: 90 * 60, questions: MAT_MK2_MCQ },
+  ],
+};
+
+export const MAT_MOCK_3: MockPaper = {
+  id: "mat-mock-3",
+  testId: "mat",
+  title: "MAT 模拟卷3（选择部分 25 题）",
+  titleEn: "MAT Mock Paper 3 (25 multiple-choice)",
+  description:
+    "对标真实 Oxford MAT 结构：25 道五选一（A–E）、每题 2–3 分、无负分。题目由生成器出题、sympy 计算答案，经多轮独立复核；仅以官方结构与考纲做校准，未照搬任何真题。",
+  modules: [
+    { id: "mcq", title: "选择题（25 题 / 90 分钟）", titleEn: "Multiple Choice (Q1–25)", durationSec: 90 * 60, questions: MAT_MK3_MCQ },
+  ],
+};
+
+export const MAT_MOCK_4: MockPaper = {
+  id: "mat-mock-4",
+  testId: "mat",
+  title: "MAT 模拟卷4（选择部分 25 题）",
+  titleEn: "MAT Mock Paper 4 (25 multiple-choice)",
+  description:
+    "对标真实 Oxford MAT 结构：25 道五选一（A–E）、每题 2–3 分、无负分。题目由生成器出题、sympy 计算答案，经多轮独立复核；仅以官方结构与考纲做校准，未照搬任何真题。",
+  modules: [
+    { id: "mcq", title: "选择题（25 题 / 90 分钟）", titleEn: "Multiple Choice (Q1–25)", durationSec: 90 * 60, questions: MAT_MK4_MCQ },
+  ],
+};
+
 export const TMUA_MOCK_2: MockPaper = {
   id: "tmua-mock-2",
   testId: "tmua",
@@ -371,7 +410,7 @@ export const TMUA_MOCK_1: MockPaper = {
   ],
 };
 
-const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1];
+const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4];
 
 export function getMockPapersForTest(testId: string): MockPaper[] {
   return ALL_MOCK_PAPERS.filter((p) => p.testId === testId);
