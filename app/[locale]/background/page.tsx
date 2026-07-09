@@ -99,7 +99,7 @@ export default function BackgroundPage() {
     <div className="mx-auto max-w-5xl px-4 py-8">
       <div className="grid lg:grid-cols-[1fr_auto] gap-8 items-center mb-8">
         <div className="[&>div]:mb-0">
-          <PageHeader title="背景提升" subtitle="背景提升分为「竞赛」与「实践」两大类：竞赛用名次奖项证明实力，实践靠亲身经历积累素材。推荐已按你的档案个性化排序。" icon="🌟" />
+          <PageHeader title="背景提升" subtitle="背景提升分为「竞赛」与「专业实践」两大类：竞赛用名次奖项证明实力，专业实践靠科研/论文/夏校等经历积累素材。推荐已按你的档案个性化排序。" icon="🌟" />
         </div>
         <Photo
           src="/images/background-project.jpg"
@@ -226,46 +226,62 @@ export default function BackgroundPage() {
           </p>
         )}
 
+        {(activeGroup === "ALL"
+          ? BG_GROUPS.map((g) => ({
+              key: g.value,
+              label: `${g.emoji} ${g.label}`,
+              items: shownCatalog.filter((c) => groupOfCategory(c.category) === g.value),
+            }))
+          : [{ key: activeGroup, label: "", items: shownByGroup }]
+        ).map((sec) =>
+          sec.items.length === 0 ? null : (
+            <div key={sec.key} className="mb-6">
+              {sec.label && (
+                <h3 className="text-sm font-semibold text-[var(--ink-soft)] mb-2">{sec.label}</h3>
+              )}
+              <div className="grid sm:grid-cols-2 gap-3">
+                {sec.items.map((c) => {
+                  const added = planned.has(c.id);
+                  const reasons = activeField === "AUTO" ? reasonOf(c.id) : [];
+                  return (
+                    <div key={c.id} className="rounded-xl border border-neutral-200 bg-white p-4 flex flex-col">
+                      <div className="flex items-start gap-2">
+                        <span className="text-lg">{categoryEmoji(c.category)}</span>
+                        <div className="min-w-0 flex-1">
+                          <p className="text-sm font-medium text-neutral-900">{c.title}</p>
+                          <p className="text-xs text-neutral-400">
+                            {categoryLabel(c.category)} · {fieldLabel(c.field)} · 难度：{DIFF_LABEL[c.difficulty]}
+                          </p>
+                        </div>
+                      </div>
+                      <p className="text-xs text-neutral-600 mt-2 flex-1">{c.description}</p>
+                      <p className="text-xs text-neutral-400 mt-1">建议时间：{c.timing}</p>
+                      {reasons.length > 0 && (
+                        <div className="flex gap-1 flex-wrap mt-2">
+                          {reasons.map((r, i) => (
+                            <span key={i} className="text-[11px] text-[var(--indigo)] bg-[var(--info-bg)] rounded px-1.5 py-0.5">{r}</span>
+                          ))}
+                        </div>
+                      )}
+                      <button
+                        onClick={() => onAdd(c)}
+                        disabled={added}
+                        className={`mt-3 text-sm rounded-lg py-1.5 ${added ? "bg-[var(--surface-2)] text-[var(--ink-faint)] cursor-default" : "bg-[var(--indigo)] text-white hover:bg-[var(--indigo-hover)]"}`}
+                      >
+                        {added ? "已加入规划" : "加入规划"}
+                      </button>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          )
+        )}
         {shownByGroup.length === 0 && (
           <p className="text-sm text-[var(--ink-faint)] py-6 text-center">
             该分类下暂无推荐项目，试试切换方向或点「全部」。
           </p>
         )}
-        <div className="grid sm:grid-cols-2 gap-3">
-          {shownByGroup.map((c) => {
-            const added = planned.has(c.id);
-            const reasons = activeField === "AUTO" ? reasonOf(c.id) : [];
-            return (
-              <div key={c.id} className="rounded-xl border border-neutral-200 bg-white p-4 flex flex-col">
-                <div className="flex items-start gap-2">
-                  <span className="text-lg">{categoryEmoji(c.category)}</span>
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-neutral-900">{c.title}</p>
-                    <p className="text-xs text-neutral-400">
-                      {categoryLabel(c.category)} · {fieldLabel(c.field)} · 难度：{DIFF_LABEL[c.difficulty]}
-                    </p>
-                  </div>
-                </div>
-                <p className="text-xs text-neutral-600 mt-2 flex-1">{c.description}</p>
-                <p className="text-xs text-neutral-400 mt-1">建议时间：{c.timing}</p>
-                {reasons.length > 0 && (
-                  <div className="flex gap-1 flex-wrap mt-2">
-                    {reasons.map((r, i) => (
-                      <span key={i} className="text-[11px] text-[var(--indigo)] bg-[var(--info-bg)] rounded px-1.5 py-0.5">{r}</span>
-                    ))}
-                  </div>
-                )}
-                <button
-                  onClick={() => onAdd(c)}
-                  disabled={added}
-                  className={`mt-3 text-sm rounded-lg py-1.5 ${added ? "bg-[var(--surface-2)] text-[var(--ink-faint)] cursor-default" : "bg-[var(--indigo)] text-white hover:bg-[var(--indigo-hover)]"}`}
-                >
-                  {added ? "已加入规划" : "加入规划"}
-                </button>
-              </div>
-            );
-          })}
-        </div>
       </section>
 
       {/* 我的规划 */}
@@ -281,7 +297,6 @@ export default function BackgroundPage() {
           >
             <option value="COMPETITION">竞赛</option>
             <option value="RESEARCH">科研</option>
-            <option value="ACTIVITY">活动</option>
             <option value="SUMMER_SCHOOL">夏校</option>
           </select>
           <input

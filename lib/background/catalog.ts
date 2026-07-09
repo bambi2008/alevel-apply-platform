@@ -17,7 +17,6 @@ export const BG_FIELDS: { value: BgField; label: string; labelEn: string }[] = [
 export const BG_CATEGORIES: { value: BgCategory; label: string; emoji: string }[] = [
   { value: "COMPETITION", label: "竞赛", emoji: "🏆" },
   { value: "RESEARCH", label: "科研", emoji: "🔬" },
-  { value: "ACTIVITY", label: "活动", emoji: "🤝" },
   { value: "SUMMER_SCHOOL", label: "夏校", emoji: "🎓" },
 ];
 
@@ -33,15 +32,15 @@ export function categoryEmoji(c: BgCategory): string {
 
 // ───────── 顶层两大类：竞赛 / 实践 ─────────
 // 竞赛 = COMPETITION；实践 = 科研 + 活动 + 夏校（亲身经历型）。
-export type BgGroup = "COMPETITION" | "PRACTICE";
+export type BgGroup = "COMPETITION" | "PROFESSIONAL";
 
 export const BG_GROUPS: { value: BgGroup; label: string; emoji: string; desc: string }[] = [
   { value: "COMPETITION", label: "竞赛", emoji: "🏆", desc: "各类学术竞赛与奥林匹克，用可量化的名次与奖项证明学术实力。" },
-  { value: "PRACTICE", label: "实践", emoji: "🛠", desc: "科研、活动/志愿/实习、夏校等亲身经历，积累文书素材与面试谈资。" },
+  { value: "PROFESSIONAL", label: "专业实践", emoji: "🔬", desc: "科研课题、独立论文与学科夏校等专业性经历，积累文书素材与面试谈资。" },
 ];
 
 export function groupOfCategory(c: BgCategory): BgGroup {
-  return c === "COMPETITION" ? "COMPETITION" : "PRACTICE";
+  return c === "COMPETITION" ? "COMPETITION" : "PROFESSIONAL";
 }
 export function groupLabel(g: BgGroup): string {
   return BG_GROUPS.find((x) => x.value === g)?.label ?? g;
@@ -81,12 +80,6 @@ export const BACKGROUND_CATALOG: CatalogItem[] = [
     title: "开源项目 / Kaggle 数据竞赛", titleEn: "Open Source & Kaggle",
     description: "参与开源项目贡献代码，或在 Kaggle 上完成数据科学/机器学习竞赛，能体现真实工程与数据能力，是文书里有说服力的实践素材。",
     difficulty: 2, timing: "全年，适合长期投入", officialUrl: "",
-  },
-  {
-    id: "bg-cse-hackathon", field: "CS_ENG", category: "ACTIVITY",
-    title: "编程马拉松 (Hackathon)", titleEn: "Hackathons",
-    description: "在有限时间内组队完成一个软件/硬件项目，锻炼快速开发、协作与展示能力，也是拓展兴趣、积累作品的好途径。",
-    difficulty: 1, timing: "全年不定期", officialUrl: "",
   },
   {
     id: "bg-cse-summer", field: "CS_ENG", category: "SUMMER_SCHOOL",
@@ -147,12 +140,6 @@ export const BACKGROUND_CATALOG: CatalogItem[] = [
     difficulty: 2, timing: "每年秋季", officialUrl: "",
   },
   {
-    id: "bg-math-club", field: "MATH", category: "ACTIVITY",
-    title: "数学社团 / 学术讲座", titleEn: "Maths Club / Seminars",
-    description: "组织或参与数学社团、专题讲座与问题研讨，持续展现学科热情，也可作为组织领导力的体现。",
-    difficulty: 1, timing: "学年内持续", officialUrl: "",
-  },
-  {
     id: "bg-math-summer", field: "MATH", category: "SUMMER_SCHOOL",
     title: "数学夏校（如 PROMYS / Ross）", titleEn: "Maths Summer Schools",
     description: "高强度的数学研究型夏校，深入数论、代数等主题，适合数学热情强烈、希望冲击顶尖院校的学生。",
@@ -197,18 +184,6 @@ export const BACKGROUND_CATALOG: CatalogItem[] = [
     title: "英国生物奥赛 (BBO)", titleEn: "British Biology Olympiad",
     description: "生物学竞赛对医学申请有直接帮助，能体现扎实的生命科学基础，是医学方向常见的学术背景之一。",
     difficulty: 2, timing: "每年一届", officialUrl: "",
-  },
-  {
-    id: "bg-med-ucat", field: "MED", category: "ACTIVITY",
-    title: "UCAT 入学考试备考", titleEn: "UCAT Preparation",
-    description: "英国多数医学院要求的入学考试。系统备考 UCAT 是医学申请的必要环节，建议尽早规划练习。",
-    difficulty: 2, timing: "申请当年暑期考试，提前数月备考", officialUrl: "",
-  },
-  {
-    id: "bg-med-volunteer", field: "MED", category: "ACTIVITY",
-    title: "医院志愿 / 临床见习", titleEn: "Clinical Volunteering / Work Experience",
-    description: "在医院、诊所或社区从事志愿服务或见习，了解真实医疗环境与职业，是医学个人陈述中极为重要的经历。",
-    difficulty: 1, timing: "假期或长期", officialUrl: "",
   },
   {
     id: "bg-med-research", field: "MED", category: "RESEARCH",
