@@ -20,6 +20,7 @@ import { PAT_MK2_MCQ } from "./pat-mock-2";
 import { PAT_MK3_MCQ } from "./pat-mock-3";
 import { PAT_MK4_MCQ } from "./pat-mock-4";
 import { PAT_MK5_MCQ } from "./pat-mock-5";
+import { LNAT_MK1_MCQ } from "./lnat-mock-1";
 import { TMUA_MK2_P1, TMUA_MK2_P2 } from "./tmua-mock-2";
 import { TMUA_MK3_P1, TMUA_MK3_P2 } from "./tmua-mock-3";
 import { TMUA_MK4_P1, TMUA_MK4_P2 } from "./tmua-mock-4";
@@ -309,6 +310,18 @@ export const PAT_MOCK_3: MockPaper = {
   ],
 };
 
+export const LNAT_MOCK_1: MockPaper = {
+  id: "lnat-mock-1",
+  testId: "lnat",
+  title: "LNAT 模拟卷1（Section A 阅读推理）",
+  titleEn: "LNAT Mock Paper 1 (Section A)",
+  description:
+    "对标 LNAT 第一节：原创论述文 + 阅读/推理选择题（主旨、推断、假设、削弱/加强、谬误识别）。真实考试为 42 题 95 分钟、外加第二节 essay；本卷为 Section A 精选练习。题目原创，仅以官方结构校准。",
+  modules: [
+    { id: "mcq", title: "Section A 阅读推理", titleEn: "Section A Reading", durationSec: 40 * 60, questions: LNAT_MK1_MCQ },
+  ],
+};
+
 export const MAT_MOCK_2: MockPaper = {
   id: "mat-mock-2",
   testId: "mat",
@@ -475,7 +488,7 @@ export const TMUA_MOCK_1: MockPaper = {
   ],
 };
 
-const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5];
+const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1];
 
 export function getMockPapersForTest(testId: string): MockPaper[] {
   return ALL_MOCK_PAPERS.filter((p) => p.testId === testId);

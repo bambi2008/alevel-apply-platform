@@ -9,6 +9,7 @@ import { STEP_QUESTIONS } from "@/lib/tests/questions/step";
 import { ESAT_QUESTIONS } from "@/lib/tests/questions/esat";
 import { TMUA_QUESTIONS } from "@/lib/tests/questions/tmua";
 import { PAT_QUESTIONS } from "@/lib/tests/questions/pat";
+import { LNAT_QUESTIONS } from "@/lib/tests/questions/lnat";
 import type { Question, MCQQuestion, LongQuestion, GradingResult } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
 import type { GradeRequest, GradeResponse } from "@/app/api/grade-answer/route";
@@ -19,6 +20,7 @@ const QUESTION_BANKS: Record<string, Question[]> = {
   esat: ESAT_QUESTIONS,
   tmua: TMUA_QUESTIONS,
   pat: PAT_QUESTIONS,
+  lnat: LNAT_QUESTIONS,
 };
 
 type PracticeMode = "topic" | "mixed";
