@@ -15,6 +15,9 @@ import { MAT_MK1_MCQ } from "./mat-mock-1";
 import { MAT_MK2_MCQ } from "./mat-mock-2";
 import { MAT_MK3_MCQ } from "./mat-mock-3";
 import { MAT_MK4_MCQ } from "./mat-mock-4";
+import { PAT_MK1_MCQ } from "./pat-mock-1";
+import { PAT_MK2_MCQ } from "./pat-mock-2";
+import { PAT_MK3_MCQ } from "./pat-mock-3";
 import { TMUA_MK2_P1, TMUA_MK2_P2 } from "./tmua-mock-2";
 import { TMUA_MK3_P1, TMUA_MK3_P2 } from "./tmua-mock-3";
 import { TMUA_MK4_P1, TMUA_MK4_P2 } from "./tmua-mock-4";
@@ -244,6 +247,42 @@ export const MAT_MOCK_1: MockPaper = {
   ],
 };
 
+export const PAT_MOCK_1: MockPaper = {
+  id: "pat-mock-1",
+  testId: "pat",
+  title: "PAT 模拟卷1（选择部分 25 题）",
+  titleEn: "PAT Mock Paper 1 (25 multiple-choice)",
+  description:
+    "对标牛津 PAT 结构：25 道五选一，覆盖力学/电磁/波动/热力学/现代物理/数学工具。题目由生成器出题、精确算术计算答案，经独立复核；仅以官方考纲校准，未照搬真题。",
+  modules: [
+    { id: "mcq", title: "选择题（25 题 / 60 分钟）", titleEn: "Multiple Choice (Q1–25)", durationSec: 60 * 60, questions: PAT_MK1_MCQ },
+  ],
+};
+
+export const PAT_MOCK_2: MockPaper = {
+  id: "pat-mock-2",
+  testId: "pat",
+  title: "PAT 模拟卷2（选择部分 25 题）",
+  titleEn: "PAT Mock Paper 2 (25 multiple-choice)",
+  description:
+    "对标牛津 PAT 结构：25 道五选一，覆盖力学/电磁/波动/热力学/现代物理/数学工具。题目由生成器出题、精确算术计算答案，经独立复核；仅以官方考纲校准，未照搬真题。",
+  modules: [
+    { id: "mcq", title: "选择题（25 题 / 60 分钟）", titleEn: "Multiple Choice (Q1–25)", durationSec: 60 * 60, questions: PAT_MK2_MCQ },
+  ],
+};
+
+export const PAT_MOCK_3: MockPaper = {
+  id: "pat-mock-3",
+  testId: "pat",
+  title: "PAT 模拟卷3（选择部分 25 题）",
+  titleEn: "PAT Mock Paper 3 (25 multiple-choice)",
+  description:
+    "对标牛津 PAT 结构：25 道五选一，覆盖力学/电磁/波动/热力学/现代物理/数学工具。题目由生成器出题、精确算术计算答案，经独立复核；仅以官方考纲校准，未照搬真题。",
+  modules: [
+    { id: "mcq", title: "选择题（25 题 / 60 分钟）", titleEn: "Multiple Choice (Q1–25)", durationSec: 60 * 60, questions: PAT_MK3_MCQ },
+  ],
+};
+
 export const MAT_MOCK_2: MockPaper = {
   id: "mat-mock-2",
   testId: "mat",
@@ -410,7 +449,7 @@ export const TMUA_MOCK_1: MockPaper = {
   ],
 };
 
-const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4];
+const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3];
 
 export function getMockPapersForTest(testId: string): MockPaper[] {
   return ALL_MOCK_PAPERS.filter((p) => p.testId === testId);

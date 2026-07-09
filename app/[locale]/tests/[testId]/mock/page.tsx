@@ -8,6 +8,7 @@ import { MAT_QUESTIONS } from "@/lib/tests/questions/mat";
 import { STEP_QUESTIONS } from "@/lib/tests/questions/step";
 import { ESAT_QUESTIONS } from "@/lib/tests/questions/esat";
 import { TMUA_QUESTIONS } from "@/lib/tests/questions/tmua";
+import { PAT_QUESTIONS } from "@/lib/tests/questions/pat";
 import type { Question, MCQQuestion, LongQuestion, GradingResult } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
 import type { GradeRequest, GradeResponse } from "@/app/api/grade-answer/route";
@@ -17,6 +18,7 @@ const QUESTION_BANKS: Record<string, Question[]> = {
   step: STEP_QUESTIONS,
   esat: ESAT_QUESTIONS,
   tmua: TMUA_QUESTIONS,
+  pat: PAT_QUESTIONS,
 };
 
 type ExamState = "briefing" | "running" | "grading" | "results";
@@ -202,17 +204,17 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-6">
         <div className="text-4xl animate-spin">⏳</div>
-        <h2 className="text-xl font-bold text-neutral-800">AI 正在评分…</h2>
-        <p className="text-sm text-neutral-500">
+        <h2 className="text-xl font-bold text-[var(--ink)]">AI 正在评分…</h2>
+        <p className="text-sm text-[var(--ink-soft)]">
           已完成 {gradingProgress} / {queue.length} 题
         </p>
-        <div className="w-64 h-2 bg-neutral-100 rounded-full overflow-hidden">
+        <div className="w-64 h-2 bg-[var(--surface-2)] rounded-full overflow-hidden">
           <div
-            className="h-full bg-blue-500 rounded-full transition-all"
+            className="h-full bg-[var(--indigo)] rounded-full transition-all"
             style={{ width: `${(gradingProgress / Math.max(queue.length, 1)) * 100}%` }}
           />
         </div>
-        <p className="text-xs text-neutral-400">大题由 Claude AI 分步评分，请稍候</p>
+        <p className="text-xs text-[var(--ink-faint)]">大题由 Claude AI 分步评分，请稍候</p>
       </div>
     );
   }
@@ -241,17 +243,17 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
   return (
     <div className="min-h-screen flex flex-col">
       {/* Top bar */}
-      <div className={`sticky top-0 z-20 border-b px-4 py-2 flex items-center gap-4 ${isUrgent ? "bg-red-50 border-red-200" : "bg-white border-neutral-200"}`}>
-        <span className="font-bold text-sm text-neutral-600">{test.abbr} 模拟考试</span>
+      <div className={`sticky top-0 z-20 border-b px-4 py-2 flex items-center gap-4 ${isUrgent ? "bg-[var(--danger-bg)] border-[color:var(--danger)]/25" : "bg-white border-[var(--border)]"}`}>
+        <span className="font-bold text-sm text-[var(--ink-soft)]">{test.abbr} 模拟考试</span>
         <div className="flex-1" />
-        <span className="text-xs text-neutral-400">{answeredCount}/{queue.length} 已作答</span>
-        <span className={`font-mono font-bold text-lg tabular-nums ${isUrgent ? "text-red-600" : "text-neutral-800"}`}>
+        <span className="text-xs text-[var(--ink-faint)]">{answeredCount}/{queue.length} 已作答</span>
+        <span className={`font-mono font-bold text-lg tabular-nums ${isUrgent ? "text-[var(--danger)]" : "text-[var(--ink)]"}`}>
           {formatTime(timeLeft)}
         </span>
         <button
           type="button"
           onClick={handleSubmitAll}
-          className="px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-medium hover:bg-blue-700"
+          className="px-3 py-1.5 rounded-lg bg-[var(--indigo)] text-white text-xs font-medium hover:bg-[var(--indigo-hover)]"
         >
           交卷
         </button>
@@ -259,7 +261,7 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
 
       <div className="flex flex-1 min-h-0">
         {/* Question nav sidebar */}
-        <div className="hidden md:flex flex-col gap-1 p-4 border-r border-neutral-100 w-16 bg-neutral-50">
+        <div className="hidden md:flex flex-col gap-1 p-4 border-r border-[var(--border-soft)] w-16 bg-[var(--surface)]">
           {queue.map((q, i) => {
             const ans = answers.find((a) => a.questionId === q.id);
             const done =
@@ -272,10 +274,10 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
                 onClick={() => setCurrentIdx(i)}
                 className={`w-8 h-8 rounded text-xs font-medium mx-auto transition ${
                   i === currentIdx
-                    ? "bg-blue-600 text-white"
+                    ? "bg-[var(--indigo)] text-white"
                     : done
-                    ? "bg-blue-100 text-blue-700"
-                    : "bg-white text-neutral-400 border border-neutral-200"
+                    ? "bg-[var(--info-bg)] text-[var(--indigo)]"
+                    : "bg-white text-[var(--ink-faint)] border border-[var(--border)]"
                 }`}
               >
                 {i + 1}
@@ -286,7 +288,7 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
 
         {/* Main question area */}
         <div className="flex-1 overflow-y-auto px-4 py-8">
-          <div className="mx-auto max-w-2xl">
+          <div className="mx-auto max-w-3xl">
             {currentQ && (
               <>
                 {currentQ.type === "mcq" ? (
@@ -308,7 +310,7 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
                     type="button"
                     disabled={currentIdx === 0}
                     onClick={() => setCurrentIdx((i) => i - 1)}
-                    className="px-4 py-2 rounded-lg border border-neutral-300 text-sm text-neutral-600 hover:bg-neutral-50 disabled:opacity-40"
+                    className="px-4 py-2 rounded-lg border border-[var(--border)] text-sm text-[var(--ink-soft)] hover:bg-[var(--surface)] disabled:opacity-40"
                   >
                     ← 上一题
                   </button>
@@ -324,7 +326,7 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
                     <button
                       type="button"
                       onClick={handleSubmitAll}
-                      className="px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
+                      className="px-4 py-2 rounded-lg bg-[var(--indigo)] text-white text-sm font-medium hover:bg-[var(--indigo-hover)]"
                     >
                       完成作答，交卷 →
                     </button>
@@ -354,32 +356,32 @@ function MockBriefing({
 
   return (
     <div className="mx-auto max-w-xl px-4 py-10">
-      <Link href={`/tests/${test.id}`} className="text-sm text-neutral-500 hover:text-neutral-800 mb-6 inline-block">
+      <Link href={`/tests/${test.id}`} className="text-sm text-[var(--ink-soft)] hover:text-[var(--ink)] mb-6 inline-block">
         ← {test.abbr} 备考详情
       </Link>
       <h1 className="text-2xl font-bold mt-4 mb-1">{test.abbr} 计时模拟考试</h1>
-      <p className="text-neutral-500 text-sm mb-8">模拟真实考试环境，完成后 AI 逐题评分</p>
+      <p className="text-[var(--ink-soft)] text-sm mb-8">模拟真实考试环境，完成后 AI 逐题评分</p>
 
-      <div className="rounded-2xl border border-neutral-200 p-6 space-y-4 mb-8">
+      <div className="rounded-2xl border border-[var(--border)] p-6 space-y-4 mb-8">
         <div className="flex justify-between text-sm">
-          <span className="text-neutral-600">考试时长</span>
+          <span className="text-[var(--ink-soft)]">考试时长</span>
           <span className="font-medium">{test.duration}</span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-neutral-600">选择题数量</span>
+          <span className="text-[var(--ink-soft)]">选择题数量</span>
           <span className="font-medium">{mcqCount} 题</span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-neutral-600">大题数量</span>
+          <span className="text-[var(--ink-soft)]">大题数量</span>
           <span className="font-medium">{longCount} 题（AI分步评分）</span>
         </div>
         <div className="flex justify-between text-sm">
-          <span className="text-neutral-600">考试模式</span>
+          <span className="text-[var(--ink-soft)]">考试模式</span>
           <span className="font-medium">计时、交卷后显示答案</span>
         </div>
       </div>
 
-      <div className="rounded-xl bg-amber-50 border border-amber-200 p-4 text-sm text-amber-800 mb-6 space-y-1">
+      <div className="rounded-xl bg-[var(--warning-bg)] border border-[color:var(--warning)]/25 p-4 text-sm text-[var(--warning)] mb-6 space-y-1">
         <p className="font-medium">开始前请注意</p>
         <ul className="list-disc ml-4 text-xs space-y-0.5">
           <li>考试期间计时不会暂停</li>
@@ -393,7 +395,7 @@ function MockBriefing({
       <button
         type="button"
         onClick={onStart}
-        className="w-full py-3 rounded-xl bg-blue-600 text-white font-medium text-sm hover:bg-blue-700 transition"
+        className="w-full py-3 rounded-xl bg-[var(--indigo)] text-white font-medium text-sm hover:bg-[var(--indigo-hover)] transition"
       >
         开始计时考试 →
       </button>
@@ -412,20 +414,20 @@ function MockMCQ({
 }) {
   return (
     <div className="space-y-5">
-      <div className="flex items-center gap-2 text-xs text-neutral-400 mb-2">
+      <div className="flex items-center gap-2 text-xs text-[var(--ink-faint)] mb-2">
         <span>选择题</span>
         <span>·</span>
         <span>{q.marks} 分</span>
         <span className={`ml-1 px-2 py-0.5 rounded-full ${
-          q.difficulty === 1 ? "bg-green-100 text-green-700" :
-          q.difficulty === 2 ? "bg-amber-100 text-amber-700" :
-          "bg-red-100 text-red-700"
+          q.difficulty === 1 ? "bg-[var(--success-bg)] text-[var(--success)]" :
+          q.difficulty === 2 ? "bg-[var(--warning-bg)] text-[var(--warning)]" :
+          "bg-[var(--danger-bg)] text-[var(--danger)]"
         }`}>
           {q.difficulty === 1 ? "基础" : q.difficulty === 2 ? "中等" : "挑战"}
         </span>
       </div>
 
-      <MathRenderer text={q.question} className="text-neutral-900 leading-relaxed" block />
+      <MathRenderer text={q.question} className="text-[var(--ink)] leading-relaxed" block />
 
       <div className="space-y-2">
         {q.options.map((opt) => (
@@ -435,8 +437,8 @@ function MockMCQ({
             onClick={() => onSelect(opt.key)}
             className={`w-full text-left rounded-xl border-2 px-4 py-3 transition flex items-start gap-3 ${
               selected === opt.key
-                ? "border-blue-500 bg-blue-50"
-                : "border-neutral-200 bg-white hover:bg-neutral-50"
+                ? "border-[var(--indigo)] bg-[var(--info-bg)]"
+                : "border-[var(--border)] bg-white hover:bg-[var(--surface)]"
             }`}
           >
             <span className="font-bold text-sm shrink-0 w-5">{opt.key}.</span>
@@ -459,15 +461,15 @@ function MockLong({
 }) {
   return (
     <div className="space-y-5">
-      <div className="flex items-center gap-2 text-xs text-neutral-400 mb-2">
+      <div className="flex items-center gap-2 text-xs text-[var(--ink-faint)] mb-2">
         <span>大题</span>
         <span>·</span>
         <span>共 {q.totalMarks} 分</span>
       </div>
 
       {q.context && (
-        <div className="p-3 bg-neutral-50 rounded-lg border border-neutral-200">
-          <MathRenderer text={q.context} className="text-sm text-neutral-700" block />
+        <div className="p-3 bg-[var(--surface)] rounded-lg border border-[var(--border)]">
+          <MathRenderer text={q.context} className="text-sm text-[var(--ink)]" block />
         </div>
       )}
 
@@ -476,11 +478,11 @@ function MockLong({
           <div key={part.label} className="space-y-2">
             <div className="flex items-baseline gap-2">
               <span className="font-semibold">{part.label}</span>
-              <span className="text-xs text-neutral-400">[{part.marks} 分]</span>
+              <span className="text-xs text-[var(--ink-faint)]">[{part.marks} 分]</span>
             </div>
-            <MathRenderer text={part.question} className="text-sm text-neutral-700 leading-relaxed" block />
+            <MathRenderer text={part.question} className="text-sm text-[var(--ink)] leading-relaxed" block />
             <textarea
-              className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-blue-300"
+              className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-[color:var(--indigo)]/30"
               rows={4}
               placeholder={`${part.label} 解答…`}
               value={works[part.label] ?? ""}
@@ -549,14 +551,14 @@ function MockResults({
           {pct >= 80 ? "🏆" : pct >= 60 ? "🎯" : "📚"}
         </div>
         <h1 className="text-2xl font-bold mb-2">考试完成！</h1>
-        <div className="text-5xl font-bold text-blue-600 mt-4">{totalEarned}<span className="text-2xl text-neutral-400">/{totalMax}</span></div>
-        <div className="text-neutral-500 text-sm mt-1">{pct}%</div>
-        <div className="mt-3 text-sm text-neutral-500">
+        <div className="text-5xl font-bold text-[var(--indigo)] mt-4">{totalEarned}<span className="text-2xl text-[var(--ink-faint)]">/{totalMax}</span></div>
+        <div className="text-[var(--ink-soft)] text-sm mt-1">{pct}%</div>
+        <div className="mt-3 text-sm text-[var(--ink-soft)]">
           选择题 {mcqCorrect}/{mcqTotal} 正确
         </div>
       </div>
 
-      <h2 className="font-bold text-neutral-800 mb-4">逐题详情</h2>
+      <h2 className="font-bold text-[var(--ink)] mb-4">逐题详情</h2>
       <div className="space-y-3">
         {queue.map((q, i) => {
           const result = results.find((r) => r.questionId === q.id);
@@ -566,37 +568,37 @@ function MockResults({
           const ans = answers.find((a) => a.questionId === q.id);
 
           return (
-            <div key={q.id} className="rounded-xl border border-neutral-200 overflow-hidden">
+            <div key={q.id} className="rounded-xl border border-[var(--border)] overflow-hidden">
               <button
                 type="button"
                 onClick={() => setExpandedId(isExpanded ? null : q.id)}
-                className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-neutral-50"
+                className="w-full flex items-center gap-3 px-4 py-3 text-left hover:bg-[var(--surface)]"
               >
-                <span className="text-xs text-neutral-400 w-5 shrink-0">Q{i + 1}</span>
-                <span className="text-xs text-neutral-500 shrink-0">
+                <span className="text-xs text-[var(--ink-faint)] w-5 shrink-0">Q{i + 1}</span>
+                <span className="text-xs text-[var(--ink-soft)] shrink-0">
                   {q.type === "mcq" ? "选择" : "大题"}
                 </span>
                 <span className={`ml-auto text-sm font-bold ${
                   result?.type === "mcq"
-                    ? result.correct ? "text-green-600" : "text-red-500"
-                    : (result?.earned ?? 0) >= (result?.max ?? 1) * 0.6 ? "text-green-600" : "text-amber-600"
+                    ? result.correct ? "text-[var(--success)]" : "text-[var(--danger)]"
+                    : (result?.earned ?? 0) >= (result?.max ?? 1) * 0.6 ? "text-[var(--success)]" : "text-[var(--warning)]"
                 }`}>
                   {result?.earned ?? 0}/{result?.max ?? 0}
                 </span>
-                <span className="text-neutral-400 text-xs ml-2">{isExpanded ? "▲" : "▼"}</span>
+                <span className="text-[var(--ink-faint)] text-xs ml-2">{isExpanded ? "▲" : "▼"}</span>
               </button>
 
               {isExpanded && (
-                <div className="border-t border-neutral-100 p-4 bg-neutral-50 space-y-4">
+                <div className="border-t border-[var(--border-soft)] p-4 bg-[var(--surface)] space-y-4">
                   {mcqQ && (
                     <>
-                      <MathRenderer text={mcqQ.question} className="text-sm text-neutral-800" block />
+                      <MathRenderer text={mcqQ.question} className="text-sm text-[var(--ink)]" block />
                       <div className="space-y-1">
                         {mcqQ.options.map((opt) => {
                           const myAns = (ans as MCQAnswer)?.selected;
-                          let cls = "border-neutral-200 text-neutral-600";
-                          if (opt.key === mcqQ.answer) cls = "border-green-400 bg-green-50 text-green-800";
-                          else if (opt.key === myAns) cls = "border-red-300 bg-red-50 text-red-700";
+                          let cls = "border-[var(--border)] text-[var(--ink-soft)]";
+                          if (opt.key === mcqQ.answer) cls = "border-[color:var(--success)]/50 bg-[var(--success-bg)] text-[var(--success)]";
+                          else if (opt.key === myAns) cls = "border-[color:var(--danger)]/40 bg-[var(--danger-bg)] text-[var(--danger)]";
                           return (
                             <div key={opt.key} className={`flex gap-2 text-xs rounded-lg border px-3 py-1.5 ${cls}`}>
                               <span className="font-bold">{opt.key}.</span>
@@ -605,7 +607,7 @@ function MockResults({
                           );
                         })}
                       </div>
-                      <div className="text-xs text-neutral-600 bg-white rounded-lg p-3 border border-neutral-200">
+                      <div className="text-xs text-[var(--ink-soft)] bg-white rounded-lg p-3 border border-[var(--border)]">
                         <span className="font-medium">解题过程：</span>
                         <MathRenderer text={mcqQ.solution} className="mt-1" block />
                       </div>
@@ -615,23 +617,23 @@ function MockResults({
                   {longQ && result?.grading && (
                     <div className="space-y-3">
                       {result.grading.perPart.map((p) => (
-                        <div key={p.label} className="bg-white rounded-lg border border-neutral-200 p-3">
+                        <div key={p.label} className="bg-white rounded-lg border border-[var(--border)] p-3">
                           <div className="flex justify-between text-xs font-semibold mb-1">
                             <span>{p.label}</span>
-                            <span className={p.earned === p.max ? "text-green-600" : "text-amber-600"}>
+                            <span className={p.earned === p.max ? "text-[var(--success)]" : "text-[var(--warning)]"}>
                               {p.earned}/{p.max}
                             </span>
                           </div>
-                          <p className="text-xs text-neutral-600">{p.feedback}</p>
+                          <p className="text-xs text-[var(--ink-soft)]">{p.feedback}</p>
                         </div>
                       ))}
-                      <div className="bg-white rounded-lg border border-neutral-200 p-3">
-                        <p className="text-xs font-medium text-neutral-700 mb-1">总评</p>
-                        <p className="text-xs text-neutral-600">{result.grading.overallFeedback}</p>
+                      <div className="bg-white rounded-lg border border-[var(--border)] p-3">
+                        <p className="text-xs font-medium text-[var(--ink)] mb-1">总评</p>
+                        <p className="text-xs text-[var(--ink-soft)]">{result.grading.overallFeedback}</p>
                       </div>
                       <details>
-                        <summary className="text-xs text-blue-600 cursor-pointer">查看标准答案</summary>
-                        <div className="mt-2 text-xs bg-white rounded-lg border border-neutral-200 p-3">
+                        <summary className="text-xs text-[var(--indigo)] cursor-pointer">查看标准答案</summary>
+                        <div className="mt-2 text-xs bg-white rounded-lg border border-[var(--border)] p-3">
                           <MathRenderer text={longQ.fullSolution} block />
                         </div>
                       </details>
@@ -645,18 +647,18 @@ function MockResults({
       </div>
 
       <div className="flex gap-3 mt-8 justify-center">
-        <button type="button" onClick={onRetry} className="px-6 py-3 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700">
+        <button type="button" onClick={onRetry} className="px-6 py-3 rounded-xl bg-[var(--indigo)] text-white font-medium hover:bg-[var(--indigo-hover)]">
           再考一次
         </button>
         <Link
           href={`/tests/${testId}/practice`}
-          className="px-6 py-3 rounded-xl border border-neutral-300 font-medium hover:bg-neutral-50 text-center"
+          className="px-6 py-3 rounded-xl border border-[var(--border)] font-medium hover:bg-[var(--surface)] text-center"
         >
           专项练习
         </Link>
         <Link
           href={`/tests/${testId}`}
-          className="px-6 py-3 rounded-xl border border-neutral-300 font-medium hover:bg-neutral-50 text-center"
+          className="px-6 py-3 rounded-xl border border-[var(--border)] font-medium hover:bg-[var(--surface)] text-center"
         >
           返回详情
         </Link>

@@ -8,6 +8,7 @@ import { MAT_QUESTIONS } from "@/lib/tests/questions/mat";
 import { STEP_QUESTIONS } from "@/lib/tests/questions/step";
 import { ESAT_QUESTIONS } from "@/lib/tests/questions/esat";
 import { TMUA_QUESTIONS } from "@/lib/tests/questions/tmua";
+import { PAT_QUESTIONS } from "@/lib/tests/questions/pat";
 import type { Question, MCQQuestion, LongQuestion, GradingResult } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
 import type { GradeRequest, GradeResponse } from "@/app/api/grade-answer/route";
@@ -17,6 +18,7 @@ const QUESTION_BANKS: Record<string, Question[]> = {
   step: STEP_QUESTIONS,
   esat: ESAT_QUESTIONS,
   tmua: TMUA_QUESTIONS,
+  pat: PAT_QUESTIONS,
 };
 
 type PracticeMode = "topic" | "mixed";
@@ -110,19 +112,19 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
   if (!currentQ) return null;
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
+    <div className="mx-auto max-w-4xl px-4 py-10">
       <div className="flex items-center justify-between mb-6">
-        <Link href={`/tests/${testId}`} className="text-sm text-neutral-500 hover:text-neutral-800">
+        <Link href={`/tests/${testId}`} className="text-sm text-[var(--ink-soft)] hover:text-[var(--ink)]">
           ← {test.abbr} 备考详情
         </Link>
-        <span className="text-sm text-neutral-500">
+        <span className="text-sm text-[var(--ink-soft)]">
           {currentIdx + 1} / {queue.length}
         </span>
       </div>
 
-      <div className="mb-4 h-1.5 bg-neutral-100 rounded-full overflow-hidden">
+      <div className="mb-4 h-1.5 bg-[var(--surface-2)] rounded-full overflow-hidden">
         <div
-          className="h-full bg-blue-500 rounded-full transition-all"
+          className="h-full bg-[var(--indigo)] rounded-full transition-all"
           style={{ width: `${(currentIdx / queue.length) * 100}%` }}
         />
       </div>
@@ -175,18 +177,18 @@ function SessionSetup({
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
-      <Link href={`/tests/${test.id}`} className="text-sm text-neutral-500 hover:text-neutral-800 mb-6 inline-block">
+      <Link href={`/tests/${test.id}`} className="text-sm text-[var(--ink-soft)] hover:text-[var(--ink)] mb-6 inline-block">
         ← {test.abbr} 备考详情
       </Link>
 
       <h1 className="text-2xl font-bold mt-4 mb-1">{test.abbr} 专项练习</h1>
-      <p className="text-neutral-500 text-sm mb-8">
+      <p className="text-[var(--ink-soft)] text-sm mb-8">
         题库共 {allQuestions.length} 题（选择题 {mcqCount} 题 · 大题 {longCount} 题）
       </p>
 
       <div className="space-y-6">
         <div>
-          <label className="block text-sm font-medium text-neutral-700 mb-2">练习模式</label>
+          <label className="block text-sm font-medium text-[var(--ink)] mb-2">练习模式</label>
           <div className="flex gap-3">
             {(["mixed", "topic"] as PracticeMode[]).map((m) => (
               <button
@@ -195,8 +197,8 @@ function SessionSetup({
                 onClick={() => onModeChange(m)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium border transition ${
                   mode === m
-                    ? "bg-blue-600 text-white border-blue-600"
-                    : "bg-white text-neutral-600 border-neutral-300 hover:bg-neutral-50"
+                    ? "bg-[var(--indigo)] text-white border-[var(--indigo)]"
+                    : "bg-white text-[var(--ink-soft)] border-[var(--border)] hover:bg-[var(--surface)]"
                 }`}
               >
                 {m === "mixed" ? "综合练习（随机）" : "知识点专项"}
@@ -207,9 +209,9 @@ function SessionSetup({
 
         {mode === "topic" && (
           <div>
-            <label className="block text-sm font-medium text-neutral-700 mb-2">选择知识点</label>
+            <label className="block text-sm font-medium text-[var(--ink)] mb-2">选择知识点</label>
             <select
-              className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+              className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm"
               value={topicId}
               onChange={(e) => onTopicChange(e.target.value)}
             >
@@ -224,7 +226,7 @@ function SessionSetup({
         )}
 
         <div>
-          <label className="block text-sm font-medium text-neutral-700 mb-2">
+          <label className="block text-sm font-medium text-[var(--ink)] mb-2">
             题目数量：{questionCount} 题
           </label>
           <input
@@ -236,13 +238,13 @@ function SessionSetup({
             onChange={(e) => onCountChange(Number(e.target.value))}
             className="w-full"
           />
-          <div className="flex justify-between text-xs text-neutral-400 mt-1">
+          <div className="flex justify-between text-xs text-[var(--ink-faint)] mt-1">
             <span>5 题</span>
             <span>{Math.min(30, allQuestions.length)} 题</span>
           </div>
         </div>
 
-        <div className="rounded-xl bg-blue-50 border border-blue-100 p-4 text-sm text-blue-800">
+        <div className="rounded-xl bg-[var(--info-bg)] border border-[color:var(--indigo)]/15 p-4 text-sm text-[var(--indigo)]">
           <p className="font-medium mb-1">关于大题（长答案）评分</p>
           <p className="text-xs leading-relaxed">
             大题由 Claude AI 分步评分：系统分析你的解题过程，按关键步骤给部分分。
@@ -253,7 +255,7 @@ function SessionSetup({
         <button
           type="button"
           onClick={onStart}
-          className="w-full py-3 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition"
+          className="w-full py-3 rounded-xl bg-[var(--indigo)] text-white font-medium hover:bg-[var(--indigo-hover)] transition"
         >
           开始练习 →
         </button>
@@ -282,12 +284,12 @@ function MCQCard({
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-neutral-200 bg-white p-6">
-        <div className="flex items-center gap-2 mb-4 text-xs text-neutral-400">
+      <div className="rounded-2xl border border-[var(--border)] bg-white p-6">
+        <div className="flex items-center gap-2 mb-4 text-xs text-[var(--ink-faint)]">
           <span className={`px-2 py-0.5 rounded-full ${
-            q.difficulty === 1 ? "bg-green-100 text-green-700" :
-            q.difficulty === 2 ? "bg-amber-100 text-amber-700" :
-            "bg-red-100 text-red-700"
+            q.difficulty === 1 ? "bg-[var(--success-bg)] text-[var(--success)]" :
+            q.difficulty === 2 ? "bg-[var(--warning-bg)] text-[var(--warning)]" :
+            "bg-[var(--danger-bg)] text-[var(--danger)]"
           }`}>
             {q.difficulty === 1 ? "基础" : q.difficulty === 2 ? "中等" : "挑战"}
           </span>
@@ -296,15 +298,15 @@ function MCQCard({
           <span>选择题</span>
         </div>
 
-        <MathRenderer text={q.question} className="text-neutral-900 leading-relaxed" block />
+        <MathRenderer text={q.question} className="text-[var(--ink)] leading-relaxed" block />
 
         <div className="mt-5 space-y-2">
           {q.options.map((opt) => {
-            let bg = "border-neutral-200 bg-white hover:bg-neutral-50";
+            let bg = "border-[var(--border)] bg-white hover:bg-[var(--surface)]";
             if (selected) {
-              if (opt.key === q.answer) bg = "border-green-500 bg-green-50";
-              else if (opt.key === selected) bg = "border-red-400 bg-red-50";
-              else bg = "border-neutral-100 bg-neutral-50 opacity-60";
+              if (opt.key === q.answer) bg = "border-[var(--success)] bg-[var(--success-bg)]";
+              else if (opt.key === selected) bg = "border-[color:var(--danger)]/50 bg-[var(--danger-bg)]";
+              else bg = "border-[var(--border-soft)] bg-[var(--surface)] opacity-60";
             }
             return (
               <button
@@ -323,29 +325,29 @@ function MCQCard({
       </div>
 
       {showSolution && (
-        <div className={`rounded-2xl border p-5 ${isCorrect ? "border-green-200 bg-green-50" : "border-red-200 bg-red-50"}`}>
+        <div className={`rounded-2xl border p-5 ${isCorrect ? "border-[color:var(--success)]/25 bg-[var(--success-bg)]" : "border-[color:var(--danger)]/25 bg-[var(--danger-bg)]"}`}>
           <div className="flex items-center gap-2 mb-3">
-            <span className={`text-lg ${isCorrect ? "text-green-600" : "text-red-500"}`}>
+            <span className={`text-lg ${isCorrect ? "text-[var(--success)]" : "text-[var(--danger)]"}`}>
               {isCorrect ? "✓" : "✗"}
             </span>
-            <span className={`font-semibold ${isCorrect ? "text-green-700" : "text-red-700"}`}>
+            <span className={`font-semibold ${isCorrect ? "text-[var(--success)]" : "text-[var(--danger)]"}`}>
               {isCorrect ? "答案正确！" : `答案有误。正确答案：${q.answer}`}
             </span>
           </div>
           {q.hint && (
-            <div className="mb-3 text-xs text-neutral-600 bg-white/60 rounded-lg px-3 py-2">
+            <div className="mb-3 text-xs text-[var(--ink-soft)] bg-white/60 rounded-lg px-3 py-2">
               <span className="font-medium">提示：</span>
               <MathRenderer text={q.hint} />
             </div>
           )}
           <div className="text-sm">
-            <span className="font-medium text-neutral-700">解题过程：</span>
-            <MathRenderer text={q.solution} className="mt-1 text-neutral-700 leading-relaxed" block />
+            <span className="font-medium text-[var(--ink)]">解题过程：</span>
+            <MathRenderer text={q.solution} className="mt-1 text-[var(--ink)] leading-relaxed" block />
           </div>
           <button
             type="button"
             onClick={() => onAnswer(isCorrect, selected ?? "")}
-            className="mt-4 px-5 py-2 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
+            className="mt-4 px-5 py-2 rounded-lg bg-[var(--indigo)] text-white text-sm font-medium hover:bg-[var(--indigo-hover)]"
           >
             下一题 →
           </button>
@@ -411,10 +413,10 @@ function LongAnswerCard({
 
   return (
     <div className="space-y-6">
-      <div className="rounded-2xl border border-neutral-200 bg-white p-6">
-        <div className="flex items-center gap-2 mb-4 text-xs text-neutral-400">
+      <div className="rounded-2xl border border-[var(--border)] bg-white p-6">
+        <div className="flex items-center gap-2 mb-4 text-xs text-[var(--ink-faint)]">
           <span className={`px-2 py-0.5 rounded-full ${
-            q.difficulty === 3 ? "bg-red-100 text-red-700" : "bg-amber-100 text-amber-700"
+            q.difficulty === 3 ? "bg-[var(--danger-bg)] text-[var(--danger)]" : "bg-[var(--warning-bg)] text-[var(--warning)]"
           }`}>
             {q.difficulty === 3 ? "挑战" : "中等"}
           </span>
@@ -424,8 +426,8 @@ function LongAnswerCard({
         </div>
 
         {q.context && (
-          <div className="mb-4 p-3 bg-neutral-50 rounded-lg border border-neutral-200">
-            <MathRenderer text={q.context} className="text-sm text-neutral-700" block />
+          <div className="mb-4 p-3 bg-[var(--surface)] rounded-lg border border-[var(--border)]">
+            <MathRenderer text={q.context} className="text-sm text-[var(--ink)]" block />
           </div>
         )}
 
@@ -433,17 +435,17 @@ function LongAnswerCard({
           {q.parts.map((part) => (
             <div key={part.label} className="space-y-2">
               <div className="flex items-baseline gap-2">
-                <span className="font-semibold text-neutral-800">{part.label}</span>
-                <span className="text-xs text-neutral-400">[{part.marks} 分]</span>
+                <span className="font-semibold text-[var(--ink)]">{part.label}</span>
+                <span className="text-xs text-[var(--ink-faint)]">[{part.marks} 分]</span>
               </div>
-              <MathRenderer text={part.question} className="text-neutral-700 leading-relaxed text-sm" block />
+              <MathRenderer text={part.question} className="text-[var(--ink)] leading-relaxed text-sm" block />
               {part.hint && (
-                <div className="text-xs text-blue-600 bg-blue-50 rounded px-2 py-1">
+                <div className="text-xs text-[var(--indigo)] bg-[var(--info-bg)] rounded px-2 py-1">
                   提示：<MathRenderer text={part.hint} />
                 </div>
               )}
               <textarea
-                className="w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-blue-300"
+                className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-[color:var(--indigo)]/30"
                 rows={4}
                 placeholder={`在此输入 ${part.label} 的解答（支持文字和数学符号，如 x^2 + 3x = 0）`}
                 value={works[part.label] ?? ""}
@@ -460,14 +462,14 @@ function LongAnswerCard({
               type="button"
               onClick={handleGrade}
               disabled={!canSubmit || grading}
-              className="px-5 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 disabled:opacity-50 transition"
+              className="px-5 py-2.5 rounded-lg bg-[var(--indigo)] text-white text-sm font-medium hover:bg-[var(--indigo-hover)] disabled:opacity-50 transition"
             >
               {grading ? "AI 评分中…" : "提交评分 (AI)"}
             </button>
             <button
               type="button"
               onClick={() => setShowSolution(true)}
-              className="px-4 py-2.5 rounded-lg border border-neutral-300 text-sm text-neutral-600 hover:bg-neutral-50"
+              className="px-4 py-2.5 rounded-lg border border-[var(--border)] text-sm text-[var(--ink-soft)] hover:bg-[var(--surface)]"
             >
               查看答案
             </button>
@@ -475,7 +477,7 @@ function LongAnswerCard({
         )}
 
         {error && (
-          <div className="mt-3 text-sm text-red-600 bg-red-50 rounded-lg px-3 py-2">
+          <div className="mt-3 text-sm text-[var(--danger)] bg-[var(--danger-bg)] rounded-lg px-3 py-2">
             {error}
           </div>
         )}
@@ -483,30 +485,30 @@ function LongAnswerCard({
 
       {/* Grading result */}
       {result && (
-        <div className="rounded-2xl border border-blue-200 bg-blue-50 p-6 space-y-5">
+        <div className="rounded-2xl border border-[color:var(--indigo)]/25 bg-[var(--info-bg)] p-6 space-y-5">
           <div className="flex items-center justify-between">
-            <h3 className="font-bold text-blue-800">AI 评分结果</h3>
-            <span className="text-lg font-bold text-blue-700">
+            <h3 className="font-bold text-[var(--indigo)]">AI 评分结果</h3>
+            <span className="text-lg font-bold text-[var(--indigo)]">
               {result.totalEarned} / {result.totalMax} 分
             </span>
           </div>
 
           <div className="space-y-4">
             {result.perPart.map((p) => (
-              <div key={p.label} className="bg-white rounded-xl p-4 border border-blue-100">
+              <div key={p.label} className="bg-white rounded-xl p-4 border border-[color:var(--indigo)]/15">
                 <div className="flex items-center justify-between mb-2">
                   <span className="font-semibold text-sm">{p.label}</span>
-                  <span className={`text-sm font-bold ${p.earned === p.max ? "text-green-600" : "text-amber-600"}`}>
+                  <span className={`text-sm font-bold ${p.earned === p.max ? "text-[var(--success)]" : "text-[var(--warning)]"}`}>
                     {p.earned}/{p.max} 分
                   </span>
                 </div>
-                <p className="text-sm text-neutral-700 leading-relaxed">{p.feedback}</p>
+                <p className="text-sm text-[var(--ink)] leading-relaxed">{p.feedback}</p>
                 {p.keyStepsFound.length > 0 && (
                   <div className="mt-2">
-                    <p className="text-xs text-green-700 font-medium">已完成步骤：</p>
+                    <p className="text-xs text-[var(--success)] font-medium">已完成步骤：</p>
                     <ul className="mt-1 space-y-0.5">
                       {p.keyStepsFound.map((s, i) => (
-                        <li key={i} className="text-xs text-green-600 flex gap-1">
+                        <li key={i} className="text-xs text-[var(--success)] flex gap-1">
                           <span>✓</span>{s}
                         </li>
                       ))}
@@ -515,10 +517,10 @@ function LongAnswerCard({
                 )}
                 {p.keyStepsMissing.length > 0 && (
                   <div className="mt-2">
-                    <p className="text-xs text-red-600 font-medium">缺少步骤：</p>
+                    <p className="text-xs text-[var(--danger)] font-medium">缺少步骤：</p>
                     <ul className="mt-1 space-y-0.5">
                       {p.keyStepsMissing.map((s, i) => (
-                        <li key={i} className="text-xs text-red-500 flex gap-1">
+                        <li key={i} className="text-xs text-[var(--danger)] flex gap-1">
                           <span>✗</span>{s}
                         </li>
                       ))}
@@ -529,15 +531,15 @@ function LongAnswerCard({
             ))}
           </div>
 
-          <div className="bg-white rounded-xl p-4 border border-blue-100">
-            <p className="text-sm font-medium text-neutral-700 mb-1">总体评价</p>
-            <p className="text-sm text-neutral-600 leading-relaxed">{result.overallFeedback}</p>
+          <div className="bg-white rounded-xl p-4 border border-[color:var(--indigo)]/15">
+            <p className="text-sm font-medium text-[var(--ink)] mb-1">总体评价</p>
+            <p className="text-sm text-[var(--ink-soft)] leading-relaxed">{result.overallFeedback}</p>
           </div>
 
           <button
             type="button"
             onClick={() => setShowSolution((v) => !v)}
-            className="text-sm text-blue-600 hover:underline"
+            className="text-sm text-[var(--indigo)] hover:underline"
           >
             {showSolution ? "收起" : "查看"} 标准答案
           </button>
@@ -546,7 +548,7 @@ function LongAnswerCard({
             <button
               type="button"
               onClick={() => onSubmit(result.totalEarned, result.totalMax, works, result.perPart)}
-              className="px-5 py-2.5 rounded-lg bg-blue-600 text-white text-sm font-medium hover:bg-blue-700"
+              className="px-5 py-2.5 rounded-lg bg-[var(--indigo)] text-white text-sm font-medium hover:bg-[var(--indigo-hover)]"
             >
               下一题 →
             </button>
@@ -556,9 +558,9 @@ function LongAnswerCard({
 
       {/* Model solution */}
       {(showSolution || (result && showSolution)) && (
-        <div className="rounded-2xl border border-neutral-200 bg-neutral-50 p-6">
-          <h3 className="font-semibold text-neutral-800 mb-3">标准答案 Model Solution</h3>
-          <MathRenderer text={q.fullSolution} className="text-sm text-neutral-700 leading-relaxed" block />
+        <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
+          <h3 className="font-semibold text-[var(--ink)] mb-3">标准答案 Model Solution</h3>
+          <MathRenderer text={q.fullSolution} className="text-sm text-[var(--ink)] leading-relaxed" block />
         </div>
       )}
     </div>
@@ -616,19 +618,19 @@ function SessionSummary({
 
       <div className="grid grid-cols-2 gap-4 mt-8 mb-8">
         {mcqResults.length > 0 && (
-          <div className="rounded-2xl border border-neutral-200 p-5">
-            <div className="text-3xl font-bold text-blue-600">{mcqCorrect}/{mcqResults.length}</div>
-            <div className="text-sm text-neutral-500 mt-1">选择题正确率</div>
-            <div className="text-xs text-neutral-400">
+          <div className="rounded-2xl border border-[var(--border)] p-5">
+            <div className="text-3xl font-bold text-[var(--indigo)]">{mcqCorrect}/{mcqResults.length}</div>
+            <div className="text-sm text-[var(--ink-soft)] mt-1">选择题正确率</div>
+            <div className="text-xs text-[var(--ink-faint)]">
               {Math.round((mcqCorrect / mcqResults.length) * 100)}%
             </div>
           </div>
         )}
         {longResults.length > 0 && (
-          <div className="rounded-2xl border border-neutral-200 p-5">
-            <div className="text-3xl font-bold text-blue-600">{longEarned}/{longMax}</div>
-            <div className="text-sm text-neutral-500 mt-1">大题得分</div>
-            <div className="text-xs text-neutral-400">
+          <div className="rounded-2xl border border-[var(--border)] p-5">
+            <div className="text-3xl font-bold text-[var(--indigo)]">{longEarned}/{longMax}</div>
+            <div className="text-sm text-[var(--ink-soft)] mt-1">大题得分</div>
+            <div className="text-xs text-[var(--ink-faint)]">
               {longMax > 0 ? Math.round((longEarned / longMax) * 100) : 0}%
             </div>
           </div>
@@ -639,13 +641,13 @@ function SessionSummary({
         <button
           type="button"
           onClick={onRestart}
-          className="px-6 py-3 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700"
+          className="px-6 py-3 rounded-xl bg-[var(--indigo)] text-white font-medium hover:bg-[var(--indigo-hover)]"
         >
           再练一轮
         </button>
         <Link
           href={`/tests/${testId}`}
-          className="px-6 py-3 rounded-xl border border-neutral-300 font-medium hover:bg-neutral-50"
+          className="px-6 py-3 rounded-xl border border-[var(--border)] font-medium hover:bg-[var(--surface)]"
         >
           返回备考详情
         </Link>

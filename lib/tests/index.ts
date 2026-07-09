@@ -102,7 +102,7 @@ export const ADMISSIONS_TESTS: AdmissionsTest[] = [
     formatZh: "混合题型：选择题 + 简答题 + 综合推导题，不可使用计算器，考查数学推导与物理直觉。",
     registrationUrl: "https://www.ox.ac.uk/admissions/undergraduate/applying-to-oxford/guide/admissions-tests/pat",
     officialSampleUrl: "https://www.ox.ac.uk/admissions/undergraduate/applying-to-oxford/guide/admissions-tests/pat",
-    hasQuestionBank: false,
+    hasQuestionBank: true,
     overview: "PAT 是牛津物理、工程科学等专业的必考笔试。考试考查 A-Level 数学与物理知识的综合应用，题目偏重推导与估算，不依赖死记公式。",
     structureDetails: "内容覆盖 A-Level 物理全部核心模块（力学、电磁学、波动、热力学、量子与粒子物理初步）以及 A-Level 数学（微积分、向量、三角等）。题目通常将数学工具直接用于物理情境。",
     scoringNote: "每题书面作答，按步骤给分。无计算器，大量计算会简化为「精确到 1 位有效数字」或「用字母表示」。",
