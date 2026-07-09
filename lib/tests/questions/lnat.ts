@@ -1,8 +1,9 @@
 // LNAT Section A 练习题库 —— 原创论述文 + 阅读/推理选择题。
 // 无可计算答案：答案由文章内容锁定，经结构自检与严谨自审。id 前缀 lnat-ex-*。
 import type { MCQQuestion } from "./types";
+import { LNAT_EXPANSION_2 } from "./lnat-batch2";
 
-export const LNAT_QUESTIONS: MCQQuestion[] = [
+const LNAT_BATCH_1: MCQQuestion[] = [
   { id: "lnat-ex-001", type: "mcq", testId: "lnat", topicId: "lnat-analyse", difficulty: 2, marks: 1,
     question: "**Passage**\n\nSome city councils argue that introducing a congestion charge is the most effective way to cut urban air pollution. When drivers must pay to enter the city centre, many switch to public transport, so the number of cars falls and emissions decline. Since cleaner air reduces respiratory illness, councils conclude that every large city should adopt such a charge without delay.\n\n**Question**\n\nWhich of the following is an assumption on which the argument depends?",
     options: [{ key: "A", text: "Public transport in the city has enough capacity to absorb drivers who stop using cars." },{ key: "B", text: "Congestion charges raise significant revenue for the council." },{ key: "C", text: "Respiratory illness is the most common health problem in cities." },{ key: "D", text: "Drivers dislike paying to enter the city centre." },{ key: "E", text: "Air pollution is caused entirely by cars." }],
@@ -128,3 +129,5 @@ export const LNAT_QUESTIONS: MCQQuestion[] = [
     options: [{ key: "A", text: "visibility does not guarantee genuine comprehension" },{ key: "B", text: "no one listens online" },{ key: "C", text: "understanding is impossible" },{ key: "D", text: "hearing and understanding are identical" },{ key: "E", text: "platforms should be banned" }],
     answer: "A", solution: "The author separates mere audibility from real understanding, cautioning that being heard widely does not mean being genuinely understood." },
 ];
+
+export const LNAT_QUESTIONS: MCQQuestion[] = [...LNAT_BATCH_1, ...LNAT_EXPANSION_2];
