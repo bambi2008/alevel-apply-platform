@@ -2,6 +2,7 @@ import { getLocale } from "next-intl/server";
 import { PageHeader } from "@/components/page-header";
 import { Link } from "@/i18n/navigation";
 import { SceneCompass } from "@/components/illustrations";
+import { Photo } from "@/components/photo";
 
 // 「择校信息源」——不再自建院校库/假数据，诚实地把院校与专业信息导流到官方与权威平台。
 // 具体学校信息交给做得最好的平台（Cialfo / explore.study / UCAS / 官方榜单 / 港校官网）。
@@ -91,7 +92,13 @@ export default async function UniversitiesPage({
           }
           icon="🧭"
         />
-        <SceneCompass className="hidden lg:block w-[260px] h-auto rounded-2xl" />
+        <Photo
+          src="/images/research.jpg"
+          alt="择校信息"
+          className="hidden lg:block w-[260px]"
+          imgClassName="h-auto w-full rounded-2xl object-cover aspect-[4/3]"
+          fallback={<SceneCompass className="w-full h-auto rounded-2xl doodle-idle" />}
+        />
       </div>
 
       {q && (

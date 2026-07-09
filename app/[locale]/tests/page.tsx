@@ -1,6 +1,8 @@
 "use client";
 
 import { PageHeader } from "@/components/page-header";
+import { SceneGrowth } from "@/components/illustrations";
+import { Photo } from "@/components/photo";
 
 import { useState } from "react";
 import { Link } from "@/i18n/navigation";
@@ -27,15 +29,26 @@ export default function TestsPage() {
     : ADMISSIONS_TESTS.filter((t) => t.category === activeCategory);
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10">
+    <div className="mx-auto max-w-6xl px-4 py-10">
       {/* Header */}
-      <PageHeader
-        title="入学笔试备考中心"
-        subtitle="9 种考试 · 结构说明 · 备考计划 · 知识点练习 · 计时模考"
-        icon="📐"
-      />
+      <div className="grid lg:grid-cols-[1fr_auto] gap-8 items-center mb-8">
+        <div className="[&>div]:mb-0">
+          <PageHeader
+            title="入学笔试备考中心"
+            subtitle="9 种考试 · 结构说明 · 备考计划 · 知识点练习 · 计时模考"
+            icon="📐"
+          />
+        </div>
+        <Photo
+          src="/images/tests-study.jpg"
+          alt="入学笔试备考"
+          className="hidden lg:block w-[300px]"
+          imgClassName="h-auto w-full rounded-2xl object-cover aspect-[4/3]"
+          fallback={<SceneGrowth className="w-full h-auto rounded-2xl doodle-idle" />}
+        />
+      </div>
       <div className="mb-8">
-        <div className="mt-0 rounded-xl border border-indigo-100 bg-brand-soft px-4 py-3 text-sm text-[var(--ink-soft)]">
+        <div className="mt-0 rounded-xl border border-[color:var(--indigo)]/15 bg-[var(--info-bg)] px-4 py-3 text-sm text-[var(--ink-soft)]">
           <span className="font-semibold text-[var(--indigo)]">📌 使用说明：</span>
           点击任一考试进入详情页，查看考试结构、完整备考计划、知识点练习和模拟考试。
           MAT、STEP、ESAT 提供 AI 题库练习（由 Claude 生成，经多 AI 审核）。
@@ -51,8 +64,8 @@ export default function TestsPage() {
             onClick={() => setActiveCategory(tab.id)}
             className={`shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition ${
               activeCategory === tab.id
-                ? "bg-blue-600 text-white"
-                : "bg-neutral-100 text-neutral-600 hover:bg-neutral-200"
+                ? "bg-[var(--indigo)] text-white"
+                : "bg-[var(--surface-2)] text-[var(--ink-soft)] hover:bg-[var(--surface-2)]"
             }`}
           >
             {tab.label}
@@ -69,7 +82,7 @@ export default function TestsPage() {
       </div>
 
       {/* Disclaimer */}
-      <p className="mt-10 text-xs text-neutral-400 text-center">
+      <p className="mt-10 text-xs text-[var(--ink-faint)] text-center">
         ※ 考试要求以各院校官网及考试机构官网为准。部分考试（ENGAA/NSAA）已更新，请确认最新信息。
       </p>
     </div>
@@ -81,32 +94,32 @@ function TestCard({ test }: { test: AdmissionsTest }) {
   return (
     <Link
       href={`/tests/${test.id}`}
-      className="block rounded-2xl border border-neutral-200 p-5 hover:border-blue-300 hover:shadow-sm transition bg-white group"
+      className="block rounded-2xl border border-[var(--border)] p-5 hover:border-[color:var(--indigo)]/30 hover:shadow-sm transition bg-white group"
     >
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-2.5">
-          <span className="text-2xl font-mono text-blue-600 font-bold w-8 text-center">
+          <span className="text-2xl font-mono text-[var(--indigo)] font-bold w-8 text-center">
             {test.icon}
           </span>
           <div>
             <div className="font-bold text-lg leading-tight">{test.abbr}</div>
-            <div className="text-xs text-neutral-400">{test.nameZh}</div>
+            <div className="text-xs text-[var(--ink-faint)]">{test.nameZh}</div>
           </div>
         </div>
         <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
           test.hasQuestionBank
-            ? "bg-green-100 text-green-700"
-            : "bg-neutral-100 text-neutral-500"
+            ? "bg-[var(--success-bg)] text-[var(--success)]"
+            : "bg-[var(--surface-2)] text-[var(--ink-soft)]"
         }`}>
           {test.hasQuestionBank ? "AI 题库" : "备考指南"}
         </span>
       </div>
 
-      <p className="text-xs text-neutral-600 line-clamp-2 mb-3 leading-relaxed">
+      <p className="text-xs text-[var(--ink-soft)] line-clamp-2 mb-3 leading-relaxed">
         {test.overview}
       </p>
 
-      <div className="space-y-1.5 text-xs text-neutral-500">
+      <div className="space-y-1.5 text-xs text-[var(--ink-soft)]">
         <div className="flex items-start gap-1.5">
           <span className="shrink-0">🏛</span>
           <span className="line-clamp-1">{test.universities.slice(0, 2).join(" · ")}{test.universities.length > 2 ? ` 等` : ""}</span>
@@ -122,12 +135,12 @@ function TestCard({ test }: { test: AdmissionsTest }) {
       </div>
 
       {test.statusNote && (
-        <div className="mt-3 text-[10px] text-amber-700 bg-amber-50 rounded-lg px-2 py-1 leading-snug">
+        <div className="mt-3 text-[10px] text-[var(--warning)] bg-[var(--warning-bg)] rounded-lg px-2 py-1 leading-snug">
           {test.statusNote.substring(0, 60)}…
         </div>
       )}
 
-      <div className="mt-3 flex items-center text-xs text-blue-600 font-medium group-hover:underline">
+      <div className="mt-3 flex items-center text-xs text-[var(--indigo)] font-medium group-hover:underline">
         查看备考详情 →
       </div>
     </Link>

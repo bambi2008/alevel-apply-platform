@@ -94,14 +94,14 @@
   },
   "home": {
     "badge": "Built for A-Level · UK UCAS + HK Direct",
-    "titleLine1": "Own your university application,",
-    "titleBefore": "at ",
-    "titleHighlight": "1/20",
-    "titleAfter": " the cost, covering 70% of an agent's service",
-    "subtitle": "A UK / Hong Kong undergraduate application platform for mainland A-Level students: course matching, a university database, application tracking and statement tools — transparent, structured, affordable.",
-    "ctaTry": "Try course matching free",
-    "ctaBrowse": "Browse universities",
-    "priceNote": "Traditional agents ¥20,000–¥60,000 · QiaoShen ¥299–¥899/yr",
+    "titleLine1": "Admission tests for top UK & HK unis,",
+    "titleBefore": "prepared for ",
+    "titleHighlight": "next to nothing",
+    "titleAfter": "",
+    "subtitle": "TMUA, ESAT, MAT, STEP, PAT, TSA, LNAT — every admission test you need, in one subscription: original question banks, full mock papers, step-by-step solutions, plus registration & results guidance.",
+    "ctaTry": "Start practising free",
+    "ctaBrowse": "Which tests do I need?",
+    "priceNote": "Subscription · from ~¥33/mo for every test bank and full mock.",
     "features": [
       {
         "emoji": "🎯",
@@ -128,47 +128,47 @@
         "desc": "Structured guidance for the UCAS personal statement plus character / format self-checks (AI assist coming soon)."
       }
     ],
-    "pricingHeading": "Transparent Pricing",
-    "pricingSub": "One annual fee covering the full application toolkit",
+    "pricingHeading": "One subscription, every test covered",
+    "pricingSub": "Unlock question banks, mocks and solutions for all 9 admission tests. Cancel anytime.",
     "plans": [
       {
         "name": "Free",
         "price": "¥0",
         "unit": "",
-        "tagline": "Explore",
+        "tagline": "Start practising",
         "perks": [
-          "Course matching (top 5 results)",
-          "Basic university info",
-          "1 statement draft"
+          "Limited practice for one test",
+          "Prep guides + registration/results info",
+          "Progress tracking"
         ]
       },
       {
-        "name": "Standard",
-        "price": "¥299",
+        "name": "Monthly",
+        "price": "¥49",
+        "unit": "/mo",
+        "tagline": "Flexible prep",
+        "perks": [
+          "All 9 test question banks",
+          "Full mock papers",
+          "Smart mistake book",
+          "Step-by-step solutions"
+        ]
+      },
+      {
+        "name": "Annual",
+        "price": "¥399",
         "unit": "/yr",
-        "tagline": "Budget",
+        "tagline": "Best value · ~¥33/mo",
         "highlight": true,
         "perks": [
-          "Full course matching",
-          "Full university database",
-          "Application calendar & tasks",
-          "Statement editor"
-        ]
-      },
-      {
-        "name": "Pro",
-        "price": "¥899",
-        "unit": "/yr",
-        "tagline": "Most popular",
-        "perks": [
-          "Everything in Standard",
-          "AI statement feedback",
-          "Past-case library",
-          "Offer comparison"
+          "Everything in Monthly",
+          "Interview simulation & bank",
+          "Statement coach tools",
+          "Content updated all year"
         ]
       }
     ],
-    "pricingNote": "Pricing is a product plan and subject to change at launch. We do not guarantee admission.",
+    "pricingNote": "Pricing is a product plan, subject to launch. We focus on preparation and do not guarantee test or admission outcomes.",
     "heroStats": [
       {
         "num": "18+",
@@ -188,7 +188,7 @@
     "capSub": "Six connected modules covering every step of UK UCAS and Hong Kong applications.",
     "processEyebrow": "Process",
     "processTitle": "Four clear steps",
-    "pricingEyebrow": "Pricing"
+    "pricingEyebrow": "Plans"
   },
   "match": {
     "title": "Course Matching",

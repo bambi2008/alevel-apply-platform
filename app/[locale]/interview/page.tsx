@@ -1,5 +1,7 @@
 import { Link } from "@/i18n/navigation";
 import { PageHeader } from "@/components/page-header";
+import { SceneChat } from "@/components/illustrations";
+import { Photo } from "@/components/photo";
 import {
   INTERVIEW_CATEGORIES,
   getSubjectsByCategory,
@@ -9,12 +11,23 @@ import {
 
 export default function InterviewPage() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10">
-      <PageHeader
-        title="面试准备"
-        subtitle="牛剑及顶尖英国大学的学科面试，考的是你面对陌生问题如何思考。这里有分学科的原创练习题、思路提示，以及 AI 模拟面试——重在训练现场推理，而不是背答案。"
-        icon="🎙️"
-      />
+    <div className="mx-auto max-w-6xl px-4 py-10">
+      <div className="grid lg:grid-cols-[1fr_auto] gap-8 items-center mb-8">
+        <div className="[&>div]:mb-0">
+          <PageHeader
+            title="面试准备"
+            subtitle="牛剑及顶尖英国大学的学科面试，考的是你面对陌生问题如何思考。这里有分学科的原创练习题、思路提示，以及 AI 模拟面试——重在训练现场推理，而不是背答案。"
+            icon="🎙️"
+          />
+        </div>
+        <Photo
+          src="/images/interview.jpg"
+          alt="面试准备"
+          className="hidden lg:block w-[300px]"
+          imgClassName="h-auto w-full rounded-2xl object-cover aspect-[4/3]"
+          fallback={<SceneChat className="w-full h-auto rounded-2xl doodle-idle" />}
+        />
+      </div>
 
       {/* 学科分类 */}
       {INTERVIEW_CATEGORIES.map((cat) => {

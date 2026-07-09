@@ -1,6 +1,7 @@
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { StoryIllustration } from "@/components/story-illustration";
+import { Photo } from "@/components/photo";
 
 type Value = { icon: string; title: string; desc: string };
 
@@ -16,7 +17,7 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
       {/* Hero */}
       <section className="mesh-hero grain relative overflow-hidden">
         <div className="pointer-events-none absolute -top-20 right-0 w-80 h-80 rounded-full bg-[radial-gradient(circle,rgba(34,211,238,0.20),transparent_70%)] floaty" />
-        <div className="relative mx-auto max-w-5xl px-6 pt-20 pb-14 sm:pt-24">
+        <div className="relative mx-auto max-w-6xl px-6 pt-20 pb-14 sm:pt-24">
           <div className="grid md:grid-cols-2 gap-10 items-center">
             <div>
               <p className="rise-in text-xs font-semibold text-[var(--indigo)] tracking-wide uppercase mb-3">
@@ -28,7 +29,13 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
               <p className="rise-in-2 mt-5 text-lg text-[var(--ink-soft)] leading-relaxed">{t("aboutSubtitle")}</p>
             </div>
             <div className="rise-in-2">
-              <StoryIllustration className="w-full h-auto floaty-slow" />
+              <Photo
+          src="/images/about-team.jpg"
+          alt="桥申团队"
+          className="w-full"
+          imgClassName="h-auto w-full rounded-2xl object-cover aspect-[4/3]"
+          fallback={<StoryIllustration className="w-full h-auto doodle-idle-slow" />}
+        />
             </div>
           </div>
         </div>

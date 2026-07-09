@@ -6,6 +6,7 @@ import { getRoadmapProgress, type RoadmapProgress } from "@/lib/roadmap/actions"
 import { NavIcon } from "@/components/nav-icons";
 import { StatusBadge, type StatusKind } from "@/components/status-badge";
 import { HeroBridge } from "@/components/illustrations";
+import { Photo } from "@/components/photo";
 import type { Milestone } from "@/lib/timeline";
 
 /* ============ UCAS 白底风仪表盘 ============ */
@@ -97,7 +98,13 @@ export function DashboardHub({
             </div>
           )}
         </div>
-        <div className="hidden lg:block tile tile-blue notion-zoom rounded-2xl"><HeroBridge className="w-[300px] h-auto" /></div>
+        <div className="hidden lg:block tile tile-blue notion-zoom rounded-2xl"><Photo
+          src="/images/hero-student.jpg"
+          alt="欢迎"
+          className="w-[300px]"
+          imgClassName="h-auto w-full rounded-xl object-cover aspect-[4/3]"
+          fallback={<HeroBridge className="w-full h-auto doodle-idle" />}
+        /></div>
       </header>
 
       {/* 进度卡 */}

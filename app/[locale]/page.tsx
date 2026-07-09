@@ -5,6 +5,7 @@ import { Dashboard } from "@/components/dashboard";
 import { ProcessOverview } from "@/components/process-overview";
 import { StoryIllustration } from "@/components/story-illustration";
 import { HeroBridge, SceneCompass, SceneDocs, SceneChat, SceneGrowth } from "@/components/illustrations";
+import { Photo } from "@/components/photo";
 
 type Feature = { emoji: string; href: string; title: string; desc: string };
 type Plan = {
@@ -41,10 +42,10 @@ function Landing({ t, t2 }: { t: Awaited<ReturnType<typeof getTranslations<"home
               {t("subtitle")}
             </p>
             <div className="rise-in-2 mt-8 flex items-center gap-3 flex-wrap">
-              <Link href="/match" className="btn btn-primary group">
+              <Link href="/tests" className="btn btn-primary group">
                 {t("ctaTry")}<span className="notion-arrow">→</span>
               </Link>
-              <Link href="/universities" className="btn btn-secondary">{t("ctaBrowse")}</Link>
+              <Link href="/match" className="btn btn-secondary">{t("ctaBrowse")}</Link>
             </div>
             {/* Notion callout：招牌 emoji + 软色底提示 */}
             <div className="rise-in-3 mt-6 callout callout-blue max-w-md">
@@ -55,7 +56,13 @@ function Landing({ t, t2 }: { t: Awaited<ReturnType<typeof getTranslations<"home
 
           <div className="rise-in-2">
             <div className="tile tile-blue notion-zoom rounded-2xl">
-              <HeroBridge className="w-full h-auto" />
+              <Photo
+                src="/images/hero-student.jpg"
+                alt={t("titleHighlight")}
+                className="w-full"
+                imgClassName="h-auto w-full rounded-xl object-cover aspect-[4/3]"
+                fallback={<HeroBridge className="w-full h-auto doodle-idle" />}
+              />
             </div>
           </div>
         </div>
@@ -98,7 +105,7 @@ function Landing({ t, t2 }: { t: Awaited<ReturnType<typeof getTranslations<"home
                     <Scene className="w-full h-36" />
                   </div>
                   <h3 className="h-section flex items-center gap-2">
-                    <span className="text-xl">{f.emoji}</span>
+                    <span className="text-xl emoji-bounce">{f.emoji}</span>
                     {f.title}
                     <span className="notion-arrow ml-auto text-[var(--ink-faint)]">→</span>
                   </h3>
@@ -159,7 +166,13 @@ function Landing({ t, t2 }: { t: Awaited<ReturnType<typeof getTranslations<"home
           </div>
           <div className="order-first md:order-last">
             <div className="tile tile-yellow notion-zoom rounded-2xl">
-              <StoryIllustration className="w-full h-auto" />
+              <Photo
+                src="/images/story-warm.jpg"
+                alt={t2("titleLine")}
+                className="w-full"
+                imgClassName="h-auto w-full rounded-xl object-cover aspect-[4/3]"
+                fallback={<StoryIllustration className="w-full h-auto doodle-idle-slow" />}
+              />
             </div>
           </div>
         </div>

@@ -3,6 +3,7 @@
 import { PageHeader } from "@/components/page-header";
 import { StatusBadge, appStatusMeta } from "@/components/status-badge";
 import { SceneCompass } from "@/components/illustrations";
+import { Photo } from "@/components/photo";
 
 import { useEffect, useState } from "react";
 import { useLocale, useTranslations } from "next-intl";
@@ -50,7 +51,7 @@ export default function ApplicationsPage() {
 
   const offerCount = items.filter((i) => i.status === "OFFER" || i.status === "ACCEPTED").length;
 
-  if (!loaded) return <div className="mx-auto max-w-4xl px-4 py-10 text-neutral-400">{tc("loading")}</div>;
+  if (!loaded) return <div className="mx-auto max-w-5xl px-4 py-10 text-neutral-400">{tc("loading")}</div>;
 
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
@@ -68,7 +69,13 @@ export default function ApplicationsPage() {
 
       {items.length === 0 ? (
         <div className="mt-8 rounded-2xl border border-dashed border-[var(--border)] p-10 text-center flex flex-col items-center">
-          <SceneCompass className="w-48 h-auto rounded-xl mb-5 opacity-90" />
+          <Photo
+          src="/images/apply-track.jpg"
+          alt="申请追踪"
+          className="w-48 mb-5"
+          imgClassName="h-auto w-full rounded-xl object-cover aspect-square"
+          fallback={<SceneCompass className="w-full h-auto rounded-xl opacity-90 doodle-idle" />}
+        />
           <p className="text-[var(--ink-soft)]">{t("empty")}</p>
           <p className="mt-3 flex items-center justify-center gap-3">
             <Link href="/match" className="btn btn-primary text-sm">{tnav("match")}</Link>

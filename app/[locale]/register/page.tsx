@@ -5,13 +5,14 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { registerAction, type AuthState } from "@/lib/auth/actions";
 import { SceneGrowth } from "@/components/illustrations";
+import { Photo } from "@/components/photo";
 
 export default function RegisterPage() {
   const t = useTranslations("auth");
   const [state, formAction, pending] = useActionState<AuthState, FormData>(registerAction, {});
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-12 lg:py-20 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+    <div className="mx-auto max-w-7xl px-5 py-12 lg:py-20 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
       {/* 左：品牌 + 插画 */}
       <div className="hidden lg:block">
         <span className="ucas-accent-bar" />
@@ -21,7 +22,13 @@ export default function RegisterPage() {
         <p className="mt-4 text-lg text-[var(--ink-soft)] max-w-md">
           注册即可免费试用选校匹配、院校数据库与备考工具，全流程透明可控。
         </p>
-        <SceneGrowth className="mt-8 w-full max-w-md h-auto rounded-2xl" />
+        <Photo
+          src="/images/register-start.jpg"
+          alt="开始申请"
+          className="mt-8 w-full max-w-md"
+          imgClassName="h-auto w-full rounded-2xl object-cover aspect-[4/3]"
+          fallback={<SceneGrowth className="w-full h-auto doodle-idle" />}
+        />
       </div>
 
       {/* 右：注册表单 */}

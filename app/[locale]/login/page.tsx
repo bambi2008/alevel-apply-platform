@@ -7,6 +7,7 @@ import { Link } from "@/i18n/navigation";
 import { loginAction, type AuthState } from "@/lib/auth/actions";
 import { PhoneAuthForm } from "@/components/phone-auth-form";
 import { HeroBridge } from "@/components/illustrations";
+import { Photo } from "@/components/photo";
 
 export default function LoginPage() {
   const t = useTranslations("auth");
@@ -14,7 +15,7 @@ export default function LoginPage() {
   const [state, formAction, pending] = useActionState<AuthState, FormData>(loginAction, {});
 
   return (
-    <div className="mx-auto max-w-6xl px-5 py-12 lg:py-20 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+    <div className="mx-auto max-w-7xl px-5 py-12 lg:py-20 grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
       {/* 左：品牌 + 插画 */}
       <div className="hidden lg:block">
         <span className="ucas-accent-bar" />
@@ -24,7 +25,13 @@ export default function LoginPage() {
         <p className="mt-4 text-lg text-[var(--ink-soft)] max-w-md">
           选校匹配、院校数据库、申请追踪、文书工具——透明、流程化、低成本。
         </p>
-        <HeroBridge className="mt-8 w-full max-w-md h-auto rounded-2xl" />
+        <Photo
+          src="/images/hero-student.jpg"
+          alt="桥申"
+          className="mt-8 w-full max-w-md"
+          imgClassName="h-auto w-full rounded-2xl object-cover aspect-[4/3]"
+          fallback={<HeroBridge className="w-full h-auto doodle-idle" />}
+        />
       </div>
 
       {/* 右：登录表单 */}

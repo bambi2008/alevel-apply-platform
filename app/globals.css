@@ -387,3 +387,25 @@ body {
   .notion-lift, .notion-zoom img, .notion-zoom svg, .notion-arrow { transition: none !important; }
   .notion-lift:hover { transform: none; }
 }
+
+/* ============ 俏皮动效（去"呆板"）============ */
+/* 插画轻微漂浮 + 摇摆（Notion 手绘俏皮感） */
+@keyframes doodleIdle {
+  0%, 100% { transform: rotate(-1.2deg) translateY(0); }
+  50%      { transform: rotate(1.1deg) translateY(-5px); }
+}
+.doodle-idle { animation: doodleIdle 5.5s ease-in-out infinite; transform-origin: center; }
+.doodle-idle-slow { animation: doodleIdle 8s ease-in-out infinite; transform-origin: center; }
+
+/* 弹性 hover（比线性更有生命力） */
+.spring-hover { transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1); }
+.spring-hover:hover { transform: translateY(-4px) rotate(-0.6deg); }
+
+/* emoji 图标在 hover 时俏皮弹跳 */
+@keyframes tinyBounce { 0%,100%{transform:translateY(0)} 30%{transform:translateY(-4px)} 60%{transform:translateY(-1px)} }
+.group:hover .emoji-bounce { animation: tinyBounce 0.5s ease; }
+
+@media (prefers-reduced-motion: reduce) {
+  .doodle-idle, .doodle-idle-slow, .emoji-bounce { animation: none !important; }
+  .spring-hover:hover { transform: translateY(-3px); }
+}
