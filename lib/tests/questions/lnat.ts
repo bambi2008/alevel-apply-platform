@@ -4,6 +4,7 @@ import type { MCQQuestion } from "./types";
 import { LNAT_EXPANSION_2 } from "./lnat-batch2";
 import { LNAT_EXPANSION_3 } from "./lnat-batch3";
 import { LNAT_EXPANSION_4 } from "./lnat-batch4";
+import { LNAT_EXPANSION_5 } from "./lnat-batch5";
 
 const LNAT_BATCH_1: MCQQuestion[] = [
   { id: "lnat-ex-001", type: "mcq", testId: "lnat", topicId: "lnat-analyse", difficulty: 2, marks: 1,
@@ -132,4 +133,4 @@ const LNAT_BATCH_1: MCQQuestion[] = [
     answer: "A", solution: "The author separates mere audibility from real understanding, cautioning that being heard widely does not mean being genuinely understood." },
 ];
 
-export const LNAT_QUESTIONS: MCQQuestion[] = [...LNAT_BATCH_1, ...LNAT_EXPANSION_2, ...LNAT_EXPANSION_3, ...LNAT_EXPANSION_4];
+export const LNAT_QUESTIONS: MCQQuestion[] = [...LNAT_BATCH_1, ...LNAT_EXPANSION_2, ...LNAT_EXPANSION_3, ...LNAT_EXPANSION_4, ...LNAT_EXPANSION_5];
