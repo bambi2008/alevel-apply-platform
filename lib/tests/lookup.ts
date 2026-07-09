@@ -8,7 +8,7 @@ import { ESAT_QUESTIONS } from "@/lib/tests/questions/esat";
 import { TMUA_QUESTIONS } from "@/lib/tests/questions/tmua";
 import { PAT_QUESTIONS } from "@/lib/tests/questions/pat";
 import { LNAT_QUESTIONS } from "@/lib/tests/questions/lnat";
-import { TSA_QUESTIONS } from "@/lib/tests/questions/tsa";
+import { TARA_QUESTIONS } from "@/lib/tests/questions/tara";
 import type { Question } from "@/lib/tests/questions/types";
 import { getTestById } from "@/lib/tests";
 import { getAllMockQuestions } from "@/lib/tests/mock-papers";
@@ -20,7 +20,7 @@ const ALL_QUESTIONS: Question[] = [
   ...TMUA_QUESTIONS,
   ...PAT_QUESTIONS,
   ...LNAT_QUESTIONS,
-  ...TSA_QUESTIONS,
+  ...TARA_QUESTIONS,
   ...getAllMockQuestions(), // 完整模拟卷题目（不进练习库，但回看/分析需可反查）
 ];
 

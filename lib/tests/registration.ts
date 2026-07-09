@@ -52,13 +52,13 @@ export const REGISTRATION_INFO: Record<string, RegInfo> = {
     resultsHow: "在 esat-tmua.ac.uk 考生账户查看标准化分数（1–9）；分数发送至相关院校。",
     resultsUrl: "https://esat-tmua.ac.uk/",
   },
-  tsa: {
-    registerWindow: "通常每年 8 月开放、9 月底至 10 月初截止",
-    registerHow: "经 Pearson VUE 授权考点在线预约（牛津机考）。",
-    testDate: "通常在 10 月下旬至 11 月初",
-    resultsWhen: "随牛津申请结果在次年 1 月前后反馈",
-    resultsHow: "由牛津提供，可按官网指引获取分数。",
-    resultsUrl: "https://www.ox.ac.uk/admissions/undergraduate/applying-to-oxford/guide/admissions-tests/tsa",
+  tara: {
+    registerWindow: "第一次考试（10 月）报名通常 7 月底开放、9 月底截止；第二次（次年 1 月）报名约 10 月底至 12 月中。牛津申请须选 10 月场。",
+    registerHow: "先在 UAT-UK 建账户，再经 Pearson VUE 授权考点在线预约（全球机考）。",
+    testDate: "两个考期：10 月中旬与次年 1 月中旬（牛津申请须选 10 月）。",
+    resultsWhen: "通常在考试后约 4 周经 UAT-UK 账户公布。",
+    resultsHow: "批判性思维与问题解决分数（各 1–9）经 UAT-UK 账户查看并自动发送院校；写作任务答卷直接转交院校。",
+    resultsUrl: "https://esat-tmua.ac.uk/about-the-tests/tara/",
   },
   lnat: {
     registerWindow: "通常每年 8 月初开放报名与预约",
