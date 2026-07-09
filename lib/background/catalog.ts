@@ -31,6 +31,25 @@ export function categoryEmoji(c: BgCategory): string {
   return BG_CATEGORIES.find((x) => x.value === c)?.emoji ?? "•";
 }
 
+// ───────── 顶层两大类：竞赛 / 实践 ─────────
+// 竞赛 = COMPETITION；实践 = 科研 + 活动 + 夏校（亲身经历型）。
+export type BgGroup = "COMPETITION" | "PRACTICE";
+
+export const BG_GROUPS: { value: BgGroup; label: string; emoji: string; desc: string }[] = [
+  { value: "COMPETITION", label: "竞赛", emoji: "🏆", desc: "各类学术竞赛与奥林匹克，用可量化的名次与奖项证明学术实力。" },
+  { value: "PRACTICE", label: "实践", emoji: "🛠", desc: "科研、活动/志愿/实习、夏校等亲身经历，积累文书素材与面试谈资。" },
+];
+
+export function groupOfCategory(c: BgCategory): BgGroup {
+  return c === "COMPETITION" ? "COMPETITION" : "PRACTICE";
+}
+export function groupLabel(g: BgGroup): string {
+  return BG_GROUPS.find((x) => x.value === g)?.label ?? g;
+}
+export function groupEmoji(g: BgGroup): string {
+  return BG_GROUPS.find((x) => x.value === g)?.emoji ?? "•";
+}
+
 export interface CatalogItem {
   id: string;
   field: BgField;

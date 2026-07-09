@@ -9,10 +9,13 @@ import { Link } from "@/i18n/navigation";
 import {
   BACKGROUND_CATALOG,
   BG_FIELDS,
+  BG_GROUPS,
+  groupOfCategory,
   fieldLabel,
   categoryLabel,
   categoryEmoji,
   type BgField,
+  type BgGroup,
   type BgCategory,
   type CatalogItem,
 } from "@/lib/background/catalog";
@@ -43,6 +46,7 @@ export default function BackgroundPage() {
   const [items, setItems] = useState<BackgroundPlanItem[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [activeField, setActiveField] = useState<BgField | "AUTO">("AUTO");
+  const [activeGroup, setActiveGroup] = useState<BgGroup | "ALL">("ALL");
   const [customTitle, setCustomTitle] = useState("");
   const [customCat, setCustomCat] = useState("COMPETITION");
 
@@ -70,6 +74,12 @@ export default function BackgroundPage() {
       ? scored.filter((s) => s.primary).map((s) => s.item)
       : BACKGROUND_CATALOG.filter((c) => c.field === activeField);
 
+  // 顶层两大类过滤：竞赛 / 实践
+  const shownByGroup: CatalogItem[] =
+    activeGroup === "ALL"
+      ? shownCatalog
+      : shownCatalog.filter((c) => groupOfCategory(c.category) === activeGroup);
+
   const reasonOf = (id: string) => scored.find((s) => s.item.id === id)?.reasons ?? [];
 
   const onAdd = (c: CatalogItem) =>
@@ -89,7 +99,7 @@ export default function BackgroundPage() {
     <div className="mx-auto max-w-5xl px-4 py-8">
       <div className="grid lg:grid-cols-[1fr_auto] gap-8 items-center mb-8">
         <div className="[&>div]:mb-0">
-          <PageHeader title="背景提升" subtitle="围绕你的目标专业规划竞赛、科研、活动与夏校，让申请更有竞争力。推荐已根据你的档案个性化排序。" icon="🌟" />
+          <PageHeader title="背景提升" subtitle="背景提升分为「竞赛」与「实践」两大类：竞赛用名次奖项证明实力，实践靠亲身经历积累素材。推荐已按你的档案个性化排序。" icon="🌟" />
         </div>
         <Photo
           src="/images/background-project.jpg"
@@ -186,14 +196,43 @@ export default function BackgroundPage() {
           </div>
         </div>
 
+        {/* 顶层两大类：竞赛 / 实践 */}
+        <div className="flex items-center gap-1.5 flex-wrap mb-3 text-xs">
+          <button
+            onClick={() => setActiveGroup("ALL")}
+            className={`px-3 py-1 rounded-full font-medium ${activeGroup === "ALL" ? "bg-[var(--ink)] text-white" : "bg-[var(--surface-2)] text-[var(--ink-soft)] hover:bg-[var(--border)]"}`}
+          >
+            全部
+          </button>
+          {BG_GROUPS.map((g) => (
+            <button
+              key={g.value}
+              onClick={() => setActiveGroup(g.value)}
+              className={`px-3 py-1 rounded-full font-medium ${activeGroup === g.value ? "bg-[var(--ink)] text-white" : "bg-[var(--surface-2)] text-[var(--ink-soft)] hover:bg-[var(--border)]"}`}
+            >
+              {g.emoji} {g.label}
+            </button>
+          ))}
+          {activeGroup !== "ALL" && (
+            <span className="text-[var(--ink-faint)] ml-1">
+              {BG_GROUPS.find((g) => g.value === activeGroup)?.desc}
+            </span>
+          )}
+        </div>
+
         {activeField === "AUTO" && profile.intendedMajors.length === 0 && (
           <p className="text-xs text-[var(--warning)] bg-[var(--warning-bg)] rounded px-3 py-2 mb-3">
             提示：在「我的档案」里填写目标专业后，推荐会更贴合你的方向。当前按通用方向展示。
           </p>
         )}
 
+        {shownByGroup.length === 0 && (
+          <p className="text-sm text-[var(--ink-faint)] py-6 text-center">
+            该分类下暂无推荐项目，试试切换方向或点「全部」。
+          </p>
+        )}
         <div className="grid sm:grid-cols-2 gap-3">
-          {shownCatalog.map((c) => {
+          {shownByGroup.map((c) => {
             const added = planned.has(c.id);
             const reasons = activeField === "AUTO" ? reasonOf(c.id) : [];
             return (
