@@ -44,14 +44,6 @@ export const REGISTRATION_INFO: Record<string, RegInfo> = {
     resultsHow: "在 esat-tmua.ac.uk 考生账户查看；分数发送至剑桥/帝国理工等相关院校。",
     resultsUrl: "https://esat-tmua.ac.uk/",
   },
-  nsaa: {
-    registerWindow: "已停用",
-    registerHow: "NSAA 已被 ESAT 取代，请参考 ESAT 的报名与查分信息。",
-    testDate: "—",
-    resultsWhen: "—",
-    resultsHow: "参见 ESAT。",
-    resultsUrl: "https://esat-tmua.ac.uk/",
-  },
   tmua: {
     registerWindow: "通常在 10 月考期前数周开放报名",
     registerHow: "经 esat-tmua.ac.uk 注册并预约就近授权考点。",
@@ -67,14 +59,6 @@ export const REGISTRATION_INFO: Record<string, RegInfo> = {
     resultsWhen: "随牛津申请结果在次年 1 月前后反馈",
     resultsHow: "由牛津提供，可按官网指引获取分数。",
     resultsUrl: "https://www.ox.ac.uk/admissions/undergraduate/applying-to-oxford/guide/admissions-tests/tsa",
-  },
-  bmat: {
-    registerWindow: "已停考",
-    registerHow: "BMAT 在 2023 年最后一次考试后停考。英国医学申请现主要使用 UCAT：经 ucat.ac.uk 报名（通常 6 月开放、9 月中截止）。",
-    testDate: "UCAT 通常在 7–9 月，机考、出分即时",
-    resultsWhen: "UCAT 考后当场获知分数",
-    resultsHow: "UCAT 成绩自动发送至所申请的院校。",
-    resultsUrl: "https://www.ucat.ac.uk/",
   },
   lnat: {
     registerWindow: "通常每年 8 月初开放报名与预约",
