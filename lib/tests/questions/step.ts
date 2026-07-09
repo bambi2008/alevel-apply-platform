@@ -2,8 +2,10 @@
 // 每题 20 分，3 小时内从 12 题中选 6 题作答
 // 此题库收录 12 道纯数学大题，覆盖 STEP 2 难度
 
-import type { LongQuestion } from "./types";
+import type { LongQuestion, MCQQuestion } from "./types";
 import { STEP_HARD } from "./step-hard";
+import { STEP_EXPANSION } from "./step-expansion";
+import { STEP_CLEVER } from "./step-clever";
 
 export const STEP_BASE: LongQuestion[] = [
   {
@@ -2261,4 +2263,4 @@ $$M^n=PD^nP^{-1}=\\begin{pmatrix}1&1\\\\0&-1\\end{pmatrix}\\begin{pmatrix}3^n&0\
 
 ];
 
-export const STEP_QUESTIONS: LongQuestion[] = [...STEP_BASE, ...STEP_HARD];
+export const STEP_QUESTIONS: (LongQuestion | MCQQuestion)[] = [...STEP_BASE, ...STEP_HARD, ...STEP_EXPANSION, ...STEP_CLEVER];

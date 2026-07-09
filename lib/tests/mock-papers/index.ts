@@ -25,6 +25,11 @@ import { LNAT_MK2_MCQ } from "./lnat-mock-2";
 import { LNAT_MK3_MCQ } from "./lnat-mock-3";
 import { LNAT_MK4_MCQ } from "./lnat-mock-4";
 import { LNAT_MK5_MCQ } from "./lnat-mock-5";
+import { STEP_MK1_MCQ } from "./step-mock-1";
+import { STEP_MK2_MCQ } from "./step-mock-2";
+import { STEP_MK3_MCQ } from "./step-mock-3";
+import { STEP_MK4_MCQ } from "./step-mock-4";
+import { STEP_MK5_MCQ } from "./step-mock-5";
 import { TMUA_MK2_P1, TMUA_MK2_P2 } from "./tmua-mock-2";
 import { TMUA_MK3_P1, TMUA_MK3_P2 } from "./tmua-mock-3";
 import { TMUA_MK4_P1, TMUA_MK4_P2 } from "./tmua-mock-4";
@@ -362,6 +367,66 @@ export const LNAT_MOCK_5: MockPaper = {
   ],
 };
 
+export const STEP_MOCK_1: MockPaper = {
+  id: "step-mock-1",
+  testId: "step",
+  title: "STEP 模拟卷1（STEP 难度选择题）",
+  titleEn: "STEP Mock Paper 1",
+  description:
+    "25 道 STEP 难度可计算选择题（代数与多项式、进阶微积分、复数、线性代数、力学、概率统计），sympy 逐题验算。注：真 STEP 为长证明大题，本卷为 STEP 难度的选择题训练。",
+  modules: [
+    { id: "mcq", title: "STEP 选择题", titleEn: "STEP MCQ", durationSec: 90 * 60, questions: STEP_MK1_MCQ },
+  ],
+};
+
+export const STEP_MOCK_2: MockPaper = {
+  id: "step-mock-2",
+  testId: "step",
+  title: "STEP 模拟卷2（STEP 难度选择题）",
+  titleEn: "STEP Mock Paper 2",
+  description:
+    "25 道 STEP 难度可计算选择题（代数与多项式、进阶微积分、复数、线性代数、力学、概率统计），sympy 逐题验算。注：真 STEP 为长证明大题，本卷为 STEP 难度的选择题训练。",
+  modules: [
+    { id: "mcq", title: "STEP 选择题", titleEn: "STEP MCQ", durationSec: 90 * 60, questions: STEP_MK2_MCQ },
+  ],
+};
+
+export const STEP_MOCK_3: MockPaper = {
+  id: "step-mock-3",
+  testId: "step",
+  title: "STEP 模拟卷3（STEP 难度选择题）",
+  titleEn: "STEP Mock Paper 3",
+  description:
+    "25 道 STEP 难度可计算选择题（代数与多项式、进阶微积分、复数、线性代数、力学、概率统计），sympy 逐题验算。注：真 STEP 为长证明大题，本卷为 STEP 难度的选择题训练。",
+  modules: [
+    { id: "mcq", title: "STEP 选择题", titleEn: "STEP MCQ", durationSec: 90 * 60, questions: STEP_MK3_MCQ },
+  ],
+};
+
+export const STEP_MOCK_4: MockPaper = {
+  id: "step-mock-4",
+  testId: "step",
+  title: "STEP 模拟卷4（STEP 难度选择题）",
+  titleEn: "STEP Mock Paper 4",
+  description:
+    "25 道 STEP 难度可计算选择题（代数与多项式、进阶微积分、复数、线性代数、力学、概率统计），sympy 逐题验算。注：真 STEP 为长证明大题，本卷为 STEP 难度的选择题训练。",
+  modules: [
+    { id: "mcq", title: "STEP 选择题", titleEn: "STEP MCQ", durationSec: 90 * 60, questions: STEP_MK4_MCQ },
+  ],
+};
+
+export const STEP_MOCK_5: MockPaper = {
+  id: "step-mock-5",
+  testId: "step",
+  title: "STEP 模拟卷5（STEP 难度选择题）",
+  titleEn: "STEP Mock Paper 5",
+  description:
+    "25 道 STEP 难度可计算选择题（代数与多项式、进阶微积分、复数、线性代数、力学、概率统计），sympy 逐题验算。注：真 STEP 为长证明大题，本卷为 STEP 难度的选择题训练。",
+  modules: [
+    { id: "mcq", title: "STEP 选择题", titleEn: "STEP MCQ", durationSec: 90 * 60, questions: STEP_MK5_MCQ },
+  ],
+};
+
 export const LNAT_MOCK_1: MockPaper = {
   id: "lnat-mock-1",
   testId: "lnat",
@@ -540,7 +605,7 @@ export const TMUA_MOCK_1: MockPaper = {
   ],
 };
 
-const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5];
+const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5];
 
 export function getMockPapersForTest(testId: string): MockPaper[] {
   return ALL_MOCK_PAPERS.filter((p) => p.testId === testId);
