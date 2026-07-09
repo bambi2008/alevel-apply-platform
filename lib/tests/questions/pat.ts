@@ -3,8 +3,10 @@
 import type { MCQQuestion } from "./types";
 import { PAT_EXPANSION } from "./pat-expansion";
 import { PAT_CLEVER } from "./pat-clever";
+import { PAT_EXPANSION_2 } from "./pat-expansion-2";
 
 export const PAT_QUESTIONS: MCQQuestion[] = [
   ...PAT_EXPANSION,
+  ...PAT_EXPANSION_2,
   ...PAT_CLEVER,
 ];
