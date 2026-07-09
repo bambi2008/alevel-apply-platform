@@ -30,6 +30,8 @@ import { STEP_MK2_MCQ } from "./step-mock-2";
 import { STEP_MK3_MCQ } from "./step-mock-3";
 import { STEP_MK4_MCQ } from "./step-mock-4";
 import { STEP_MK5_MCQ } from "./step-mock-5";
+import { TSA_MK1_MCQ } from "./tsa-mock-1";
+import { TSA_MK2_MCQ } from "./tsa-mock-2";
 import { TMUA_MK2_P1, TMUA_MK2_P2 } from "./tmua-mock-2";
 import { TMUA_MK3_P1, TMUA_MK3_P2 } from "./tmua-mock-3";
 import { TMUA_MK4_P1, TMUA_MK4_P2 } from "./tmua-mock-4";
@@ -427,6 +429,30 @@ export const STEP_MOCK_5: MockPaper = {
   ],
 };
 
+export const TSA_MOCK_1: MockPaper = {
+  id: "tsa-mock-1",
+  testId: "tsa",
+  title: "TSA 模拟卷1（Section 1）",
+  titleEn: "TSA Mock Paper 1 (Section 1)",
+  description:
+    "对标 TSA 第一节：批判性思维 + 问题解决混合选择题。真实考试为 50 题 60 分钟外加牛津 essay；本卷为精选练习。问题解决题 sympy 验算；批判性思维题答案由文段锁定。",
+  modules: [
+    { id: "mcq", title: "Section 1 混合选择题", titleEn: "Section 1 MCQ", durationSec: 30 * 60, questions: TSA_MK1_MCQ },
+  ],
+};
+
+export const TSA_MOCK_2: MockPaper = {
+  id: "tsa-mock-2",
+  testId: "tsa",
+  title: "TSA 模拟卷2（Section 1）",
+  titleEn: "TSA Mock Paper 2 (Section 1)",
+  description:
+    "对标 TSA 第一节：批判性思维 + 问题解决混合选择题。真实考试为 50 题 60 分钟外加牛津 essay；本卷为精选练习。问题解决题 sympy 验算；批判性思维题答案由文段锁定。",
+  modules: [
+    { id: "mcq", title: "Section 1 混合选择题", titleEn: "Section 1 MCQ", durationSec: 30 * 60, questions: TSA_MK2_MCQ },
+  ],
+};
+
 export const LNAT_MOCK_1: MockPaper = {
   id: "lnat-mock-1",
   testId: "lnat",
@@ -605,7 +631,7 @@ export const TMUA_MOCK_1: MockPaper = {
   ],
 };
 
-const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5];
+const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TSA_MOCK_1, TSA_MOCK_2];
 
 export function getMockPapersForTest(testId: string): MockPaper[] {
   return ALL_MOCK_PAPERS.filter((p) => p.testId === testId);

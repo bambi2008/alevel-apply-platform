@@ -326,7 +326,7 @@ export const ADMISSIONS_TESTS: AdmissionsTest[] = [
     formatZh: "第一节：50 道选择题（25 道批判性思维 + 25 道问题解决，60 分钟）；第二节：30 分钟小论文（仅牛津部分课程要求）。",
     registrationUrl: "https://www.ox.ac.uk/admissions/undergraduate/applying-to-oxford/guide/admissions-tests/tsa",
     officialSampleUrl: "https://www.ox.ac.uk/admissions/undergraduate/applying-to-oxford/guide/admissions-tests/tsa",
-    hasQuestionBank: false,
+    hasQuestionBank: true,
     overview: "TSA 测试逻辑推理、批判性思维与数学解题能力，不依赖任何具体学科知识（无需 A-Level 内容），更考查思维方式。牛津 PPE 等人文社科专业通常要求 TSA。",
     structureDetails: "批判性思维题：分析论证、识别假设、评估证据。问题解决题：逻辑谜题、数学推理（初中数学水平，重逻辑不重计算）。Section 2 小论文要求从两题中选一题，30 分钟内写出论点清晰的短文。",
     scoringNote: "Section 1：原始分换算成 0–100 标准化分数。Section 2：独立评分（0–6）。两部分合并评估。",

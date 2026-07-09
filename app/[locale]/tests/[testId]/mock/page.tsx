@@ -10,6 +10,7 @@ import { ESAT_QUESTIONS } from "@/lib/tests/questions/esat";
 import { TMUA_QUESTIONS } from "@/lib/tests/questions/tmua";
 import { PAT_QUESTIONS } from "@/lib/tests/questions/pat";
 import { LNAT_QUESTIONS } from "@/lib/tests/questions/lnat";
+import { TSA_QUESTIONS } from "@/lib/tests/questions/tsa";
 import type { Question, MCQQuestion, LongQuestion, GradingResult } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
 import type { GradeRequest, GradeResponse } from "@/app/api/grade-answer/route";
@@ -21,6 +22,7 @@ const QUESTION_BANKS: Record<string, Question[]> = {
   tmua: TMUA_QUESTIONS,
   pat: PAT_QUESTIONS,
   lnat: LNAT_QUESTIONS,
+  tsa: TSA_QUESTIONS,
 };
 
 type ExamState = "briefing" | "running" | "grading" | "results";
