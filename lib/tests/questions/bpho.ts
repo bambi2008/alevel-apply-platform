@@ -3,6 +3,7 @@ import type { Question } from "./types";
 import { BPHO_KINE_S1 } from "./bpho-kinematics";
 import { BPHO_S1_MAIN } from "./bpho-s1";
 import { BPHO_S1_B } from "./bpho-s1-b";
+import { BPHO_S1_C } from "./bpho-s1-c";
 import { BPHO_LONG_SAMPLE } from "./bpho-long";
 
-export const BPHO_QUESTIONS: Question[] = [...BPHO_KINE_S1, ...BPHO_S1_MAIN, ...BPHO_S1_B, ...BPHO_LONG_SAMPLE];
+export const BPHO_QUESTIONS: Question[] = [...BPHO_KINE_S1, ...BPHO_S1_MAIN, ...BPHO_S1_B, ...BPHO_S1_C, ...BPHO_LONG_SAMPLE];

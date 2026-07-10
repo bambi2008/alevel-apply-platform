@@ -32,6 +32,10 @@ import { BPHO_MK1_S1, BPHO_MK1_S2 } from "./bpho-mock-1";
 import { BPHO_MK2_S1, BPHO_MK2_S2 } from "./bpho-mock-2";
 import { BPHO_MK3_S1, BPHO_MK3_S2 } from "./bpho-mock-3";
 import { BPHO_MK4_S1, BPHO_MK4_S2 } from "./bpho-mock-4";
+import { BPHO_MK5_S1, BPHO_MK5_S2 } from "./bpho-mock-5";
+import { BPHO_MK6_S1, BPHO_MK6_S2 } from "./bpho-mock-6";
+import { BPHO_MK7_S1, BPHO_MK7_S2 } from "./bpho-mock-7";
+import { BPHO_MK8_S1, BPHO_MK8_S2 } from "./bpho-mock-8";
 import { STEP_MK1_MCQ } from "./step-mock-1";
 import { STEP_MK2_MCQ } from "./step-mock-2";
 import { STEP_MK3_MCQ } from "./step-mock-3";
@@ -486,6 +490,58 @@ export const BPHO_MOCK_4: MockPaper = {
   ],
 };
 
+export const BPHO_MOCK_5: MockPaper = {
+  id: "bpho-mock-5",
+  testId: "bpho",
+  title: "BPhO Round 1 模拟卷5",
+  titleEn: "BPhO Round 1 Mock 5",
+  description:
+    "模块1对标 Section 1 短题；模块2以高难选择题近似 Section 2 强度。真实 Section 2 为长推导题——请到练习区完成 9 道原创长题并对照解答自评。全部短题经 sympy 双重验算。",
+  modules: [
+    { id: "s1", title: "Section 1 短题", titleEn: "Section 1", durationSec: 80 * 60, questions: BPHO_MK5_S1 },
+    { id: "s2", title: "Section 2 强度题（选择题化）", titleEn: "Section 2 (MCQ form)", durationSec: 80 * 60, questions: BPHO_MK5_S2 },
+  ],
+};
+
+export const BPHO_MOCK_6: MockPaper = {
+  id: "bpho-mock-6",
+  testId: "bpho",
+  title: "BPhO Round 1 模拟卷6",
+  titleEn: "BPhO Round 1 Mock 6",
+  description:
+    "模块1对标 Section 1 短题；模块2以高难选择题近似 Section 2 强度。真实 Section 2 为长推导题——请到练习区完成 9 道原创长题并对照解答自评。全部短题经 sympy 双重验算。",
+  modules: [
+    { id: "s1", title: "Section 1 短题", titleEn: "Section 1", durationSec: 80 * 60, questions: BPHO_MK6_S1 },
+    { id: "s2", title: "Section 2 强度题（选择题化）", titleEn: "Section 2 (MCQ form)", durationSec: 80 * 60, questions: BPHO_MK6_S2 },
+  ],
+};
+
+export const BPHO_MOCK_7: MockPaper = {
+  id: "bpho-mock-7",
+  testId: "bpho",
+  title: "BPhO Round 1 模拟卷7",
+  titleEn: "BPhO Round 1 Mock 7",
+  description:
+    "模块1对标 Section 1 短题；模块2以高难选择题近似 Section 2 强度。真实 Section 2 为长推导题——请到练习区完成 9 道原创长题并对照解答自评。全部短题经 sympy 双重验算。",
+  modules: [
+    { id: "s1", title: "Section 1 短题", titleEn: "Section 1", durationSec: 80 * 60, questions: BPHO_MK7_S1 },
+    { id: "s2", title: "Section 2 强度题（选择题化）", titleEn: "Section 2 (MCQ form)", durationSec: 80 * 60, questions: BPHO_MK7_S2 },
+  ],
+};
+
+export const BPHO_MOCK_8: MockPaper = {
+  id: "bpho-mock-8",
+  testId: "bpho",
+  title: "BPhO Round 1 模拟卷8",
+  titleEn: "BPhO Round 1 Mock 8",
+  description:
+    "模块1对标 Section 1 短题；模块2以高难选择题近似 Section 2 强度。真实 Section 2 为长推导题——请到练习区完成 9 道原创长题并对照解答自评。全部短题经 sympy 双重验算。",
+  modules: [
+    { id: "s1", title: "Section 1 短题", titleEn: "Section 1", durationSec: 80 * 60, questions: BPHO_MK8_S1 },
+    { id: "s2", title: "Section 2 强度题（选择题化）", titleEn: "Section 2 (MCQ form)", durationSec: 80 * 60, questions: BPHO_MK8_S2 },
+  ],
+};
+
 export const TARA_MOCK_1: MockPaper = {
   id: "tara-mock-1",
   testId: "tara",
@@ -703,7 +759,7 @@ export const TMUA_MOCK_1: MockPaper = {
   ],
 };
 
-const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3, BPHO_MOCK_1, BPHO_MOCK_2, BPHO_MOCK_3, BPHO_MOCK_4];
+const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3, BPHO_MOCK_1, BPHO_MOCK_2, BPHO_MOCK_3, BPHO_MOCK_4, BPHO_MOCK_5, BPHO_MOCK_6, BPHO_MOCK_7, BPHO_MOCK_8];
 
 export function getMockPapersForTest(testId: string): MockPaper[] {
   return ALL_MOCK_PAPERS.filter((p) => p.testId === testId);
