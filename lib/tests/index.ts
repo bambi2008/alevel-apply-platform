@@ -315,6 +315,48 @@ export const ADMISSIONS_TESTS: AdmissionsTest[] = [
 
 
   {
+    id: "bpho",
+    name: "British Physics Olympiad (Round 1)",
+    abbr: "BPhO",
+    nameZh: "英国物理奥林匹克（学术竞赛）",
+    category: "science",
+    icon: "🏆",
+    universities: ["由牛津大学物理系运营；成绩受 Oxford、Cambridge、Imperial 等物理/工程方向招生认可"],
+    programs: ["物理", "工程", "自然科学（物理方向）"],
+    programsEn: ["Physics", "Engineering", "Natural Sciences (Physical)"],
+    duration: "Round 1：两节各 80 分钟（可连堂 2 小时 40 分钟或分两次）",
+    format: "Section 1: one multi-part question (~13 independent parts, ≈76 marks capped at 50); Section 2: choose 2 of ~5 thematic 25-mark long questions (also capped at 50).",
+    formatZh: "第一节：一道多小问大题（约 13 个独立小问、总分约 76、上限 50 分，80 分钟）；第二节：约 5 道 25 分主题长题中任选 2 道作答（上限 50 分，80 分钟）。需写出完整过程，仅有答案不得分。",
+    registrationUrl: "https://www.bpho.org.uk/",
+    officialSampleUrl: "https://www.bpho.org.uk/",
+    hasQuestionBank: true,
+    overview: "BPhO 是英国最高水平的中学物理竞赛，由牛津大学物理系运营，是选拔英国国家队参加国际物理奥赛（IPhO）的通道。注意：这是学术竞赛而非入学考试——它不用于报名大学，但 Round 1 的 Gold/Top Gold 证书是物理与工程方向申请中极有分量的学术信号，其解题风格也与牛剑面试高度一致。BPhO 无固定考纲：题目取自 A-Level 核心物理，但以陌生、多步的方式应用，并需要微积分与向量等超出 A-Level 的数学工具。",
+    structureDetails: "竞赛为分级系列：Physics Challenges（Y11/Y12/Y13 入门）→ Round 1（11 月，本题库对标）→ Round 2（次年 1 月底，受邀参加，IPhO 级难度）→ Round 3 牛津集训营 → 英国国家队。Round 1 允许使用标准考试局公式表与普通计算器（不可编程/符号运算）。评分特点：满分极难，50–60% 已是奖牌线水平；A* 水平的学生首次裸考常只有 30–40%——这是竞赛的正常现象，不代表能力不足。",
+    scoringNote: "按成绩比例授予 Top Gold / Gold / Silver / Bronze 等证书；Top Gold 获邀参加 Round 2。本平台题库：Section 1 短题已转为选择题以支持自动判分与即时反馈（全部经程序双重验算）；Section 2 长题保留原始格式，附完整解答供自评。",
+    topics: [
+      { id: "bpho-mechanics", title: "力学", titleEn: "Mechanics", description: "运动学与动力学、圆周与引力、能量动量碰撞、转动力学（含微积分方法）" },
+      { id: "bpho-waves", title: "振动与波", titleEn: "Oscillations & Waves", description: "SHM 能量与周期、波动方程、驻波、多普勒、干涉与光学" },
+      { id: "bpho-em", title: "电与磁", titleEn: "Electricity & Magnetism", description: "含内阻电路、RC 充放电与时间常数、场与力、电磁感应、变压器" },
+      { id: "bpho-thermal", title: "热学", titleEn: "Thermal Physics", description: "理想气体、热量收支、潜热、传导、卡诺效率、r.m.s. 速率" },
+      { id: "bpho-modern", title: "现代物理与估算", titleEn: "Modern Physics & Estimation", description: "光电效应、德布罗意、核物理、相对论入门、数量级估算（BPhO 招牌）" },
+    ],
+    studyPlan: [
+      { week: "第 1–3 周", focus: "力学攻坚", tasks: ["刷完力学题库（占 Round 1 半壁江山）", "掌握 a = v dv/dx、相对速度反转、轨道能量三件套", "开始做官方历年 Round 1 真题的 Section 1（bpho.org.uk/Papers/R1/）"] },
+      { week: "第 4–5 周", focus: "波与电磁", tasks: ["振动与波 + 电磁题库", "重点练 RC 电路「读方程不积分」", "每周 1 份官方真题 Section 1 计时练习"] },
+      { week: "第 6–7 周", focus: "热学、现代与长题", tasks: ["热学 + 现代与估算题库", "完成平台 4 道原创 Section 2 长题并对照解答自评", "官方真题的 Section 2 每周精做 2 道"] },
+      { week: "第 8 周", focus: "全真模拟", tasks: ["完成平台 2 套双模块模拟卷", "官方近年真题整卷限时模拟（2 小时 40 分钟）", "整理错题：区分「知识缺口」与「陌生情境不适应」"] },
+    ],
+    tips: [
+      "BPhO 的第一心态关：满分不是目标，50–60% 就是奖牌水平——别被真题吓退。",
+      "务必做官方历年真题（bpho.org.uk/Papers/R1/ 免费下载）：本题库负责主题化训练与即时反馈，真题负责手感与书写训练。",
+      "Section 1 各小问相互独立：卡住立刻跳过，先把会做的分拿满（总分 76 上限 50，意味着可以战略性放弃约 1/3）。",
+      "Section 2 只选 2 题：开考先花 3 分钟通读所有题，选最顺手的主题，每题约 40 分钟。",
+      "写过程！评分按步骤给分，只有答案不得分；关键中间结果圈出来方便阅卷人找到。",
+      "报名由学校老师在 BPhO 平台统一注册（每校一位教师账号），个人无法直接报名——尽早与学校沟通。",
+    ],
+  },
+
+  {
     id: "lnat",
     name: "Law National Aptitude Test",
     abbr: "LNAT",

@@ -12,6 +12,14 @@ export interface RegInfo {
 }
 
 export const REGISTRATION_INFO: Record<string, RegInfo> = {
+  bpho: {
+    registerWindow: "通常 9 月起开放，Round 1 报名截止约在 11 月考前 48 小时（以当年官网为准）",
+    registerHow: "由学校物理老师在 BPhO 竞赛平台注册（每校一个教师账号）并统一为学生报名，个人无法直接报名。国际学校（含中国的国际部/国际学校）可与英国学校同日开考。付费学校每人约 £15，后续轮次免费。",
+    testDate: "Round 1 通常在 11 月上中旬（在校内进行，两节各 80 分钟，可连堂或分两次）",
+    resultsWhen: "答卷扫描上传后由 BPhO 统一评阅，成绩与证书通常在 1 月初学期开始时发回学校",
+    resultsHow: "成绩发送至报名教师邮箱；按比例授予 Top Gold / Gold / Silver / Bronze 证书，Top Gold 获邀参加次年 1 月底的 Round 2",
+    resultsUrl: "https://www.bpho.org.uk/",
+  },
   mat: {
     registerWindow: "通常每年 8 月开放、9 月底至 10 月初截止",
     registerHow: "经 Pearson VUE 授权考点在线预约（牛津已改为机考）。中国大陆考生需选择就近的授权考点。",
