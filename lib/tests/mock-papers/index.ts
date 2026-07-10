@@ -36,6 +36,8 @@ import { BPHO_MK5_S1, BPHO_MK5_S2 } from "./bpho-mock-5";
 import { BPHO_MK6_S1, BPHO_MK6_S2 } from "./bpho-mock-6";
 import { BPHO_MK7_S1, BPHO_MK7_S2 } from "./bpho-mock-7";
 import { BPHO_MK8_S1, BPHO_MK8_S2 } from "./bpho-mock-8";
+import { BPHO_R2M1_T1, BPHO_R2M1_T2, BPHO_R2M1_T3, BPHO_R2M1_T4 } from "./bpho-r2-mock-1";
+import { BPHO_R2M2_T1, BPHO_R2M2_T2, BPHO_R2M2_T3, BPHO_R2M2_T4 } from "./bpho-r2-mock-2";
 import { STEP_MK1_MCQ } from "./step-mock-1";
 import { STEP_MK2_MCQ } from "./step-mock-2";
 import { STEP_MK3_MCQ } from "./step-mock-3";
@@ -542,6 +544,36 @@ export const BPHO_MOCK_8: MockPaper = {
   ],
 };
 
+export const BPHO_R2_MOCK_1: MockPaper = {
+  id: "bpho-r2-mock-1",
+  testId: "bpho",
+  title: "BPhO Round 2 模拟卷1（主题阶梯）",
+  titleEn: "BPhO Round 2 Mock 1",
+  description:
+    "对标真实 Round 2：3 小时、4 道引导式主题长题、全部必做（每题约 45 分钟）。本卷把每道长题化为一个「链式选择题阶梯」——沿真题的推导路径逐级上难度（含估算与极限思想），支持自动判分。真实 R2 需完整手写推导：请配合官方历年真题练习书写。",
+  modules: [
+    { id: "t1", title: "第1题 · 太空电梯", titleEn: "Q1 · Space Elevator", durationSec: 45 * 60, questions: BPHO_R2M1_T1 },
+    { id: "t2", title: "第2题 · 白炽灯丝的物理", titleEn: "Q2 · Physics of a Filament", durationSec: 45 * 60, questions: BPHO_R2M1_T2 },
+    { id: "t3", title: "第3题 · 从平行板到闪电", titleEn: "Q3 · Capacitors to Lightning", durationSec: 45 * 60, questions: BPHO_R2M1_T3 },
+    { id: "t4", title: "第4题 · 原子核的尺度", titleEn: "Q4 · Nuclear Scales", durationSec: 45 * 60, questions: BPHO_R2M1_T4 },
+  ],
+};
+
+export const BPHO_R2_MOCK_2: MockPaper = {
+  id: "bpho-r2-mock-2",
+  testId: "bpho",
+  title: "BPhO Round 2 模拟卷2（主题阶梯）",
+  titleEn: "BPhO Round 2 Mock 2",
+  description:
+    "对标真实 Round 2：3 小时、4 道引导式主题长题、全部必做（每题约 45 分钟）。本卷把每道长题化为一个「链式选择题阶梯」——沿真题的推导路径逐级上难度（含估算与极限思想），支持自动判分。真实 R2 需完整手写推导：请配合官方历年真题练习书写。",
+  modules: [
+    { id: "t1", title: "第1题 · 单摆的极限", titleEn: "Q1 · Pendulum at Large Angle", durationSec: 45 * 60, questions: BPHO_R2M2_T1 },
+    { id: "t2", title: "第2题 · 大气有多厚", titleEn: "Q2 · Scale Height of the Atmosphere", durationSec: 45 * 60, questions: BPHO_R2M2_T2 },
+    { id: "t3", title: "第3题 · 驾驭电子束", titleEn: "Q3 · Steering an Electron Beam", durationSec: 45 * 60, questions: BPHO_R2M2_T3 },
+    { id: "t4", title: "第4题 · 光压与太阳帆", titleEn: "Q4 · Radiation Pressure & Solar Sails", durationSec: 45 * 60, questions: BPHO_R2M2_T4 },
+  ],
+};
+
 export const TARA_MOCK_1: MockPaper = {
   id: "tara-mock-1",
   testId: "tara",
@@ -759,7 +791,7 @@ export const TMUA_MOCK_1: MockPaper = {
   ],
 };
 
-const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3, BPHO_MOCK_1, BPHO_MOCK_2, BPHO_MOCK_3, BPHO_MOCK_4, BPHO_MOCK_5, BPHO_MOCK_6, BPHO_MOCK_7, BPHO_MOCK_8];
+const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3, BPHO_MOCK_1, BPHO_MOCK_2, BPHO_MOCK_3, BPHO_MOCK_4, BPHO_MOCK_5, BPHO_MOCK_6, BPHO_MOCK_7, BPHO_MOCK_8, BPHO_R2_MOCK_1, BPHO_R2_MOCK_2];
 
 export function getMockPapersForTest(testId: string): MockPaper[] {
   return ALL_MOCK_PAPERS.filter((p) => p.testId === testId);
