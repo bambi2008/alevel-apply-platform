@@ -6,6 +6,7 @@ import { MAT_STEP_KNOWLEDGE } from "./mat-step";
 import { PAT_KNOWLEDGE } from "./pat";
 import { LNAT_KNOWLEDGE } from "./lnat";
 import { TARA_KNOWLEDGE } from "./tara";
+import { BPHO_KNOWLEDGE } from "./bpho";
 
 const ALL_KNOWLEDGE: TopicKnowledge[] = [
   ...ESAT_KNOWLEDGE,
@@ -16,6 +17,7 @@ const ALL_KNOWLEDGE: TopicKnowledge[] = [
   ...PAT_KNOWLEDGE,
   ...LNAT_KNOWLEDGE,
   ...TARA_KNOWLEDGE,
+  ...BPHO_KNOWLEDGE,
 ];
 
 export function getKnowledgeByTopicId(topicId: string): TopicKnowledge | undefined {

@@ -28,6 +28,8 @@ import { LNAT_MK5_MCQ } from "./lnat-mock-5";
 import { TARA_MK1_CT, TARA_MK1_PS } from "./tara-mock-1";
 import { TARA_MK2_CT, TARA_MK2_PS } from "./tara-mock-2";
 import { TARA_MK3_CT, TARA_MK3_PS } from "./tara-mock-3";
+import { BPHO_MK1_S1, BPHO_MK1_S2 } from "./bpho-mock-1";
+import { BPHO_MK2_S1, BPHO_MK2_S2 } from "./bpho-mock-2";
 import { STEP_MK1_MCQ } from "./step-mock-1";
 import { STEP_MK2_MCQ } from "./step-mock-2";
 import { STEP_MK3_MCQ } from "./step-mock-3";
@@ -430,6 +432,32 @@ export const STEP_MOCK_5: MockPaper = {
   ],
 };
 
+export const BPHO_MOCK_1: MockPaper = {
+  id: "bpho-mock-1",
+  testId: "bpho",
+  title: "BPhO Round 1 模拟卷1",
+  titleEn: "BPhO Round 1 Mock 1",
+  description:
+    "模块1对标 Section 1 短题（多主题独立小问）；模块2以高难选择题近似 Section 2 强度。真实 Section 2 为长推导题——请到练习区完成 4 道原创长题并对照解答自评。全部短题经 sympy 双重验算。",
+  modules: [
+    { id: "s1", title: "Section 1 短题", titleEn: "Section 1", durationSec: 80 * 60, questions: BPHO_MK1_S1 },
+    { id: "s2", title: "Section 2 强度题（选择题化）", titleEn: "Section 2 (MCQ form)", durationSec: 80 * 60, questions: BPHO_MK1_S2 },
+  ],
+};
+
+export const BPHO_MOCK_2: MockPaper = {
+  id: "bpho-mock-2",
+  testId: "bpho",
+  title: "BPhO Round 1 模拟卷2",
+  titleEn: "BPhO Round 1 Mock 2",
+  description:
+    "模块1对标 Section 1 短题（多主题独立小问）；模块2以高难选择题近似 Section 2 强度。真实 Section 2 为长推导题——请到练习区完成 4 道原创长题并对照解答自评。全部短题经 sympy 双重验算。",
+  modules: [
+    { id: "s1", title: "Section 1 短题", titleEn: "Section 1", durationSec: 80 * 60, questions: BPHO_MK2_S1 },
+    { id: "s2", title: "Section 2 强度题（选择题化）", titleEn: "Section 2 (MCQ form)", durationSec: 80 * 60, questions: BPHO_MK2_S2 },
+  ],
+};
+
 export const TARA_MOCK_1: MockPaper = {
   id: "tara-mock-1",
   testId: "tara",
@@ -647,7 +675,7 @@ export const TMUA_MOCK_1: MockPaper = {
   ],
 };
 
-const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3];
+const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3, BPHO_MOCK_1, BPHO_MOCK_2];
 
 export function getMockPapersForTest(testId: string): MockPaper[] {
   return ALL_MOCK_PAPERS.filter((p) => p.testId === testId);
