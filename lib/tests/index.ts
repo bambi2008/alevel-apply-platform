@@ -1,6 +1,6 @@
 // 英国大学入学笔试数据层 — 9 种考试
 
-export type TestCategory = "mathematics" | "science" | "law" | "thinking";
+export type TestCategory = "mathematics" | "science" | "law" | "thinking" | "competition";
 
 export interface TestTopic {
   id: string;
@@ -319,7 +319,7 @@ export const ADMISSIONS_TESTS: AdmissionsTest[] = [
     name: "British Physics Olympiad (Round 1)",
     abbr: "BPhO",
     nameZh: "英国物理奥林匹克（学术竞赛）",
-    category: "science",
+    category: "competition",
     icon: "🏆",
     universities: ["由牛津大学物理系运营；成绩受 Oxford、Cambridge、Imperial 等物理/工程方向招生认可"],
     programs: ["物理", "工程", "自然科学（物理方向）"],
@@ -401,6 +401,7 @@ export function getTestById(id: string): AdmissionsTest | undefined {
 }
 
 export const TEST_CATEGORIES: Record<TestCategory, { label: string; labelEn: string }> = {
+  competition: { label: "竞赛", labelEn: "Competition" },
   mathematics: { label: "数学类", labelEn: "Mathematics" },
   science: { label: "理科类", labelEn: "Science" },
   law: { label: "法学类", labelEn: "Law" },

@@ -19,6 +19,7 @@ const CATEGORY_TABS: { id: TestCategory | "all"; label: string; labelEn: string 
   { id: "science", label: "理科类", labelEn: "Science" },
   { id: "thinking", label: "思维类", labelEn: "Thinking Skills" },
   { id: "law", label: "法学类", labelEn: "Law" },
+  { id: "competition", label: "竞赛", labelEn: "Competition" },
 ];
 
 export default function TestsPage() {
@@ -28,14 +29,18 @@ export default function TestsPage() {
     ? ADMISSIONS_TESTS
     : ADMISSIONS_TESTS.filter((t) => t.category === activeCategory);
 
+  // 「全部」视图下把入学笔试与学术竞赛分区展示
+  const admissions = filtered.filter((t) => t.category !== "competition");
+  const competitions = filtered.filter((t) => t.category === "competition");
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
       {/* Header */}
       <div className="grid lg:grid-cols-[1fr_auto] gap-8 items-center mb-8">
         <div className="[&>div]:mb-0">
           <PageHeader
-            title="入学笔试备考中心"
-            subtitle="9 种考试 · 结构说明 · 备考计划 · 知识点练习 · 计时模考"
+            title="笔试与竞赛备考中心"
+            subtitle="入学笔试 + 学术竞赛 · 结构说明 · 备考计划 · 知识点练习 · 计时模考"
             icon="📐"
           />
         </div>
@@ -74,12 +79,33 @@ export default function TestsPage() {
         ))}
       </div>
 
-      {/* Test cards grid */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filtered.map((test) => (
-          <TestCard key={test.id} test={test} />
-        ))}
-      </div>
+      {/* Test cards grid：入学笔试 / 学术竞赛 分区 */}
+      {admissions.length > 0 && (
+        <>
+          {activeCategory === "all" && competitions.length > 0 && (
+            <h2 className="text-lg font-bold text-[var(--ink)] mb-3">入学笔试</h2>
+          )}
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {admissions.map((test) => (
+              <TestCard key={test.id} test={test} />
+            ))}
+          </div>
+        </>
+      )}
+
+      {competitions.length > 0 && (
+        <>
+          <div className="flex items-center gap-2 mt-10 mb-3">
+            <h2 className="text-lg font-bold text-[var(--ink)]">🏆 学术竞赛</h2>
+            <span className="text-xs text-[var(--ink-faint)]">用名次奖项证明学术实力（非入学考试）</span>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {competitions.map((test) => (
+              <TestCard key={test.id} test={test} />
+            ))}
+          </div>
+        </>
+      )}
 
       {/* Disclaimer */}
       <p className="mt-10 text-xs text-[var(--ink-faint)] text-center">
