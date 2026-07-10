@@ -59,6 +59,7 @@ export interface CatalogItem {
   difficulty: 1 | 2 | 3; // 1 入门 / 2 进阶 / 3 挑战
   timing: string; // 方向性时间建议
   officialUrl?: string; // 占位，后续补充
+  testId?: string; // 若该竞赛在平台已有题库，指向 /tests/{testId}
 }
 
 export const BACKGROUND_CATALOG: CatalogItem[] = [
@@ -151,7 +152,7 @@ export const BACKGROUND_CATALOG: CatalogItem[] = [
     id: "bg-sci-bpho", field: "SCIENCE", category: "COMPETITION",
     title: "英国物理奥赛 (BPhO)", titleEn: "British Physics Olympiad",
     description: "英国权威的物理竞赛系列，题目富有挑战性，是物理及工程方向展示学术能力的重要竞赛。",
-    difficulty: 3, timing: "秋冬季", officialUrl: "",
+    difficulty: 3, timing: "秋冬季", officialUrl: "", testId: "bpho",
   },
   {
     id: "bg-sci-chem", field: "SCIENCE", category: "COMPETITION",

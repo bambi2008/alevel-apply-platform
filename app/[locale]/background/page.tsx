@@ -276,13 +276,23 @@ export default function BackgroundPage() {
                           ))}
                         </div>
                       )}
-                      <button
-                        onClick={() => onAdd(c)}
-                        disabled={added}
-                        className={`mt-3 text-sm rounded-lg py-1.5 ${added ? "bg-[var(--surface-2)] text-[var(--ink-faint)] cursor-default" : "bg-[var(--indigo)] text-white hover:bg-[var(--indigo-hover)]"}`}
-                      >
-                        {added ? "已加入规划" : "加入规划"}
-                      </button>
+                      <div className="mt-3 flex gap-2">
+                        <button
+                          onClick={() => onAdd(c)}
+                          disabled={added}
+                          className={`flex-1 text-sm rounded-lg py-1.5 ${added ? "bg-[var(--surface-2)] text-[var(--ink-faint)] cursor-default" : "bg-[var(--indigo)] text-white hover:bg-[var(--indigo-hover)]"}`}
+                        >
+                          {added ? "已加入规划" : "加入规划"}
+                        </button>
+                        {c.testId && (
+                          <Link
+                            href={`/tests/${c.testId}`}
+                            className="text-sm rounded-lg py-1.5 px-3 bg-amber-400 text-white font-medium hover:bg-amber-500 whitespace-nowrap"
+                          >
+                            去做题 →
+                          </Link>
+                        )}
+                      </div>
                     </div>
                   );
                 })}
