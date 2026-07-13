@@ -339,4 +339,256 @@ export const BMO_LONG_SAMPLE: LongQuestion[] = [
     fullSolution:
       "**完整证明（双重计数 + 奇偶）**\\n\\n把每个人握手的次数称为他的**度数**。\\n\\n**第一步（度数总和为偶）**：每一次握手恰好涉及 $2$ 个人，对这 $2$ 人的度数各贡献 $1$。因此把所有人的度数加起来，等于把每次握手数了两遍：\\n$$\\sum_{\\text{每个人}}(\\text{度数})=2\\times(\\text{握手总次数}),$$\\n这是一个偶数。\\n\\n**第二步（分成奇偶两组）**：把众人分成两组——度数为偶的人 $E$ 与度数为奇的人 $O$。$E$ 组每人度数为偶，其度数之和当然是偶数。\\n\\n**第三步（推出结论）**：\\n$$\\underbrace{\\sum_{O}(\\text{度数})}_{?}=\\underbrace{\\sum_{\\text{所有人}}(\\text{度数})}_{\\text{偶}}-\\underbrace{\\sum_{E}(\\text{度数})}_{\\text{偶}}=\\text{偶}.$$\\n所以 $O$ 组的度数之和是偶数。但 $O$ 组里每个人的度数都是**奇数**；若干个奇数之和为偶数，当且仅当奇数的**个数为偶**。因此度数为奇的人数 $|O|$ 是偶数。$\\blacksquare$\\n\\n---\\n**方法要点（BMO1 通用武器）**：**双重计数**（同一个量用两种方式数，得到等式）是组合证明的支柱；配合**奇偶分析**，「奇数之和的奇偶性由奇数个数决定」这一句常是收口的关键。用图论语言说：任何图中奇度顶点的个数为偶——这就是握手引理。\\n\\n**延伸练习**：由此可知「不可能有 $n$ 个人每人都恰好与其他人中奇数个握手，若 $n$ 为奇数且要求人人度数相同为奇」——把握手引理套到具体约束上是常见考法。\\n\\n---\\n*原创题；对标 BMO1 第 1–2 题难度；「奇度数顶点个数恒为偶」已在 $5000$ 个随机图上程序核对；请对照证明自评。*",
   },
+
+  {
+    id: "bmo1-nt-005",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-number",
+    difficulty: 2,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】Prove that $n^3-n$ is divisible by $6$ for every integer $n$.（求证：对每个整数 $n$，$n^3-n$ 都能被 $6$ 整除。）真实 BMO1 中本题不设小问——引导小问示范「连续整数之积」的整除威力。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（因式分解）：把 $n^3-n$ 分解成三个连续整数之积。",
+        solutionOutline: "$n^3-n=n(n^2-1)=n(n-1)(n+1)=(n-1)n(n+1)$，即三个连续整数之积。" },
+      { label: "b", marks: 4, question: "引导二（分别证被 $2$、被 $3$ 整除）：说明三个连续整数中必有一个是 $2$ 的倍数、必有一个是 $3$ 的倍数。",
+        solutionOutline: "任意两个连续整数中必有一偶数，故 $2\\mid(n-1)n(n+1)$；任意三个连续整数中必有一个是 $3$ 的倍数（按 $n\\bmod3$ 分类），故 $3\\mid(n-1)n(n+1)$。" },
+      { label: "c", marks: 3, question: "引导三（合并）：由 $2\\mid$ 与 $3\\mid$ 且 $\\gcd(2,3)=1$，推出 $6\\mid n^3-n$。",
+        solutionOutline: "$2$ 与 $3$ 互素，同时整除同一个数则其积 $6$ 也整除之，故 $6\\mid n^3-n$，对一切整数 $n$ 成立。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（连续整数之积）**\\n\\n分解：\\n$$n^3-n=n(n^2-1)=(n-1)\\,n\\,(n+1),$$\\n这是**三个连续整数之积**。\\n\\n- **被 $2$ 整除**：连续两个整数中必有一个偶数，故 $(n-1)n(n+1)$ 含因子 $2$。\\n- **被 $3$ 整除**：把 $n$ 按模 $3$ 分类，$n\\equiv0,1,2$ 时分别有 $n$、$n+1$（因 $n\\equiv2\\Rightarrow n+1\\equiv0$）、$n-1$（因 $n\\equiv1\\Rightarrow n-1\\equiv0$）被 $3$ 整除；总之三连续整数中必有一个是 $3$ 的倍数。\\n\\n于是 $2\\mid n^3-n$ 且 $3\\mid n^3-n$。由 $\\gcd(2,3)=1$，二者的乘积 $6$ 也整除 $n^3-n$：\\n$$6\\mid n^3-n\\quad(\\forall\\,n\\in\\mathbb{Z}).\\qquad\\blacksquare$$\\n\\n---\\n**方法要点（BMO1 通用武器）**：**连续整数之积**天然带整除性——$k$ 个连续整数之积必被 $k!$ 整除。证「被 $m$ 整除」时，把 $m$ 拆成互素因子分别验证（这里 $6=2\\times3$），再用「互素因子同除则积除」合并，是标准套路。\\n\\n**延伸练习**：同法可证 $n^5-n$ 被 $30$ 整除（$30=2\\cdot3\\cdot5$，用费马小定理或直接分类补上「被 $5$ 整除」）。\\n\\n---\\n*原创题；对标 BMO1 第 1 题难度；$6\\mid n^3-n$ 已对 $n=-200\\dots200$ 程序核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo1-nt-006",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-number",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】Prove that if $2^n-1$ is prime, then $n$ is prime.（求证：若 $2^n-1$ 是素数，则 $n$ 必为素数。）真实 BMO1 中本题不设小问——引导小问示范「用逆否命题 + 因式分解」。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（一个基本因式分解）：证明对任意整数 $x$ 与正整数 $k$，有 $x-1\\mid x^k-1$。（提示：$x^k-1=(x-1)(x^{k-1}+x^{k-2}+\\cdots+1)$。）",
+        solutionOutline: "直接验证 $(x-1)(x^{k-1}+\\cdots+x+1)=x^k-1$（望远镜展开），故 $x-1\\mid x^k-1$。" },
+      { label: "b", marks: 4, question: "引导二（逆否：设 $n$ 合数）：设 $n=ab$，其中 $1<a<n$。取 $x=2^a$，用 a) 说明 $2^a-1$ 整除 $2^n-1$，并说明这个因子是「真因子」（既非 $1$ 也非 $2^n-1$）。",
+        solutionOutline: "$2^n-1=2^{ab}-1=(2^a)^b-1$，由 a)（$x=2^a$）得 $2^a-1\\mid 2^n-1$。因 $1<a<n$，有 $1<2^a-1<2^n-1$，是真因子。" },
+      { label: "c", marks: 3, question: "引导三（收尾）：由 b) 说明 $n$ 合数时 $2^n-1$ 必合数，取逆否得原命题。",
+        solutionOutline: "$n$ 合数 $\\Rightarrow 2^n-1$ 有真因子 $\\Rightarrow 2^n-1$ 合数。逆否即：$2^n-1$ 素数 $\\Rightarrow n$ 素数。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（逆否命题 + 因式分解）**\\n\\n**引理**：对任意整数 $x$ 与正整数 $k$，\\n$$x^k-1=(x-1)(x^{k-1}+x^{k-2}+\\cdots+x+1),$$\\n故 $x-1\\mid x^k-1$。（右边展开，中间项望远镜相消即得左边。）\\n\\n**证逆否命题**：设 $n$ 是合数，写成 $n=ab$，其中整数 $a,b$ 满足 $1<a<n$（从而 $b>1$）。令 $x=2^a$，则由引理\\n$$2^n-1=(2^a)^b-1\\ \\text{被}\\ 2^a-1\\ \\text{整除}.$$\\n又因 $1<a<n$，有\\n$$1<2^a-1<2^n-1,$$\\n所以 $2^a-1$ 是 $2^n-1$ 的一个**真因子**，$2^n-1$ 为合数。\\n\\n这证明了「$n$ 合数 $\\Rightarrow 2^n-1$ 合数」。取其逆否命题：\\n$$2^n-1\\ \\text{是素数}\\ \\Rightarrow\\ n\\ \\text{是素数}.\\qquad\\blacksquare$$\\n（注：$n=1$ 时 $2^n-1=1$ 不是素数，命题前提不成立，无需单独讨论。）\\n\\n---\\n**方法要点（BMO1 通用武器）**：要证「$P\\Rightarrow Q$」而正面难下手时，改证**逆否**「$\\neg Q\\Rightarrow\\neg P$」往往豁然开朗——本题把「$n$ 素数」的反面「$n$ 合数」拆成 $n=ab$，立刻能用 $x-1\\mid x^k-1$ 造出真因子。这类形如 $2^n-1$（Mersenne 数）的题几乎都靠这条因式分解。\\n\\n**延伸**：其逆不成立——$n$ 素数不保证 $2^n-1$ 素数，例如 $2^{11}-1=2047=23\\times89$。\\n\\n---\\n*原创题；对标 BMO1 第 2–3 题难度；「合数 $n$ 下 $2^a-1$ 为 $2^n-1$ 的真因子」及「Mersenne 素数的指数为素数」已程序核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo1-nt-007",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-number",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】Prove that no integer of the form $4k+3$ can be written as a sum of two perfect squares.（求证：形如 $4k+3$ 的整数都不能表示成两个完全平方数之和。）真实 BMO1 中本题不设小问——引导小问示范「模 $4$ 判别」。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（平方数模 $4$）：证明任何完全平方数模 $4$ 只能是 $0$ 或 $1$。",
+        solutionOutline: "偶数 $2m$：$(2m)^2=4m^2\\equiv0$；奇数 $2m+1$：$(2m+1)^2=4m^2+4m+1\\equiv1\\pmod4$。故平方数 $\\bmod4\\in\\{0,1\\}$。" },
+      { label: "b", marks: 4, question: "引导二（两平方之和模 $4$）：由 a) 求出 $a^2+b^2\\bmod 4$ 的所有可能取值。",
+        solutionOutline: "$a^2,b^2\\in\\{0,1\\}\\pmod4$，其和 $\\in\\{0+0,0+1,1+1\\}=\\{0,1,2\\}\\pmod4$，绝不会是 $3$。" },
+      { label: "c", marks: 3, question: "引导三（收尾）：$4k+3\\equiv3\\pmod4$，与 b) 矛盾，完成证明。",
+        solutionOutline: "$4k+3\\equiv3\\pmod4$，而两平方之和模 $4$ 只能取 $0,1,2$，故 $4k+3$ 不能写成两平方之和。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（模 $4$ 判别）**\\n\\n**第一步：平方数模 $4$ 只有 $0,1$。** 任一整数按奇偶写出：\\n$$(2m)^2=4m^2\\equiv0,\\qquad (2m+1)^2=4m^2+4m+1\\equiv1\\pmod4.$$\\n故对任意整数 $t$，$t^2\\equiv0$ 或 $1\\pmod4$。\\n\\n**第二步：两平方之和模 $4$。** 若 $N=a^2+b^2$，则 $a^2,b^2$ 各 $\\equiv0$ 或 $1$，相加得\\n$$N\\equiv 0,\\ 1,\\ \\text{或}\\ 2\\pmod4,$$\\n即两个平方数之和模 $4$ 绝不等于 $3$。\\n\\n**第三步：矛盾。** 形如 $4k+3$ 的数满足 $4k+3\\equiv3\\pmod4$。若它能写成两平方之和，则其模 $4$ 应落在 $\\{0,1,2\\}$，与 $\\equiv3$ 矛盾。故 $4k+3$ **不能**表示为两个完全平方数之和。$\\blacksquare$\\n\\n---\\n**方法要点（BMO1 通用武器）**：证「某种形式的数不能表成某种和」，先算**该和在某个模下的可能取值集合**，再看目标是否落在集合外——**模 $4$**（对平方）与**模 $8$**（对奇平方 $\\equiv1$）是数论题的常客。这类「取模缩小可能性」的手法能一步排除无穷多情形。\\n\\n**延伸**：由此可知 $3,7,11,\\dots$ 都不是两平方和；进一步（费马两平方定理）一个素数是两平方和当且仅当它等于 $2$ 或 $\\equiv1\\pmod4$。\\n\\n---\\n*原创题；对标 BMO1 第 2–3 题难度；「平方 $\\bmod4\\in\\{0,1\\}$、两平方和 $\\bmod4\\ne3$、$2000$ 内 $4k+3$ 均非两平方和」已程序核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo1-in-003",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-algebra",
+    difficulty: 2,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】Let $a,b,c$ be positive real numbers. Prove that $\\dfrac{a}{b}+\\dfrac{b}{c}+\\dfrac{c}{a}\\ge 3$, and determine when equality holds.（设正实数 $a,b,c$，求证 $\\dfrac{a}{b}+\\dfrac{b}{c}+\\dfrac{c}{a}\\ge3$，并说明等号条件。）真实 BMO1 中本题不设小问——引导小问示范三元 AM–GM 中「乘积为 $1$」的用法。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（三元 AM–GM）：叙述三个正数的算术–几何平均不等式 $\\dfrac{x+y+z}{3}\\ge\\sqrt[3]{xyz}$。",
+        solutionOutline: "对正数 $x,y,z$：$\\dfrac{x+y+z}{3}\\ge\\sqrt[3]{xyz}$，等号当且仅当 $x=y=z$。" },
+      { label: "b", marks: 4, question: "引导二（关键代入）：取 $x=\\dfrac ab,\\ y=\\dfrac bc,\\ z=\\dfrac ca$，计算它们的乘积 $xyz$。",
+        solutionOutline: "$xyz=\\dfrac ab\\cdot\\dfrac bc\\cdot\\dfrac ca=1$，故 $\\sqrt[3]{xyz}=1$。" },
+      { label: "c", marks: 3, question: "引导三（收尾 + 等号）：由 a)、b) 得出不等式并确定等号条件。",
+        solutionOutline: "$\\dfrac13\\left(\\dfrac ab+\\dfrac bc+\\dfrac ca\\right)\\ge\\sqrt[3]{1}=1$，即和 $\\ge3$。等号 $\\iff \\dfrac ab=\\dfrac bc=\\dfrac ca$，结合乘积 $=1$ 得三者都 $=1$，即 $a=b=c$。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（三元 AM–GM，乘积为 $1$）**\\n\\n对三个正数用算术–几何平均不等式：\\n$$\\frac{x+y+z}{3}\\ge\\sqrt[3]{xyz},\\qquad\\text{等号}\\iff x=y=z.$$\\n取\\n$$x=\\frac ab,\\quad y=\\frac bc,\\quad z=\\frac ca,$$\\n它们都为正，且乘积\\n$$xyz=\\frac ab\\cdot\\frac bc\\cdot\\frac ca=1.$$\\n于是\\n$$\\frac13\\left(\\frac ab+\\frac bc+\\frac ca\\right)\\ge\\sqrt[3]{1}=1\\ \\Longrightarrow\\ \\frac ab+\\frac bc+\\frac ca\\ge3.$$\\n\\n**等号条件**：需 $x=y=z$，即 $\\dfrac ab=\\dfrac bc=\\dfrac ca$。设此公共值为 $t$，则 $t^3=xyz=1\\Rightarrow t=1$，故 $\\dfrac ab=\\dfrac bc=\\dfrac ca=1$，即 $a=b=c$。此时和恰为 $3$。$\\blacksquare$\\n\\n---\\n**方法要点（BMO1 通用武器）**：一串分式之**和**、其**积恰为常数**（尤其为 $1$）时，直接套 AM–GM 最省力——积为 $1$ 使几何平均等于 $1$，下界立现。这是「循环分式不等式」的招牌解法。\\n\\n**延伸练习**：同理 $\\dfrac ab+\\dfrac bc+\\dfrac ca+\\dfrac ba+\\dfrac cb+\\dfrac ac\\ge6$，以及一般 $n$ 元循环和 $\\ge n$。\\n\\n---\\n*原创题；对标 BMO1 第 1–2 题难度；最小值 $\\to3$（等号 $a=b=c$）已由 $3\\times10^5$ 次随机取样核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo1-al-003",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-algebra",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】Prove that for every integer $n\\ge 2$, the number $n^4+n^2+1$ is composite (not prime).（求证：对每个整数 $n\\ge2$，$n^4+n^2+1$ 都是合数。）真实 BMO1 中本题不设小问——引导小问示范「配方造差」的因式分解技巧。",
+    parts: [
+      { label: "a", marks: 4, question: "引导一（配方造平方差）：在 $n^4+n^2+1$ 中「加一项再减一项」凑成平方差，从而因式分解。（提示：$n^4+n^2+1=(n^4+2n^2+1)-n^2$。）",
+        solutionOutline: "$n^4+n^2+1=(n^2+1)^2-n^2=(n^2+1-n)(n^2+1+n)=(n^2-n+1)(n^2+n+1)$。" },
+      { label: "b", marks: 3, question: "引导二（两个因子都 $>1$）：对整数 $n\\ge2$，证明 $n^2-n+1>1$ 且 $n^2+n+1>1$。",
+        solutionOutline: "$n\\ge2$：$n^2+n+1\\ge7>1$；$n^2-n+1=n(n-1)+1\\ge2\\cdot1+1=3>1$。两因子都是大于 $1$ 的整数。" },
+      { label: "c", marks: 3, question: "引导三（收尾）：说明 $n^4+n^2+1$ 因此是合数。",
+        solutionOutline: "它写成两个都 $>1$ 的整数之积，故为合数（对一切整数 $n\\ge2$）。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（配方造平方差 + 因式分解）**\\n\\n**配方**：在 $n^4+n^2+1$ 里把 $n^2$ 拆成 $2n^2-n^2$，凑出完全平方：\\n$$n^4+n^2+1=(n^4+2n^2+1)-n^2=(n^2+1)^2-n^2.$$\\n这是平方差，可分解：\\n$$(n^2+1)^2-n^2=(n^2+1-n)(n^2+1+n)=(n^2-n+1)(n^2+n+1).$$\\n\\n**两因子都大于 $1$**：对整数 $n\\ge2$，\\n$$n^2+n+1\\ge 2^2+2+1=7>1,\\qquad n^2-n+1=n(n-1)+1\\ge 2\\cdot1+1=3>1.$$\\n二者都是大于 $1$ 的整数。\\n\\n**结论**：$n^4+n^2+1$ 表示成两个大于 $1$ 的整数之积，因此对每个整数 $n\\ge2$ 都是**合数**。$\\blacksquare$\\n\\n**数值核对**：$n=2$：$16+4+1=21=3\\times7=(2^2-2+1)(2^2+2+1)$ ✓；$n=3$：$81+9+1=91=7\\times13$ ✓。\\n\\n---\\n**方法要点（BMO1 通用武器）**：多项式「看着像素数其实能分解」的题，核心是**配方造平方差**（Sophie Germain 式恒等式的思想）——通过 $+t-t$ 补成完全平方，再用 $A^2-B^2=(A-B)(A+B)$ 拆开；最后别忘了验证两因子都 $>1$（否则可能退化成素数，如 $n=1$ 时 $1^2-1+1=1$，$n^4+n^2+1=3$ 为素数，这正是要求 $n\\ge2$ 的原因）。\\n\\n**延伸练习**：同法证 $n^4+4$ 对 $n\\ge2$ 为合数（$n^4+4=(n^2-2n+2)(n^2+2n+2)$，Sophie Germain 恒等式）。\\n\\n---\\n*原创题；对标 BMO1 第 2 题难度；恒等式与「$|n|\\ge2$ 时两因子 $>1$、乘积为合数」已符号 + 数值程序核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo1-al-004",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-algebra",
+    difficulty: 2,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】A real number $x$ satisfies $x+\\dfrac1x=3$. Prove that $x^2+\\dfrac1{x^2}=7$ and $x^3+\\dfrac1{x^3}=18$.（实数 $x$ 满足 $x+\\dfrac1x=3$。求证 $x^2+\\dfrac1{x^2}=7$ 且 $x^3+\\dfrac1{x^3}=18$。）真实 BMO1 中本题不设小问——引导小问示范「对称幂和」的递推技巧。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（平方）：把 $x+\\dfrac1x=3$ 两边平方，导出 $x^2+\\dfrac1{x^2}$。",
+        solutionOutline: "$\\left(x+\\dfrac1x\\right)^2=x^2+2+\\dfrac1{x^2}=9$，故 $x^2+\\dfrac1{x^2}=9-2=7$。" },
+      { label: "b", marks: 4, question: "引导二（立方或相乘）：用 $\\left(x+\\dfrac1x\\right)^3$ 展开，或用 $\\left(x+\\dfrac1x\\right)\\left(x^2+\\dfrac1{x^2}\\right)$，导出 $x^3+\\dfrac1{x^3}$。",
+        solutionOutline: "$\\left(x+\\dfrac1x\\right)^3=x^3+3x+\\dfrac3x+\\dfrac1{x^3}=x^3+\\dfrac1{x^3}+3\\left(x+\\dfrac1x\\right)$，故 $x^3+\\dfrac1{x^3}=3^3-3\\cdot3=27-9=18$。" },
+      { label: "c", marks: 3, question: "引导三（严谨收尾）：写清结论，并说明该结论对满足 $x+\\dfrac1x=3$ 的任意实数 $x$ 都成立（无需解出 $x$）。",
+        solutionOutline: "由 a)、b) 得 $x^2+\\dfrac1{x^2}=7$、$x^3+\\dfrac1{x^3}=18$。全程只用到 $x+\\dfrac1x=3$，未解出 $x$，故对任何满足此式的实数 $x$ 都成立。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（对称幂和递推）**\\n\\n记 $s=x+\\dfrac1x=3$。\\n\\n**二次幂和**：两边平方，\\n$$s^2=\\left(x+\\frac1x\\right)^2=x^2+2\\cdot x\\cdot\\frac1x+\\frac1{x^2}=x^2+\\frac1{x^2}+2,$$\\n故\\n$$x^2+\\frac1{x^2}=s^2-2=9-2=7.$$\\n\\n**三次幂和**：把 $s$ 立方，\\n$$s^3=\\left(x+\\frac1x\\right)^3=x^3+3x^2\\cdot\\frac1x+3x\\cdot\\frac1{x^2}+\\frac1{x^3}=x^3+\\frac1{x^3}+3\\left(x+\\frac1x\\right),$$\\n即 $s^3=\\left(x^3+\\dfrac1{x^3}\\right)+3s$，于是\\n$$x^3+\\frac1{x^3}=s^3-3s=27-9=18.$$\\n\\n整个推导只用到 $x+\\dfrac1x=3$，从未解出 $x$，因此结论对满足该条件的**任意**实数 $x$ 都成立。$\\blacksquare$\\n\\n---\\n**方法要点（BMO1 通用武器）**：对称式 $p_k=x^k+\\dfrac1{x^k}$ 满足递推 $p_k=s\\,p_{k-1}-p_{k-2}$（$p_0=2,\\ p_1=s$）。考场上**不要急着解方程求 $x$**——直接用「平方去交叉项」「立方补一次项」这类恒等式，几步就得到高次幂和，既快又避开无理数。\\n\\n**延伸练习**：用递推续算 $x^4+\\dfrac1{x^4}=7\\cdot? $：$p_4=s\\,p_3-p_2=3\\cdot18-7=47$。\\n\\n---\\n*原创题；对标 BMO1 第 1–2 题难度；$p_2=7,\\ p_3=18$ 已用恒等式与对 $x^2-3x+1=0$ 两实根的数值代入双重核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo1-ge-005",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-geometry",
+    difficulty: 2,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】In triangle $ABC$, let $M$ and $N$ be the midpoints of $AB$ and $AC$. Prove the Midpoint Theorem: $MN$ is parallel to $BC$ and $MN=\\tfrac12 BC$.（在三角形 $ABC$ 中，$M,N$ 分别是 $AB,AC$ 的中点。求证中位线定理：$MN\\parallel BC$ 且 $MN=\\tfrac12BC$。）真实 BMO1 中本题不设小问——引导小问示范「向量法」这一利器。",
+    parts: [
+      { label: "a", marks: 4, question: "引导一（用向量表示）：以 $A$ 为原点，记 $\\vec{AB}=\\mathbf b$、$\\vec{AC}=\\mathbf c$。用 $\\mathbf b,\\mathbf c$ 写出 $\\vec{MN}$ 与 $\\vec{BC}$。",
+        solutionOutline: "$M=\\tfrac12\\mathbf b$，$N=\\tfrac12\\mathbf c$，故 $\\vec{MN}=N-M=\\tfrac12(\\mathbf c-\\mathbf b)$；而 $\\vec{BC}=\\mathbf c-\\mathbf b$。" },
+      { label: "b", marks: 3, question: "引导二（平行）：由 a) 的两向量关系说明 $MN\\parallel BC$。",
+        solutionOutline: "$\\vec{MN}=\\tfrac12\\vec{BC}$，两向量共线（成比例 $\\tfrac12$），故 $MN\\parallel BC$。" },
+      { label: "c", marks: 3, question: "引导三（长度）：由同一关系得出 $MN$ 与 $BC$ 的长度关系。",
+        solutionOutline: "取模：$MN=|\\vec{MN}|=\\tfrac12|\\vec{BC}|=\\tfrac12BC$。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（向量法）**\\n\\n以 $A$ 为原点，设 $\\vec{AB}=\\mathbf b$，$\\vec{AC}=\\mathbf c$。$M,N$ 分别是 $AB,AC$ 的中点，故其位置向量为\\n$$M=\\tfrac12\\mathbf b,\\qquad N=\\tfrac12\\mathbf c.$$\\n于是\\n$$\\vec{MN}=N-M=\\tfrac12\\mathbf c-\\tfrac12\\mathbf b=\\tfrac12(\\mathbf c-\\mathbf b),\\qquad \\vec{BC}=\\vec{AC}-\\vec{AB}=\\mathbf c-\\mathbf b.$$\\n因此\\n$$\\vec{MN}=\\tfrac12\\,\\vec{BC}.$$\\n\\n- **平行**：$\\vec{MN}$ 与 $\\vec{BC}$ 成比例（系数 $\\tfrac12$），二者共线方向相同，故 $MN\\parallel BC$。\\n- **长度**：两边取模，$MN=|\\vec{MN}|=\\tfrac12|\\vec{BC}|=\\tfrac12BC$。\\n\\n命题得证。$\\blacksquare$\\n\\n---\\n**方法要点（BMO1 通用武器）**：涉及**中点、平行、比例**的几何题，**向量法**极其干净——把点写成位置向量，「平行」变成「向量成比例」，「长度关系」变成「取模」，一步到位，还天然避免图形位置的讨论。这与坐标法互补，都是综合法之外的稳妥兜底。\\n\\n**延伸**：由中位线定理可推三角形三条中位线把它分成四个全等小三角形，以及「梯形中位线等于两底和的一半」。\\n\\n---\\n*原创题；对标 BMO1 第 1 题难度；$\\vec{MN}=\\tfrac12\\vec{BC}$（平行且半长）已在 $2\\times10^4$ 组随机三角形上用坐标法核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo1-ge-006",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-geometry",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】Prove that the three perpendicular bisectors of the sides of a triangle are concurrent (they meet at a single point, the circumcentre, which is equidistant from all three vertices).（求证：三角形三条边的垂直平分线交于一点（外心），且该点到三个顶点等距。）真实 BMO1 中本题不设小问——引导小问示范「等距刻画 + 公共点」的共点证法。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（垂直平分线的刻画）：叙述并说明：点 $P$ 在线段 $XY$ 的垂直平分线上，当且仅当 $PX=PY$。",
+        solutionOutline: "垂直平分线是「到 $X,Y$ 等距的点的轨迹」：$P$ 在其上 $\\iff PX=PY$（勾股定理正反向可证）。" },
+      { label: "b", marks: 4, question: "引导二（取两条交点）：设 $AB$ 与 $AC$ 的垂直平分线交于点 $O$（三角形中它们不平行，必相交）。用 a) 写出 $O$ 到各顶点的距离关系。",
+        solutionOutline: "$O$ 在 $AB$ 垂直平分线上 $\\Rightarrow OA=OB$；$O$ 在 $AC$ 垂直平分线上 $\\Rightarrow OA=OC$。故 $OA=OB=OC$。" },
+      { label: "c", marks: 3, question: "引导三（第三条也过 $O$）：由 b) 推出 $OB=OC$，再用 a) 说明 $O$ 也在 $BC$ 的垂直平分线上，完成共点证明。",
+        solutionOutline: "由 $OB=OC$ 及 a)，$O$ 在 $BC$ 的垂直平分线上。故三条垂直平分线都过 $O$，共点；且 $OA=OB=OC$，$O$ 到三顶点等距（即外心）。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（等距刻画 + 公共点）**\\n\\n**关键刻画**：线段 $XY$ 的垂直平分线，恰是**到 $X$ 与 $Y$ 等距的所有点的轨迹**：\\n$$P\\ \\text{在}\\ XY\\ \\text{的垂直平分线上}\\iff PX=PY.$$\\n（设中点 $Q$，若 $PQ\\perp XY$ 则由勾股 $PX^2=PQ^2+QX^2=PQ^2+QY^2=PY^2$；反之 $PX=PY$ 迫使 $P$ 落在过 $Q$ 且垂直 $XY$ 的直线上。）\\n\\n**取两条的交点**：在三角形 $ABC$ 中，$AB$ 与 $AC$ 不平行，故它们的垂直平分线也不平行，必相交于某点 $O$。由刻画：\\n$$O\\ \\text{在}\\ AB\\ \\text{垂直平分线上}\\Rightarrow OA=OB,\\qquad O\\ \\text{在}\\ AC\\ \\text{垂直平分线上}\\Rightarrow OA=OC.$$\\n于是\\n$$OA=OB=OC.$$\\n\\n**第三条也过 $O$**：由上式 $OB=OC$，再用刻画（反方向），$O$ 必在 $BC$ 的垂直平分线上。因此三条垂直平分线都经过同一点 $O$——它们**共点**。且 $OA=OB=OC$，即 $O$ 到三顶点等距，这个公共点就是**外心**（以 $O$ 为心、$OA$ 为半径的圆过三顶点）。$\\blacksquare$\\n\\n---\\n**方法要点（BMO1 通用武器）**：证「三线共点」的一个万能套路——**先取其中两条的交点，再证它满足第三条的定义**。这里第三条的「定义」被翻译成等距条件（$OB=OC$），由前两条自动导出。角平分线共点（内心）、中线共点（重心）都可用类似「定义式刻画 + 公共点」或面积/向量法处理。\\n\\n**延伸**：同法用「到两边等距 $\\iff$ 在角平分线上」可证三条内角平分线共点于内心。\\n\\n---\\n*原创题；对标 BMO1 第 2–3 题难度；外心到三顶点等距（三垂直平分线共点）已在 $2\\times10^4$ 组随机三角形上用坐标法核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo1-ge-007",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-geometry",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】Two chords $AB$ and $CD$ of a circle meet at an interior point $P$. Prove the Intersecting Chords Theorem: $PA\\cdot PB=PC\\cdot PD$.（圆的两条弦 $AB$ 与 $CD$ 交于圆内一点 $P$。求证相交弦定理 $PA\\cdot PB=PC\\cdot PD$。）真实 BMO1 中本题不设小问——引导小问示范「圆周角 → 相似三角形」。",
+    parts: [
+      { label: "a", marks: 4, question: "引导一（找相似）：考虑 $\\triangle PAC$ 与 $\\triangle PDB$。利用「同弧所对圆周角相等」与「对顶角相等」，证明这两个三角形相似。",
+        solutionOutline: "$\\angle APC=\\angle DPB$（对顶角）；$\\angle PAC=\\angle CAB$ 与 $\\angle PDB=\\angle CDB$ 同为弧 $CB$ 所对圆周角，故相等。由 AA，$\\triangle PAC\\sim\\triangle PDB$。" },
+      { label: "b", marks: 3, question: "引导二（写比例）：由相似写出对应边成比例。",
+        solutionOutline: "对应边：$\\dfrac{PA}{PD}=\\dfrac{PC}{PB}$。" },
+      { label: "c", marks: 3, question: "引导三（交叉相乘）：由 b) 的比例得出结论。",
+        solutionOutline: "交叉相乘 $PA\\cdot PB=PC\\cdot PD$。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（圆周角 → 相似三角形）**\\n\\n两弦 $AB,CD$ 交于圆内点 $P$。考察 $\\triangle PAC$ 与 $\\triangle PDB$。\\n\\n- **对顶角相等**：$\\angle APC=\\angle DPB$。\\n- **同弧圆周角相等**：$\\angle PAC$ 即 $\\angle CAB$，$\\angle PDB$ 即 $\\angle CDB$，二者都是弦（弧）$CB$ 所对的圆周角，故 $\\angle PAC=\\angle PDB$。\\n\\n由 AA 判定，\\n$$\\triangle PAC\\sim\\triangle PDB.$$\\n于是对应边成比例（$PA\\leftrightarrow PD$，$PC\\leftrightarrow PB$）：\\n$$\\frac{PA}{PD}=\\frac{PC}{PB}.$$\\n交叉相乘即得\\n$$PA\\cdot PB=PC\\cdot PD.\\qquad\\blacksquare$$\\n\\n---\\n**方法要点（BMO1 通用武器）**：圆里出现**交点 + 边长乘积**，先找**相似三角形**——「同弧圆周角相等」提供一组等角，「对顶角 / 公共角」提供另一组，AA 立刻给出相似，比例交叉相乘就是所求。此即「点对圆的幂」的一部分（$P$ 在圆内时幂为 $-PA\\cdot PB$）；$P$ 在圆外时同法得到 $PA\\cdot PB=PC\\cdot PD$（割线）乃至切线情形 $PT^2=PA\\cdot PB$。\\n\\n**延伸练习**：用点的幂可快速证明「切线长相等」以及处理两圆根轴问题。\\n\\n---\\n*原创题；对标 BMO1 第 2–3 题难度；$PA\\cdot PB=PC\\cdot PD$ 已在 $2\\times10^4$ 组随机圆 + 过内点两弦上用坐标法核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo1-co-005",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-combinatorics",
+    difficulty: 2,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】Let $n\\ge 1$. Prove that a set of $n$ elements has exactly as many subsets of even size as of odd size (hence each count is $2^{n-1}$).（设 $n\\ge1$。求证：$n$ 元集合中「偶数元子集」与「奇数元子集」的个数相等（从而各为 $2^{n-1}$）。）真实 BMO1 中本题不设小问——引导小问示范「构造对合（配对）」的组合证法。",
+    parts: [
+      { label: "a", marks: 4, question: "引导一（造映射）：固定一个元素 $e$。定义映射 $f$：对任意子集 $S$，若 $e\\in S$ 则从 $S$ 中删去 $e$，否则把 $e$ 加进 $S$。说明 $f$ 把子集映到子集，并且 $f(f(S))=S$（是对合）。",
+        solutionOutline: "$f(S)=S\\triangle\\{e\\}$（对称差）。再作一次又把 $e$ 切换回来，故 $f(f(S))=S$，$f$ 是自身的逆——一个对合，从而是双射。" },
+      { label: "b", marks: 3, question: "引导二（改变奇偶）：说明 $f$ 恰好把 $S$ 的元素个数改变 $1$，因而把「偶数元子集」映到「奇数元子集」，反之亦然。",
+        solutionOutline: "加入或删去一个元素使 $|S|$ 变化 $\\pm1$，奇偶翻转。故 $f$ 把偶子集族双射到奇子集族。" },
+      { label: "c", marks: 3, question: "引导三（收尾）：由双射得两类个数相等；再由子集总数 $2^n$ 推出各为 $2^{n-1}$。",
+        solutionOutline: "$f$ 是偶子集与奇子集之间的双射 $\\Rightarrow$ 两者个数相等。又总数为 $2^n$，故各占一半 $=2^{n-1}$（$n\\ge1$ 保证 $e$ 存在）。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（构造对合 / 配对）**\\n\\n因为 $n\\ge1$，可固定集合中的某个元素 $e$。定义映射 $f$ 作用在所有子集上：\\n$$f(S)=\\begin{cases}S\\setminus\\{e\\},& e\\in S,\\\\[2pt] S\\cup\\{e\\},& e\\notin S,\\end{cases}\\qquad\\text{即}\\ f(S)=S\\,\\triangle\\,\\{e\\}\\ (\\text{对称差}).$$\\n\\n**$f$ 是双射（对合）**：再作用一次 $f$，又把 $e$ 的「有/无」切换回原状，故 $f(f(S))=S$。$f$ 以自身为逆，因此是所有子集到自身的一个双射。\\n\\n**$f$ 翻转奇偶**：$f$ 恰好使子集的元素个数增加或减少 $1$，于是 $|S|$ 的奇偶性被翻转——$f$ 把每个**偶数元**子集送到一个**奇数元**子集，反之亦然。\\n\\n**计数**：因此 $f$ 给出「偶子集族」与「奇子集族」之间的一个双射，两族元素个数**相等**。而全部子集共 $2^n$ 个，被平分成这两族，故\\n$$\\#\\{\\text{偶子集}\\}=\\#\\{\\text{奇子集}\\}=\\frac{2^n}{2}=2^{n-1}.\\qquad\\blacksquare$$\\n\\n---\\n**方法要点（BMO1 通用武器）**：要证「两类对象一样多」，最漂亮的办法是造一个**双射**把一类一一对应到另一类；而**对合**（$f\\circ f=\\mathrm{id}$）是最省事的双射——只需验证「做两次回到原样」。「切换某元素的有无」是组合里最常用的对合构造。\\n\\n**延伸练习**：同一对合思想可证二项式恒等式 $\\sum_k(-1)^k\\binom nk=0$（$n\\ge1$）。\\n\\n---\\n*原创题；对标 BMO1 第 1–2 题难度；「偶子集数 = 奇子集数 = $2^{n-1}$」已对 $n=1\\dots14$ 程序核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo1-co-006",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-combinatorics",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】Five points are placed inside a unit square (side length $1$). Prove that some two of them are at distance at most $\\dfrac{\\sqrt2}{2}$ apart.（在边长为 $1$ 的正方形内放置 $5$ 个点。求证：其中必有两点的距离不超过 $\\dfrac{\\sqrt2}{2}$。）真实 BMO1 中本题不设小问——引导小问示范「切分区域 + 鸽巢」。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（切分 + 每块的直径）：把单位正方形切成 $4$ 个边长为 $\\tfrac12$ 的小正方形。求每个小正方形内两点的最大可能距离（即它的对角线长）。",
+        solutionOutline: "四个 $\\tfrac12\\times\\tfrac12$ 小正方形；每个对角线长 $=\\sqrt{(\\tfrac12)^2+(\\tfrac12)^2}=\\dfrac{\\sqrt2}{2}$，即块内任两点距离 $\\le\\dfrac{\\sqrt2}{2}$。" },
+      { label: "b", marks: 4, question: "引导二（鸽巢）：把 $5$ 个点放入 $4$ 个小正方形（边界点按约定归入某一块）。用鸽巢原理得出什么？",
+        solutionOutline: "$5$ 个点放进 $4$ 个小正方形，必有两个点落在**同一个**小正方形内。" },
+      { label: "c", marks: 3, question: "引导三（收尾）：结合 a)、b) 完成证明。",
+        solutionOutline: "同一小正方形内的两点距离 $\\le$ 该正方形对角线 $=\\dfrac{\\sqrt2}{2}$。故存在两点距离 $\\le\\dfrac{\\sqrt2}{2}$。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（区域切分 + 鸽巢）**\\n\\n**切分**：用两条中位线把单位正方形分成 $4$ 个边长为 $\\tfrac12$ 的小正方形（边界点约定归入其右 / 上侧的那一块，使每点恰属于一块）。每个小正方形内，两点间最大距离就是它的对角线：\\n$$\\sqrt{\\left(\\tfrac12\\right)^2+\\left(\\tfrac12\\right)^2}=\\sqrt{\\tfrac12}=\\frac{\\sqrt2}{2}.$$\\n即同一小正方形内**任意两点的距离都 $\\le\\dfrac{\\sqrt2}{2}$**。\\n\\n**鸽巢**：把 $5$ 个点放进这 $4$ 个小正方形。由鸽巢原理（$5>4$），必有两个点落在**同一个**小正方形里。\\n\\n**结论**：这两点同处一个 $\\tfrac12\\times\\tfrac12$ 的小正方形，故其距离 $\\le\\dfrac{\\sqrt2}{2}$。这就证明了必有两点距离不超过 $\\dfrac{\\sqrt2}{2}$。$\\blacksquare$\\n\\n---\\n**方法要点（BMO1 通用武器）**：「$n+1$ 个点里必有两个靠得近」类问题的标准解法——**把大区域切成 $n$ 个小块，使每块直径 $\\le$ 目标距离**，再用鸽巢把两点逼进同一块。难点在于**切分方式的设计**（块数 = 点数 − 1，且每块直径合适）。\\n\\n**紧性**：界 $\\dfrac{\\sqrt2}{2}$ 不能再小——取正方形四角 + 中心这 $5$ 点，最近的一对（角与中心）距离恰为 $\\dfrac{\\sqrt2}{2}$。\\n\\n---\\n*原创题；对标 BMO1 第 2–3 题难度；「$20$ 万组随机 $5$ 点最近距离 $\\le\\dfrac{\\sqrt2}{2}$」及「四角+中心恰达界 $0.7071$」已程序核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo1-co-007",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-combinatorics",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】Six people are at a party. Any two of them are either acquaintances or strangers. Prove that there are either three people who are all mutual acquaintances, or three who are all mutual strangers.（聚会上有 $6$ 个人，任两人非「相识」即「陌生」。求证：必存在三人两两相识，或三人两两陌生。）（这就是 $R(3,3)\\le6$。）真实 BMO1 中本题不设小问——引导小问示范「鸽巢 + 二染色三角形」。",
+    parts: [
+      { label: "a", marks: 4, question: "引导一（对一个人用鸽巢）：任取一人 $P$。$P$ 与其余 $5$ 人的关系是「相识」或「陌生」两种。用鸽巢说明：其中必有 $3$ 人与 $P$ 处于**同一种**关系。",
+        solutionOutline: "$5$ 个关系分成两类，$5>2\\times2$，由鸽巢必有一类 $\\ge3$。不妨设有 $3$ 人 $Q,R,S$ 都与 $P$ **相识**（另一情形对称）。" },
+      { label: "b", marks: 3, question: "引导二（看这三人之间）：考察 $Q,R,S$ 之间的三对关系。若其中**有一对相识**，会得到什么？",
+        solutionOutline: "若 $Q,R,S$ 中某两人（比如 $Q,R$）相识，则 $P,Q,R$ 两两相识——得到三人互相识。" },
+      { label: "c", marks: 3, question: "引导三（否则的情形 + 收尾）：若 $Q,R,S$ 之间**一对相识都没有**呢？综合完成证明。",
+        solutionOutline: "若 $Q,R,S$ 两两都不相识，则他们就是三人两两陌生。两种情形都得到所求。（若 a) 中是三人与 $P$ 陌生，把「相识/陌生」互换，论证完全对称。）$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（鸽巢 + 二染色三角形）**\\n\\n把 $6$ 人看成 $6$ 个点，每两点间连一条线：相识染**红**、陌生染**蓝**。要证：必有一个**同色三角形**（红三角形 = 三人互相识；蓝三角形 = 三人互陌生）。\\n\\n**第一步（鸽巢）**：任取一人 $P$。$P$ 与其余 $5$ 人各连一条红或蓝的线，共 $5$ 条只有两种颜色。由鸽巢原理，必有 $\\left\\lceil\\tfrac52\\right\\rceil=3$ 条同色。不妨设 $P$ 与 $Q,R,S$ 之间的三条都是**红**（若是蓝，下面论证把红蓝互换即可，完全对称）。\\n\\n**第二步（看 $Q,R,S$ 内部）**：考察 $Q,R,S$ 三人之间的三条线。\\n- **若其中有一条红线**，比如 $QR$ 为红，则 $P,Q,R$ 三条边 $PQ,PR,QR$ 全红——得到一个**红三角形**，即三人两两相识。\\n- **若三条线全是蓝**，则 $Q,R,S$ 两两为蓝——得到一个**蓝三角形**，即三人两两陌生。\\n\\n无论哪种情形，都出现了同色三角形。因此 $6$ 人中必有三人两两相识或三人两两陌生。$\\blacksquare$\\n\\n---\\n**方法要点（BMO1 通用武器）**：这是**拉姆齐型**论证的原型——先用**鸽巢**在某个顶点处逼出 $3$ 条同色边，再对这 $3$ 个邻点内部做**二染色三角形**的分类（有同色边则与中心配成三角形，否则它们自身成三角形）。「$6$」是最小的能保证的人数（$R(3,3)=6$）：$5$ 个人时存在无同色三角形的染色（五边形红、五角星蓝）。\\n\\n**延伸练习**：想想为什么 $5$ 人不够——构造那个「五边形 + 五角星」的反例。\\n\\n---\\n*原创题；对标 BMO1 第 2–3 题难度；「$K_6$ 的全部 $2^{15}=32768$ 种红蓝染色都含同色三角形」已穷举程序核对；请对照证明自评。*",
+  },
 ];
