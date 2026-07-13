@@ -54,6 +54,14 @@ import { TMUA_MK7_P1, TMUA_MK7_P2 } from "./tmua-mock-7";
 import { TMUA_MK8_P1, TMUA_MK8_P2 } from "./tmua-mock-8";
 import { TMUA_MK9_P1, TMUA_MK9_P2 } from "./tmua-mock-9";
 import { TMUA_MK10_P1, TMUA_MK10_P2 } from "./tmua-mock-10";
+import { BMO_MK1_MCQ } from "./bmo-mock-1";
+import { BMO_MK2_MCQ } from "./bmo-mock-2";
+import { BMO_MK3_MCQ } from "./bmo-mock-3";
+import { BMO_MK4_MCQ } from "./bmo-mock-4";
+import { BMO_MK5_MCQ } from "./bmo-mock-5";
+import { BMO_MK6_MCQ } from "./bmo-mock-6";
+import { BMO_MK7_MCQ } from "./bmo-mock-7";
+import { BMO_MK8_MCQ } from "./bmo-mock-8";
 
 export interface MockModule {
   id: string;
@@ -823,7 +831,51 @@ export const TMUA_MOCK_1: MockPaper = {
   ],
 };
 
-const ALL_MOCK_PAPERS: MockPaper[] = [ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3, BPHO_MOCK_1, BPHO_MOCK_2, BPHO_MOCK_3, BPHO_MOCK_4, BPHO_MOCK_5, BPHO_MOCK_6, BPHO_MOCK_7, BPHO_MOCK_8, BPHO_R2_MOCK_1, BPHO_R2_MOCK_2, BPHO_R2_MOCK_3, BPHO_R2_MOCK_4];
+const BMO_SMC_MOCK_DESC =
+  "从 205 道 SMC 练习题库分段抽取、按难度升序装配的完整计时模拟卷：25 题、五选一（A–E）、无负分。每套约含 3 道基础 + 14 道中档 + 8 道较难，题号由易到难，8 套之间零重复。原为 000–999 数字作答的题目已转为选择题并在题干注明；全部题目均经程序验算。真实 SMC 通常 90 分钟，本卷按此计时。";
+
+export const BMO_MOCK_1: MockPaper = {
+  id: "bmo-mock-1", testId: "bmo", title: "SMC 模拟卷一（25 题 · 难度递增）", titleEn: "SMC Mock Paper 1",
+  description: BMO_SMC_MOCK_DESC,
+  modules: [{ id: "mcq", title: "选择题（25 题 / 90 分钟）", titleEn: "Multiple Choice (Q1–25)", durationSec: 90 * 60, questions: BMO_MK1_MCQ }],
+};
+export const BMO_MOCK_2: MockPaper = {
+  id: "bmo-mock-2", testId: "bmo", title: "SMC 模拟卷二（25 题 · 难度递增）", titleEn: "SMC Mock Paper 2",
+  description: BMO_SMC_MOCK_DESC,
+  modules: [{ id: "mcq", title: "选择题（25 题 / 90 分钟）", titleEn: "Multiple Choice (Q1–25)", durationSec: 90 * 60, questions: BMO_MK2_MCQ }],
+};
+export const BMO_MOCK_3: MockPaper = {
+  id: "bmo-mock-3", testId: "bmo", title: "SMC 模拟卷三（25 题 · 难度递增）", titleEn: "SMC Mock Paper 3",
+  description: BMO_SMC_MOCK_DESC,
+  modules: [{ id: "mcq", title: "选择题（25 题 / 90 分钟）", titleEn: "Multiple Choice (Q1–25)", durationSec: 90 * 60, questions: BMO_MK3_MCQ }],
+};
+export const BMO_MOCK_4: MockPaper = {
+  id: "bmo-mock-4", testId: "bmo", title: "SMC 模拟卷四（25 题 · 难度递增）", titleEn: "SMC Mock Paper 4",
+  description: BMO_SMC_MOCK_DESC,
+  modules: [{ id: "mcq", title: "选择题（25 题 / 90 分钟）", titleEn: "Multiple Choice (Q1–25)", durationSec: 90 * 60, questions: BMO_MK4_MCQ }],
+};
+export const BMO_MOCK_5: MockPaper = {
+  id: "bmo-mock-5", testId: "bmo", title: "SMC 模拟卷五（25 题 · 难度递增）", titleEn: "SMC Mock Paper 5",
+  description: BMO_SMC_MOCK_DESC,
+  modules: [{ id: "mcq", title: "选择题（25 题 / 90 分钟）", titleEn: "Multiple Choice (Q1–25)", durationSec: 90 * 60, questions: BMO_MK5_MCQ }],
+};
+export const BMO_MOCK_6: MockPaper = {
+  id: "bmo-mock-6", testId: "bmo", title: "SMC 模拟卷六（25 题 · 难度递增）", titleEn: "SMC Mock Paper 6",
+  description: BMO_SMC_MOCK_DESC,
+  modules: [{ id: "mcq", title: "选择题（25 题 / 90 分钟）", titleEn: "Multiple Choice (Q1–25)", durationSec: 90 * 60, questions: BMO_MK6_MCQ }],
+};
+export const BMO_MOCK_7: MockPaper = {
+  id: "bmo-mock-7", testId: "bmo", title: "SMC 模拟卷七（25 题 · 难度递增）", titleEn: "SMC Mock Paper 7",
+  description: BMO_SMC_MOCK_DESC,
+  modules: [{ id: "mcq", title: "选择题（25 题 / 90 分钟）", titleEn: "Multiple Choice (Q1–25)", durationSec: 90 * 60, questions: BMO_MK7_MCQ }],
+};
+export const BMO_MOCK_8: MockPaper = {
+  id: "bmo-mock-8", testId: "bmo", title: "SMC 模拟卷八（25 题 · 难度递增）", titleEn: "SMC Mock Paper 8",
+  description: BMO_SMC_MOCK_DESC,
+  modules: [{ id: "mcq", title: "选择题（25 题 / 90 分钟）", titleEn: "Multiple Choice (Q1–25)", durationSec: 90 * 60, questions: BMO_MK8_MCQ }],
+};
+
+const ALL_MOCK_PAPERS: MockPaper[] = [BMO_MOCK_1, BMO_MOCK_2, BMO_MOCK_3, BMO_MOCK_4, BMO_MOCK_5, BMO_MOCK_6, BMO_MOCK_7, BMO_MOCK_8, ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3, BPHO_MOCK_1, BPHO_MOCK_2, BPHO_MOCK_3, BPHO_MOCK_4, BPHO_MOCK_5, BPHO_MOCK_6, BPHO_MOCK_7, BPHO_MOCK_8, BPHO_R2_MOCK_1, BPHO_R2_MOCK_2, BPHO_R2_MOCK_3, BPHO_R2_MOCK_4];
 
 export function getMockPapersForTest(testId: string): MockPaper[] {
   return ALL_MOCK_PAPERS.filter((p) => p.testId === testId);

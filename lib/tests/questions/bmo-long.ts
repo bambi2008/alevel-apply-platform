@@ -591,4 +591,256 @@ export const BMO_LONG_SAMPLE: LongQuestion[] = [
     fullSolution:
       "**完整证明（鸽巢 + 二染色三角形）**\\n\\n把 $6$ 人看成 $6$ 个点，每两点间连一条线：相识染**红**、陌生染**蓝**。要证：必有一个**同色三角形**（红三角形 = 三人互相识；蓝三角形 = 三人互陌生）。\\n\\n**第一步（鸽巢）**：任取一人 $P$。$P$ 与其余 $5$ 人各连一条红或蓝的线，共 $5$ 条只有两种颜色。由鸽巢原理，必有 $\\left\\lceil\\tfrac52\\right\\rceil=3$ 条同色。不妨设 $P$ 与 $Q,R,S$ 之间的三条都是**红**（若是蓝，下面论证把红蓝互换即可，完全对称）。\\n\\n**第二步（看 $Q,R,S$ 内部）**：考察 $Q,R,S$ 三人之间的三条线。\\n- **若其中有一条红线**，比如 $QR$ 为红，则 $P,Q,R$ 三条边 $PQ,PR,QR$ 全红——得到一个**红三角形**，即三人两两相识。\\n- **若三条线全是蓝**，则 $Q,R,S$ 两两为蓝——得到一个**蓝三角形**，即三人两两陌生。\\n\\n无论哪种情形，都出现了同色三角形。因此 $6$ 人中必有三人两两相识或三人两两陌生。$\\blacksquare$\\n\\n---\\n**方法要点（BMO1 通用武器）**：这是**拉姆齐型**论证的原型——先用**鸽巢**在某个顶点处逼出 $3$ 条同色边，再对这 $3$ 个邻点内部做**二染色三角形**的分类（有同色边则与中心配成三角形，否则它们自身成三角形）。「$6$」是最小的能保证的人数（$R(3,3)=6$）：$5$ 个人时存在无同色三角形的染色（五边形红、五角星蓝）。\\n\\n**延伸练习**：想想为什么 $5$ 人不够——构造那个「五边形 + 五角星」的反例。\\n\\n---\\n*原创题；对标 BMO1 第 2–3 题难度；「$K_6$ 的全部 $2^{15}=32768$ 种红蓝染色都含同色三角形」已穷举程序核对；请对照证明自评。*",
   },
+
+  {
+    id: "bmo1-nt-008",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-number",
+    difficulty: 2,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】Prove that the product of any four consecutive integers is divisible by $24$.（求证：任意四个连续整数之积都能被 $24$ 整除。）真实 BMO1 中本题不设小问——引导小问示范「拆成互素因子 $24=8\\times3$」分别论证。",
+    parts: [
+      { label: "a", marks: 4, question: "引导一（被 $8$ 整除）：在四个连续整数中，说明必有两个偶数，且这两个偶数中恰有一个被 $4$ 整除，从而其积含因子 $8$。",
+        solutionOutline: "四连续整数含两个偶数（相隔 $2$），二者是「相邻的偶数」，其中恰有一个 $\\equiv0\\pmod4$、另一个 $\\equiv2\\pmod4$；故两偶数之积含 $4\\times2=8$，即 $8\\mid$ 乘积。" },
+      { label: "b", marks: 3, question: "引导二（被 $3$ 整除）：说明四个连续整数中必有一个被 $3$ 整除。",
+        solutionOutline: "任意三个连续整数已必含一个 $3$ 的倍数，四个更是如此，故 $3\\mid$ 乘积。" },
+      { label: "c", marks: 3, question: "引导三（合并）：由 $8\\mid$ 与 $3\\mid$ 且 $\\gcd(8,3)=1$，得 $24\\mid$ 乘积。",
+        solutionOutline: "$8$ 与 $3$ 互素，同时整除同一数则 $24=8\\times3$ 整除之，故四连续整数之积被 $24$ 整除。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（拆成互素因子 $24=8\\times3$）**\\n\\n设四个连续整数为 $n,n+1,n+2,n+3$。\\n\\n**被 $8$ 整除**：这四个数中有两个偶数，它们是两个相邻的偶数（相差 $2$）。相邻偶数中恰有一个是 $4$ 的倍数（$\\equiv0\\pmod4$），另一个 $\\equiv2\\pmod4$。因此这两个偶数之积至少含因子 $4\\times2=8$，从而 $8$ 整除四数之积。\\n\\n**被 $3$ 整除**：任意三个连续整数中必有一个被 $3$ 整除（按模 $3$ 分类），四个连续整数当然也含一个 $3$ 的倍数，故 $3$ 整除四数之积。\\n\\n**合并**：$8$ 与 $3$ 互素而都整除同一个数，故它们的乘积 $24$ 也整除该数：\\n$$24\\mid n(n+1)(n+2)(n+3).\\qquad\\blacksquare$$\\n\\n---\\n**方法要点（BMO1 通用武器）**：证「被 $N$ 整除」的通法是**把 $N$ 分解成两两互素的因子，分别验证**，再用「互素因子同除则积除」。对连续整数，「被 $2^k$ 整除」要数清偶数里 $4,8,\\dots$ 的贡献——本题正是靠「相邻偶数中必有一个被 $4$ 整除」补足到 $8$。更一般地，$k$ 个连续整数之积恒被 $k!$ 整除（此处 $4!=24$）。\\n\\n---\\n*原创题；对标 BMO1 第 1–2 题难度；$24\\mid k(k+1)(k+2)(k+3)$ 已对 $k=-100\\dots100$ 程序核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo1-nt-009",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-number",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】Prove that the equation $x^2+y^2=3z^2$ has no solution in positive integers.（求证：方程 $x^2+y^2=3z^2$ 没有正整数解。）真实 BMO1 中本题不设小问——引导小问示范「模 $3$ + 无穷递降」。",
+    parts: [
+      { label: "a", marks: 4, question: "引导一（模 $3$）：利用「平方数模 $3$ 只能是 $0$ 或 $1$」，说明 $x^2+y^2\\equiv0\\pmod3$ 迫使 $3\\mid x$ 且 $3\\mid y$。",
+        solutionOutline: "平方 $\\bmod3\\in\\{0,1\\}$。$3z^2\\equiv0$ 故 $x^2+y^2\\equiv0\\pmod3$，而两个 $\\{0,1\\}$ 之和 $\\equiv0$ 只能 $0+0$，故 $x^2\\equiv y^2\\equiv0$，即 $3\\mid x,\\ 3\\mid y$。" },
+      { label: "b", marks: 4, question: "引导二（递降一步）：写 $x=3x_1,\\ y=3y_1$，代入化简，证明 $3\\mid z$，从而得到一组更小的解。",
+        solutionOutline: "代入：$9x_1^2+9y_1^2=3z^2\\Rightarrow z^2=3(x_1^2+y_1^2)$，故 $3\\mid z^2\\Rightarrow3\\mid z$，写 $z=3z_1$，得 $x_1^2+y_1^2=3z_1^2$，形式相同但 $x_1,y_1,z_1$ 严格更小。" },
+      { label: "c", marks: 2, question: "引导三（无穷递降收尾）：用「不能无限变小」的正整数性质导出矛盾。",
+        solutionOutline: "若存在正整数解，可无限重复 b) 得到严格递减的正整数解列，与正整数不能无限下降矛盾。故无正整数解。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（模 $3$ + 无穷递降）**\\n\\n假设存在正整数解 $(x,y,z)$。取所有正整数解中使 $z$ **最小**的一组（良序原理保证存在）。\\n\\n**模 $3$ 分析**：平方数模 $3$ 只能是 $0$ 或 $1$（$0^2\\equiv0,\\ (\\pm1)^2\\equiv1$）。因 $3z^2\\equiv0\\pmod3$，故\\n$$x^2+y^2\\equiv0\\pmod3.$$\\n两个取自 $\\{0,1\\}$ 的数之和 $\\equiv0\\pmod3$，只能是 $0+0$。于是 $x^2\\equiv0$ 且 $y^2\\equiv0\\pmod3$，即 $3\\mid x$ 且 $3\\mid y$。\\n\\n**递降**：写 $x=3x_1,\\ y=3y_1$。代入原方程：\\n$$9x_1^2+9y_1^2=3z^2\\ \\Longrightarrow\\ z^2=3(x_1^2+y_1^2),$$\\n故 $3\\mid z^2$，从而 $3\\mid z$，写 $z=3z_1$。再代入得\\n$$x_1^2+y_1^2=3z_1^2,$$\\n这是**同样形式**的方程，且 $z_1=z/3<z$。这与「$z$ 最小」矛盾。\\n\\n因此不存在正整数解。$\\blacksquare$\\n\\n---\\n**方法要点（BMO1 通用武器）**：**无穷递降**（费马的招牌）证「无正整数解」——先取最小解，再造出一个更小的同型解，矛盾。其引擎往往是**同余**：这里「平方模 $3\\in\\{0,1\\}$」迫使 $3$ 同时整除 $x,y$，从而每个变量都能除以 $3$ 变小。看到方程含 $3z^2,5z^2$ 这类系数，先试模 $3$、模 $5$。\\n\\n**延伸**：同法可证 $x^2+y^2+z^2=2xyz$ 只有平凡解，以及 $\\sqrt3$ 为无理数（$p^2=3q^2$ 的递降）。\\n\\n---\\n*原创题；对标 BMO1 第 3 题难度；「$x,y,z<120$ 内无正整数解」及「$x^2+y^2\\equiv0\\pmod3\\Rightarrow3\\mid x,y$」已程序核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo1-nt-010",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-number",
+    difficulty: 2,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】Prove that no perfect square ends in the digit $2,3,7$ or $8$.（求证：完全平方数的个位数字不可能是 $2,3,7,8$。）真实 BMO1 中本题不设小问——引导小问示范「个位只取决于末位、模 $10$ 枚举」。",
+    parts: [
+      { label: "a", marks: 4, question: "引导一（个位只看个位）：说明 $n^2$ 的个位数字只由 $n$ 的个位数字决定（即只依赖 $n\\bmod10$）。",
+        solutionOutline: "写 $n=10a+d$（$d$ 为个位），$n^2=100a^2+20ad+d^2$，前两项个位为 $0$，故 $n^2$ 的个位等于 $d^2$ 的个位，只取决于 $d=n\\bmod10$。" },
+      { label: "b", marks: 4, question: "引导二（枚举 $d=0..9$）：列出 $d^2$ 的个位数字，得出平方数所有可能的个位。",
+        solutionOutline: "$0^2..9^2$ 的个位依次为 $0,1,4,9,6,5,6,9,4,1$，可能的个位集合为 $\\{0,1,4,5,6,9\\}$。" },
+      { label: "c", marks: 2, question: "引导三（收尾）：对照 b) 的集合，说明 $2,3,7,8$ 都不在其中。",
+        solutionOutline: "$2,3,7,8\\notin\\{0,1,4,5,6,9\\}$，故完全平方数的个位不可能是 $2,3,7,8$。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（个位取决于末位 + 模 $10$ 枚举）**\\n\\n**个位只看个位**：设 $n=10a+d$，其中 $d\\in\\{0,1,\\dots,9\\}$ 是 $n$ 的个位。则\\n$$n^2=100a^2+20ad+d^2,$$\\n前两项都是 $10$ 的倍数，个位为 $0$。因此 $n^2$ 的个位等于 $d^2$ 的个位，**只由 $d=n\\bmod10$ 决定**。\\n\\n**枚举末位**：逐一计算 $d=0,1,\\dots,9$：\\n$$0,1,4,9,16,25,36,49,64,81,$$\\n它们的个位依次是\\n$$0,1,4,9,6,5,6,9,4,1.$$\\n因此完全平方数的个位只可能落在集合 $\\{0,1,4,5,6,9\\}$ 中。\\n\\n**结论**：$2,3,7,8$ 都不在这个集合里，所以完全平方数的个位不可能是 $2,3,7$ 或 $8$。$\\blacksquare$\\n\\n---\\n**方法要点（BMO1 通用武器）**：涉及**个位/末位数字**的问题，等价于在**模 $10$**（末两位则模 $100$）下工作；而一个数的幂的末位又只依赖其自身末位，于是只需**枚举 $0\\sim9$** 这有限情形。这类「有限枚举 + 取模」是处理末位、循环节问题的通法。\\n\\n**延伸**：同理平方数模 $4\\in\\{0,1\\}$、模 $9\\in\\{0,1,4,7\\}$，都是快速排除「某数是否为平方」的利器。\\n\\n---\\n*原创题；对标 BMO1 第 1 题难度；「平方数模 $10\\in\\{0,1,4,5,6,9\\}$」已对 $0\\dots999$ 程序核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo1-in-004",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-algebra",
+    difficulty: 2,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】Let $a,b,c$ be positive real numbers. Prove that $(a+b+c)\\left(\\dfrac1a+\\dfrac1b+\\dfrac1c\\right)\\ge 9$, and determine when equality holds.（设正实数 $a,b,c$，求证 $(a+b+c)\\left(\\dfrac1a+\\dfrac1b+\\dfrac1c\\right)\\ge9$，并说明等号条件。）真实 BMO1 中本题不设小问——引导小问示范两条路：展开配对 AM–GM，或 Cauchy–Schwarz。",
+    parts: [
+      { label: "a", marks: 4, question: "引导一（展开）：把乘积展开，把同类配对项 $\\dfrac ab+\\dfrac ba$ 等收集起来。",
+        solutionOutline: "展开 $=3+\\left(\\dfrac ab+\\dfrac ba\\right)+\\left(\\dfrac bc+\\dfrac cb\\right)+\\left(\\dfrac ca+\\dfrac ac\\right)$。" },
+      { label: "b", marks: 3, question: "引导二（每对用 AM–GM）：证明对正数 $\\dfrac ab+\\dfrac ba\\ge2$，并对三对同时使用。",
+        solutionOutline: "AM–GM：$\\dfrac ab+\\dfrac ba\\ge2\\sqrt{\\dfrac ab\\cdot\\dfrac ba}=2$，三对皆然，合计 $\\ge6$。" },
+      { label: "c", marks: 3, question: "引导三（合并 + 等号）：得出下界并确定等号条件。",
+        solutionOutline: "总和 $\\ge3+6=9$。等号需三对各取等，即 $a=b,\\ b=c,\\ c=a$，也就是 $a=b=c$。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（展开 + 逐对 AM–GM）**\\n\\n展开乘积：\\n$$(a+b+c)\\left(\\frac1a+\\frac1b+\\frac1c\\right)=3+\\left(\\frac ab+\\frac ba\\right)+\\left(\\frac bc+\\frac cb\\right)+\\left(\\frac ca+\\frac ac\\right).$$\\n对每一对正数用 AM–GM：\\n$$\\frac ab+\\frac ba\\ge2\\sqrt{\\frac ab\\cdot\\frac ba}=2,$$\\n三对同理都 $\\ge2$。于是\\n$$(a+b+c)\\left(\\frac1a+\\frac1b+\\frac1c\\right)\\ge3+2+2+2=9.$$\\n\\n**等号条件**：三处 AM–GM 分别在 $a=b$、$b=c$、$c=a$ 时取等，同时成立即 $a=b=c$。此时左边 $=(3a)\\cdot\\dfrac3a=9$，等号成立。$\\blacksquare$\\n\\n---\\n**更快的写法（Cauchy–Schwarz）**：由 Cauchy–Schwarz（或其 Engel 形式），\\n$$(a+b+c)\\left(\\frac1a+\\frac1b+\\frac1c\\right)\\ge\\left(\\sqrt{a}\\cdot\\tfrac1{\\sqrt a}+\\sqrt b\\cdot\\tfrac1{\\sqrt b}+\\sqrt c\\cdot\\tfrac1{\\sqrt c}\\right)^2=(1+1+1)^2=9.$$\\n\\n**方法要点（BMO1 通用武器）**：「和 × 倒数和」型恒等地展开后会冒出成对的 $\\dfrac xy+\\dfrac yx\\ge2$，这是 AM–GM 最基本的形态；或者直接一行 Cauchy–Schwarz。两法都要**单独交代等号**（$a=b=c$）。\\n\\n**延伸**：一般 $n$ 元有 $\\left(\\sum a_i\\right)\\left(\\sum\\tfrac1{a_i}\\right)\\ge n^2$。\\n\\n---\\n*原创题；对标 BMO1 第 1–2 题难度；最小值 $\\to9$（等号 $a=b=c$）已由 $3\\times10^5$ 次随机取样核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo1-al-005",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-algebra",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】Prove that $x^8-x^5+x^2-x+1>0$ for every real number $x$.（求证：对一切实数 $x$，$x^8-x^5+x^2-x+1>0$。）真实 BMO1 中本题不设小问——引导小问示范「按 $x$ 的范围分段、把式子凑成非负块」。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（易处理的区间）：先处理 $x\\le0$ 与 $x\\ge1$。说明在这两个范围内各项如何保证整体为正。",
+        solutionOutline: "$x\\le0$：$-x^5\\ge0,\\ x^2\\ge0,\\ -x\\ge0,\\ x^8\\ge0$，加常数 $1$，整体 $\\ge1>0$。$x\\ge1$：$x^8-x^5=x^5(x^3-1)\\ge0$ 且 $x^2-x=x(x-1)\\ge0$，故 $\\ge1>0$。" },
+      { label: "b", marks: 4, question: "引导二（中间区间 $0<x<1$）：在 $0<x<1$ 上，把式子重组成若干非负项之和（提示：$x^2-x^5=x^2(1-x^3)$，$1-x$）。",
+        solutionOutline: "$0<x<1$：写 $x^8-x^5+x^2-x+1=x^8+x^2(1-x^3)+(1-x)$。此时 $x^8>0$、$1-x^3>0$、$1-x>0$，三部分皆正，故整体 $>0$。" },
+      { label: "c", marks: 3, question: "引导三（合并）：综合三段，得出对一切实数成立。",
+        solutionOutline: "$x\\le0$、$0<x<1$、$x\\ge1$ 三段都已证 $>0$，覆盖全体实数，故对一切实数 $x$ 该式 $>0$。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（分段凑非负块）**\\n\\n记 $f(x)=x^8-x^5+x^2-x+1$。按 $x$ 的范围分三段。\\n\\n**情形 1：$x\\le0$。** 此时 $-x^5\\ge0$（因 $x^5\\le0$）、$-x\\ge0$、$x^2\\ge0$、$x^8\\ge0$。于是\\n$$f(x)=x^8+(-x^5)+x^2+(-x)+1\\ge 1>0.$$\\n\\n**情形 2：$x\\ge1$。** 把相邻两项配对：\\n$$f(x)=\\underbrace{x^5(x^3-1)}_{\\ge0}+\\underbrace{x(x-1)}_{\\ge0}+1\\ge1>0,$$\\n因为 $x\\ge1$ 时 $x^3-1\\ge0$、$x-1\\ge0$、$x^5,x\\ge0$。\\n\\n**情形 3：$0<x<1$。** 重新分组：\\n$$f(x)=x^8+\\underbrace{x^2(1-x^3)}_{>0}+\\underbrace{(1-x)}_{>0}.$$\\n此时 $x^8>0$，且 $0<x<1\\Rightarrow 1-x^3>0,\\ 1-x>0$，三部分都为正，故 $f(x)>0$。\\n\\n三段覆盖全部实数，故 $f(x)>0$ 对一切实数 $x$ 成立。$\\blacksquare$\\n\\n---\\n**方法要点（BMO1 通用武器）**：证多项式**恒正**没有统一配方时，**按变量范围分段**、在每段里把式子**重组成显然非负（或正）的块之和**，是最灵活的手法。关键在于同一个式子在不同区间用**不同的分组**（本题 $x\\ge1$ 配 $x^5(x^3-1)$，$0<x<1$ 配 $x^2(1-x^3)$，符号正好反过来用）。\\n\\n**延伸**：类似可证 $x^{2n}-x^{2n-1}+\\cdots-x+1>0$（几何级数变形，$>\\dfrac{1}{1+x}$ 型估计）。\\n\\n---\\n*原创题；对标 BMO1 第 2–3 题难度；$f(x)>0$（数值最小值 $\\approx0.675$）已由 $5\\times10^5$ 次随机取样 + 细网格核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo1-al-006",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-algebra",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】Prove that for every positive integer $n$,\\n$$1^3+2^3+\\cdots+n^3=\\left(\\frac{n(n+1)}{2}\\right)^2=(1+2+\\cdots+n)^2.$$（求证：前 $n$ 个正整数的立方和等于它们的和的平方。）真实 BMO1 中本题不设小问——引导小问示范数学归纳法。",
+    parts: [
+      { label: "a", marks: 2, question: "引导一（基础）：验证 $n=1$（以及 $n=2$ 作直观检查）时等式成立。",
+        solutionOutline: "$n=1$：左 $=1$，右 $=(1)^2=1$ ✓。$n=2$：左 $=1+8=9$，右 $=(3)^2=9$ ✓。" },
+      { label: "b", marks: 5, question: "引导二（归纳步）：假设对 $n$ 成立，证明对 $n+1$ 也成立。（关键：$\\left(\\tfrac{n(n+1)}2\\right)^2+(n+1)^3=\\left(\\tfrac{(n+1)(n+2)}2\\right)^2$。）",
+        solutionOutline: "设 $\\sum_{k=1}^n k^3=\\left(\\tfrac{n(n+1)}2\\right)^2$。加 $(n+1)^3$：$\\left(\\tfrac{n(n+1)}2\\right)^2+(n+1)^3=\\tfrac{(n+1)^2}{4}\\big(n^2+4(n+1)\\big)=\\tfrac{(n+1)^2(n+2)^2}{4}=\\left(\\tfrac{(n+1)(n+2)}2\\right)^2$。" },
+      { label: "c", marks: 3, question: "引导三（收尾）：写清归纳结论，并点明右边正是 $(1+2+\\cdots+n)^2$。",
+        solutionOutline: "由归纳法，等式对一切正整数 $n$ 成立。又 $1+2+\\cdots+n=\\tfrac{n(n+1)}2$，故右边 $=(1+2+\\cdots+n)^2$。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（数学归纳法）**\\n\\n**待证**：$\\displaystyle\\sum_{k=1}^n k^3=\\left(\\frac{n(n+1)}2\\right)^2$。\\n\\n**基础**（$n=1$）：左边 $=1^3=1$，右边 $=\\left(\\tfrac{1\\cdot2}2\\right)^2=1$，成立。\\n\\n**归纳步**：设对某个 $n$ 成立，即 $\\sum_{k=1}^n k^3=\\left(\\tfrac{n(n+1)}2\\right)^2$。则\\n$$\\sum_{k=1}^{n+1}k^3=\\left(\\frac{n(n+1)}2\\right)^2+(n+1)^3=\\frac{n^2(n+1)^2}{4}+(n+1)^3.$$\\n提取 $\\dfrac{(n+1)^2}{4}$：\\n$$=\\frac{(n+1)^2}{4}\\Big(n^2+4(n+1)\\Big)=\\frac{(n+1)^2}{4}\\,(n^2+4n+4)=\\frac{(n+1)^2(n+2)^2}{4}=\\left(\\frac{(n+1)(n+2)}2\\right)^2.$$\\n这正是把公式中的 $n$ 换成 $n+1$ 的形式，故对 $n+1$ 也成立。\\n\\n由数学归纳法，等式对一切正整数 $n$ 成立。最后，因 $1+2+\\cdots+n=\\dfrac{n(n+1)}2$，右边恰为 $(1+2+\\cdots+n)^2$。$\\blacksquare$\\n\\n---\\n**方法要点（BMO1 通用武器）**：**数学归纳法**是证「对所有正整数成立」的等式/不等式的默认工具；难点通常在归纳步的**代数化简**——本题的窍门是先**提取公因子 $\\dfrac{(n+1)^2}{4}$**，剩下的 $n^2+4n+4=(n+2)^2$ 立刻配平方。\\n\\n**延伸**：这个「立方和 = 和的平方」有漂亮的无字证明（用 $L$ 形色块拼成正方形）。\\n\\n---\\n*原创题；对标 BMO1 第 2 题难度；等式已对 $n=1\\dots100$ 精确核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo1-ge-008",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-geometry",
+    difficulty: 2,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】Prove the Pythagorean Theorem: in a right-angled triangle with legs $a,b$ and hypotenuse $c$ (right angle between the legs), $a^2+b^2=c^2$.（求证勾股定理：直角三角形两直角边 $a,b$、斜边 $c$，则 $a^2+b^2=c^2$。）真实 BMO1 中本题不设小问——引导小问示范「作高造相似三角形」的经典证法。",
+    parts: [
+      { label: "a", marks: 4, question: "引导一（作高造相似）：在直角 $\\angle C=90^\\circ$ 的 $\\triangle ABC$ 中，从直角顶点 $C$ 向斜边 $AB$ 作高 $CD$。证明 $\\triangle ACD\\sim\\triangle ABC$ 且 $\\triangle CBD\\sim\\triangle ABC$。",
+        solutionOutline: "$\\triangle ACD$ 与 $\\triangle ABC$ 共用 $\\angle A$，且各有一个直角，故 AA 相似；同理 $\\triangle CBD$ 共用 $\\angle B$、含直角，与 $\\triangle ABC$ 相似。" },
+      { label: "b", marks: 3, question: "引导二（写比例）：由相似写出 $AC^2=AB\\cdot AD$ 与 $BC^2=AB\\cdot BD$。",
+        solutionOutline: "$\\triangle ACD\\sim\\triangle ABC$：$\\dfrac{AC}{AB}=\\dfrac{AD}{AC}\\Rightarrow AC^2=AB\\cdot AD$。同理 $BC^2=AB\\cdot BD$。" },
+      { label: "c", marks: 3, question: "引导三（相加收尾）：把两式相加，利用 $AD+BD=AB$ 完成证明。",
+        solutionOutline: "$AC^2+BC^2=AB(AD+BD)=AB\\cdot AB=AB^2$，即 $b^2+a^2=c^2$。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（作高造相似三角形）**\\n\\n设 $\\angle C=90^\\circ$，$a=BC,\\ b=AC,\\ c=AB$。从直角顶点 $C$ 向斜边 $AB$ 作垂足 $D$，即 $CD\\perp AB$。\\n\\n**两组相似**：\\n- $\\triangle ACD$ 与 $\\triangle ABC$ 共用角 $A$，且分别在 $D,C$ 处有直角，由 AA 相似：$\\triangle ACD\\sim\\triangle ABC$。\\n- $\\triangle CBD$ 与 $\\triangle ABC$ 共用角 $B$，且分别在 $D,C$ 处有直角，由 AA 相似：$\\triangle CBD\\sim\\triangle ABC$。\\n\\n**射影关系**：由第一组相似，对应边成比例 $\\dfrac{AC}{AB}=\\dfrac{AD}{AC}$，即\\n$$AC^2=AB\\cdot AD\\quad(\\text{即}\\ b^2=c\\cdot AD).$$\\n由第二组相似同理\\n$$BC^2=AB\\cdot BD\\quad(\\text{即}\\ a^2=c\\cdot BD).$$\\n\\n**相加**：$D$ 在斜边上，$AD+BD=AB=c$。于是\\n$$a^2+b^2=AB\\cdot BD+AB\\cdot AD=AB(AD+BD)=AB^2=c^2.\\qquad\\blacksquare$$\\n\\n---\\n**方法要点（BMO1 通用武器）**：**向斜边作高**把直角三角形劈成两个与原三角形都相似的小三角形（「母子相似」），由此得到射影定理 $b^2=c\\cdot AD,\\ a^2=c\\cdot BD$，相加即勾股。这套「作高 → 相似 → 比例」是几何证明的基本功，射影定理本身也是常用引理。\\n\\n**延伸**：由同一图还得 $CD^2=AD\\cdot BD$（高的射影关系）。\\n\\n---\\n*原创题；对标 BMO1 第 1–2 题难度；$a^2+b^2=c^2$ 已在随机直角三角形上用坐标法核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo1-ge-009",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-geometry",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】Prove that the three medians of a triangle are concurrent, and that their common point (the centroid) divides each median in the ratio $2:1$ from the vertex.（求证：三角形三条中线共点（重心），且重心把每条中线按从顶点起 $2:1$ 分。）真实 BMO1 中本题不设小问——引导小问示范「向量法」定重心。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（设向量并猜重心）：以任意点 $O$ 为原点，顶点位置向量记 $\\mathbf a,\\mathbf b,\\mathbf c$。考虑点 $G=\\dfrac{\\mathbf a+\\mathbf b+\\mathbf c}{3}$，先算 $BC$ 中点 $M_A$ 的位置向量。",
+        solutionOutline: "$M_A=\\dfrac{\\mathbf b+\\mathbf c}{2}$。$G=\\dfrac{\\mathbf a+\\mathbf b+\\mathbf c}{3}$（待验证它在中线上且分比 $2:1$）。" },
+      { label: "b", marks: 4, question: "引导二（验证在中线上且 $2:1$）：证明 $G$ 落在中线 $AM_A$ 上，且 $\\vec{AG}=\\dfrac23\\vec{AM_A}$（即 $AG:GM_A=2:1$）。",
+        solutionOutline: "$\\vec{AG}=G-\\mathbf a=\\dfrac{\\mathbf b+\\mathbf c-2\\mathbf a}{3}$，$\\vec{AM_A}=M_A-\\mathbf a=\\dfrac{\\mathbf b+\\mathbf c-2\\mathbf a}{2}$，故 $\\vec{AG}=\\dfrac23\\vec{AM_A}$，$G$ 在 $AM_A$ 上且 $AG:GM_A=2:1$。" },
+      { label: "c", marks: 3, question: "引导三（对称收尾）：说明同一个 $G$ 对另两条中线也成立，故三中线共点。",
+        solutionOutline: "$G=\\dfrac{\\mathbf a+\\mathbf b+\\mathbf c}{3}$ 关于三个顶点对称，同理它也在中线 $BM_B$、$CM_C$ 上并各按 $2:1$ 分。故三条中线都过 $G$，共点。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（向量法）**\\n\\n取任意原点 $O$，设三顶点位置向量为 $\\mathbf a,\\mathbf b,\\mathbf c$。令\\n$$G=\\frac{\\mathbf a+\\mathbf b+\\mathbf c}{3}.$$\\n\\n**$G$ 在中线 $AM_A$ 上且分比 $2:1$**：$BC$ 中点为 $M_A=\\dfrac{\\mathbf b+\\mathbf c}{2}$。计算\\n$$\\vec{AG}=G-\\mathbf a=\\frac{\\mathbf b+\\mathbf c-2\\mathbf a}{3},\\qquad \\vec{AM_A}=M_A-\\mathbf a=\\frac{\\mathbf b+\\mathbf c-2\\mathbf a}{2}.$$\\n二者只差一个正标量：\\n$$\\vec{AG}=\\frac{2}{3}\\,\\vec{AM_A}.$$\\n故 $G$ 落在线段 $AM_A$ 上，且 $AG:GM_A=\\dfrac23:\\dfrac13=2:1$。\\n\\n**对称性**：表达式 $G=\\dfrac{\\mathbf a+\\mathbf b+\\mathbf c}{3}$ 对 $\\mathbf a,\\mathbf b,\\mathbf c$ 完全对称，因此同样的计算表明 $G$ 也在中线 $BM_B$、$CM_C$ 上，并各按 $2:1$ 分。于是三条中线都经过同一点 $G$——它们**共点**于重心 $G$。$\\blacksquare$\\n\\n---\\n**方法要点（BMO1 通用武器）**：证「三线共点」的向量法极其干净——**猜出公共点的向量表达（这里是三顶点的平均）**，再验证它落在每条线上并给出分比。对称的表达式一次计算即可套用到三条线（「对称性省去重复」）。重心公式 $G=\\dfrac{\\mathbf a+\\mathbf b+\\mathbf c}{3}$ 本身是常用工具。\\n\\n**延伸**：由此可推欧拉线——重心 $G$、外心 $O$、垂心 $H$ 共线且 $OG:GH=1:2$。\\n\\n---\\n*原创题；对标 BMO1 第 2–3 题难度；重心按 $2:1$ 分中线已在 $2\\times10^4$ 组随机三角形上用坐标法核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo1-ge-010",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-geometry",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】Prove the Law of Cosines: in triangle $ABC$ with sides $a=BC,\\ b=CA,\\ c=AB$, one has $c^2=a^2+b^2-2ab\\cos C$.（求证余弦定理：$\\triangle ABC$ 中 $c^2=a^2+b^2-2ab\\cos C$。）真实 BMO1 中本题不设小问——引导小问示范「把顶点放坐标系里硬算」。",
+    parts: [
+      { label: "a", marks: 4, question: "引导一（设坐标）：把角 $C$ 放在原点，一边沿正 $x$ 轴。写出 $A,B,C$ 三点的坐标（用 $a,b,C$ 表示）。",
+        solutionOutline: "令 $C=(0,0)$，$B=(a,0)$（$CB=a$ 沿 $x$ 轴），$A=(b\\cos C,\\ b\\sin C)$（$CA=b$，与 $x$ 轴夹角 $C$）。" },
+      { label: "b", marks: 4, question: "引导二（算 $c=AB$）：用距离公式计算 $c^2=AB^2$ 并展开。",
+        solutionOutline: "$c^2=(b\\cos C-a)^2+(b\\sin C)^2=b^2\\cos^2C-2ab\\cos C+a^2+b^2\\sin^2C$。" },
+      { label: "c", marks: 2, question: "引导三（用 $\\sin^2+\\cos^2=1$ 收尾）。",
+        solutionOutline: "合并 $b^2(\\cos^2C+\\sin^2C)=b^2$，得 $c^2=a^2+b^2-2ab\\cos C$。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（坐标法）**\\n\\n把顶点 $C$ 放在原点，让边 $CB$ 沿正 $x$ 轴：\\n$$C=(0,0),\\qquad B=(a,0),\\qquad A=(b\\cos C,\\ b\\sin C),$$\\n其中 $CB=a$，$CA=b$，$\\angle C$ 是 $CA$ 与 $CB$ 的夹角。\\n\\n用距离公式算 $c=AB$：\\n$$c^2=AB^2=(b\\cos C-a)^2+(b\\sin C-0)^2.$$\\n展开：\\n$$c^2=b^2\\cos^2C-2ab\\cos C+a^2+b^2\\sin^2C=a^2+b^2(\\cos^2C+\\sin^2C)-2ab\\cos C.$$\\n由 $\\cos^2C+\\sin^2C=1$，\\n$$c^2=a^2+b^2-2ab\\cos C.\\qquad\\blacksquare$$\\n\\n---\\n**方法要点（BMO1 通用武器）**：**坐标法**（解析几何）是几何题的万能兜底——把一个顶点放原点、一条边放坐标轴，其余点用边长与角写出坐标，然后**距离公式硬算**。当综合法（相似、圆）一时想不到时，坐标法几乎总能推到底，代价只是计算量。余弦定理是它最典型的一次成功。\\n\\n**延伸**：当 $C=90^\\circ$ 时 $\\cos C=0$，余弦定理退化为勾股定理 $c^2=a^2+b^2$——勾股是余弦定理的特例。\\n\\n---\\n*原创题；对标 BMO1 第 2–3 题难度；$c^2=a^2+b^2-2ab\\cos C$ 已在 $2\\times10^4$ 组随机三角形上用坐标法核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo1-co-008",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-combinatorics",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】Let $T_n$ be the number of ways to tile a $2\\times n$ rectangle with $2\\times1$ dominoes. Prove that $T_n=T_{n-1}+T_{n-2}$ for $n\\ge3$, and hence $T_1,T_2,T_3,\\dots=1,2,3,5,8,\\dots$ are Fibonacci numbers.（设 $T_n$ 为用 $2\\times1$ 多米诺铺满 $2\\times n$ 矩形的方法数。求证 $T_n=T_{n-1}+T_{n-2}$（$n\\ge3$），从而 $T_n$ 是斐波那契数。）真实 BMO1 中本题不设小问——引导小问示范「按最右一列的铺法分类」建立递推。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（小情形）：直接数出 $T_1$ 与 $T_2$。",
+        solutionOutline: "$2\\times1$ 只能竖放 $1$ 张，$T_1=1$；$2\\times2$ 可两横或两竖，$T_2=2$。" },
+      { label: "b", marks: 5, question: "引导二（按最右列分类）：考察铺满 $2\\times n$ 时最右边如何收尾。说明恰有两种互斥情形，并把每种情形的方法数用更小的 $T$ 表示。",
+        solutionOutline: "情形①最右列是一张**竖放**多米诺，剩下 $2\\times(n-1)$，方法数 $T_{n-1}$；情形②最右是**两张横放**多米诺叠成 $2\\times2$ 的右半，剩下 $2\\times(n-2)$，方法数 $T_{n-2}$。两情形互斥且穷尽。" },
+      { label: "c", marks: 2, question: "引导三（收尾）：写出递推与初值，指出这正是斐波那契。",
+        solutionOutline: "$T_n=T_{n-1}+T_{n-2}$（$n\\ge3$），$T_1=1,T_2=2$，故 $T_n=1,2,3,5,8,13,\\dots$ 即斐波那契数（$T_n=F_{n+1}$）。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（按最右一列的铺法分类）**\\n\\n**小情形**：$2\\times1$ 矩形只能放一张竖直多米诺，$T_1=1$；$2\\times2$ 矩形可放两张横的或两张竖的，$T_2=2$。\\n\\n**建立递推**（$n\\ge3$）：任取 $2\\times n$ 的一种铺法，看它**最右侧**如何收尾，恰分两类且互斥：\\n\\n- **情形 ①**：最右边一列由**一张竖直**多米诺占满。去掉这一列，剩下一个 $2\\times(n-1)$ 矩形，其铺法数为 $T_{n-1}$。\\n- **情形 ②**：最右边不是竖直多米诺，那么右上、右下两格只能各由一张**横向**多米诺覆盖，这两张横砖恰好占满最右的 $2\\times2$ 区块。去掉这两列，剩下 $2\\times(n-2)$，铺法数 $T_{n-2}$。\\n\\n这两种情形不重叠（最右列是否为竖砖互斥），且涵盖所有铺法。于是\\n$$T_n=T_{n-1}+T_{n-2}\\qquad(n\\ge3).$$\\n\\n结合初值 $T_1=1,\\ T_2=2$，逐项得 $T_n=1,2,3,5,8,13,21,\\dots$，正是斐波那契数列（$T_n=F_{n+1}$，其中 $F_1=F_2=1$）。$\\blacksquare$\\n\\n---\\n**方法要点（BMO1 通用武器）**：计数问题常靠**递推**——找一个「自然的最后一步 / 边界」（这里是最右一列），据其可能形态把大问题分解成同类小问题之和。关键是分类要**互斥且穷尽**。这种「按最后一块分类」的思路是组合计数的核心套路，斐波那契、卡特兰数都由此而来。\\n\\n**延伸练习**：用同法求 $2\\times n$ 用 $1\\times2$ 与 $2\\times2$ 方块混铺的方法数递推。\\n\\n---\\n*原创题；对标 BMO1 第 2–3 题难度；$T_n$ 满足斐波那契递推、$T_{1..8}=1,2,3,5,8,13,21,34$ 已程序核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo1-co-009",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-combinatorics",
+    difficulty: 2,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】Prove that among any $n+1$ integers, some two of them have a difference divisible by $n$.（求证：任取 $n+1$ 个整数，其中必有两个之差能被 $n$ 整除。）真实 BMO1 中本题不设小问——引导小问示范「用余数当抽屉」。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（余数抽屉）：一个整数被 $n$ 除的余数有多少种可能？把它们作为抽屉。",
+        solutionOutline: "余数只能是 $0,1,\\dots,n-1$ 共 $n$ 种，作为 $n$ 个抽屉。" },
+      { label: "b", marks: 4, question: "引导二（鸽巢）：把 $n+1$ 个整数按其余数放入抽屉，用鸽巢原理得出什么？",
+        solutionOutline: "$n+1$ 个数放进 $n$ 个余数抽屉，必有两个数 $a,b$ 落在同一抽屉，即 $a\\equiv b\\pmod n$。" },
+      { label: "c", marks: 3, question: "引导三（收尾）：由「同余」推出「差被 $n$ 整除」，并说明 $n+1$ 是最少（构造 $n$ 个两两不满足的例子）。",
+        solutionOutline: "$a\\equiv b\\pmod n\\Rightarrow n\\mid a-b$。$n$ 个不够：取 $0,1,\\dots,n-1$ 这 $n$ 个，两两之差 $\\in\\{1,\\dots,n-1\\}$ 都不被 $n$ 整除，故 $n+1$ 为最少。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（余数当抽屉）**\\n\\n**抽屉**：任何整数被 $n$ 除，余数只能是 $0,1,2,\\dots,n-1$ 之一，共 **$n$ 种**。把这 $n$ 个余数看作 $n$ 个抽屉。\\n\\n**鸽巢**：现有 $n+1$ 个整数，按各自被 $n$ 除的余数投入相应抽屉。因 $n+1>n$，由鸽巢原理必有两个整数 $a,b$ 落入**同一个抽屉**，即它们被 $n$ 除余数相同：\\n$$a\\equiv b\\pmod n.$$\\n\\n**收尾**：同余即意味着差被整除，$n\\mid(a-b)$。这就证明了 $n+1$ 个整数中必有两个之差是 $n$ 的倍数。\\n\\n**$n+1$ 是最少的**：只有 $n$ 个数时可能失败——取 $0,1,2,\\dots,n-1$，它们两两之差属于 $\\{1,2,\\dots,n-1\\}$，都不被 $n$ 整除。故「$n+1$」不能再减少。$\\blacksquare$\\n\\n---\\n**方法要点（BMO1 通用武器）**：**用余数（同余类）当抽屉**是鸽巢原理在数论里最常见的形态——「$n+1$ 个数必有两个同余 $\\bmod n$」这一句能瞬间制造出「差被 $n$ 整除」的一对。别忘补上**紧性构造**说明 $n+1$ 不可减小。\\n\\n**延伸**：由此可证「任意 $n$ 个整数中必有若干个（连续或非连续）之和被 $n$ 整除」（对前缀和用同样的余数鸽巢）。\\n\\n---\\n*原创题；对标 BMO1 第 1–2 题难度；「$n+1$ 个整数必有两个同余 $\\bmod n$」已对 $n=2\\dots11$ 随机核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo1-co-010",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-combinatorics",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO1 风格 · 完整证明题】Ten distinct two-digit numbers (each between $10$ and $99$) are given. Prove that one can always choose two disjoint non-empty subsets of them having the same sum.（给定 $10$ 个不同的两位数（都在 $10$ 与 $99$ 之间）。求证：总能从中选出两个不相交的非空子集，使它们的元素之和相等。）真实 BMO1 中本题不设小问——引导小问示范「子集数 vs 可能和数」的鸽巢，以及「去掉公共部分」的收尾技巧。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（数抽屉：可能的和）：这 $10$ 个数的一个非空子集，其元素之和最小、最大各是多少？可能的和值共有多少种（给一个上界）？",
+        solutionOutline: "非空子集和 $\\ge$ 最小的数 $\\ge10$，$\\le$ 全部之和 $\\le90+91+\\cdots+99=945$。故和值落在 $\\{10,\\dots,945\\}$，不超过 $945$ 种（更粗略地 $<1000$ 种）。" },
+      { label: "b", marks: 4, question: "引导二（数鸽子：子集个数）：$10$ 个数的非空子集有多少个？与 a) 的和值种类数比较，用鸽巢得出什么？",
+        solutionOutline: "非空子集有 $2^{10}-1=1023$ 个，超过可能的和值种类（$\\le945$）。由鸽巢，必有两个**不同**的子集 $A,B$ 之和相等。" },
+      { label: "c", marks: 3, question: "引导三（去掉公共部分收尾）：从 b) 得到的 $A,B$ 可能相交。说明如何把它们改造成**不相交**且非空、和仍相等的两组。",
+        solutionOutline: "令 $A'=A\\setminus B$、$B'=B\\setminus A$（去掉公共元素）。因 $\\text{sum}(A)=\\text{sum}(B)$，减去公共部分之和后仍有 $\\text{sum}(A')=\\text{sum}(B')$；且 $A\\ne B$ 保证 $A',B'$ 不全空——由和相等知二者要么都空要么都非空，故都非空。$A',B'$ 不相交、非空、等和。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（鸽巢：子集数 > 可能和数；再去公共部分）**\\n\\n**可能的和值种类（抽屉）**：这 $10$ 个两位数各在 $[10,99]$。任一非空子集的元素和至少为最小的那个数（$\\ge10$），至多为全部之和。由于十个**不同**的两位数之和最大不超过 $90+91+\\cdots+99=945$，所有非空子集的和都落在 $\\{10,11,\\dots,945\\}$ 内，**至多 $945$ 种**取值。\\n\\n**子集个数（鸽子）**：$10$ 个数的非空子集共有 $2^{10}-1=1023$ 个。因为 $1023>945$，由鸽巢原理，必有两个**不同**的非空子集 $A\\ne B$ 满足\\n$$\\operatorname{sum}(A)=\\operatorname{sum}(B).$$\\n\\n**去掉公共部分**：$A,B$ 可能相交。令\\n$$A'=A\\setminus B,\\qquad B'=B\\setminus A.$$\\n从等式 $\\operatorname{sum}(A)=\\operatorname{sum}(B)$ 两边同时减去公共元素之和 $\\operatorname{sum}(A\\cap B)$，得\\n$$\\operatorname{sum}(A')=\\operatorname{sum}(B').$$\\n$A',B'$ 显然**不相交**。又因 $A\\ne B$，$A'$ 与 $B'$ 不同时为空；而它们和相等，若一个为空（和为 $0$）则另一个的和也为 $0$，但非空子集的和 $\\ge10>0$，矛盾——故 $A',B'$ **都非空**。\\n\\n于是 $A',B'$ 是两个不相交、非空、且元素和相等的子集。$\\blacksquare$\\n\\n---\\n**方法要点（BMO1 通用武器）**：**「对象数 > 取值数」型鸽巢**——当子集（或选法）的数量超过它们某个属性（这里是「和」）的可能取值数时，必有两者属性相同。收尾常配一招**去掉公共部分**，把「相等但可能相交」升级成「不相交且相等」。这类子集和论证是 BMO 组合的经典题型。\\n\\n**延伸**：一般地，$m$ 个上界为 $M$ 的正整数，只要 $2^m-1>mM$ 就能保证存在等和的不相交子集。\\n\\n---\\n*原创题；对标 BMO1 第 3 题难度；「$2^{10}-1=1023>945=$ 最大可能和」及随机 $10$ 数集必有等和子集已程序核对；请对照证明自评。*",
+  },
 ];
