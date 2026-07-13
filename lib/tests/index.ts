@@ -315,6 +315,48 @@ export const ADMISSIONS_TESTS: AdmissionsTest[] = [
 
 
   {
+    id: "bmo",
+    name: "British Mathematical Olympiad (via UKMT Senior Challenge)",
+    abbr: "BMO",
+    nameZh: "英国数学奥林匹克（UKMT → BMO）",
+    category: "competition",
+    icon: "🧮",
+    universities: ["由英国数学信托（UKMT）运营；BMO 成绩受 Oxford、Cambridge、Imperial、Warwick 等数学方向招生高度认可，也是数学 PS 与面试的有力学术信号"],
+    programs: ["数学", "数学与统计", "数学与计算机", "计算机科学", "工程"],
+    programsEn: ["Mathematics", "Mathematics & Statistics", "Mathematics & Computer Science", "Computer Science", "Engineering"],
+    duration: "SMC：90 分钟；BMO1：3.5 小时",
+    format: "Senior Maths Challenge (SMC): 90 min, 25 questions (22 multiple-choice + 3 numeric answers 000–999), increasing difficulty. British Mathematical Olympiad Round 1 (BMO1): 3.5 hours, 6 proof questions, 10 marks each — full written proofs required.",
+    formatZh: "SMC（晋级入口）：90 分钟 25 题，前 22 题为选择题、最后 3 题为 000–999 三位数字作答，难度递增；BMO1：3.5 小时 6 道纯证明题，每题 10 分，须写出完整证明，仅有答案不得分。BMO1 常见配比：数论约 2 题、几何 1–2 题、组合/博弈约 2 题、代数/数列 1 题。",
+    registrationUrl: "https://www.ukmt.org.uk/",
+    officialSampleUrl: "https://www.ukmt.org.uk/",
+    hasQuestionBank: true,
+    overview: "BMO 是英国最高水平的中学数学竞赛，由 UKMT 运营，是选拔英国队参加国际数学奥赛（IMO）的通道。注意：这是学术竞赛而非入学考试——不用于报名大学，但 SMC 的 Gold 证书、尤其 BMO1 的优异成绩，是数学与相关专业申请中极有分量的学术信号，其解题与证明风格也与牛剑面试高度一致。晋级路径：Senior Maths Challenge → BMO1 → BMO2 → 国家队集训。",
+    structureDetails: "竞赛为分级系列：Senior Maths Challenge（10 月，选择/数字题，本平台 SMC 题库对标）→ BMO Round 1（11 月，6 道证明题，本平台长题对标）→ BMO Round 2（次年 1 月，IMO 级难度，受邀参加）→ 国家队集训与 IMO。SMC 允许普通计算器（部分年份禁用计算器，以当年规则为准）；BMO 为纯手写证明、不得使用计算器。评分特点：BMO 满分极难，一道写到位的完整证明往往胜过六道半成品——书写与严格性本身就是重要得分点。",
+    scoringNote: "SMC 按比例授予 Gold / Silver / Bronze，并据分数线发出 BMO1 邀请；BMO1 按成绩授予奖项并选拔进入 BMO2。本平台题库：SMC 短题已转为选择题以支持自动判分与即时反馈（其中原为 000–999 数字作答的题目会在题干注明，均经程序验算）；BMO1 风格证明长题保留完整格式，配引导小问与完整解答供自评。",
+    topics: [
+      { id: "bmo-number", title: "数论", titleEn: "Number Theory", description: "整除与同余、素数与因数分解、平方差与奇偶约束、完全平方判定、模运算（BMO1 最高频主题之一）" },
+      { id: "bmo-algebra", title: "代数与不等式", titleEn: "Algebra & Inequalities", description: "多项式与因式分解、数列与求和、函数方程入门、AM–GM / QM–AM / Cauchy–Schwarz 等经典不等式与等号分析" },
+      { id: "bmo-geometry", title: "几何", titleEn: "Geometry", description: "三角形与圆、角度追逐、相似与全等、面积法、圆内接四边形与幂、坐标与向量方法" },
+      { id: "bmo-combinatorics", title: "组合与博弈", titleEn: "Combinatorics & Games", description: "计数与鸽巢原理、不变量与单调量、图与染色、博弈策略与必胜态（BMO1 证明题的常客）" },
+    ],
+    studyPlan: [
+      { week: "第 1–2 周", focus: "SMC 手感 + 数论地基", tasks: ["刷 SMC 题库数论/代数分段，适应 90 分钟节奏", "掌握同余、平方差因式分解、奇偶性约束因数对三件套", "开始接触官方 SMC 真题（ukmt.org.uk）"] },
+      { week: "第 3–4 周", focus: "组合不变量 + 几何", tasks: ["组合题库：练不变量/单调量与鸽巢", "几何题库：角度追逐与圆的性质", "每周 1 套 SMC 计时练习，最后 3 道数字题重点练"] },
+      { week: "第 5–6 周", focus: "从选择题过渡到完整证明", tasks: ["完成平台 BMO1 风格证明长题并对照解答自评", "专练证明书写：不变量法、平方配方、不等式等号分析", "官方 BMO1 真题每周精做 1–2 道，只求写到位"] },
+      { week: "第 7–8 周", focus: "全真模拟与查漏", tasks: ["完成平台 SMC 模拟卷与 BMO1 阶梯模考", "官方近年 BMO1 整卷限时模拟（3.5 小时选做 3–4 题）", "整理错题：区分「不会」与「会但写不严」"] },
+    ],
+    tips: [
+      "SMC 通常 10 月经学校统一报名；BMO1 可凭 SMC 达线晋级，或由学校付费直报（每人约 £40）——尽早与学校数学老师沟通。",
+      "BMO 的第一心态关：满分不是目标。一道完整、严谨的解答，胜过六道半成品——评分按证明的严格性给分。",
+      "务必做官方历年真题（ukmt.org.uk 免费下载）：本题库负责主题化训练与即时反馈，真题负责手感与证明书写。",
+      "SMC 最后 3 题为 000–999 数字作答（本平台以选择题呈现并已注明）：难度最高，会做再回头攻，别在此耗光时间。",
+      "证明题写「双向完整」：既要给出解/构造，也要论证再无其他、或不等式等号何时成立——漏掉这一半常被扣分。",
+      "常用武器备好：数论用平方差+奇偶/同余；组合先找不变量或单调量；不等式想 AM–GM / Cauchy–Schwarz 并单独分析等号。",
+    ],
+  },
+
+
+  {
     id: "bpho",
     name: "British Physics Olympiad (Round 1)",
     abbr: "BPhO",

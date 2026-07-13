@@ -126,7 +126,7 @@ export const BACKGROUND_CATALOG: CatalogItem[] = [
     id: "bg-math-ukmt", field: "MATH", category: "COMPETITION",
     title: "UKMT 数学挑战 → BMO", titleEn: "UKMT Senior Challenge → BMO",
     description: "英国数学信托的系列竞赛，从 Senior Maths Challenge 晋级至英国数学奥林匹克 (BMO)，是数学方向权威度很高的学术竞赛。",
-    difficulty: 3, timing: "秋季起逐轮晋级", officialUrl: "",
+    difficulty: 3, timing: "秋季起逐轮晋级", officialUrl: "", testId: "bmo",
   },
   {
     id: "bg-math-yau", field: "MATH", category: "RESEARCH",
