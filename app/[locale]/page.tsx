@@ -101,9 +101,9 @@ function Landing({ t, t2 }: { t: Awaited<ReturnType<typeof getTranslations<"home
 
       {/* ── Capabilities：Notion 色块 bento 拼贴 ─────────────── */}
       <section className="border-y border-[var(--border-soft)] bg-[var(--surface)]">
-        <div className="mx-auto max-w-6xl px-6 py-20">
+        <div className="mx-auto max-w-7xl px-6 py-20">
           <SectionHead eyebrow={t("capEyebrow")} title={t("capTitle")} sub={t("capSub")} />
-          <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="mt-12 grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {features.map((f, i) => {
               const Scene = SCENES[i % SCENES.length];
               return (

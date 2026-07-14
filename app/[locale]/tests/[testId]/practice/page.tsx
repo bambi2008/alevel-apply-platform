@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect, useCallback, use } from "react";
+import { useTier } from "@/hooks/use-tier";
+import { applyFreeLimit } from "@/lib/entitlements";
 import { notFound, useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { getTestById } from "@/lib/tests";
@@ -60,12 +62,15 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
   const [queue, setQueue] = useState<Question[]>([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [results, setResults] = useState<SessionResult[]>([]);
+  const tier = useTier();
 
   const startSession = useCallback(() => {
     let pool = allQuestions;
     if (topicId !== "all") {
       pool = allQuestions.filter((q) => q.topicId === topicId);
     }
+    // 免费额度门控：付费墙关闭 / 会员时原样返回，绝不改变现有行为。
+    pool = applyFreeLimit(pool, testId, tier);
     // Weighted selection: difficulty 3 → 3×, difficulty 2 → 2×, difficulty 1 → 1×
     const diffWeight = (d: number) => (d === 3 ? 3 : d === 2 ? 2 : 1);
     const shuffled = [...pool]
@@ -77,7 +82,7 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
     setCurrentIdx(0);
     setResults([]);
     setSessionState("practicing");
-  }, [allQuestions, topicId, questionCount]);
+  }, [allQuestions, topicId, questionCount, tier, testId]);
 
   const recordResult = useCallback((result: SessionResult) => {
     setResults((prev) => [...prev, result]);
