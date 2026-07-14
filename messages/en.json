@@ -93,43 +93,43 @@
     "startMatch": "Start matching"
   },
   "home": {
-    "badge": "Built for A-Level · UK UCAS + HK Direct",
-    "titleLine1": "Admission tests for top UK & HK unis,",
+    "badge": "Built for A-Level · Admission tests + Olympiads",
+    "titleLine1": "Admission tests + academic competitions for top UK & HK unis,",
     "titleBefore": "prepared for ",
     "titleHighlight": "next to nothing",
     "titleAfter": "",
-    "subtitle": "TMUA, ESAT, MAT, STEP, PAT, TSA, LNAT — every admission test you need, in one subscription: original question banks, full mock papers, step-by-step solutions, plus registration & results guidance.",
+    "subtitle": "University admission tests like MAT, TMUA, ESAT, STEP, PAT, LNAT and TARA, plus academic competitions for profile-building — the two kinds of exam a UK/HK application calls for, in one subscription: original question banks, full timed mocks, step-by-step solutions and knowledge cards.",
     "ctaTry": "Start practising free",
     "ctaBrowse": "Which tests do I need?",
     "priceNote": "Subscription · from ~¥33/mo for every test bank and full mock.",
     "features": [
       {
+        "emoji": "📚",
+        "href": "/tests",
+        "title": "Original question banks",
+        "desc": "Original questions across 9 admission tests and competitions, layered by topic, each with full step-by-step solutions — learn while you practise."
+      },
+      {
+        "emoji": "⏱️",
+        "href": "/tests",
+        "title": "Full timed mocks",
+        "desc": "Mock papers matching the real exam's structure and timing, auto-marked with mistake review — real rehearsal before the day."
+      },
+      {
+        "emoji": "🧠",
+        "href": "/tests",
+        "title": "Knowledge cards",
+        "desc": "Core concepts, methods and examples for every topic, distilled into cards — learn and practise reinforce each other."
+      },
+      {
         "emoji": "🎯",
         "href": "/match",
-        "title": "Course Matching",
-        "desc": "Enter your A-Level predictions and get reach / match / safety tiers based on each course's minimum and typical offers."
-      },
-      {
-        "emoji": "🏛️",
-        "href": "/universities",
-        "title": "University Database",
-        "desc": "Entry requirements, tuition and rankings for UK + HK universities and courses — structured and transparent."
-      },
-      {
-        "emoji": "📅",
-        "href": "/match",
-        "title": "Application Tracking",
-        "desc": "Status, document checklists and deadline calendar for each application — never miss a deadline."
-      },
-      {
-        "emoji": "✍️",
-        "href": "/statements",
-        "title": "Statement Tools",
-        "desc": "Structured guidance for the UCAS personal statement plus character / format self-checks (AI assist coming soon)."
+        "title": "Course matching",
+        "desc": "Enter your A-Level predictions for reach / match / safety tiers — and see exactly which admission tests you'll need."
       }
     ],
-    "pricingHeading": "One subscription, every test covered",
-    "pricingSub": "Unlock question banks, mocks and solutions for all 9 admission tests. Cancel anytime.",
+    "pricingHeading": "One subscription — tests and competitions covered",
+    "pricingSub": "Unlock question banks, mocks and solutions for all 9 admission tests and competitions. Cancel anytime.",
     "plans": [
       {
         "name": "Free",
@@ -137,7 +137,7 @@
         "unit": "",
         "tagline": "Start practising",
         "perks": [
-          "Limited practice for one test",
+          "Basic practice for one test or competition (limited)",
           "Prep guides + registration/results info",
           "Progress tracking"
         ]
@@ -148,7 +148,7 @@
         "unit": "/mo",
         "tagline": "Flexible prep",
         "perks": [
-          "All 9 test question banks",
+          "Unlock every admission-test and competition bank",
           "Full mock papers",
           "Smart mistake book",
           "Step-by-step solutions"
@@ -171,24 +171,42 @@
     "pricingNote": "Pricing is a product plan, subject to launch. We focus on preparation and do not guarantee test or admission outcomes.",
     "heroStats": [
       {
-        "num": "18+",
-        "label": "Online research projects"
+        "num": "Admission tests",
+        "label": "MAT · TMUA · ESAT · STEP · PAT · LNAT · TARA"
       },
       {
-        "num": "10",
-        "label": "Original timed mock papers"
+        "num": "Competitions",
+        "label": "Profile boosters · BMO & BPhO live, more coming"
       },
       {
-        "num": "UCAS + HK",
-        "label": "Dual application systems"
+        "num": "Original",
+        "label": "Banks + timed mocks + knowledge cards"
       }
     ],
-    "capEyebrow": "Capabilities",
-    "capTitle": "From background to submission — in your own hands",
-    "capSub": "Six connected modules covering every step of UK UCAS and Hong Kong applications.",
-    "processEyebrow": "Process",
-    "processTitle": "Four clear steps",
-    "pricingEyebrow": "Plans"
+    "capEyebrow": "What you get",
+    "capTitle": "One platform to master every admission test",
+    "capSub": "Admission tests or academic competitions — original banks + full mocks + step-by-step solutions + knowledge cards, one loop for all.",
+    "processEyebrow": "How it works",
+    "processTitle": "Three steps, from zero to exam day",
+    "pricingEyebrow": "Plans",
+    "processSub": "Pick your test → drill the bank → sit timed mocks. Just follow the path.",
+    "prepSteps": [
+      {
+        "num": "01",
+        "title": "Pick a test or competition · Read the cards",
+        "desc": "Lock in the admission tests (TMUA / ESAT / MAT / STEP / PAT / LNAT / TARA) and competitions (BMO / BPhO) you need, then use knowledge cards to grasp the key methods and question types fast."
+      },
+      {
+        "num": "02",
+        "title": "Drill the bank · Full solutions",
+        "desc": "Practise original questions layered by topic, each with step-by-step solutions and method notes; a smart mistakes log keeps you on your weak spots."
+      },
+      {
+        "num": "03",
+        "title": "Timed mock papers · Close the gaps",
+        "desc": "Rehearse on mocks that match the real exam's structure and timing — auto-marked, with review — so your pace and instincts are ready."
+      }
+    ]
   },
   "match": {
     "title": "Course Matching",

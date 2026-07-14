@@ -93,43 +93,43 @@
     "startMatch": "开始选校匹配"
   },
   "home": {
-    "badge": "A-Level 专属 · 英国 UCAS + 香港直申",
-    "titleLine1": "英港名校入学笔试，",
+    "badge": "A-Level 专属 · 入学笔试 + 学科竞赛",
+    "titleLine1": "英港名校入学笔试 + 背景提升竞赛，",
     "titleBefore": "用 ",
     "titleHighlight": "极低成本",
     "titleAfter": " 备考到位",
-    "subtitle": "TMUA、ESAT、MAT、STEP、PAT、TSA、LNAT…… 英港申请所需的各类入学笔试，一个订阅全部覆盖：海量原创题库、全真模考、分步详解，外加报名与查分指引。",
+    "subtitle": "MAT、TMUA、ESAT、STEP、PAT、LNAT、TARA 等大学入学笔试，以及用于背景提升的学科竞赛——A-Level 申请要练的两大类，一个订阅全覆盖：海量原创题库、全真计时模考、逐题详解与知识卡。",
     "ctaTry": "免费开始刷题",
     "ctaBrowse": "看看我该考哪些",
     "priceNote": "订阅制 · 低至约 ¥33/月，解锁全部笔试题库与全真模考。",
     "features": [
       {
+        "emoji": "📚",
+        "href": "/tests",
+        "title": "海量原创题库",
+        "desc": "入学笔试与学科竞赛共 9 门，按考点分层的原创题，全部配逐题分步详解，边练边学、即时反馈。"
+      },
+      {
+        "emoji": "⏱️",
+        "href": "/tests",
+        "title": "全真计时模考",
+        "desc": "与真考同结构、同计时的模拟卷，自动判分与错题复盘，考前实战演练不慌张。"
+      },
+      {
+        "emoji": "🧠",
+        "href": "/tests",
+        "title": "知识卡讲解",
+        "desc": "每个考点的核心概念、方法与例题整理成卡片，学练互通、随时查阅、快速补短板。"
+      },
+      {
         "emoji": "🎯",
         "href": "/match",
         "title": "选校匹配",
-        "desc": "输入 A-Level 预估成绩，按最低/典型 offer 智能给出冲刺/匹配/稳妥分层。"
-      },
-      {
-        "emoji": "🏛️",
-        "href": "/universities",
-        "title": "院校数据库",
-        "desc": "英国 + 香港院校与专业的入学要求、学费、排名，结构化透明可查。"
-      },
-      {
-        "emoji": "📅",
-        "href": "/match",
-        "title": "申请追踪",
-        "desc": "每所申请的状态、材料清单与截止日历，不再漏 deadline。"
-      },
-      {
-        "emoji": "✍️",
-        "href": "/statements",
-        "title": "文书工具",
-        "desc": "UCAS 个人陈述结构化引导 + 字数/格式自查（AI 辅助即将上线）。"
+        "desc": "输入 A-Level 预估成绩，按最低/典型 offer 分出冲刺/匹配/稳妥，顺便看清该考哪些笔试。"
       }
     ],
-    "pricingHeading": "一个订阅，覆盖所有笔试备考",
-    "pricingSub": "解锁全部 9 类入学笔试的题库、模考与解析，随时可取消。",
+    "pricingHeading": "一个订阅，笔试与竞赛全覆盖",
+    "pricingSub": "解锁全部 9 门入学笔试与学科竞赛的题库、模考与解析，随时可取消。",
     "plans": [
       {
         "name": "免费版",
@@ -137,7 +137,7 @@
         "unit": "",
         "tagline": "先练起来",
         "perks": [
-          "单科笔试基础练习（限量）",
+          "单科笔试 / 竞赛基础练习（限量）",
           "备考指南与报名/查分信息",
           "学习进度记录"
         ]
@@ -148,7 +148,7 @@
         "unit": "/月",
         "tagline": "灵活备考",
         "perks": [
-          "解锁全部 9 类笔试题库",
+          "解锁全部入学笔试与学科竞赛题库",
           "全真模考试卷",
           "智能错题本",
           "逐题分步详解"
@@ -171,24 +171,42 @@
     "pricingNote": "定价为产品规划方案，最终以正式上线为准。本平台专注备考训练，不承诺考试或录取结果。",
     "heroStats": [
       {
-        "num": "18+",
-        "label": "在线科研课题"
+        "num": "入学笔试",
+        "label": "MAT · TMUA · ESAT · STEP · PAT · LNAT · TARA"
       },
       {
-        "num": "10 套",
-        "label": "原创计时模考卷"
+        "num": "学科竞赛",
+        "label": "背景提升利器 · BMO、BPhO 已上线，陆续扩充"
       },
       {
-        "num": "UCAS + 港校",
-        "label": "双申请体系"
+        "num": "原创",
+        "label": "题库 + 计时模考 + 知识卡"
       }
     ],
-    "capEyebrow": "平台能力",
-    "capTitle": "从背景到提交，全程自己掌控",
-    "capSub": "六大模块环环相扣，覆盖英国 UCAS 与香港申请的每一步。",
-    "processEyebrow": "申请流程",
-    "processTitle": "四步，清清楚楚",
-    "pricingEyebrow": "订阅方案"
+    "capEyebrow": "备考能力",
+    "capTitle": "一个平台，把每一门笔试练透",
+    "capSub": "无论入学笔试还是学科竞赛，原创题库 + 全真模考 + 分步详解 + 知识卡，一套练到底。",
+    "processEyebrow": "备考路径",
+    "processTitle": "三步，从入门到考场",
+    "pricingEyebrow": "订阅方案",
+    "processSub": "选定笔试 → 刷题练透 → 计时模考，照着练就行。",
+    "prepSteps": [
+      {
+        "num": "01",
+        "title": "选定笔试或竞赛 · 看知识卡",
+        "desc": "按目标专业锁定要练的入学笔试（TMUA / ESAT / MAT / STEP / PAT / LNAT / TARA）与背景竞赛（BMO / BPhO），先用知识卡快速掌握每个考点的核心方法与常见题型。"
+      },
+      {
+        "num": "02",
+        "title": "刷原创题库 · 逐题详解",
+        "desc": "海量原创题按考点分层练习，每题都配分步详解与方法要点；智能错题本帮你盯住薄弱环节，越练越准。"
+      },
+      {
+        "num": "03",
+        "title": "全真计时模考 · 查漏补缺",
+        "desc": "用与真考同结构、同计时的模拟卷实战演练，自动判分、复盘错题，考前把手感和节奏练满。"
+      }
+    ]
   },
   "match": {
     "title": "选校匹配",

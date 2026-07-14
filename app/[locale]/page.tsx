@@ -2,7 +2,6 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { auth } from "@/auth";
 import { Dashboard } from "@/components/dashboard";
-import { ProcessOverview } from "@/components/process-overview";
 import { StoryIllustration } from "@/components/story-illustration";
 import { HeroBridge, SceneCompass, SceneDocs, SceneChat, SceneGrowth } from "@/components/illustrations";
 import { Photo } from "@/components/photo";
@@ -24,6 +23,7 @@ function Landing({ t, t2 }: { t: Awaited<ReturnType<typeof getTranslations<"home
   const features = t.raw("features") as Feature[];
   const plans = t.raw("plans") as Plan[];
   const heroStats = t.raw("heroStats") as { num: string; label: string }[];
+  const prepSteps = t.raw("prepSteps") as { num: string; title: string; desc: string }[];
 
   return (
     <div className="bg-white">
@@ -80,11 +80,22 @@ function Landing({ t, t2 }: { t: Awaited<ReturnType<typeof getTranslations<"home
         </div>
       </section>
 
-      {/* ── Process ────────────────────────────────────────── */}
+      {/* ── Prep flow：备考路径 ─────────────────────────────── */}
       <section className="mx-auto max-w-5xl px-6 py-20">
-        <SectionHead eyebrow={t("processEyebrow")} title={t("processTitle")} />
-        <div className="mt-12 max-w-2xl mx-auto">
-          <ProcessOverview />
+        <SectionHead eyebrow={t("processEyebrow")} title={t("processTitle")} sub={t("processSub")} />
+        <div className="mt-12 grid sm:grid-cols-3 gap-4">
+          {prepSteps.map((s, i) => (
+            <div key={s.title} className={`tile ${TILE[i % TILE.length]} flex flex-col`}>
+              <div className="text-2xl font-extrabold text-[var(--indigo)] tabular-nums">{s.num}</div>
+              <h3 className="mt-2 h-section">{s.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-[var(--ink-soft)]">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+        <div className="mt-8 text-center">
+          <Link href="/tests" className="btn btn-primary group">
+            {t("ctaTry")}<span className="notion-arrow">→</span>
+          </Link>
         </div>
       </section>
 
