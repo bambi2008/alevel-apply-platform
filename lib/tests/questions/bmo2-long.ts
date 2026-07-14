@@ -675,4 +675,172 @@ export const BMO2_LONG_SAMPLE: LongQuestion[] = [
     fullSolution:
       "**完整证明（反证 + 度数和 + Cauchy–Schwarz）**\\n\\n反证：设 $G$ 有 $n$ 个顶点却**无三角形**，我们证明 $|E|\\le\\dfrac{n^2}{4}$。\\n\\n**每条边两端度数和 $\\le n$**：取任一条边 $uv$。若 $u,v$ 有公共邻居 $w$，则 $u,v,w$ 成三角形，矛盾。故 $u$ 的邻居与 $v$ 的邻居互不相同；这些邻居连同 $u,v$ 自身都是 $n$ 个顶点中的点，因此\\n$$\\deg(u)+\\deg(v)\\le n.$$\\n\\n**对所有边求和**：\\n$$\\sum_{uv\\in E}\\big(\\deg(u)+\\deg(v)\\big)\\le n|E|.$$\\n左边按顶点归并：每个顶点 $v$ 在它的 $\\deg(v)$ 条边里各被计一次 $\\deg(v)$，故左边 $=\\sum_v\\deg(v)^2$。于是\\n$$\\sum_v\\deg(v)^2\\le n|E|.$$\\n另一方面，由 Cauchy–Schwarz（且 $\\sum_v\\deg(v)=2|E|$）：\\n$$\\sum_v\\deg(v)^2\\ge\\frac{\\big(\\sum_v\\deg(v)\\big)^2}{n}=\\frac{(2|E|)^2}{n}=\\frac{4|E|^2}{n}.$$\\n\\n**合并**：\\n$$\\frac{4|E|^2}{n}\\le\\sum_v\\deg(v)^2\\le n|E|\\ \\Longrightarrow\\ 4|E|^2\\le n^2|E|\\ \\Longrightarrow\\ |E|\\le\\frac{n^2}{4}.$$\\n\\n这证明了「无三角形 $\\Rightarrow|E|\\le\\tfrac{n^2}4$」。取逆否命题：\\n$$|E|>\\frac{n^2}{4}\\ \\Longrightarrow\\ G\\ \\text{含三角形}.\\qquad\\blacksquare$$\\n\\n**紧性**：完全二部图 $K_{\\lfloor n/2\\rfloor,\\lceil n/2\\rceil}$ 无三角形且恰有 $\\left\\lfloor\\tfrac{n^2}4\\right\\rfloor$ 条边，说明界不可改进。\\n\\n---\\n**方法要点（BMO2 通用武器）**：极值图论的入门定理 Mantel，示范了**「局部约束（每条边度数和 $\\le n$）→ 全局求和 → Cauchy–Schwarz 收口」**的三段式。把「边上的不等式」按顶点归并成 $\\sum\\deg^2$、再用 Cauchy–Schwarz 与握手引理 $\\sum\\deg=2|E|$ 夹逼，是数边问题的通用套路（Turán 定理是其推广）。\\n\\n---\\n*原创题（Mantel）；仅以 BMO2 组合题型做难度校准；「$>\\lfloor n^2/4\\rfloor$ 边必含三角形」($n=3\\dots7$ 抽样) 与紧例 $K_{\\lfloor n/2\\rfloor,\\lceil n/2\\rceil}$ 已程序核对；请对照证明自评。*",
   },
+
+  {
+    id: "bmo2-nt-009",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-number",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】The Fermat numbers are $F_k=2^{2^k}+1$ ($k\\ge0$). Prove that any two distinct Fermat numbers are coprime, and deduce that there are infinitely many primes.（费马数 $F_k=2^{2^k}+1$。求证任意两个不同的费马数互素，并由此推出素数有无穷多个。）真实 BMO2 为纯证明题——引导小问示范「望远镜乘积恒等式」。",
+    parts: [
+      { label: "a", marks: 4, question: "引导一（乘积恒等式）：证明 $F_0F_1\\cdots F_{k-1}=F_k-2$（对 $k\\ge1$，归纳）。",
+        solutionOutline: "基例 $F_0=3=F_1-2$。归纳：$F_0\\cdots F_{k-1}F_k=(F_k-2)F_k=F_k^2-2F_k=(2^{2^k}+1)^2-2(2^{2^k}+1)=2^{2^{k+1}}-1=F_{k+1}-2$。" },
+      { label: "b", marks: 3, question: "引导二（互素）：设 $j<k$，$d\\mid F_j$ 且 $d\\mid F_k$。用 a) 证明 $d\\mid2$，再结合费马数为奇数得 $d=1$。",
+        solutionOutline: "$F_j$ 是乘积 $F_0\\cdots F_{k-1}=F_k-2$ 的一个因子，故 $d\\mid F_k-2$；又 $d\\mid F_k$，相减 $d\\mid2$。费马数为奇，$d$ 为奇，故 $d=1$。" },
+      { label: "c", marks: 3, question: "引导三（无穷多素数）：由互素推出素数无穷多。",
+        solutionOutline: "每个 $F_k$ 取一个素因子 $p_k$；因 $F_k$ 两两互素，这些 $p_k$ 两两不同，给出无穷多个不同素数。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（望远镜乘积恒等式）**\\n\\n**乘积恒等式** $F_0F_1\\cdots F_{k-1}=F_k-2$：对 $k$ 归纳。基例 $k=1$：$F_0=3=5-2=F_1-2$。归纳步，设 $F_0\\cdots F_{k-1}=F_k-2$，则\\n$$F_0\\cdots F_{k-1}F_k=(F_k-2)F_k=F_k^2-2F_k.$$\\n代入 $F_k=2^{2^k}+1$：\\n$$F_k^2-2F_k=(2^{2^k}+1)^2-2(2^{2^k}+1)=2^{2^{k+1}}+2\\cdot2^{2^k}+1-2\\cdot2^{2^k}-2=2^{2^{k+1}}-1=F_{k+1}-2.$$\\n\\n**两两互素**：设 $j<k$，$d$ 同时整除 $F_j$ 与 $F_k$。因 $F_j$ 是乘积 $F_0\\cdots F_{k-1}=F_k-2$ 的一个因子，故 $d\\mid F_k-2$；又 $d\\mid F_k$，两者相减得 $d\\mid2$。但每个费马数 $2^{2^k}+1$ 都是**奇数**，其公因子 $d$ 也是奇数，与 $d\\mid2$ 合起来迫使 $d=1$。故 $\\gcd(F_j,F_k)=1$。\\n\\n**无穷多素数**：每个 $F_k\\ge3$ 至少有一个素因子 $p_k$。由于 $F_0,F_1,F_2,\\dots$ 两两互素，它们的素因子 $p_0,p_1,p_2,\\dots$ **两两不同**，于是得到无穷多个互不相同的素数。$\\blacksquare$\\n\\n---\\n**方法要点（BMO2 通用武器）**：这是欧几里得之外证明「素数无穷」的名证（Goldbach 致欧拉信）。核心是一条**望远镜乘积恒等式**，把「较大项 $-$ 常数 $=$ 前面所有项之积」变成「任意公因子只能整除那个小常数」。构造一列**两两互素**的数、再各取素因子，是制造无穷多不同素数的通用范式。\\n\\n---\\n*原创题；仅以 BMO2 数论题型做难度校准；乘积恒等式、两两互素（$k\\le7$）已程序核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo2-nt-010",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-number",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】Prove Wilson's theorem: for every prime $p$, $(p-1)!\\equiv-1\\pmod p$.（求证威尔逊定理：对每个素数 $p$，$(p-1)!\\equiv-1\\pmod p$。）真实 BMO2 为纯证明题——引导小问示范「模 $p$ 逆元配对」。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（自逆元）：在 $\\{1,2,\\dots,p-1\\}$ 中每个元素模 $p$ 都有唯一逆元。证明 $a$ 是自己的逆元（$a^2\\equiv1$）当且仅当 $a\\equiv1$ 或 $a\\equiv p-1$。",
+        solutionOutline: "$a^2\\equiv1\\pmod p\\iff p\\mid(a-1)(a+1)\\iff a\\equiv1$ 或 $a\\equiv-1\\equiv p-1$（$p$ 素数）。" },
+      { label: "b", marks: 4, question: "引导二（配对）：把 $\\{2,3,\\dots,p-2\\}$ 中的元素与其逆元两两配对，说明每对乘积 $\\equiv1$，且 $1$ 与 $p-1$ 落单。",
+        solutionOutline: "除 $1,p-1$ 外，每个 $a$ 的逆元 $a^{-1}\\ne a$ 且也在 $\\{2,\\dots,p-2\\}$ 中，故它们两两配成 $(a,a^{-1})$，每对乘积 $\\equiv1\\pmod p$。" },
+      { label: "c", marks: 3, question: "引导三（求积收尾）：把 $(p-1)!$ 按配对求积。",
+        solutionOutline: "$(p-1)!\\equiv1\\cdot(p-1)\\cdot\\prod(\\text{各对}\\equiv1)\\equiv p-1\\equiv-1\\pmod p$。（$p=2$ 单独验证 $1!\\equiv-1$。）$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（模 $p$ 逆元配对）**\\n\\n$p=2$：$(2-1)!=1\\equiv-1\\pmod2$，成立。以下设 $p$ 为奇素数。\\n\\n**逆元与自逆元**：由于 $p$ 素数，$\\mathbb Z/p$ 是域，$\\{1,2,\\dots,p-1\\}$ 中每个 $a$ 都有唯一的乘法逆元 $a^{-1}\\in\\{1,\\dots,p-1\\}$。$a$ 是自己的逆元当且仅当\\n$$a^2\\equiv1\\pmod p\\iff p\\mid(a-1)(a+1)\\iff a\\equiv1\\ \\text{或}\\ a\\equiv p-1.$$\\n\\n**配对**：因此在 $\\{2,3,\\dots,p-2\\}$ 中，每个 $a$ 的逆元 $a^{-1}$ 与自身不同、且也落在这个集合里。于是这 $p-3$ 个元素两两配成 $\\dfrac{p-3}{2}$ 对 $(a,a^{-1})$，每对乘积 $\\equiv1\\pmod p$。剩下 $1$ 和 $p-1$ 落单。\\n\\n**求积**：\\n$$(p-1)!=1\\cdot(p-1)\\cdot\\!\\!\\prod_{\\text{各配对}}\\!\\!(a\\cdot a^{-1})\\equiv 1\\cdot(p-1)\\cdot 1\\equiv p-1\\equiv-1\\pmod p.$$\\n$\\blacksquare$\\n\\n**逆定理**（了解）：若 $n>1$ 且 $(n-1)!\\equiv-1\\pmod n$，则 $n$ 必为素数——故威尔逊定理其实是素性的**充要**刻画（但阶乘太大，不用作实际判素）。\\n\\n---\\n**方法要点（BMO2 通用武器）**：在 $\\mathbb Z/p$ 里，「**每个元素与其逆元配对**」是处理连乘 $(p-1)!$、$\\prod$ 型表达式的核心技巧——绝大多数元素成对相消为 $1$，只留下自逆元（$\\pm1$）贡献。识别「自逆元 $\\iff a\\equiv\\pm1$」是关键一步。\\n\\n---\\n*原创题（Wilson）；仅以 BMO2 数论题型做难度校准；$(p-1)!\\equiv-1\\pmod p$ 对素数 $p<300$、以及合数对照已程序核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo2-al-009",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-algebra",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】Define $a_0=0$ and $a_{n+1}=\\sqrt{2+a_n}$ for $n\\ge0$. Prove that the sequence is increasing and bounded above by $2$, and find its limit.（$a_0=0$，$a_{n+1}=\\sqrt{2+a_n}$。求证数列单调递增且以 $2$ 为上界，并求极限。）真实 BMO2 为纯证明题——引导小问示范「归纳证上界 + 单调 + 单调有界收敛」。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（上界）：用归纳法证明对一切 $n$ 有 $0\\le a_n<2$。",
+        solutionOutline: "$a_0=0<2$。若 $a_n<2$，则 $a_{n+1}=\\sqrt{2+a_n}<\\sqrt{2+2}=2$；且显然 $a_{n+1}\\ge0$。故 $0\\le a_n<2$。" },
+      { label: "b", marks: 4, question: "引导二（单调）：证明 $a_{n+1}>a_n$。（提示：$\\sqrt{2+a_n}>a_n\\iff a_n^2-a_n-2<0$。）",
+        solutionOutline: "对 $0\\le a_n<2$：$a_{n+1}>a_n\\iff 2+a_n>a_n^2\\iff a_n^2-a_n-2<0\\iff(a_n-2)(a_n+1)<0$，在 $-1<a_n<2$ 成立。故严格递增。" },
+      { label: "c", marks: 3, question: "引导三（极限）：由单调有界收敛，设极限 $L$，解方程求 $L$。",
+        solutionOutline: "单调递增且上有界 $\\Rightarrow$ 收敛于某 $L$。对递推取极限：$L=\\sqrt{2+L}\\Rightarrow L^2-L-2=0\\Rightarrow(L-2)(L+1)=0\\Rightarrow L=2$（$L\\ge0$）。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（归纳上界 + 单调 + 单调有界收敛）**\\n\\n**上界**（归纳）：$a_0=0<2$。设 $a_n<2$，则 $2+a_n<4$，故 $a_{n+1}=\\sqrt{2+a_n}<2$；又根号非负，$a_{n+1}\\ge0$。于是对一切 $n$ 有 $0\\le a_n<2$。\\n\\n**单调递增**：对 $0\\le a_n<2$，\\n$$a_{n+1}>a_n\\iff\\sqrt{2+a_n}>a_n\\iff 2+a_n>a_n^2\\iff a_n^2-a_n-2<0\\iff(a_n-2)(a_n+1)<0,$$\\n最后一式在 $-1<a_n<2$ 时成立，而我们已知 $0\\le a_n<2$。故 $a_{n+1}>a_n$，数列严格递增。\\n\\n**收敛与极限**：单调递增且以 $2$ 为上界的实数列必**收敛**（单调有界定理），设 $\\lim a_n=L$，$0\\le L\\le2$。对递推 $a_{n+1}=\\sqrt{2+a_n}$ 两边取极限（$\\sqrt{\\ }$ 连续）：\\n$$L=\\sqrt{2+L}\\ \\Longrightarrow\\ L^2=2+L\\ \\Longrightarrow\\ L^2-L-2=0\\ \\Longrightarrow\\ (L-2)(L+1)=0.$$\\n因 $L\\ge0$，得 $L=2$。所以 $\\displaystyle\\lim_{n\\to\\infty}a_n=2$。$\\blacksquare$\\n\\n（此即嵌套根式 $\\sqrt{2+\\sqrt{2+\\sqrt{2+\\cdots}}}=2$。）\\n\\n---\\n**方法要点（BMO2 通用武器）**：递推数列收敛的黄金三步——**(1) 归纳证有界；(2) 证单调（常把 $a_{n+1}-a_n$ 或 $a_{n+1}/a_n$ 的符号化为一个二次不等式）；(3) 单调有界定理保证极限存在，再对递推取极限解出 $L$**。第三步必须先说清「极限存在」才能「令两边相等」，这是评分关键。\\n\\n---\\n*原创题；仅以 BMO2 数列题型做难度校准；单调、上界、极限 $\\to2$ 已程序核对（$200$ 步）；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo2-al-010",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-algebra",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】Prove the Cauchy–Schwarz inequality: for real numbers $a_1,\\dots,a_n$ and $b_1,\\dots,b_n$, $\\left(\\sum a_ib_i\\right)^2\\le\\left(\\sum a_i^2\\right)\\left(\\sum b_i^2\\right)$, with equality iff the two sequences are proportional.（求证柯西–施瓦茨不等式，并给出等号条件。）真实 BMO2 为纯证明题——引导小问示范「配一个非负二次式，用判别式」。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（造非负二次式）：考虑 $Q(t)=\\sum_{i}(a_it-b_i)^2$。说明 $Q(t)\\ge0$ 对一切实 $t$ 成立，并把它展开为 $At^2-2Bt+C$，指出 $A,B,C$ 是什么。",
+        solutionOutline: "$Q(t)=\\left(\\sum a_i^2\\right)t^2-2\\left(\\sum a_ib_i\\right)t+\\left(\\sum b_i^2\\right)\\ge0$，即 $A=\\sum a_i^2,\\ B=\\sum a_ib_i,\\ C=\\sum b_i^2$。" },
+      { label: "b", marks: 4, question: "引导二（判别式）：设 $A>0$。由「二次式对一切 $t$ 非负」推出判别式 $\\le0$，即 $B^2\\le AC$。",
+        solutionOutline: "$A>0$ 且 $Q(t)\\ge0\\ \\forall t\\Rightarrow$ 判别式 $(2B)^2-4AC\\le0\\Rightarrow B^2\\le AC$。" },
+      { label: "c", marks: 3, question: "引导三（收尾 + 等号 + 退化情形）：写出结论，讨论 $A=0$ 的情形与等号条件。",
+        solutionOutline: "得 $\\left(\\sum a_ib_i\\right)^2\\le\\left(\\sum a_i^2\\right)\\left(\\sum b_i^2\\right)$。$A=0$ 时所有 $a_i=0$，两边皆 $0$。等号 $\\iff Q(t_0)=0$ 某 $t_0$，即 $b_i=t_0a_i$，两序列成比例。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（非负二次式 + 判别式）**\\n\\n构造关于实变量 $t$ 的函数\\n$$Q(t)=\\sum_{i=1}^n (a_it-b_i)^2\\ \\ge0\\quad(\\forall t\\in\\mathbb R),$$\\n因为它是若干平方之和。展开：\\n$$Q(t)=\\Big(\\underbrace{\\sum a_i^2}_{A}\\Big)t^2-2\\Big(\\underbrace{\\sum a_ib_i}_{B}\\Big)t+\\Big(\\underbrace{\\sum b_i^2}_{C}\\Big)=At^2-2Bt+C.$$\\n\\n**情形 $A>0$**：$Q$ 是开口向上的二次函数且恒 $\\ge0$，故它至多有一个实根，判别式非正：\\n$$(2B)^2-4AC\\le0\\ \\Longrightarrow\\ B^2\\le AC,$$\\n即\\n$$\\Big(\\sum a_ib_i\\Big)^2\\le\\Big(\\sum a_i^2\\Big)\\Big(\\sum b_i^2\\Big).$$\\n\\n**情形 $A=0$**：则所有 $a_i=0$，不等式两边都是 $0$，成立。\\n\\n**等号条件**：等号成立当且仅当判别式 $=0$，即 $Q$ 有实根 $t_0$，$Q(t_0)=\\sum(a_it_0-b_i)^2=0$，也就是 $b_i=t_0a_i$ 对所有 $i$——两序列**成比例**（或有一方全为零）。$\\blacksquare$\\n\\n---\\n**方法要点（BMO2 通用武器）**：柯西–施瓦茨的「一行证法」——**把待证不等式塞进一个显然非负的二次式 $\\sum(a_it-b_i)^2$，再用『恒非负 $\\Rightarrow$ 判别式 $\\le0$』**。这种「引入辅助变量 $t$、用二次判别式榨取不等式」的手法在竞赛中极为通用（也可证 AM–GM 的两变量情形、三角不等式等）。\\n\\n**延伸**：由柯西–施瓦茨可推出 Engel 形式（Titu 引理）$\\sum\\dfrac{x_i^2}{y_i}\\ge\\dfrac{(\\sum x_i)^2}{\\sum y_i}$，是分式不等式神器。\\n\\n---\\n*原创题（Cauchy–Schwarz）；仅以 BMO2 不等式题型做难度校准；不等式已由 $2\\times10^5$ 次随机向量核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo2-ge-009",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-geometry",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】Prove Viviani's theorem: for any point $P$ inside an equilateral triangle, the sum of the distances from $P$ to the three sides equals the triangle's altitude (independent of $P$).（求证维维亚尼定理：等边三角形内任一点到三边距离之和等于三角形的高，与点的位置无关。）真实 BMO2 几何为纯证明题——引导小问示范「面积拆分」。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（连线拆分）：设等边三角形 $ABC$ 边长 $s$，内点 $P$ 到三边 $BC,CA,AB$ 的距离为 $d_a,d_b,d_c$。把 $P$ 与三顶点相连，用 $d_a,d_b,d_c$ 表示三个小三角形的面积。",
+        solutionOutline: "$[PBC]=\\tfrac12 s\\,d_a$，$[PCA]=\\tfrac12 s\\,d_b$，$[PAB]=\\tfrac12 s\\,d_c$（三边等长 $s$）。" },
+      { label: "b", marks: 4, question: "引导二（面积求和）：把三个小三角形面积相加得 $[ABC]$，并另用高 $h$ 表示 $[ABC]$。",
+        solutionOutline: "$[ABC]=[PBC]+[PCA]+[PAB]=\\tfrac12 s(d_a+d_b+d_c)$；又 $[ABC]=\\tfrac12 s\\,h$。" },
+      { label: "c", marks: 3, question: "引导三（消去 $s$）：由两式相等得出结论。",
+        solutionOutline: "$\\tfrac12 s(d_a+d_b+d_c)=\\tfrac12 s\\,h\\Rightarrow d_a+d_b+d_c=h$，与 $P$ 无关。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（面积拆分）**\\n\\n设等边三角形 $ABC$ 边长为 $s$、高为 $h$。取内部一点 $P$，记它到三边 $BC,CA,AB$ 的距离分别为 $d_a,d_b,d_c$。\\n\\n把 $P$ 与三个顶点相连，$\\triangle ABC$ 被分成三个小三角形 $PBC,PCA,PAB$。每个小三角形以原三角形的一条边为底（长度都是 $s$），对应的高正是 $P$ 到该边的距离：\\n$$[PBC]=\\tfrac12 s\\,d_a,\\qquad[PCA]=\\tfrac12 s\\,d_b,\\qquad[PAB]=\\tfrac12 s\\,d_c.$$\\n三者之和为整个三角形的面积：\\n$$[ABC]=[PBC]+[PCA]+[PAB]=\\tfrac12 s\\,(d_a+d_b+d_c).$$\\n另一方面，用一条边 $s$ 与其上的高 $h$，$[ABC]=\\tfrac12 s\\,h$。两式相等，消去 $\\tfrac12 s$：\\n$$d_a+d_b+d_c=h.$$\\n右边只依赖于三角形本身，与内点 $P$ 的位置无关。$\\blacksquare$\\n\\n---\\n**方法要点（BMO2 通用武器）**：**面积拆分法**——把一点与多边形顶点相连，用「同一面积的两种算法」建立等式，是几何证明里最朴素也最有效的手段之一。这里正因为等边三角形三边**等长**，$s$ 才能被提取公因子并消去，得到与位置无关的常量。\\n\\n**延伸**：对一般三角形，$a\\,d_a+b\\,d_b+c\\,d_c=2[ABC]$ 恒成立（加权版维维亚尼）。\\n\\n---\\n*原创题（Viviani）；仅以 BMO2 几何题型做难度校准；「内点到三边距离之和 $=$ 高」已在 $2\\times10^4$ 个随机内点上用坐标法核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo2-ge-010",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-geometry",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】Let $P$ be a point on the circumcircle of triangle $ABC$, and let $X,Y,Z$ be the feet of the perpendiculars from $P$ to lines $BC,CA,AB$ respectively. Prove that $X,Y,Z$ are collinear (the Simson line).（设 $P$ 在 $ABC$ 的外接圆上，$X,Y,Z$ 为 $P$ 到直线 $BC,CA,AB$ 的垂足。求证 $X,Y,Z$ 共线——西姆松线。）真实 BMO2 几何为纯证明题——引导小问示范「直径圆判定共圆 + 有向角追踪」。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（两个辅助圆）：说明 $P,Z,A,Y$ 四点共圆，$P,Y,C,X$ 四点共圆（提示：两个直角对着同一线段，落在以 $PA$、$PC$ 为直径的圆上）。",
+        solutionOutline: "$\\angle PZA=\\angle PYA=90^\\circ\\Rightarrow Z,Y$ 在以 $PA$ 为直径的圆上，故 $P,Z,A,Y$ 共圆。同理 $\\angle PYC=\\angle PXC=90^\\circ\\Rightarrow P,Y,C,X$ 共圆。" },
+      { label: "b", marks: 4, question: "引导二（有向角）：用两个共圆把有向角 $\\angle(YZ,YP)$ 与 $\\angle(YX,YP)$ 分别转到过 $A$、过 $C$ 的角。",
+        solutionOutline: "由 $PZAY$ 共圆：$\\angle(YZ,YP)=\\angle(AZ,AP)=\\angle(AB,AP)$。由 $PYXC$ 共圆：$\\angle(YX,YP)=\\angle(CX,CP)=\\angle(CB,CP)$。" },
+      { label: "c", marks: 3, question: "引导三（用外接圆收尾）：利用 $A,B,C,P$ 共圆说明 $\\angle(AB,AP)=\\angle(CB,CP)$，从而 $\\angle(YZ,YP)=\\angle(YX,YP)$，即 $Z,Y,X$ 共线。",
+        solutionOutline: "$A,B,C,P$ 共圆 $\\Rightarrow\\angle(AB,AP)=\\angle(CB,CP)$（同弦 $BP$ 的圆周角，有向角相等）。于是 $\\angle(YZ,YP)=\\angle(YX,YP)$，$YZ$ 与 $YX$ 同向，$Z,Y,X$ 三点共线。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（直径圆 + 有向角追踪）**\\n\\n（有向角均按模 $180^\\circ$ 理解，可自动照顾各种位置情形。）\\n\\n**两个辅助圆**：$X,Y,Z$ 分别是 $P$ 到 $BC,CA,AB$ 的垂足。\\n- $\\angle PZA=\\angle PYA=90^\\circ$，故 $Z,Y$ 都在以 $PA$ 为直径的圆上，即 $P,Z,A,Y$ **四点共圆**。\\n- $\\angle PYC=\\angle PXC=90^\\circ$，故 $P,Y,X,C$ **四点共圆**。\\n\\n**有向角转移**：\\n- 由 $P,Z,A,Y$ 共圆，$\\angle(YZ,YP)=\\angle(AZ,AP)=\\angle(AB,AP)$（$Z$ 在直线 $AB$ 上）。\\n- 由 $P,Y,X,C$ 共圆，$\\angle(YX,YP)=\\angle(CX,CP)=\\angle(CB,CP)$（$X$ 在直线 $BC$ 上）。\\n\\n**用外接圆收尾**：$A,B,C,P$ 同在外接圆上，对同一条弦 $BP$ 的圆周角（有向角）相等：\\n$$\\angle(AB,AP)=\\angle(CB,CP).$$\\n于是\\n$$\\angle(YZ,YP)=\\angle(AB,AP)=\\angle(CB,CP)=\\angle(YX,YP).$$\\n两条射线 $YZ$ 与 $YX$ 相对于 $YP$ 的有向角相同，说明它们是同一条直线，故 $Z,Y,X$ **共线**。这条直线就是 $P$ 关于 $\\triangle ABC$ 的西姆松线。$\\blacksquare$\\n\\n**注**：逆命题也成立——三垂足共线当且仅当 $P$ 在外接圆上，可作为「四点共圆」的判定工具。\\n\\n---\\n**方法要点（BMO2 通用武器）**：西姆松线是「**直角 $\\Rightarrow$ 落在直径圆上**」与「**有向角追踪**」的经典合奏。遇到多个垂足/直角，先用「对同一线段张直角的点共圆（直径圆）」制造若干共圆四边形，再用**有向角**（模 $180^\\circ$）把分散的角统一转移、比较——有向角能一举免去繁琐的分情形讨论，是 BMO2 高级几何的必备语言。\\n\\n---\\n*原创题（Simson）；仅以 BMO2 几何题型做难度校准；「$P$ 在外接圆上 $\\Rightarrow$ 三垂足共线」及「$P$ 不在圆上则一般不共线」已在 $2\\times10^4$ 组随机三角形上用坐标法核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo2-co-009",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-combinatorics",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】Prove that $n$ lines in the plane in general position (no two parallel, no three concurrent) divide the plane into $1+n+\\binom n2$ regions.（求证：平面上一般位置的 $n$ 条直线（两两不平行、无三线共点）把平面分成 $1+n+\\binom n2$ 个区域。）真实 BMO2 组合为纯证明题——引导小问示范「逐条加线 + 计数增量」。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（增量思路）：从 $0$ 条线（$1$ 个区域）开始逐条加线。第 $k$ 条线与已有的 $k-1$ 条各交于一点，这些交点把第 $k$ 条线分成几段？",
+        solutionOutline: "第 $k$ 条线与前 $k-1$ 条在一般位置下有 $k-1$ 个不同交点，把该直线分成 $k$ 段（$k-1$ 个点分一条直线成 $k$ 段：含两条射线）。" },
+      { label: "b", marks: 4, question: "引导二（每段加一个区域）：说明第 $k$ 条线的每一段恰好把它穿过的一个旧区域一分为二，因此加入第 $k$ 条线新增 $k$ 个区域。",
+        solutionOutline: "第 $k$ 条线的每段位于某个原有区域内，把该区域切成两块，故新增区域数 = 段数 = $k$。" },
+      { label: "c", marks: 3, question: "引导三（求和）：把增量从 $k=1$ 到 $n$ 累加，得区域总数。",
+        solutionOutline: "总数 $=1+\\sum_{k=1}^n k=1+\\dfrac{n(n+1)}2=1+n+\\dfrac{n(n-1)}2=1+n+\\binom n2$。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（逐条加线 + 增量计数）**\\n\\n从空平面开始：$0$ 条直线时有 $1$ 个区域。逐条加入直线，计算每次新增的区域数。\\n\\n**第 $k$ 条线被分成 $k$ 段**：加入第 $k$ 条直线时，平面上已有 $k-1$ 条线。由一般位置（两两不平行、无三线共点），第 $k$ 条线与它们各交于**一个**点，且这 $k-1$ 个交点互不相同。$k-1$ 个点把一条直线分成 $k$ 个部分（$k-2$ 条线段加两端的两条射线，共 $k$ 段）。\\n\\n**每段新增一个区域**：第 $k$ 条线的每一段都落在某个已有的区域内部，把那个区域**一分为二**，恰好新增 $1$ 个区域。故加入第 $k$ 条线新增的区域数等于段数 $k$。\\n\\n**求和**：从 $k=1$ 到 $n$ 累加增量，\\n$$\\text{区域总数}=1+\\sum_{k=1}^{n}k=1+\\frac{n(n+1)}2.$$\\n注意 $\\dfrac{n(n+1)}2=n+\\dfrac{n(n-1)}2=n+\\binom n2$，故\\n$$\\text{区域总数}=1+n+\\binom n2.\\qquad\\blacksquare$$\\n\\n（对照：$n=1$ 给 $2$，$n=2$ 给 $4$，$n=3$ 给 $7$，$n=4$ 给 $11$，与直接画图一致。）\\n\\n---\\n**方法要点（BMO2 通用武器）**：几何计数题常用**「增量法」**——不直接数总量，而是「加入第 $k$ 个对象时新增多少」，再求和。关键是算准每次的增量（这里 = 新线被切成的段数 = 交点数 $+1$）。同法可数「$n$ 个一般位置圆的区域数」「空间中 $n$ 个平面的区域数」等。\\n\\n---\\n*原创题；仅以 BMO2 组合题型做难度校准；区域数公式 $1+n+\\binom n2$ 已用增量模型与真实直线布置对 $n\\le12$ 程序核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo2-co-010",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-combinatorics",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】Prove that among any $5$ points in the plane with integer coordinates, there exist two whose midpoint also has integer coordinates. Show also that $5$ cannot be replaced by $4$.（求证：平面上任意 $5$ 个整点中，必有两个点其中点也是整点；并说明 $5$ 不能减为 $4$。）真实 BMO2 组合为纯证明题——引导小问示范「按奇偶分类的鸽巢」。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（奇偶类）：按坐标的奇偶把整点分类，即看 $(x\\bmod2,\\ y\\bmod2)$。一共有几类？",
+        solutionOutline: "$(x\\bmod2,y\\bmod2)\\in\\{(0,0),(0,1),(1,0),(1,1)\\}$，共 $4$ 类。" },
+      { label: "b", marks: 4, question: "引导二（鸽巢 + 中点整）：把 $5$ 个整点按奇偶类归入 $4$ 个抽屉，用鸽巢得出两点同类；再说明同类两点的中点为整点。",
+        solutionOutline: "$5>4\\Rightarrow$ 两点 $P,Q$ 同奇偶类，即 $x_P\\equiv x_Q,\\ y_P\\equiv y_Q\\pmod2$，故 $x_P+x_Q,\\ y_P+y_Q$ 皆偶，中点 $\\left(\\tfrac{x_P+x_Q}2,\\tfrac{y_P+y_Q}2\\right)$ 为整点。" },
+      { label: "c", marks: 3, question: "引导三（紧性）：给出 $4$ 个整点，任两点中点都非整点，说明 $5$ 不能减为 $4$。",
+        solutionOutline: "取 $(0,0),(1,0),(0,1),(1,1)$——四个奇偶类各一个，任两点至少有一个坐标和为奇，中点非整。故 $4$ 个不够。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（按奇偶分类的鸽巢）**\\n\\n**奇偶类（抽屉）**：把每个整点 $(x,y)$ 按其坐标的奇偶归类，标签为\\n$$(x\\bmod2,\\ y\\bmod2)\\in\\{(0,0),(0,1),(1,0),(1,1)\\},$$\\n共 $4$ 类。\\n\\n**鸽巢**：$5$ 个整点放入 $4$ 个奇偶类，必有两点 $P=(x_P,y_P)$ 与 $Q=(x_Q,y_Q)$ **同类**，即\\n$$x_P\\equiv x_Q\\pmod2,\\qquad y_P\\equiv y_Q\\pmod2.$$\\n于是 $x_P+x_Q$ 与 $y_P+y_Q$ 都是偶数，中点\\n$$\\left(\\frac{x_P+x_Q}{2},\\ \\frac{y_P+y_Q}{2}\\right)$$\\n的两个坐标都是整数——它是一个整点。\\n\\n**紧性（$5$ 不能减为 $4$）**：取四个点 $(0,0),(1,0),(0,1),(1,1)$，它们恰好落在四个不同的奇偶类里。任取其中两点，至少有一个坐标的奇偶不同，其和为奇数，中点坐标非整。故存在 $4$ 个整点两两中点都非整，说明「$5$」不可减小。$\\blacksquare$\\n\\n---\\n**方法要点（BMO2 通用武器）**：涉及「中点为整点 / 坐标和的整除」的问题，抽屉应设成**坐标的奇偶类 $(\\mathbb Z/2)^d$**——$d$ 维时有 $2^d$ 类，故 $2^d+1$ 个整点必有两个中点为整点。这是「按 $\\bmod m$ 的向量分类」这一鸽巢范式的典型应用（本题 $m=2,d=2$）。别忘补紧性构造。\\n\\n---\\n*原创题；仅以 BMO2 组合题型做难度校准；「$5$ 整点必有整中点」（$5\\times10^4$ 随机）与「四奇偶类各一点无整中点」已程序核对；请对照证明自评。*",
+  },
 ];

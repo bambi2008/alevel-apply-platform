@@ -68,6 +68,8 @@ import { BMO_R2M3_T1, BMO_R2M3_T2, BMO_R2M3_T3, BMO_R2M3_T4 } from "./bmo-r2-moc
 import { BMO_R2M4_T1, BMO_R2M4_T2, BMO_R2M4_T3, BMO_R2M4_T4 } from "./bmo-r2-mock-4";
 import { BMO_R2M5_T1, BMO_R2M5_T2, BMO_R2M5_T3, BMO_R2M5_T4 } from "./bmo-r2-mock-5";
 import { BMO_R2M6_T1, BMO_R2M6_T2, BMO_R2M6_T3, BMO_R2M6_T4 } from "./bmo-r2-mock-6";
+import { BMO_R2M7_T1, BMO_R2M7_T2, BMO_R2M7_T3, BMO_R2M7_T4 } from "./bmo-r2-mock-7";
+import { BMO_R2M8_T1, BMO_R2M8_T2, BMO_R2M8_T3, BMO_R2M8_T4 } from "./bmo-r2-mock-8";
 
 export interface MockModule {
   id: string;
@@ -947,7 +949,28 @@ export const BMO_R2_MOCK_6: MockPaper = {
   ],
 };
 
-const ALL_MOCK_PAPERS: MockPaper[] = [BMO_R2_MOCK_1, BMO_R2_MOCK_2, BMO_R2_MOCK_3, BMO_R2_MOCK_4, BMO_R2_MOCK_5, BMO_R2_MOCK_6, BMO_MOCK_1, BMO_MOCK_2, BMO_MOCK_3, BMO_MOCK_4, BMO_MOCK_5, BMO_MOCK_6, BMO_MOCK_7, BMO_MOCK_8, ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3, BPHO_MOCK_1, BPHO_MOCK_2, BPHO_MOCK_3, BPHO_MOCK_4, BPHO_MOCK_5, BPHO_MOCK_6, BPHO_MOCK_7, BPHO_MOCK_8, BPHO_R2_MOCK_1, BPHO_R2_MOCK_2, BPHO_R2_MOCK_3, BPHO_R2_MOCK_4];
+export const BMO_R2_MOCK_7: MockPaper = {
+  id: "bmo-r2-mock-7", testId: "bmo", title: "BMO Round 2 模拟卷七（主题阶梯）", titleEn: "BMO Round 2 Mock 7",
+  description: BMO_R2_MOCK_DESC,
+  modules: [
+    { id: "t1", title: "第1题 · 数论阶梯（阶 / 同余 / 计数）", titleEn: "Q1 · Number Theory", durationSec: 45 * 60, questions: BMO_R2M7_T1 },
+    { id: "t2", title: "第2题 · 代数与数列阶梯", titleEn: "Q2 · Algebra & Sequences", durationSec: 45 * 60, questions: BMO_R2M7_T2 },
+    { id: "t3", title: "第3题 · 几何阶梯（向量 / 圆 / 三角形心）", titleEn: "Q3 · Geometry", durationSec: 45 * 60, questions: BMO_R2M7_T3 },
+    { id: "t4", title: "第4题 · 组合阶梯（鸽巢 / 极值 / 拉姆齐）", titleEn: "Q4 · Combinatorics", durationSec: 45 * 60, questions: BMO_R2M7_T4 },
+  ],
+};
+export const BMO_R2_MOCK_8: MockPaper = {
+  id: "bmo-r2-mock-8", testId: "bmo", title: "BMO Round 2 模拟卷八（主题阶梯）", titleEn: "BMO Round 2 Mock 8",
+  description: BMO_R2_MOCK_DESC,
+  modules: [
+    { id: "t1", title: "第1题 · 数论阶梯（阶 / 同余 / 计数）", titleEn: "Q1 · Number Theory", durationSec: 45 * 60, questions: BMO_R2M8_T1 },
+    { id: "t2", title: "第2题 · 代数与数列阶梯", titleEn: "Q2 · Algebra & Sequences", durationSec: 45 * 60, questions: BMO_R2M8_T2 },
+    { id: "t3", title: "第3题 · 几何阶梯（向量 / 圆 / 三角形心）", titleEn: "Q3 · Geometry", durationSec: 45 * 60, questions: BMO_R2M8_T3 },
+    { id: "t4", title: "第4题 · 组合阶梯（鸽巢 / 极值 / 拉姆齐）", titleEn: "Q4 · Combinatorics", durationSec: 45 * 60, questions: BMO_R2M8_T4 },
+  ],
+};
+
+const ALL_MOCK_PAPERS: MockPaper[] = [BMO_R2_MOCK_1, BMO_R2_MOCK_2, BMO_R2_MOCK_3, BMO_R2_MOCK_4, BMO_R2_MOCK_5, BMO_R2_MOCK_6, BMO_R2_MOCK_7, BMO_R2_MOCK_8, BMO_MOCK_1, BMO_MOCK_2, BMO_MOCK_3, BMO_MOCK_4, BMO_MOCK_5, BMO_MOCK_6, BMO_MOCK_7, BMO_MOCK_8, ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3, BPHO_MOCK_1, BPHO_MOCK_2, BPHO_MOCK_3, BPHO_MOCK_4, BPHO_MOCK_5, BPHO_MOCK_6, BPHO_MOCK_7, BPHO_MOCK_8, BPHO_R2_MOCK_1, BPHO_R2_MOCK_2, BPHO_R2_MOCK_3, BPHO_R2_MOCK_4];
 
 export function getMockPapersForTest(testId: string): MockPaper[] {
   return ALL_MOCK_PAPERS.filter((p) => p.testId === testId);
