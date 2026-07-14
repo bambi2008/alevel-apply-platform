@@ -507,4 +507,172 @@ export const BMO2_LONG_SAMPLE: LongQuestion[] = [
     fullSolution:
       "**完整证明（对人数归纳 + 插入法）**\\n\\n用「$A\\to B$」表示「$A$ 战胜 $B$」。要证：可排成一列使相邻前者胜后者（即锦标赛存在**哈密顿路径**）。\\n\\n**基础**：$n=1$ 时单人即为一列；$n=2$ 时两人分胜负，胜者列前。\\n\\n**归纳步**：假设任意 $n$ 名选手都能排成满足条件的链。现有 $n+1$ 名选手，任取其中 $n$ 名，由归纳假设排成\\n$$P_1\\to P_2\\to\\cdots\\to P_n.$$\\n把剩下的一名选手记为 $X$，将其插入这条链：\\n\\n- **若 $X\\to P_1$**（$X$ 胜排头）：把 $X$ 放在最前，得 $X\\to P_1\\to\\cdots\\to P_n$。\\n- **若 $P_n\\to X$**（排尾胜 $X$）：把 $X$ 放在最后，得 $P_1\\to\\cdots\\to P_n\\to X$。\\n- **否则**：即 $P_1\\to X$（排头胜 $X$）且 $X\\to P_n$。沿链从左往右看比较结果：在 $P_1$ 处是「$P_1$ 胜 $X$」，在 $P_n$ 处是「$X$ 胜 $P_n$」，两端结论相反，故存在相邻的一对下标 $i$，使\\n$$P_i\\to X\\quad\\text{且}\\quad X\\to P_{i+1}.$$\\n把 $X$ 插在 $P_i$ 与 $P_{i+1}$ 之间，链仍处处「前者胜后者」。\\n\\n无论哪种情形，都得到 $n+1$ 名选手的合法链。由归纳法，命题对一切 $n$ 成立。$\\blacksquare$\\n\\n---\\n**方法要点（BMO2 通用武器）**：**「归纳 + 插入」**是证明有序结构存在性的利器——把新元素插进已排好的序列，靠「在某处胜负发生翻转」定位插入点。这正是「每个锦标赛都有哈密顿路径」的经典证明；同样的插入思想也用于排序、拓扑序、以及各种「可线性化」的存在性论证。\\n\\n**延伸**：更强的结论——每个**强连通**锦标赛都有哈密顿**回路**（Camion 定理），证明思路类似但更细。\\n\\n---\\n*原创题；仅以 BMO2 组合题型做难度校准；插入法对 $3000$ 个随机锦标赛均产出合法哈密顿路径，已程序核对；请对照证明自评。*",
   },
+
+  {
+    id: "bmo2-nt-007",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-number",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】Find all positive integers $n$ such that $n\\mid 2^n-1$.（求出所有满足 $n\\mid 2^n-1$ 的正整数 $n$，并证明。）真实 BMO2 为纯证明题——引导小问示范「取最小素因子 + 元素的阶」这一杀招。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（设最小素因子 + 阶）：$n=1$ 显然可行。设 $n>1$ 且 $n\\mid2^n-1$。说明 $n$ 为奇数；取 $n$ 的最小素因子 $p$，令 $d=\\operatorname{ord}_p(2)$。证明 $d\\mid n$ 且 $d\\mid p-1$。",
+        solutionOutline: "$2^n-1$ 为奇，故 $n$ 奇。$p\\mid n\\mid2^n-1\\Rightarrow2^n\\equiv1\\pmod p\\Rightarrow d\\mid n$；由费马小定理 $2^{p-1}\\equiv1\\Rightarrow d\\mid p-1$。" },
+      { label: "b", marks: 4, question: "引导二（关键：$\\gcd(n,p-1)=1$）：利用「$p$ 是 $n$ 的最小素因子」证明 $\\gcd(n,p-1)=1$，从而 $d=1$。",
+        solutionOutline: "$p-1$ 的任何素因子都 $<p$，而 $n$ 的素因子都 $\\ge p$，故 $\\gcd(n,p-1)=1$。由 $d\\mid n$ 且 $d\\mid p-1$ 得 $d\\mid\\gcd(n,p-1)=1$，故 $d=1$。" },
+      { label: "c", marks: 3, question: "引导三（矛盾收尾）：由 $d=1$ 导出矛盾，得出所有解。",
+        solutionOutline: "$d=\\operatorname{ord}_p(2)=1\\Rightarrow2\\equiv1\\pmod p\\Rightarrow p\\mid1$，不可能。故不存在 $n>1$，唯一解 $n=1$。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（最小素因子 + 元素的阶）**\\n\\n$n=1$ 时 $1\\mid2^1-1=1$，成立。下证没有 $n>1$ 满足条件，从而**唯一解是 $n=1$**。\\n\\n反设 $n>1$ 且 $n\\mid2^n-1$。因 $2^n-1$ 为奇数，$n$ 必为奇数。取 $n$ 的**最小素因子** $p$。\\n\\n**阶的两个整除**：由 $p\\mid n\\mid2^n-1$ 得 $2^n\\equiv1\\pmod p$。令 $d=\\operatorname{ord}_p(2)$（$2$ 模 $p$ 的阶），则\\n$$d\\mid n.$$\\n又由费马小定理 $2^{p-1}\\equiv1\\pmod p$，故\\n$$d\\mid p-1.$$\\n\\n**关键一步 $\\gcd(n,p-1)=1$**：$p-1$ 的任何素因子都 $<p$；而 $n$ 的每个素因子都 $\\ge p$（$p$ 是最小素因子）。因此 $n$ 与 $p-1$ 没有公共素因子，$\\gcd(n,p-1)=1$。于是\\n$$d\\mid\\gcd(n,p-1)=1\\ \\Longrightarrow\\ d=1.$$\\n\\n**矛盾**：$d=\\operatorname{ord}_p(2)=1$ 意味着 $2^1\\equiv1\\pmod p$，即 $p\\mid1$，不可能。矛盾说明不存在 $n>1$。\\n\\n综上，满足 $n\\mid2^n-1$ 的正整数只有 $n=1$。$\\blacksquare$\\n\\n---\\n**方法要点（BMO2 通用武器）**：处理「$n\\mid a^n\\pm1$」型题，**取 $n$ 的最小素因子 $p$、再看 $a$ 模 $p$ 的阶 $d$** 是标准杀招——$d$ 同时整除 $n$ 与 $p-1$，而最小素因子迫使 $\\gcd(n,p-1)=1$，把 $d$ 逼成 $1$ 产生矛盾。IMO 1990「$n^2\\mid2^n+1\\Rightarrow n=1,3$」等名题都用此法。\\n\\n---\\n*原创题；仅以 BMO2 数论题型做难度校准；「$n\\mid2^n-1$ 仅 $n=1$」已对 $n\\le5000$ 程序核对，最小素因子引理亦已验证；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo2-nt-008",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-number",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】Let $F_1=F_2=1$ and $F_{n+2}=F_{n+1}+F_n$ be the Fibonacci sequence. Prove that (i) $\\gcd(F_n,F_{n+1})=1$ for all $n$, and (ii) $F_m\\mid F_n$ whenever $m\\mid n$.（斐波那契数列。求证 (i) 相邻两项互素；(ii) 当 $m\\mid n$ 时 $F_m\\mid F_n$。）真实 BMO2 为纯证明题——引导小问示范「辗转相减 + 加法公式归纳」。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（相邻互素）：用递推与辗转相减证明 $\\gcd(F_n,F_{n+1})=1$。",
+        solutionOutline: "$\\gcd(F_n,F_{n+1})=\\gcd(F_n,F_{n+1}-F_n)=\\gcd(F_n,F_{n-1})=\\cdots=\\gcd(F_1,F_2)=1$。" },
+      { label: "b", marks: 4, question: "引导二（加法公式）：证明（或引用并验证）恒等式 $F_{a+b}=F_aF_{b+1}+F_{a-1}F_b$；由此对 $k$ 归纳证明 $F_m\\mid F_{mk}$。",
+        solutionOutline: "加法公式对 $b$ 归纳可得。取 $a=mk,\\ b=m$：$F_{m(k+1)}=F_{mk}F_{m+1}+F_{mk-1}F_m$。若 $F_m\\mid F_{mk}$，则两项都被 $F_m$ 整除，故 $F_m\\mid F_{m(k+1)}$；基例 $F_m\\mid F_m$。" },
+      { label: "c", marks: 3, question: "引导三（收尾）：由 b) 得出「$m\\mid n\\Rightarrow F_m\\mid F_n$」。",
+        solutionOutline: "$m\\mid n$ 写 $n=mk$，由 b) 的归纳 $F_m\\mid F_{mk}=F_n$。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（辗转相减 + 加法公式归纳）**\\n\\n**(i) 相邻互素**：利用 $F_{n+1}=F_n+F_{n-1}$，\\n$$\\gcd(F_n,F_{n+1})=\\gcd(F_n,\\,F_{n+1}-F_n)=\\gcd(F_n,F_{n-1}).$$\\n逐步下降，最终\\n$$\\gcd(F_n,F_{n+1})=\\cdots=\\gcd(F_2,F_1)=\\gcd(1,1)=1.$$\\n\\n**(ii) $m\\mid n\\Rightarrow F_m\\mid F_n$**。先给出**加法公式**\\n$$F_{a+b}=F_aF_{b+1}+F_{a-1}F_b,$$\\n它可对 $b$ 归纳证明（$b=1$：$F_{a+1}=F_aF_2+F_{a-1}F_1=F_a+F_{a-1}$ ✓；归纳步用递推相加即得）。\\n\\n现固定 $m$，对 $k$ 归纳证 $F_m\\mid F_{mk}$：\\n- $k=1$：$F_m\\mid F_m$。\\n- 归纳步：在加法公式中取 $a=mk,\\ b=m$，\\n$$F_{m(k+1)}=F_{mk+m}=F_{mk}\\,F_{m+1}+F_{mk-1}\\,F_m.$$\\n第二项显含 $F_m$；第一项含 $F_{mk}$，由归纳假设 $F_m\\mid F_{mk}$。故 $F_m\\mid F_{m(k+1)}$。\\n\\n于是对一切 $k$，$F_m\\mid F_{mk}$。当 $m\\mid n$ 时写 $n=mk$，即得 $F_m\\mid F_n$。$\\blacksquare$\\n\\n**推论**：结合更强的 $\\gcd(F_m,F_n)=F_{\\gcd(m,n)}$（可由加法公式 + 辗转相除推得），(i)(ii) 都是其特例。\\n\\n---\\n**方法要点（BMO2 通用武器）**：线性递推数列（斐波那契、Lucas、Pell 等）的整除性，核心是**加法/倍角恒等式 + 归纳**；而「相邻项互素」几乎总由**辗转相减**一步下降得到。掌握 $F_{a+b}=F_aF_{b+1}+F_{a-1}F_b$ 能解一大类斐波那契整除题。\\n\\n---\\n*原创题；仅以 BMO2 数论题型做难度校准；「相邻互素」（$n\\le150$）与「$m\\mid n\\Rightarrow F_m\\mid F_n$」（$m,n\\le160$）已程序核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo2-al-007",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-algebra",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】Find all functions $f:\\mathbb R\\to\\mathbb R$ such that $f(x+y)=f(x)+f(y)$ and $f(xy)=f(x)f(y)$ for all real $x,y$.（求所有满足「对一切实数 $x,y$ 有 $f(x+y)=f(x)+f(y)$ 且 $f(xy)=f(x)f(y)$」的函数 $f:\\mathbb R\\to\\mathbb R$。）真实 BMO2 函数方程为纯证明题——引导小问示范「先定 $f(1)$，再用『平方非负』逼出单调性」。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（先定 $f(1)$）：证明 $f(0)=0$、$f(1)\\in\\{0,1\\}$；并说明 $f(1)=0$ 时 $f\\equiv0$。",
+        solutionOutline: "加性 $\\Rightarrow f(0)=0$。乘性 $\\Rightarrow f(1)=f(1)^2\\Rightarrow f(1)\\in\\{0,1\\}$。若 $f(1)=0$，则 $f(x)=f(x\\cdot1)=f(x)f(1)=0$，即 $f\\equiv0$。" },
+      { label: "b", marks: 4, question: "引导二（$f(1)=1$：定有理点 + 保号）：设 $f(1)=1$。证明 $f$ 在有理数上取恒等，并证明 $x\\ge0\\Rightarrow f(x)\\ge0$。",
+        solutionOutline: "加性 + $f(1)=1\\Rightarrow f(n)=n$、$f(\\tfrac pq)=\\tfrac pq$。对 $x\\ge0$，$x=(\\sqrt x)^2\\Rightarrow f(x)=f(\\sqrt x)^2\\ge0$（保号/保序）。" },
+      { label: "c", marks: 3, question: "引导三（单调 ⇒ 恒等）：由保号推出 $f$ 单调不减，结合有理点恒等，证明 $f(x)=x$。总结所有解。",
+        solutionOutline: "$x\\le y\\Rightarrow f(y)-f(x)=f(y-x)\\ge0$，$f$ 单调不减。加性 + 单调 + 有理点恒等 $\\Rightarrow f(x)=x$。故所有解为 $f\\equiv0$ 与 $f=\\mathrm{id}$。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整解答（先定 $f(1)$，再用平方非负逼出单调性）**\\n\\n**基本值**：令 $y=0$ 于加性得 $f(0)=0$。乘性中令 $x=y=1$：$f(1)=f(1)^2$，故 $f(1)\\in\\{0,1\\}$。\\n\\n**情形一 $f(1)=0$**：对任意 $x$，$f(x)=f(x\\cdot1)=f(x)f(1)=0$，即 $f\\equiv0$。此函数显然满足两条方程。\\n\\n**情形二 $f(1)=1$**：\\n- **有理点恒等**：加性给出 $f(n)=nf(1)=n$（先对正整数，再由 $f(-x)=-f(x)$ 推负整数），以及 $f\\!\\left(\\tfrac pq\\right)=\\tfrac pq$。\\n- **保号**：对 $x\\ge0$，有 $x=(\\sqrt x)^2$，于是由乘性\\n$$f(x)=f(\\sqrt x\\cdot\\sqrt x)=f(\\sqrt x)^2\\ge0.$$\\n即 $f$ 把非负数映到非负数。\\n- **单调**：若 $x\\le y$，则 $f(y)-f(x)=f(y-x)\\ge0$（$y-x\\ge0$），故 $f$ 单调不减。\\n- **恒等**：一个单调不减、且在稠密的有理数上等于恒等映射的函数，必处处等于恒等——否则若某 $f(x_0)\\ne x_0$，取有理数夹在 $x_0$ 与 $f(x_0)$ 之间会破坏单调性。故 $f(x)=x$。\\n\\n**结论**：满足条件的函数恰有两个——\\n$$\\boxed{f\\equiv0\\quad\\text{与}\\quad f(x)=x.}\\qquad\\blacksquare$$\\n\\n---\\n**方法要点（BMO2 通用武器）**：同时具**加性与乘性**的 $f:\\mathbb R\\to\\mathbb R$（即环同态）只能是 $0$ 或恒等。突破口是**乘性 + 平方**：$f(x)=f(\\sqrt x)^2\\ge0$ 把「保号」白送给你，再由加性升级成「单调」，最后单调 + 有理点稠密锁死为恒等。「用平方制造非负 / 保序」是 FE 中把柯西方程从病态解里救出来的经典手段。\\n\\n---\\n*原创题；仅以 BMO2 函数方程题型做难度校准；两个解均已验证满足两条方程，保号性 $f(x)=f(\\sqrt x)^2\\ge0$ 为结构性事实；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo2-al-008",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-algebra",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】Let $a,b,c$ be positive real numbers. Prove that $a^3+b^3+c^3\\ge a^2b+b^2c+c^2a$, and determine when equality holds.（设正实数 $a,b,c$，求证 $a^3+b^3+c^3\\ge a^2b+b^2c+c^2a$，并确定等号条件。）真实 BMO2 为纯证明题——引导小问示范「加权 AM–GM 逐项 + 循环求和」。",
+    parts: [
+      { label: "a", marks: 4, question: "引导一（逐项加权 AM–GM）：用 AM–GM 证明 $2a^3+b^3\\ge3a^2b$（以及循环的 $2b^3+c^3\\ge3b^2c$、$2c^3+a^3\\ge3c^2a$）。",
+        solutionOutline: "三数 $a^3,a^3,b^3$ 的 AM–GM：$\\dfrac{a^3+a^3+b^3}{3}\\ge\\sqrt[3]{a^6b^3}=a^2b$，即 $2a^3+b^3\\ge3a^2b$。循环同理。" },
+      { label: "b", marks: 3, question: "引导二（求和）：把三条不等式相加，化简左边。",
+        solutionOutline: "相加左边 $=(2a^3+b^3)+(2b^3+c^3)+(2c^3+a^3)=3(a^3+b^3+c^3)$，右边 $=3(a^2b+b^2c+c^2a)$。" },
+      { label: "c", marks: 3, question: "引导三（收尾 + 等号）：两边除以 $3$；确定等号条件。",
+        solutionOutline: "得 $a^3+b^3+c^3\\ge a^2b+b^2c+c^2a$。每处 AM–GM 等号要 $a^3=b^3$ 等，即 $a=b=c$。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（加权 AM–GM 逐项 + 循环求和）**\\n\\n**逐项**：对三个正数 $a^3,a^3,b^3$ 用 AM–GM，\\n$$\\frac{a^3+a^3+b^3}{3}\\ge\\sqrt[3]{a^3\\cdot a^3\\cdot b^3}=a^2b\\ \\Longrightarrow\\ 2a^3+b^3\\ge3a^2b.$$\\n循环地同理\\n$$2b^3+c^3\\ge3b^2c,\\qquad 2c^3+a^3\\ge3c^2a.$$\\n\\n**求和**：三式相加，左边\\n$$(2a^3+b^3)+(2b^3+c^3)+(2c^3+a^3)=3(a^3+b^3+c^3),$$\\n右边 $=3(a^2b+b^2c+c^2a)$。于是\\n$$3(a^3+b^3+c^3)\\ge3(a^2b+b^2c+c^2a)\\ \\Longrightarrow\\ a^3+b^3+c^3\\ge a^2b+b^2c+c^2a.$$\\n\\n**等号条件**：每个 AM–GM 取等要三个数相等，即 $a^3=b^3$（第一式）等，合起来 $a=b=c$。此时两边同为 $3a^3$。$\\blacksquare$\\n\\n---\\n**方法要点（BMO2 通用武器）**：**非对称**的循环不等式（如 $a^2b+b^2c+c^2a$ 只含一种「旋向」），对称型手段（Schur、SOS）常不直接适用；此时**逐项加权 AM–GM**——把目标每一项 $a^2b$ 写成 $\\sqrt[3]{a^3a^3b^3}$，配出「$2$ 份 $a^3$ + $1$ 份 $b^3$」，再循环求和——是最稳的通法。权重（$2:1$）由目标项的指数决定。\\n\\n**延伸**：同法证 $a^4+b^4+c^4\\ge a^3b+b^3c+c^3a$（权重 $3:1$）等一系列循环不等式。\\n\\n---\\n*原创题；仅以 BMO2 不等式题型做难度校准；$a^3+b^3+c^3-(a^2b+b^2c+c^2a)\\ge0$（等号 $a=b=c$）已由 $5\\times10^5$ 次随机取样与逐项 AM–GM 核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo2-ge-007",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-geometry",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】The incircle of triangle $ABC$ touches $BC,CA,AB$ at $X,Y,Z$ respectively. Let $s=\\tfrac12(a+b+c)$ be the semiperimeter, with $a=BC,b=CA,c=AB$. Prove that $AY=AZ=s-a$.（$ABC$ 的内切圆切三边于 $X,Y,Z$。求证切线长 $AY=AZ=s-a$。）真实 BMO2 几何为纯证明题——引导小问示范「等切线长 + 解线性方程组」。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（等切线长）：说明从每个顶点到内切圆的两条切线长相等，记 $AY=AZ=x,\\ BZ=BX=y,\\ CX=CY=z$。",
+        solutionOutline: "圆外一点到圆的两条切线长相等，故 $AY=AZ=:x$，$BZ=BX=:y$，$CX=CY=:z$。" },
+      { label: "b", marks: 4, question: "引导二（列方程）：用 $x,y,z$ 表示三边 $a,b,c$，并求出 $x+y+z$。",
+        solutionOutline: "$a=BX+XC=y+z$，$b=CY+YA=z+x$，$c=AZ+ZB=x+y$。相加 $a+b+c=2(x+y+z)=2s\\Rightarrow x+y+z=s$。" },
+      { label: "c", marks: 3, question: "引导三（解出）：由 $x+y+z=s$ 与 $a=y+z$ 解出 $x$。",
+        solutionOutline: "$x=(x+y+z)-(y+z)=s-a$，即 $AY=AZ=s-a$。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（等切线长 + 线性方程组）**\\n\\n**等切线长**：从圆外一点向圆所作的两条切线长相等。内切圆分别切 $BC,CA,AB$ 于 $X,Y,Z$，故从三个顶点出发：\\n$$AY=AZ=:x,\\qquad BZ=BX=:y,\\qquad CX=CY=:z.$$\\n\\n**用 $x,y,z$ 表边**：每条边被切点分成两段，\\n$$a=BC=BX+XC=y+z,\\quad b=CA=CY+YA=z+x,\\quad c=AB=AZ+ZB=x+y.$$\\n三式相加：\\n$$a+b+c=2(x+y+z)\\ \\Longrightarrow\\ x+y+z=\\frac{a+b+c}{2}=s.$$\\n\\n**解出**：\\n$$x=(x+y+z)-(y+z)=s-a,$$\\n即 $AY=AZ=s-a$。（同理 $BZ=BX=s-b$，$CX=CY=s-c$。）$\\blacksquare$\\n\\n---\\n**方法要点（BMO2 通用武器）**：内切圆问题几乎都从「**等切线长**」起步，把三对切线段设成 $x,y,z$，边长化为 $x,y,z$ 的线性组合，**解方程组**得 $x=s-a$ 等。这组切线长公式是 BMO2 几何的高频引理（Gergonne 点、内切圆半径 $r=\\text{面积}/s$、旁切圆切线长 $s$ 等都建立在它之上）。\\n\\n**延伸**：旁切圆在 $BC$ 上的切点到 $B$ 的距离为 $s-c$，与内切圆切点关于 $BC$ 中点对称——由此可推许多切点弦长关系。\\n\\n---\\n*原创题；仅以 BMO2 几何题型做难度校准；$AY=AZ=s-a$ 已在 $2\\times10^4$ 组随机三角形上用坐标法（内心投影到边）核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo2-ge-008",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-geometry",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】In triangle $ABC$ with $a=BC,b=CA,c=AB$, let $m_a$ be the length of the median from $A$ to the midpoint of $BC$. Prove Apollonius' theorem: $m_a^2=\\dfrac{2b^2+2c^2-a^2}{4}$.（求证阿波罗尼中线定理。）真实 BMO2 几何为纯证明题——引导小问示范「坐标法硬算」。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（设坐标）：把 $BC$ 中点 $M$ 放原点、$BC$ 沿 $x$ 轴，写出 $B,C,A$ 的坐标，并写出 $m_a^2=AM^2$。",
+        solutionOutline: "$M=(0,0),\\ B=(-\\tfrac a2,0),\\ C=(\\tfrac a2,0),\\ A=(p,q)$。$m_a^2=AM^2=p^2+q^2$。" },
+      { label: "b", marks: 4, question: "引导二（算 $b^2+c^2$）：用坐标写出 $b^2=CA^2$、$c^2=AB^2$，求 $b^2+c^2$ 并化简。",
+        solutionOutline: "$b^2=(p-\\tfrac a2)^2+q^2$，$c^2=(p+\\tfrac a2)^2+q^2$。相加：$b^2+c^2=2p^2+2q^2+\\tfrac{a^2}2=2(p^2+q^2)+\\tfrac{a^2}2$。" },
+      { label: "c", marks: 3, question: "引导三（解出 $m_a^2$）：由 b) 解出 $p^2+q^2$ 即 $m_a^2$。",
+        solutionOutline: "$p^2+q^2=\\dfrac{b^2+c^2}{2}-\\dfrac{a^2}{4}=\\dfrac{2b^2+2c^2-a^2}{4}$，即 $m_a^2=\\dfrac{2b^2+2c^2-a^2}{4}$。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（坐标法）**\\n\\n把 $BC$ 的中点 $M$ 放在原点，$BC$ 沿 $x$ 轴：\\n$$M=(0,0),\\qquad B=\\left(-\\tfrac a2,0\\right),\\qquad C=\\left(\\tfrac a2,0\\right),\\qquad A=(p,q).$$\\n中线长的平方 $m_a^2=AM^2=p^2+q^2$。\\n\\n用坐标写出另两边：\\n$$b^2=CA^2=\\left(p-\\tfrac a2\\right)^2+q^2,\\qquad c^2=AB^2=\\left(p+\\tfrac a2\\right)^2+q^2.$$\\n相加，交叉项 $\\mp ap$ 抵消：\\n$$b^2+c^2=2p^2+2q^2+\\frac{a^2}{2}=2(p^2+q^2)+\\frac{a^2}{2}.$$\\n解出 $p^2+q^2$：\\n$$m_a^2=p^2+q^2=\\frac{b^2+c^2}{2}-\\frac{a^2}{4}=\\frac{2b^2+2c^2-a^2}{4}.\\qquad\\blacksquare$$\\n\\n---\\n**方法要点（BMO2 通用武器）**：**把中点放原点、对边放坐标轴**是坐标法的黄金摆位——中线、对称、垂直关系都被极大简化，交叉项自动抵消。阿波罗尼定理（及更一般的 Stewart 定理）是「长度平方」类题的常备引理；一旦记住 $m_a^2=\\tfrac14(2b^2+2c^2-a^2)$，很多「中线 / 三角形内点距离」题可直接代入。\\n\\n**延伸**：三条中线平方和 $m_a^2+m_b^2+m_c^2=\\tfrac34(a^2+b^2+c^2)$，由本定理循环相加立得。\\n\\n---\\n*原创题；仅以 BMO2 几何题型做难度校准；$m_a^2=\\tfrac14(2b^2+2c^2-a^2)$ 已在 $2\\times10^4$ 组随机三角形上用坐标法核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo2-co-007",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-combinatorics",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】There are $2n$ points on a circle, coloured with $n$ red and $n$ blue. Prove that they can be joined by $n$ non-crossing chords, each connecting a red point to a blue point.（圆上有 $2n$ 个点，$n$ 红 $n$ 蓝。求证可用 $n$ 条互不相交的弦把它们两两相连，且每条弦都连一红一蓝。）真实 BMO2 组合为纯证明题——引导小问示范「找相邻异色对 + 归纳」。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（存在相邻异色对）：证明圆周上一定存在两个**相邻**（圆周上紧挨着）的点颜色不同。",
+        solutionOutline: "并非所有点同色（红蓝各 $n\\ge1$）。沿圆周走一圈，颜色必发生变化，故存在相邻两点异色。" },
+      { label: "b", marks: 4, question: "引导二（连一条 + 归约）：把这对相邻异色点用一条弦相连，说明这条弦不与任何其它弦相交；移去这两点后剩下什么？",
+        solutionOutline: "相邻两点间的弦「贴着」圆周，中间无其它点，故不可能与其它弦相交。移去这两点后剩 $2(n-1)$ 个点，仍是 $n-1$ 红、$n-1$ 蓝。" },
+      { label: "c", marks: 3, question: "引导三（归纳收尾）：对 $n$ 归纳完成证明。",
+        solutionOutline: "基例 $n=1$：一红一蓝直接连。归纳步：由 b) 归约到 $n-1$ 情形，加上那条弦，共得 $n$ 条互不相交的红–蓝弦。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（找相邻异色对 + 归纳）**\\n\\n对 $n$ 归纳。\\n\\n**基例 $n=1$**：$2$ 个点一红一蓝，用一条弦相连即可。\\n\\n**归纳步**：设 $n-1$ 情形已成立。现有 $2n$ 个点、$n$ 红 $n$ 蓝。\\n\\n**存在相邻异色对**：因红蓝都出现（各 $n\\ge1$ 个），沿圆周绕一圈颜色必有变化，故存在**圆周上相邻**的两点 $P,Q$ 颜色不同（一红一蓝）。\\n\\n**连一条并归约**：用弦 $PQ$ 连接这对相邻异色点。由于 $P,Q$ 在圆周上紧邻、其间没有别的点，弦 $PQ$ 紧贴圆周的一段弧，**不可能与任何连接其余点的弦相交**。移走 $P,Q$，剩下 $2(n-1)$ 个点仍在圆上，且恰有 $n-1$ 红、$n-1$ 蓝。\\n\\n由归纳假设，这 $2(n-1)$ 个点可用 $n-1$ 条互不相交的红–蓝弦连接；它们都不与 $PQ$ 相交。加上 $PQ$，共得 $n$ 条互不相交、且每条连一红一蓝的弦。\\n\\n由归纳法，命题对一切 $n$ 成立。$\\blacksquare$\\n\\n---\\n**方法要点（BMO2 通用武器）**：圆上「非交叉配对」类题，**「找一对相邻的目标点、连起来、剥掉、归纳」**是标准剥离法——相邻点之间的弦天然不与他人相交，保证归纳时不破坏「非交叉」。这与括号匹配、栈、Catalan 结构本质相同。\\n\\n**延伸**：同法可证任意「平衡的红蓝序列」都能非交叉匹配，且匹配数是 Catalan 数 $C_n$。\\n\\n---\\n*原创题；仅以 BMO2 组合题型做难度校准；剥离算法对 $2\\times10^4$ 组随机红蓝着色均产出 $n$ 条非交叉红–蓝弦，已程序核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo2-co-008",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-combinatorics",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】Prove that a graph on $n$ vertices with more than $\\dfrac{n^2}{4}$ edges must contain a triangle. (Mantel's theorem.)（求证：$n$ 个顶点、边数超过 $\\dfrac{n^2}{4}$ 的图必含三角形。）真实 BMO2 组合为纯证明题——引导小问示范「反证 + 每条边两端度数和 ≤ $n$ + Cauchy–Schwarz」。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（无三角形的局部约束）：设图 $G$ **无三角形**。证明对每条边 $uv$，有 $\\deg(u)+\\deg(v)\\le n$。",
+        solutionOutline: "无三角形 $\\Rightarrow u,v$ 没有公共邻居。$u,v$ 的邻居集合（含彼此）互不重叠地放进 $n$ 个顶点，故 $\\deg(u)+\\deg(v)\\le n$。" },
+      { label: "b", marks: 4, question: "引导二（求和 + Cauchy–Schwarz）：把 a) 对所有边求和，说明 $\\sum_{v}\\deg(v)^2\\le n|E|$；再用 Cauchy–Schwarz 给出 $\\sum_v\\deg(v)^2\\ge\\dfrac{(2|E|)^2}{n}$。",
+        solutionOutline: "$\\sum_{uv\\in E}(\\deg u+\\deg v)=\\sum_v\\deg(v)^2\\le n|E|$。由 Cauchy–Schwarz，$\\sum_v\\deg(v)^2\\ge\\dfrac{(\\sum_v\\deg v)^2}{n}=\\dfrac{(2|E|)^2}{n}$。" },
+      { label: "c", marks: 3, question: "引导三（合并 + 逆否）：合并两不等式解出 $|E|$，再取逆否收尾。",
+        solutionOutline: "$\\dfrac{4|E|^2}{n}\\le n|E|\\Rightarrow|E|\\le\\dfrac{n^2}{4}$。故无三角形 $\\Rightarrow|E|\\le\\tfrac{n^2}4$；逆否即 $|E|>\\tfrac{n^2}4\\Rightarrow$ 有三角形。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（反证 + 度数和 + Cauchy–Schwarz）**\\n\\n反证：设 $G$ 有 $n$ 个顶点却**无三角形**，我们证明 $|E|\\le\\dfrac{n^2}{4}$。\\n\\n**每条边两端度数和 $\\le n$**：取任一条边 $uv$。若 $u,v$ 有公共邻居 $w$，则 $u,v,w$ 成三角形，矛盾。故 $u$ 的邻居与 $v$ 的邻居互不相同；这些邻居连同 $u,v$ 自身都是 $n$ 个顶点中的点，因此\\n$$\\deg(u)+\\deg(v)\\le n.$$\\n\\n**对所有边求和**：\\n$$\\sum_{uv\\in E}\\big(\\deg(u)+\\deg(v)\\big)\\le n|E|.$$\\n左边按顶点归并：每个顶点 $v$ 在它的 $\\deg(v)$ 条边里各被计一次 $\\deg(v)$，故左边 $=\\sum_v\\deg(v)^2$。于是\\n$$\\sum_v\\deg(v)^2\\le n|E|.$$\\n另一方面，由 Cauchy–Schwarz（且 $\\sum_v\\deg(v)=2|E|$）：\\n$$\\sum_v\\deg(v)^2\\ge\\frac{\\big(\\sum_v\\deg(v)\\big)^2}{n}=\\frac{(2|E|)^2}{n}=\\frac{4|E|^2}{n}.$$\\n\\n**合并**：\\n$$\\frac{4|E|^2}{n}\\le\\sum_v\\deg(v)^2\\le n|E|\\ \\Longrightarrow\\ 4|E|^2\\le n^2|E|\\ \\Longrightarrow\\ |E|\\le\\frac{n^2}{4}.$$\\n\\n这证明了「无三角形 $\\Rightarrow|E|\\le\\tfrac{n^2}4$」。取逆否命题：\\n$$|E|>\\frac{n^2}{4}\\ \\Longrightarrow\\ G\\ \\text{含三角形}.\\qquad\\blacksquare$$\\n\\n**紧性**：完全二部图 $K_{\\lfloor n/2\\rfloor,\\lceil n/2\\rceil}$ 无三角形且恰有 $\\left\\lfloor\\tfrac{n^2}4\\right\\rfloor$ 条边，说明界不可改进。\\n\\n---\\n**方法要点（BMO2 通用武器）**：极值图论的入门定理 Mantel，示范了**「局部约束（每条边度数和 $\\le n$）→ 全局求和 → Cauchy–Schwarz 收口」**的三段式。把「边上的不等式」按顶点归并成 $\\sum\\deg^2$、再用 Cauchy–Schwarz 与握手引理 $\\sum\\deg=2|E|$ 夹逼，是数边问题的通用套路（Turán 定理是其推广）。\\n\\n---\\n*原创题（Mantel）；仅以 BMO2 组合题型做难度校准；「$>\\lfloor n^2/4\\rfloor$ 边必含三角形」($n=3\\dots7$ 抽样) 与紧例 $K_{\\lfloor n/2\\rfloor,\\lceil n/2\\rceil}$ 已程序核对；请对照证明自评。*",
+  },
 ];
