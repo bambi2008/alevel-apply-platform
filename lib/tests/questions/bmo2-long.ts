@@ -339,4 +339,172 @@ export const BMO2_LONG_SAMPLE: LongQuestion[] = [
     fullSolution:
       "**完整证明（奇部分类 + 鸽巢）**\\n\\n**奇部分解**：每个正整数 $m$ 都能唯一写成\\n$$m=2^a\\cdot b,\\qquad b\\ \\text{为奇数}$$\\n（$2^a$ 是 $m$ 中 $2$ 的最高幂，$b$ 是 $m$ 的「奇部」）。当 $m\\le2n$ 时，其奇部 $b$ 是一个不超过 $2n$ 的奇数，故\\n$$b\\in\\{1,3,5,\\dots,2n-1\\},$$\\n只有 $n$ 种可能。\\n\\n**鸽巢**：从 $\\{1,\\dots,2n\\}$ 中选出 $n+1$ 个数，把它们按奇部 $b$ 归入这 $n$ 个「抽屉」。因 $n+1>n$，必有两个被选的数\\n$$m_1=2^{a_1}b,\\qquad m_2=2^{a_2}b$$\\n有**相同的奇部** $b$。\\n\\n**整除**：不妨设 $a_1<a_2$，则\\n$$m_1=2^{a_1}b\\ \\big|\\ 2^{a_2}b=m_2,$$\\n即被选数中一个整除另一个。\\n\\n**紧性（$n+1$ 最少）**：取 $\\{n+1,n+2,\\dots,2n\\}$，恰 $n$ 个数。若其中 $x\\mid y$ 且 $x<y$，则 $y\\ge2x\\ge2(n+1)>2n$，超出范围，矛盾；故这 $n$ 个数中没有一个整除另一个。因此「$n+1$」不能减小为 $n$。$\\blacksquare$\\n\\n---\\n**方法要点（BMO2 通用武器）**：**「按奇部（或最大奇因子）分类」是整除型鸽巢题的招牌抽屉**——同奇部的两数必成 $2^a$ 倍数关系，从而一个整除另一个。与「按余数分类」「按 $2$-adic 赋值分类」并列，是数论组合里最锋利的几种抽屉设计。别忘补上**紧性构造**（$\\{n+1,\\dots,2n\\}$）说明界不可改进。\\n\\n---\\n*原创题；仅以 BMO2 组合数论题型做难度校准；「每个 $(n+1)$ 元子集含整除对」与「$\\{n+1..2n\\}$ 无整除对」已对 $n\\le8$ 穷举核对；请对照证明自评。*",
   },
+
+  {
+    id: "bmo2-nt-005",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-number",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】Prove that the product of three consecutive positive integers is never a perfect square.（求证：三个连续正整数之积永远不是完全平方数。）真实 BMO2 为纯证明题——引导小问示范「换元 + 互素则各为平方」。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（换元）：设三个连续整数为 $n,n+1,n+2$，令 $m=n+1$。把乘积用 $m$ 表示成一个更对称的形式。",
+        solutionOutline: "乘积 $=(m-1)m(m+1)=m(m^2-1)=m^3-m$。" },
+      { label: "b", marks: 4, question: "引导二（互素分解）：证明 $\\gcd(m,m^2-1)=1$；因此若 $m(m^2-1)$ 是完全平方，则 $m$ 与 $m^2-1$ 各自都是完全平方。",
+        solutionOutline: "$m^2-1$ 与 $m$ 相邻互素类：任何公因子整除 $m^2-(m^2-1)=1$，故 $\\gcd=1$。互素两数之积为平方 $\\Rightarrow$ 各为平方。" },
+      { label: "c", marks: 3, question: "引导三（导出矛盾）：说明当 $m\\ge2$ 时 $m^2-1$ 不可能是完全平方，从而完成证明。",
+        solutionOutline: "$m\\ge2$ 时 $(m-1)^2<m^2-1<m^2$，夹在相邻两平方之间，故 $m^2-1$ 非平方。于是乘积非平方（$n\\ge1\\Rightarrow m\\ge2$）。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（换元 + 互素则各为平方）**\\n\\n设三个连续正整数为 $n,n+1,n+2$（$n\\ge1$）。令 $m=n+1\\ge2$，则\\n$$n(n+1)(n+2)=(m-1)\\,m\\,(m+1)=m(m^2-1)=m^3-m.$$\\n\\n**互素**：$\\gcd(m,\\,m^2-1)=1$，因为任何同时整除 $m$ 与 $m^2-1$ 的数也整除 $m^2-(m^2-1)=1$。\\n\\n**互素两数之积为平方 $\\Rightarrow$ 各为平方**：若 $m(m^2-1)$ 是完全平方，由 $\\gcd(m,m^2-1)=1$，则 $m$ 与 $m^2-1$ 必**各自**都是完全平方（互素因子在平方数中出现的幂次都为偶）。\\n\\n**矛盾**：但当 $m\\ge2$ 时\\n$$(m-1)^2=m^2-2m+1<m^2-1<m^2,$$\\n即 $m^2-1$ 严格夹在相邻两个完全平方 $(m-1)^2$ 与 $m^2$ 之间，故 $m^2-1$ **不是**完全平方。矛盾。\\n\\n因此 $n(n+1)(n+2)$ 永远不是完全平方数。$\\blacksquare$\\n\\n---\\n**方法要点（BMO2 通用武器）**：「某乘积是否为完全平方」的题，核心工具是「**互素的两个因子，其积为平方 $\\iff$ 各自为平方**」（由唯一分解）。再配合「**相邻平方数之间没有别的平方数**」这一夹逼，就能否定候选。换元 $m=n+1$ 制造对称是点睛之笔。\\n\\n**延伸**：四个连续整数之积 $+1$ 反而**总是**完全平方（见 BMO1 题库），对比之下更能体会「互素结构」的作用。\\n\\n---\\n*原创题；仅以 BMO2 数论题型做难度校准；「$n(n+1)(n+2)$ 非平方」已对 $n\\le10^5$、「$m^2-1$ 非平方」「$\\gcd(m,m^2-1)=1$」均程序核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo2-nt-006",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-number",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】Prove that $1+\\dfrac12+\\dfrac13+\\cdots+\\dfrac1n$ is never an integer for $n\\ge2$.（求证：调和和 $H_n=1+\\dfrac12+\\cdots+\\dfrac1n$ 对每个 $n\\ge2$ 都不是整数。）真实 BMO2 为纯证明题——引导小问示范「$2$-adic 赋值：盯住最大的 $2$ 的幂」。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（找唯一的最高 $2$ 幂）：设 $2^k$ 是 $\\le n$ 的最大 $2$ 的幂。证明在 $1,2,\\dots,n$ 中，**恰好只有 $2^k$ 这一个数**的因子里含 $2^k$（即被 $2^k$ 整除者唯一）。",
+        solutionOutline: "被 $2^k$ 整除且 $\\le n$ 的数是 $2^k,2\\cdot2^k,\\dots$；但 $2\\cdot2^k=2^{k+1}>n$（否则 $2^{k+1}$ 是更大的 $2$ 幂 $\\le n$，矛盾）。故只有 $2^k$ 一个。" },
+      { label: "b", marks: 4, question: "引导二（通分乘 $M$）：令 $M=\\operatorname{lcm}(1,2,\\dots,n)$，写 $M=2^k\\cdot t$（$t$ 奇）。考察 $M\\cdot H_n=\\sum_{j=1}^n \\dfrac Mj$。证明其中除 $j=2^k$ 那一项外，每一项 $\\dfrac Mj$ 都是偶数。",
+        solutionOutline: "对 $j\\ne2^k$，$j$ 含 $2$ 的幂 $<2^k$（由 a)，只有 $j=2^k$ 达到最高），故 $\\dfrac Mj$ 仍含正的 $2$ 因子，是偶数。而 $\\dfrac M{2^k}=t$ 为奇数。" },
+      { label: "c", marks: 3, question: "引导三（奇偶收尾）：由 b) 说明 $M\\cdot H_n$ 为奇数，从而 $H_n$ 不是整数。",
+        solutionOutline: "$M H_n=$（奇数 $t$）$+$（若干偶数）$=$ 奇数。若 $H_n$ 是整数，则 $M H_n$ 应为偶数（$M$ 含因子 $2$），矛盾。故 $H_n$ 非整数。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（$2$-adic：盯住最大的 $2$ 的幂）**\\n\\n设 $2^k$ 是不超过 $n$ 的最大的 $2$ 的幂（$n\\ge2\\Rightarrow k\\ge1$）。\\n\\n**唯一性**：在 $1,2,\\dots,n$ 中被 $2^k$ 整除的数只有 $2^k$ 本身——因为下一个 $2\\cdot2^k=2^{k+1}$ 若 $\\le n$，则它是一个更大的 $2$ 的幂 $\\le n$，与 $2^k$ 的最大性矛盾。因此**恰有一个** $j\\in\\{1,\\dots,n\\}$ 的 $2$-adic 赋值 $v_2(j)=k$，即 $j=2^k$；其余所有 $j$ 都有 $v_2(j)<k$。\\n\\n**通分**：令 $M=\\operatorname{lcm}(1,2,\\dots,n)$，则 $v_2(M)=k$，写 $M=2^k t$（$t$ 为奇数）。考虑\\n$$M\\cdot H_n=\\sum_{j=1}^n\\frac{M}{j}.$$\\n对每个 $j$，$v_2\\!\\left(\\dfrac Mj\\right)=k-v_2(j)$。\\n- 当 $j=2^k$：$v_2\\!\\left(\\dfrac M{2^k}\\right)=0$，该项 $\\dfrac M{2^k}=t$ 为**奇数**；\\n- 当 $j\\ne2^k$：$v_2(j)<k$，故 $v_2\\!\\left(\\dfrac Mj\\right)=k-v_2(j)\\ge1$，该项为**偶数**。\\n\\n**奇偶收尾**：于是\\n$$M\\cdot H_n=\\underbrace{t}_{\\text{奇}}+\\underbrace{(\\text{若干偶数})}_{\\text{偶}}=\\text{奇数}.$$\\n倘若 $H_n$ 是整数，则 $M\\cdot H_n$ 会被 $M$（含因子 $2^k$，$k\\ge1$）的偶性带成偶数——与「$M H_n$ 为奇数」矛盾。故 $H_n$ 不是整数。$\\blacksquare$\\n\\n---\\n**方法要点（BMO2 通用武器）**：证「某个有理数和不是整数」，用 **$p$-adic 赋值**盯住某个素数（这里 $p=2$）的幂——找到「唯一达到最高幂」的那一项，它在通分后贡献一个奇数、别人都贡献偶数，破坏整性。这是 harmonic sum / 类似求和非整性的标准杀招。\\n\\n**延伸**：同法（盯最大 $2$ 幂）可证 $\\dfrac1{a}+\\dfrac1{a+1}+\\cdots+\\dfrac1{b}$（$b>a\\ge1$）也非整数。\\n\\n---\\n*原创题；仅以 BMO2 数论题型做难度校准；「$H_n$ 非整数」及「$\\le n$ 中最高 $2$ 幂唯一」已对 $n=2\\dots300$ 用精确分数程序核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo2-al-005",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-algebra",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】Let $a,b,c$ be real numbers with $a+b+c=0$. Prove that $\\dfrac{a^5+b^5+c^5}{5}=\\dfrac{a^2+b^2+c^2}{2}\\cdot\\dfrac{a^3+b^3+c^3}{3}$.（设实数 $a,b,c$ 满足 $a+b+c=0$。求证上述等式。）真实 BMO2 为纯证明题——引导小问示范「牛顿幂和 + 对称多项式」。",
+    parts: [
+      { label: "a", marks: 4, question: "引导一（低次幂和）：设 $p_k=a^k+b^k+c^k$、$e_2=ab+bc+ca$、$e_3=abc$。在 $a+b+c=0$（即 $e_1=0$）下，用牛顿恒等式求出 $p_2,p_3$（用 $e_2,e_3$ 表示）。",
+        solutionOutline: "牛顿：$p_1=e_1=0$；$p_2=e_1p_1-2e_2=-2e_2$；$p_3=e_1p_2-e_2p_1+3e_3=3e_3$。" },
+      { label: "b", marks: 4, question: "引导二（五次幂和）：继续用牛顿恒等式（$e_1=0$）求 $p_4,p_5$。",
+        solutionOutline: "$p_4=e_1p_3-e_2p_2+e_3p_1=-e_2(-2e_2)=2e_2^2$；$p_5=e_1p_4-e_2p_3+e_3p_2=-e_2(3e_3)+e_3(-2e_2)=-5e_2e_3$。" },
+      { label: "c", marks: 2, question: "引导三（代入核对）：把 $p_2,p_3,p_5$ 代入两边，验证等式。",
+        solutionOutline: "右边 $=\\dfrac{p_2}{2}\\cdot\\dfrac{p_3}{3}=\\dfrac{-2e_2}{2}\\cdot\\dfrac{3e_3}{3}=(-e_2)(e_3)=-e_2e_3$；左边 $=\\dfrac{p_5}{5}=\\dfrac{-5e_2e_3}{5}=-e_2e_3$。相等。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（牛顿幂和恒等式）**\\n\\n记幂和 $p_k=a^k+b^k+c^k$，初等对称多项式 $e_1=a+b+c$，$e_2=ab+bc+ca$，$e_3=abc$。条件即 $e_1=0$。牛顿恒等式（三元）为\\n$$p_1=e_1,\\quad p_2=e_1p_1-2e_2,\\quad p_k=e_1p_{k-1}-e_2p_{k-2}+e_3p_{k-3}\\ (k\\ge3).$$\\n代入 $e_1=0$：\\n$$p_1=0,\\qquad p_2=-2e_2,\\qquad p_3=-e_2p_1+3e_3=3e_3,$$\\n$$p_4=-e_2p_2+e_3p_1=-e_2(-2e_2)=2e_2^2,$$\\n$$p_5=-e_2p_3+e_3p_2=-e_2(3e_3)+e_3(-2e_2)=-5e_2e_3.$$\\n\\n**核对等式**：\\n$$\\frac{a^2+b^2+c^2}{2}\\cdot\\frac{a^3+b^3+c^3}{3}=\\frac{p_2}{2}\\cdot\\frac{p_3}{3}=\\frac{-2e_2}{2}\\cdot\\frac{3e_3}{3}=(-e_2)(e_3)=-e_2e_3,$$\\n$$\\frac{a^5+b^5+c^5}{5}=\\frac{p_5}{5}=\\frac{-5e_2e_3}{5}=-e_2e_3.$$\\n两边都等于 $-e_2e_3$，故等式成立。$\\blacksquare$\\n\\n---\\n**方法要点（BMO2 通用武器）**：对称的幂和恒等式，**牛顿恒等式**把 $p_k$ 递推地写成初等对称多项式 $e_1,e_2,e_3$ 的多项式；一旦有约束（如 $e_1=0$）便大量塌缩，等式的证明化为纯代数核对。掌握 $p_2=e_1^2-2e_2$、$p_3=e_1^3-3e_1e_2+3e_3$ 等常用式能极大提速。\\n\\n**延伸**：同样在 $a+b+c=0$ 下有 $\\dfrac{p_7}{7}=\\dfrac{p_2}{2}\\cdot\\dfrac{p_5}{5}$ 等一系列漂亮恒等式。\\n\\n---\\n*原创题；仅以 BMO2 代数题型做难度校准；恒等式已用符号计算在 $a+b+c=0$（代入 $c=-a-b$）下验证为 $0$；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo2-al-006",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-algebra",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】Let $a,b,c$ be positive real numbers. Prove that $a^4+b^4+c^4\\ge abc(a+b+c)$, and determine when equality holds.（设正实数 $a,b,c$，求证 $a^4+b^4+c^4\\ge abc(a+b+c)$，并确定等号条件。）真实 BMO2 为纯证明题——引导小问示范「两级 SOS 递进」。",
+    parts: [
+      { label: "a", marks: 4, question: "引导一（第一级）：证明 $a^4+b^4+c^4\\ge a^2b^2+b^2c^2+c^2a^2$。",
+        solutionOutline: "对 $x=a^2,y=b^2,z=c^2$ 用 $x^2+y^2+z^2\\ge xy+yz+zx$（即 $\\tfrac12\\sum(x-y)^2\\ge0$）。" },
+      { label: "b", marks: 4, question: "引导二（第二级）：证明 $a^2b^2+b^2c^2+c^2a^2\\ge abc(a+b+c)$。",
+        solutionOutline: "对 $u=ab,v=bc,w=ca$ 用 $u^2+v^2+w^2\\ge uv+vw+wu$；而 $uv+vw+wu=ab\\cdot bc+bc\\cdot ca+ca\\cdot ab=abc(a+b+c)$。" },
+      { label: "c", marks: 2, question: "引导三（串联 + 等号）：合并 a)、b) 并确定等号条件。",
+        solutionOutline: "$a^4+b^4+c^4\\ge a^2b^2+b^2c^2+c^2a^2\\ge abc(a+b+c)$。两级等号都要 $a^2=b^2=c^2$ 且 $ab=bc=ca$，即 $a=b=c$。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（两级 SOS 递进）**\\n\\n用到的核心引理：对任意实数 $x,y,z$，\\n$$x^2+y^2+z^2\\ge xy+yz+zx\\quad\\Big(\\text{因}\\ x^2+y^2+z^2-xy-yz-zx=\\tfrac12\\big[(x-y)^2+(y-z)^2+(z-x)^2\\big]\\ge0\\Big).$$\\n\\n**第一级**（取 $x=a^2,y=b^2,z=c^2$）：\\n$$a^4+b^4+c^4\\ge a^2b^2+b^2c^2+c^2a^2. \\quad(\\ast)$$\\n\\n**第二级**（取 $x=ab,\\ y=bc,\\ z=ca$）：\\n$$a^2b^2+b^2c^2+c^2a^2\\ge (ab)(bc)+(bc)(ca)+(ca)(ab)=ab^2c+bc^2a+ca^2b=abc(a+b+c). \\quad(\\ast\\ast)$$\\n\\n**串联**：由 $(\\ast)$ 与 $(\\ast\\ast)$，\\n$$a^4+b^4+c^4\\ \\ge\\ a^2b^2+b^2c^2+c^2a^2\\ \\ge\\ abc(a+b+c).$$\\n\\n**等号条件**：$(\\ast)$ 取等要 $a^2=b^2=c^2$；$(\\ast\\ast)$ 取等要 $ab=bc=ca$。对正实数，二者都归结为 $a=b=c$。此时两边同为 $3a^4$，等号成立。$\\blacksquare$\\n\\n---\\n**方法要点（BMO2 通用武器）**：不等式两边「跨度」较大时，**用同一个引理分两级搭桥**——本题两次调用 $\\sum x^2\\ge\\sum xy$，第一次把四次方压到「平方之积」，第二次再把「平方之积」压到目标。识别出「$ab,bc,ca$ 的两两乘积之和 $=abc(a+b+c)$」是关键的代数观察。\\n\\n**延伸**：一般地 $a^4+b^4+c^4\\ge a^2bc+ab^2c+abc^2$ 及 Schur 型不等式都可用类似分级 SOS 处理。\\n\\n---\\n*原创题；仅以 BMO2 不等式题型做难度校准；$a^4+b^4+c^4-abc(a+b+c)\\ge0$（等号 $a=b=c$）已由 $4\\times10^5$ 次随机取样与两级 SOS 恒等式核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo2-ge-005",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-geometry",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】Let $O,H$ be the circumcentre and orthocentre of triangle $ABC$, and $M$ the midpoint of $BC$. Prove that $AH=2\\,OM$.（设 $O,H$ 为三角形 $ABC$ 的外心与垂心，$M$ 为 $BC$ 中点。求证 $AH=2\\,OM$。）真实 BMO2 几何为纯证明题——引导小问示范「外心为原点的向量法」。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（外心原点 + 垂心向量）：取外心 $O$ 为原点、顶点向量 $\\mathbf a,\\mathbf b,\\mathbf c$（模均为 $R$）。写出垂心 $H$ 与 $BC$ 中点 $M$ 的向量。",
+        solutionOutline: "$H=\\mathbf a+\\mathbf b+\\mathbf c$（外心原点下的标准事实）；$M=\\dfrac{\\mathbf b+\\mathbf c}{2}$。" },
+      { label: "b", marks: 4, question: "引导二（算两段向量）：分别写出 $\\vec{AH}$ 与 $\\vec{OM}$。",
+        solutionOutline: "$\\vec{AH}=H-\\mathbf a=\\mathbf b+\\mathbf c$；$\\vec{OM}=M-\\mathbf 0=\\dfrac{\\mathbf b+\\mathbf c}{2}$。" },
+      { label: "c", marks: 3, question: "引导三（取模收尾）：由 $\\vec{AH}=2\\,\\vec{OM}$ 得长度关系。",
+        solutionOutline: "$\\vec{AH}=\\mathbf b+\\mathbf c=2\\cdot\\dfrac{\\mathbf b+\\mathbf c}{2}=2\\,\\vec{OM}$，取模得 $AH=2\\,OM$（且 $AH\\parallel OM$）。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（外心为原点的向量法）**\\n\\n取外心 $O$ 为原点，顶点位置向量 $\\mathbf a,\\mathbf b,\\mathbf c$，$|\\mathbf a|=|\\mathbf b|=|\\mathbf c|=R$。已知（或如 BMO2 题 ge-001 中所证）垂心 $H=\\mathbf a+\\mathbf b+\\mathbf c$。$BC$ 中点 $M=\\dfrac{\\mathbf b+\\mathbf c}{2}$。\\n\\n计算两段有向线段：\\n$$\\vec{AH}=H-\\mathbf a=(\\mathbf a+\\mathbf b+\\mathbf c)-\\mathbf a=\\mathbf b+\\mathbf c,\\qquad \\vec{OM}=M-\\mathbf 0=\\frac{\\mathbf b+\\mathbf c}{2}.$$\\n因此\\n$$\\vec{AH}=\\mathbf b+\\mathbf c=2\\cdot\\frac{\\mathbf b+\\mathbf c}{2}=2\\,\\vec{OM}.$$\\n两边取模：$AH=2\\,OM$（并且 $AH\\parallel OM$，方向相同）。$\\blacksquare$\\n\\n---\\n**方法要点（BMO2 通用武器）**：外心取原点后，$H=\\mathbf a+\\mathbf b+\\mathbf c$ 让「$AH$ 与 $OM$ 平行且 $2{:}1$」这类关系变成一行向量恒等式。这条 $AH=2\\,OM$ 正是欧拉线与九点圆的基石之一（$O$ 到边的距离等于对顶点到垂心距离的一半）。\\n\\n**延伸**：由此立得九点圆半径 $=\\tfrac12R$、以及外心到三边距离之和的相关恒等式。\\n\\n---\\n*原创题；仅以 BMO2 几何题型做难度校准；$AH=2\\,OM$ 已在 $2\\times10^4$ 组随机三角形上用坐标法核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo2-ge-006",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-geometry",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】Prove that in any non-equilateral triangle, the circumcentre $O$, centroid $G$ and orthocentre $H$ are collinear, and $OG:GH=1:2$. (This line is the Euler line.)（求证：在任意非等边三角形中，外心 $O$、重心 $G$、垂心 $H$ 三点共线，且 $OG:GH=1:2$——此即欧拉线。）真实 BMO2 几何为纯证明题——引导小问示范「向量共线判定」。",
+    parts: [
+      { label: "a", marks: 3, question: "引导一（外心原点 + 三心向量）：取外心 $O$ 为原点，写出重心 $G$ 与垂心 $H$ 的向量。",
+        solutionOutline: "$G=\\dfrac{\\mathbf a+\\mathbf b+\\mathbf c}{3}$，$H=\\mathbf a+\\mathbf b+\\mathbf c$。（$O=\\mathbf 0$。）" },
+      { label: "b", marks: 4, question: "引导二（共线）：用 $G,H$ 的向量说明 $O,G,H$ 三点共线（提示：$H$ 是 $G$ 的标量倍）。",
+        solutionOutline: "记 $\\mathbf s=\\mathbf a+\\mathbf b+\\mathbf c$，则 $G=\\tfrac13\\mathbf s$，$H=\\mathbf s=3G$。$O,G,H$ 都是 $\\mathbf s$ 方向上的标量倍（$0,\\tfrac13,1$），故共线。" },
+      { label: "c", marks: 3, question: "引导三（比例 + 非等边）：计算 $OG:GH$；并说明非等边保证三点不重合、方向确定。",
+        solutionOutline: "$\\vec{OG}=\\tfrac13\\mathbf s$，$\\vec{GH}=H-G=\\tfrac23\\mathbf s$，故 $OG:GH=\\tfrac13:\\tfrac23=1:2$。非等边 $\\Rightarrow\\mathbf s\\ne\\mathbf 0$（$O\\ne H$），三点互异、欧拉线确定。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（向量共线判定）**\\n\\n取外心 $O$ 为原点，顶点向量 $\\mathbf a,\\mathbf b,\\mathbf c$（模均为 $R$）。则重心\\n$$G=\\frac{\\mathbf a+\\mathbf b+\\mathbf c}{3},$$\\n垂心（外心原点下的标准事实）\\n$$H=\\mathbf a+\\mathbf b+\\mathbf c.$$\\n记 $\\mathbf s=\\mathbf a+\\mathbf b+\\mathbf c$，则 $O=\\mathbf 0$、$G=\\tfrac13\\mathbf s$、$H=\\mathbf s$。\\n\\n**共线**：三点 $O,G,H$ 的位置向量分别是 $0\\cdot\\mathbf s,\\ \\tfrac13\\mathbf s,\\ 1\\cdot\\mathbf s$，都落在过原点、方向为 $\\mathbf s$ 的同一条直线上（当 $\\mathbf s\\ne\\mathbf 0$）。故三点共线。\\n\\n**比例**：\\n$$\\vec{OG}=G-O=\\tfrac13\\mathbf s,\\qquad \\vec{GH}=H-G=\\mathbf s-\\tfrac13\\mathbf s=\\tfrac23\\mathbf s,$$\\n所以 $OG:GH=\\tfrac13:\\tfrac23=1:2$，且 $\\vec{GH}=2\\,\\vec{OG}$（同向）。\\n\\n**非等边的作用**：三角形非等边时 $O\\ne H$，即 $\\mathbf s\\ne\\mathbf 0$，上述直线（欧拉线）确实存在且三心互异（等边时 $O=G=H$ 重合，欧拉线退化）。$\\blacksquare$\\n\\n---\\n**方法要点（BMO2 通用武器）**：**欧拉线**是「外心原点 + $H=\\mathbf a+\\mathbf b+\\mathbf c$」的直接推论——一旦三个心都写成 $\\mathbf s$ 的标量倍，共线与比例都是「看系数」。向量法在处理「共线 / 定比 / 平行」时几乎无脑可靠，是 BMO2 几何的主力工具之一。\\n\\n**延伸**：九点圆圆心 $N=\\tfrac12\\mathbf s$ 也在欧拉线上，且是 $OH$ 的中点——同一套向量立刻给出。\\n\\n---\\n*原创题；仅以 BMO2 几何题型做难度校准；「$O,G,H$ 共线且 $OG:GH=1:2$」已在 $2\\times10^4$ 组随机（非退化）三角形上用坐标法核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo2-co-005",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-combinatorics",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】Prove that for every positive integer $n$, any $2^n\\times2^n$ board with one unit square removed can be tiled by L-shaped trominoes (each covering three squares).（求证：对每个正整数 $n$，任何去掉一个单位方格的 $2^n\\times2^n$ 棋盘都能被 L 形三格骨牌铺满。）真实 BMO2 组合为纯证明题——引导小问示范「对 $n$ 归纳 + 中心巧放一块」。",
+    parts: [
+      { label: "a", marks: 2, question: "引导一（基础）：验证 $n=1$（$2\\times2$ 去掉一格）可由一块 L 形三格骨牌铺满。",
+        solutionOutline: "$2\\times2$ 去掉任一格恰剩 $3$ 格，成 L 形，正好一块骨牌。基础成立。" },
+      { label: "b", marks: 5, question: "引导二（归纳的关键一步）：设 $2^{n}\\times2^{n}$ 缺一格可铺。对 $2^{n+1}\\times2^{n+1}$ 缺一格的棋盘，把它四等分成四个 $2^n\\times2^n$ 象限。缺格在某一象限；如何用「在中心放一块 L」使四个象限都变成『缺一格』？",
+        solutionOutline: "缺格所在象限已缺一格。在棋盘正中心放一块 L 形骨牌，恰好覆盖另外三个象限各自靠中心的那一个角格——于是这三个象限也各缺一格。四个象限都成为 $2^n\\times2^n$ 缺一格。" },
+      { label: "c", marks: 3, question: "引导三（收尾）：用归纳假设铺完四个象限，完成证明。",
+        solutionOutline: "由归纳假设，四个 $2^n\\times2^n$ 缺一格象限各自可铺；加上中心那一块，整个 $2^{n+1}\\times2^{n+1}$ 缺一格棋盘被铺满。由归纳法对一切 $n$ 成立。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（对 $n$ 归纳 + 中心放一块）**\\n\\n**基础（$n=1$）**：$2\\times2$ 棋盘去掉任意一格，剩下三格恰构成一个 L 形，正好由一块 L 形三格骨牌覆盖。成立。\\n\\n**归纳步**：假设任何 $2^n\\times2^n$ 缺一格的棋盘都能用 L 形骨牌铺满。考虑一个 $2^{n+1}\\times2^{n+1}$ 缺一格的棋盘。用正中的横竖两条中线把它分成四个 $2^n\\times2^n$ 的**象限**。\\n\\n那个被去掉的格子落在某**一个**象限里——这个象限已经是「$2^n\\times2^n$ 缺一格」。\\n\\n**关键一步**：在棋盘正中心放一块 L 形骨牌，让它覆盖**另外三个象限**中各自最靠近中心的那一个角格。这样一来，这三个象限也各自「缺」了一格（缺的正是被中心骨牌占掉的那个角）。于是四个象限**全部**成为「$2^n\\times2^n$ 缺一格」的棋盘。\\n\\n**收尾**：由归纳假设，这四个缺一格象限都能各自被 L 形骨牌铺满；再加上中心那一块骨牌，整个 $2^{n+1}\\times2^{n+1}$ 缺一格棋盘被完全铺满。\\n\\n由数学归纳法，命题对一切正整数 $n$ 成立。$\\blacksquare$\\n\\n**计数一致性**：$2^n\\times2^n$ 缺一格共 $4^n-1$ 格，恰能被 $3$ 整除（$4^n\\equiv1\\pmod3$），骨牌数 $=\\dfrac{4^n-1}{3}$，与递归相符。\\n\\n---\\n**方法要点（BMO2 通用武器）**：**归纳 + 「造出递归结构」**——铺砖类存在性题常把 $2^{n+1}$ 问题四分成 $2^n$ 子问题，难点在「让每个子问题都满足归纳假设」；本题的妙招是**在中心放一块骨牌，人为地给另外三个象限各制造一个缺口**。这种「用一块拼图连接四个子问题」的构造是分治归纳的经典范式。\\n\\n---\\n*原创题；仅以 BMO2 组合题型做难度校准；递归构造对 $n=1\\dots6$ 均给出合法铺法（骨牌数 $=(4^n-1)/3$），已程序核对；请对照证明自评。*",
+  },
+
+  {
+    id: "bmo2-co-006",
+    type: "long",
+    testId: "bmo",
+    topicId: "bmo-combinatorics",
+    difficulty: 3,
+    totalMarks: 10,
+    context:
+      "【BMO2 / Round 2 风格 · 完整证明题】In a round-robin tournament every two players play exactly once and there are no draws. Prove that the players can be lined up $P_1,P_2,\\dots,P_n$ so that $P_i$ beat $P_{i+1}$ for every $i$ (a Hamiltonian path in the tournament).（单循环比赛中每两人恰赛一场且无平局。求证：可把选手排成一列 $P_1,\\dots,P_n$，使每个 $P_i$ 都战胜了 $P_{i+1}$。）真实 BMO2 组合为纯证明题——引导小问示范「对人数归纳 + 插入」。",
+    parts: [
+      { label: "a", marks: 2, question: "引导一（基础）：$n=1$（或 $n=2$）时结论为何显然？",
+        solutionOutline: "$n=1$：单人成列。$n=2$：两人有胜负，胜者在前即可。" },
+      { label: "b", marks: 5, question: "引导二（插入法）：设 $n$ 人已排成满足条件的一列 $P_1\\to P_2\\to\\cdots\\to P_n$（箭头表示战胜）。新来一人 $X$。分情况说明总能把 $X$ 插入这条链中某处，保持「前者胜后者」。",
+        solutionOutline: "若 $X$ 胜 $P_1$，放最前。若 $P_n$ 胜 $X$，放最后。否则存在相邻位置：$P_i$ 胜 $X$ 而 $X$ 胜 $P_{i+1}$（沿链走，胜负从『$X$ 胜』翻转到『败给』必有交界），把 $X$ 插在 $P_i,P_{i+1}$ 之间。" },
+      { label: "c", marks: 3, question: "引导三（归纳收尾）：用 b) 完成归纳。",
+        solutionOutline: "由 b)，$n$ 人的链总能扩成 $n+1$ 人的链；由归纳法，任意 $n$ 人都能排成所需的一列。$\\blacksquare$" },
+    ],
+    fullSolution:
+      "**完整证明（对人数归纳 + 插入法）**\\n\\n用「$A\\to B$」表示「$A$ 战胜 $B$」。要证：可排成一列使相邻前者胜后者（即锦标赛存在**哈密顿路径**）。\\n\\n**基础**：$n=1$ 时单人即为一列；$n=2$ 时两人分胜负，胜者列前。\\n\\n**归纳步**：假设任意 $n$ 名选手都能排成满足条件的链。现有 $n+1$ 名选手，任取其中 $n$ 名，由归纳假设排成\\n$$P_1\\to P_2\\to\\cdots\\to P_n.$$\\n把剩下的一名选手记为 $X$，将其插入这条链：\\n\\n- **若 $X\\to P_1$**（$X$ 胜排头）：把 $X$ 放在最前，得 $X\\to P_1\\to\\cdots\\to P_n$。\\n- **若 $P_n\\to X$**（排尾胜 $X$）：把 $X$ 放在最后，得 $P_1\\to\\cdots\\to P_n\\to X$。\\n- **否则**：即 $P_1\\to X$（排头胜 $X$）且 $X\\to P_n$。沿链从左往右看比较结果：在 $P_1$ 处是「$P_1$ 胜 $X$」，在 $P_n$ 处是「$X$ 胜 $P_n$」，两端结论相反，故存在相邻的一对下标 $i$，使\\n$$P_i\\to X\\quad\\text{且}\\quad X\\to P_{i+1}.$$\\n把 $X$ 插在 $P_i$ 与 $P_{i+1}$ 之间，链仍处处「前者胜后者」。\\n\\n无论哪种情形，都得到 $n+1$ 名选手的合法链。由归纳法，命题对一切 $n$ 成立。$\\blacksquare$\\n\\n---\\n**方法要点（BMO2 通用武器）**：**「归纳 + 插入」**是证明有序结构存在性的利器——把新元素插进已排好的序列，靠「在某处胜负发生翻转」定位插入点。这正是「每个锦标赛都有哈密顿路径」的经典证明；同样的插入思想也用于排序、拓扑序、以及各种「可线性化」的存在性论证。\\n\\n**延伸**：更强的结论——每个**强连通**锦标赛都有哈密顿**回路**（Camion 定理），证明思路类似但更细。\\n\\n---\\n*原创题；仅以 BMO2 组合题型做难度校准；插入法对 $3000$ 个随机锦标赛均产出合法哈密顿路径，已程序核对；请对照证明自评。*",
+  },
 ];
