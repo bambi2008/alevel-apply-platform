@@ -4,11 +4,6 @@ import { captureError } from "@/lib/monitoring";
 
 export const runtime = "nodejs";
 
-const client = new OpenAI({
-  apiKey: process.env.DEEPSEEK_API_KEY,
-  baseURL: "https://api.deepseek.com",
-});
-
 export interface ProjectFeedbackRequest {
   mode?: "stage" | "reflection"; // stage=阶段成果反馈；reflection=反思与延伸的文书式教练反馈
   projectTitle: string;
@@ -114,6 +109,10 @@ export async function POST(req: NextRequest) {
       { status: 503 }
     );
   }
+  const client = new OpenAI({
+    apiKey: process.env.DEEPSEEK_API_KEY,
+    baseURL: "https://api.deepseek.com",
+  });
 
   let body: ProjectFeedbackRequest;
   try {

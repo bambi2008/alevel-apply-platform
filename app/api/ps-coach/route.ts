@@ -4,11 +4,6 @@ import { captureError } from "@/lib/monitoring";
 
 export const runtime = "nodejs";
 
-const client = new OpenAI({
-  apiKey: process.env.DEEPSEEK_API_KEY,
-  baseURL: "https://api.deepseek.com",
-});
-
 type QKey = "q1" | "q2" | "q3";
 
 interface CoachRequest {
@@ -158,6 +153,10 @@ export async function POST(req: NextRequest) {
   if (!process.env.DEEPSEEK_API_KEY) {
     return NextResponse.json({ error: "AI 暂未配置（缺少 DEEPSEEK_API_KEY）" }, { status: 503 });
   }
+  const client = new OpenAI({
+    apiKey: process.env.DEEPSEEK_API_KEY,
+    baseURL: "https://api.deepseek.com",
+  });
 
   let body: CoachRequest;
   try {

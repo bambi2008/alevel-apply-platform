@@ -4,11 +4,6 @@ import { captureError } from "@/lib/monitoring";
 
 export const runtime = "nodejs";
 
-const client = new OpenAI({
-  apiKey: process.env.DEEPSEEK_API_KEY,
-  baseURL: "https://api.deepseek.com",
-});
-
 interface StructureRequest {
   title: string;
   field: string;
@@ -62,6 +57,10 @@ export async function POST(req: NextRequest) {
       { status: 503 }
     );
   }
+  const client = new OpenAI({
+    apiKey: process.env.DEEPSEEK_API_KEY,
+    baseURL: "https://api.deepseek.com",
+  });
 
   let body: StructureRequest;
   try {

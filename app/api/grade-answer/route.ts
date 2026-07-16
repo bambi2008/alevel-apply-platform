@@ -3,11 +3,6 @@ import OpenAI from "openai";
 
 export const runtime = "nodejs";
 
-const client = new OpenAI({
-  apiKey: process.env.DEEPSEEK_API_KEY,
-  baseURL: "https://api.deepseek.com",
-});
-
 export interface GradeRequest {
   questionId: string;
   testId: string;
@@ -95,6 +90,10 @@ export async function POST(req: NextRequest) {
       { status: 503 }
     );
   }
+  const client = new OpenAI({
+    apiKey: process.env.DEEPSEEK_API_KEY,
+    baseURL: "https://api.deepseek.com",
+  });
 
   let body: GradeRequest;
   try {

@@ -4,11 +4,6 @@ import { captureError } from "@/lib/monitoring";
 
 export const runtime = "nodejs";
 
-const client = new OpenAI({
-  apiKey: process.env.DEEPSEEK_API_KEY,
-  baseURL: "https://api.deepseek.com",
-});
-
 interface Msg {
   role: "interviewer" | "student";
   content: string;
@@ -64,6 +59,10 @@ export async function POST(req: NextRequest) {
   if (!process.env.DEEPSEEK_API_KEY) {
     return NextResponse.json({ error: "AI 暂未配置" }, { status: 503 });
   }
+  const client = new OpenAI({
+    apiKey: process.env.DEEPSEEK_API_KEY,
+    baseURL: "https://api.deepseek.com",
+  });
   try {
     const body = (await req.json()) as MockRequest;
     const { mode = "interview", subject, question, history = [], studentReply } = body;

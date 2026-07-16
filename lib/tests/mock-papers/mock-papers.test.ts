@@ -6,8 +6,8 @@ import {
 } from "@/lib/tests/mock-papers";
 
 describe("mock papers", () => {
-  it("ESAT has 4 mock papers", () => {
-    expect(getMockPapersForTest("esat").length).toBe(4);
+  it("ESAT has 10 mock papers", () => {
+    expect(getMockPapersForTest("esat").length).toBe(10);
   });
 
   it("getMockPaper resolves known ids and rejects unknown", () => {

@@ -3,6 +3,7 @@ import { MAT_QUESTIONS } from "@/lib/tests/questions/mat";
 import { STEP_QUESTIONS } from "@/lib/tests/questions/step";
 import { ESAT_QUESTIONS } from "@/lib/tests/questions/esat";
 import { TMUA_QUESTIONS } from "@/lib/tests/questions/tmua";
+import { BPHO_QUESTIONS } from "@/lib/tests/questions/bpho";
 import { getAllMockQuestions } from "@/lib/tests/mock-papers";
 import { getTestById } from "@/lib/tests";
 import { getQuestionById } from "@/lib/tests/lookup";
@@ -13,6 +14,7 @@ const banks: Record<string, Question[]> = {
   step: STEP_QUESTIONS,
   esat: ESAT_QUESTIONS,
   tmua: TMUA_QUESTIONS,
+  bpho: BPHO_QUESTIONS,
 };
 
 const allQuestions: Question[] = [
@@ -20,6 +22,7 @@ const allQuestions: Question[] = [
   ...STEP_QUESTIONS,
   ...ESAT_QUESTIONS,
   ...TMUA_QUESTIONS,
+  ...BPHO_QUESTIONS,
   ...getAllMockQuestions(),
 ];
 
@@ -72,8 +75,16 @@ for (const [name, bank] of Object.entries(banks)) {
           expect(q.totalMarks, `${q.id}: non-positive totalMarks`).toBeGreaterThan(0);
           expect(q.parts.length, `${q.id}: no parts`).toBeGreaterThan(0);
           expect((q.fullSolution ?? "").length, `${q.id}: empty fullSolution`).toBeGreaterThan(0);
+          expect(
+            q.parts.reduce((sum, part) => sum + part.marks, 0),
+            `${q.id}: part marks do not add up to totalMarks`
+          ).toBe(q.totalMarks);
           for (const part of q.parts) {
             expect((part.question ?? "").length, `${q.id}: empty part question`).toBeGreaterThan(0);
+            expect(
+              (part.solutionOutline ?? "").length,
+              `${q.id}: empty part solution outline`
+            ).toBeGreaterThan(0);
           }
         }
       }
