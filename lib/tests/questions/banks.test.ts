@@ -4,6 +4,7 @@ import { STEP_QUESTIONS } from "@/lib/tests/questions/step";
 import { ESAT_QUESTIONS } from "@/lib/tests/questions/esat";
 import { TMUA_QUESTIONS } from "@/lib/tests/questions/tmua";
 import { BPHO_QUESTIONS } from "@/lib/tests/questions/bpho";
+import { BPHO4_LONG_SAMPLE } from "@/lib/tests/questions/bpho4-long";
 import { getAllMockQuestions } from "@/lib/tests/mock-papers";
 import { getTestById } from "@/lib/tests";
 import { getQuestionById } from "@/lib/tests/lookup";
@@ -42,6 +43,23 @@ describe("question bank global integrity", () => {
       .filter((q) => !getQuestionById(q.id))
       .map((q) => q.id);
     expect(unresolved).toEqual([]);
+  });
+});
+
+describe("BPhO fourth long-question batch", () => {
+  it("covers every BPhO topic exactly once", () => {
+    expect(BPHO4_LONG_SAMPLE).toHaveLength(5);
+    expect(BPHO4_LONG_SAMPLE.map((q) => q.topicId).sort()).toEqual(
+      ["bpho-mechanics", "bpho-waves", "bpho-em", "bpho-thermal", "bpho-modern"].sort()
+    );
+  });
+
+  it("contains five 25-mark staged problems", () => {
+    for (const question of BPHO4_LONG_SAMPLE) {
+      expect(question.totalMarks).toBe(25);
+      expect(question.parts.length).toBeGreaterThanOrEqual(5);
+      expect(question.parts.reduce((sum, part) => sum + part.marks, 0)).toBe(25);
+    }
   });
 });
 
