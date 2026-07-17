@@ -8,6 +8,7 @@ import { BPHO_LONG_SAMPLE } from "./bpho-long";
 import { BPHO2_LONG_SAMPLE } from "./bpho2-long";
 import { BPHO3_LONG_SAMPLE } from "./bpho3-long";
 import { BPHO4_LONG_SAMPLE } from "./bpho4-long";
+import { BPHO5_LONG_SAMPLE } from "./bpho5-long";
 
 export const BPHO_QUESTIONS: Question[] = [
   ...BPHO_KINE_S1,
@@ -18,4 +19,5 @@ export const BPHO_QUESTIONS: Question[] = [
   ...BPHO2_LONG_SAMPLE,
   ...BPHO3_LONG_SAMPLE,
   ...BPHO4_LONG_SAMPLE,
+  ...BPHO5_LONG_SAMPLE,
 ];
