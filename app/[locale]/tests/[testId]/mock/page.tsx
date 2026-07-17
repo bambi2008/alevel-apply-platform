@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, use } from "react";
+import { useState, useEffect, useEffectEvent, useRef, use } from "react";
 import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { getTestById } from "@/lib/tests";
@@ -13,7 +13,7 @@ import { LNAT_QUESTIONS } from "@/lib/tests/questions/lnat";
 import { TARA_QUESTIONS } from "@/lib/tests/questions/tara";
 import { BPHO_QUESTIONS } from "@/lib/tests/questions/bpho";
 import { BMO_QUESTIONS } from "@/lib/tests/questions/bmo";
-import type { Question, MCQQuestion, LongQuestion, GradingResult } from "@/lib/tests/questions/types";
+import type { Question, MCQQuestion, LongQuestion } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
 import type { GradeRequest, GradeResponse } from "@/app/api/grade-answer/route";
 
@@ -52,6 +52,109 @@ interface GradedResult {
   earned?: number;
   max?: number;
   grading?: GradeResponse;
+  gradingError?: string;
+}
+
+interface MockPreset {
+  id: string;
+  label: string;
+  description: string;
+  durationSec: number;
+  mcqCount: number;
+  longCount: number;
+}
+
+function parseDurationText(duration: string): number {
+  const hours = duration.match(/(\d+(?:\.\d+)?)\s*(?:h|小时)/i);
+  const minutes = duration.match(/(\d+)\s*(?:min|分钟)/i);
+  return Math.round((hours ? Number(hours[1]) * 3600 : 0) + (minutes ? Number(minutes[1]) * 60 : 0));
+}
+
+function getMockPresets(testId: string, duration: string): MockPreset[] {
+  if (testId === "bpho") {
+    return [{
+      id: "round-1",
+      label: "Round 1",
+      description: "Section 1 独立短题 13 题 + Section 2 书面长题 2 题",
+      durationSec: 160 * 60,
+      mcqCount: 13,
+      longCount: 2,
+    }];
+  }
+  if (testId === "bmo") {
+    return [
+      {
+        id: "smc",
+        label: "SMC",
+        description: "25 道难度递增短题；起始 25 分，答对 +4、答错 -1、空白 0",
+        durationSec: 90 * 60,
+        mcqCount: 25,
+        longCount: 0,
+      },
+      {
+        id: "bmo-1",
+        label: "BMO1",
+        description: "6 道完整证明题，按书面过程分步评分",
+        durationSec: 210 * 60,
+        mcqCount: 0,
+        longCount: 6,
+      },
+    ];
+  }
+  return [{
+    id: "representative",
+    label: "综合模拟",
+    description: "从当前题库抽取代表性选择题与书面题",
+    durationSec: parseDurationText(duration) || 120 * 60,
+    mcqCount: 20,
+    longCount: 2,
+  }];
+}
+
+function shuffle<T>(items: T[]): T[] {
+  return [...items].sort(() => Math.random() - 0.5);
+}
+
+function balancedSample<T extends Question>(items: T[], count: number): T[] {
+  const grouped = new Map<string, T[]>();
+  for (const item of shuffle(items)) {
+    const group = grouped.get(item.topicId) ?? [];
+    group.push(item);
+    grouped.set(item.topicId, group);
+  }
+  const groups = [...grouped.values()];
+  const selected: T[] = [];
+  let round = 0;
+  while (selected.length < count && groups.some((group) => group && group.length > round)) {
+    for (const group of shuffle(groups)) {
+      const item = group?.[round];
+      if (item) selected.push(item);
+      if (selected.length === count) break;
+    }
+    round++;
+  }
+  return selected;
+}
+
+function selectMcqs(items: MCQQuestion[], count: number, presetId: string): MCQQuestion[] {
+  const quotas = presetId === "smc"
+    ? { 1: 4, 2: 13, 3: 8 }
+    : presetId === "round-1"
+      ? { 1: 2, 2: 6, 3: 5 }
+      : null;
+  if (!quotas) return balancedSample(items, count).sort((a, b) => a.difficulty - b.difficulty);
+
+  const selected = ([1, 2, 3] as const).flatMap((difficulty) =>
+    balancedSample(
+      items.filter((item) => item.difficulty === difficulty),
+      Math.min(quotas[difficulty], count)
+    )
+  );
+  if (selected.length < count) {
+    const used = new Set(selected.map((item) => item.id));
+    selected.push(...balancedSample(items.filter((item) => !used.has(item.id)), count - selected.length));
+  }
+  return selected.slice(0, count).sort((a, b) => a.difficulty - b.difficulty);
 }
 
 export default function MockExamPage({ params }: { params: Promise<{ testId: string }> }) {
@@ -68,18 +171,20 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
   const [gradedResults, setGradedResults] = useState<GradedResult[]>([]);
   const [gradingProgress, setGradingProgress] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
+  const presets = getMockPresets(testId, test.duration);
+  const [presetId, setPresetId] = useState(presets[0].id);
+  const selectedPreset = presets.find((preset) => preset.id === presetId) ?? presets[0];
 
-  // Parse duration "2h 30min" → seconds
-  const parseDuration = useCallback((d: string): number => {
-    const h = d.match(/(\d+)h/);
-    const m = d.match(/(\d+)\s*min/);
-    return (h ? parseInt(h[1]) * 3600 : 0) + (m ? parseInt(m[1]) * 60 : 0);
-  }, []);
-
-  const startExam = useCallback(() => {
-    // Build a representative mock: up to 20 MCQ + 2 long (or all if fewer)
-    const mcqs = allQuestions.filter((q) => q.type === "mcq").sort(() => Math.random() - 0.5).slice(0, 20);
-    const longs = allQuestions.filter((q) => q.type === "long").sort(() => Math.random() - 0.5).slice(0, 2);
+  const startExam = () => {
+    const mcqs = selectMcqs(
+      allQuestions.filter((q): q is MCQQuestion => q.type === "mcq"),
+      selectedPreset.mcqCount,
+      selectedPreset.id
+    );
+    const longs = balancedSample(
+      allQuestions.filter((q): q is LongQuestion => q.type === "long"),
+      selectedPreset.longCount
+    );
     const examQ = [...mcqs, ...longs];
     setQueue(examQ);
     setCurrentIdx(0);
@@ -90,27 +195,11 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
           : { questionId: q.id, type: "long", works: {} }
       )
     );
-    setTimeLeft(parseDuration(test.duration) || 7200);
+    setTimeLeft(selectedPreset.durationSec);
     setExamState("running");
-  }, [allQuestions, test.duration, parseDuration]);
+  };
 
-  // Countdown timer
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  useEffect(() => {
-    if (examState !== "running") return;
-    timerRef.current = setInterval(() => {
-      setTimeLeft((t) => {
-        if (t <= 1) {
-          clearInterval(timerRef.current!);
-          handleSubmitAll();
-          return 0;
-        }
-        return t - 1;
-      });
-    }, 1000);
-    return () => { if (timerRef.current) clearInterval(timerRef.current); };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [examState]);
 
   const formatTime = (s: number) => {
     const h = Math.floor(s / 3600);
@@ -137,7 +226,7 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
     );
   };
 
-  const handleSubmitAll = useCallback(async () => {
+  const handleSubmitAll = async () => {
     if (timerRef.current) clearInterval(timerRef.current);
     setExamState("grading");
 
@@ -150,11 +239,13 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
 
       if (q.type === "mcq" && ans.type === "mcq") {
         const mcq = q as MCQQuestion;
+        const isCorrect = ans.selected === mcq.answer;
+        const isSmc = testId === "bmo" && selectedPreset.id === "smc";
         results.push({
           questionId: q.id,
           type: "mcq",
-          correct: ans.selected === mcq.answer,
-          earned: ans.selected === mcq.answer ? mcq.marks : 0,
+          correct: isCorrect,
+          earned: isCorrect ? mcq.marks : isSmc && ans.selected !== null ? -1 : 0,
           max: mcq.marks,
         });
         progress++;
@@ -190,10 +281,19 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
               grading: data,
             });
           } else {
-            results.push({ questionId: q.id, type: "long", earned: 0, max: lq.totalMarks });
+            const error = await res.json().catch(() => null) as { error?: string } | null;
+            results.push({
+              questionId: q.id,
+              type: "long",
+              gradingError: error?.error ?? "AI 评分暂不可用，请按标准答案自评。",
+            });
           }
         } catch {
-          results.push({ questionId: q.id, type: "long", earned: 0, max: lq.totalMarks });
+          results.push({
+            questionId: q.id,
+            type: "long",
+            gradingError: "AI 评分连接失败，请按标准答案自评。",
+          });
         }
         progress++;
         setGradingProgress(progress);
@@ -202,10 +302,37 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
 
     setGradedResults(results);
     setExamState("results");
-  }, [queue, answers]);
+  };
+
+  const handleAutoSubmit = useEffectEvent(() => {
+    void handleSubmitAll();
+  });
+
+  useEffect(() => {
+    if (examState !== "running") return;
+    timerRef.current = setInterval(() => {
+      setTimeLeft((time) => {
+        if (time <= 1) {
+          clearInterval(timerRef.current!);
+          handleAutoSubmit();
+          return 0;
+        }
+        return time - 1;
+      });
+    }, 1000);
+    return () => { if (timerRef.current) clearInterval(timerRef.current); };
+  }, [examState]);
 
   if (examState === "briefing") {
-    return <MockBriefing test={test} allQuestions={allQuestions} onStart={startExam} />;
+    return (
+      <MockBriefing
+        test={test}
+        presets={presets}
+        selectedPreset={selectedPreset}
+        onPresetChange={setPresetId}
+        onStart={startExam}
+      />
+    );
   }
 
   if (examState === "grading") {
@@ -231,6 +358,7 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
     return (
       <MockResults
         testId={testId}
+        presetId={selectedPreset.id}
         queue={queue}
         results={gradedResults}
         answers={answers}
@@ -351,16 +479,18 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
 
 function MockBriefing({
   test,
-  allQuestions,
+  presets,
+  selectedPreset,
+  onPresetChange,
   onStart,
 }: {
   test: ReturnType<typeof getTestById>;
-  allQuestions: Question[];
+  presets: MockPreset[];
+  selectedPreset: MockPreset;
+  onPresetChange: (id: string) => void;
   onStart: () => void;
 }) {
   if (!test) return null;
-  const mcqCount = Math.min(20, allQuestions.filter((q) => q.type === "mcq").length);
-  const longCount = Math.min(2, allQuestions.filter((q) => q.type === "long").length);
 
   return (
     <div className="mx-auto max-w-xl px-4 py-10">
@@ -370,18 +500,40 @@ function MockBriefing({
       <h1 className="text-2xl font-bold mt-4 mb-1">{test.abbr} 计时模拟考试</h1>
       <p className="text-[var(--ink-soft)] text-sm mb-8">模拟真实考试环境，完成后 AI 逐题评分</p>
 
+      {presets.length > 1 && (
+        <div className="grid grid-cols-2 gap-1 rounded-lg bg-[var(--surface-2)] p-1 mb-5" role="tablist" aria-label="考试模式">
+          {presets.map((preset) => (
+            <button
+              key={preset.id}
+              type="button"
+              role="tab"
+              aria-selected={preset.id === selectedPreset.id}
+              onClick={() => onPresetChange(preset.id)}
+              className={`px-3 py-2 text-sm font-medium rounded-md transition ${
+                preset.id === selectedPreset.id
+                  ? "bg-white text-[var(--ink)] shadow-sm"
+                  : "text-[var(--ink-soft)] hover:text-[var(--ink)]"
+              }`}
+            >
+              {preset.label}
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="rounded-2xl border border-[var(--border)] p-6 space-y-4 mb-8">
+        <p className="text-sm text-[var(--ink-soft)] leading-relaxed">{selectedPreset.description}</p>
         <div className="flex justify-between text-sm">
           <span className="text-[var(--ink-soft)]">考试时长</span>
-          <span className="font-medium">{test.duration}</span>
+          <span className="font-medium">{Math.round(selectedPreset.durationSec / 60)} 分钟</span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-[var(--ink-soft)]">选择题数量</span>
-          <span className="font-medium">{mcqCount} 题</span>
+          <span className="font-medium">{selectedPreset.mcqCount} 题</span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-[var(--ink-soft)]">大题数量</span>
-          <span className="font-medium">{longCount} 题（AI分步评分）</span>
+          <span className="font-medium">{selectedPreset.longCount} 题{selectedPreset.longCount > 0 ? "（AI 分步评分）" : ""}</span>
         </div>
         <div className="flex justify-between text-sm">
           <span className="text-[var(--ink-soft)]">考试模式</span>
@@ -505,12 +657,14 @@ function MockLong({
 
 function MockResults({
   testId,
+  presetId,
   queue,
   results,
   answers,
   onRetry,
 }: {
   testId: string;
+  presetId: string;
   queue: Question[];
   results: GradedResult[];
   answers: Answer[];
@@ -518,8 +672,10 @@ function MockResults({
 }) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
-  const totalEarned = results.reduce((s, r) => s + (r.earned ?? 0), 0);
-  const totalMax = results.reduce((s, r) => s + (r.max ?? 0), 0);
+  const scoreBase = presetId === "smc" ? 25 : 0;
+  const totalEarned = scoreBase + results.reduce((s, r) => s + (r.earned ?? 0), 0);
+  const totalMax = scoreBase + results.reduce((s, r) => s + (r.max ?? 0), 0);
+  const pendingLongCount = results.filter((r) => r.type === "long" && r.gradingError).length;
   const mcqCorrect = results.filter((r) => r.type === "mcq" && r.correct).length;
   const mcqTotal = results.filter((r) => r.type === "mcq").length;
   const pct = totalMax > 0 ? Math.round((totalEarned / totalMax) * 100) : 0;
@@ -564,6 +720,11 @@ function MockResults({
         <div className="mt-3 text-sm text-[var(--ink-soft)]">
           选择题 {mcqCorrect}/{mcqTotal} 正确
         </div>
+        {pendingLongCount > 0 && (
+          <div className="mt-2 text-sm text-[var(--warning)]">
+            {pendingLongCount} 道书面题待自评，暂未计入总分
+          </div>
+        )}
       </div>
 
       <h2 className="font-bold text-[var(--ink)] mb-4">逐题详情</h2>
@@ -591,7 +752,7 @@ function MockResults({
                     ? result.correct ? "text-[var(--success)]" : "text-[var(--danger)]"
                     : (result?.earned ?? 0) >= (result?.max ?? 1) * 0.6 ? "text-[var(--success)]" : "text-[var(--warning)]"
                 }`}>
-                  {result?.earned ?? 0}/{result?.max ?? 0}
+                  {result?.gradingError ? "待自评" : `${result?.earned ?? 0}/${result?.max ?? 0}`}
                 </span>
                 <span className="text-[var(--ink-faint)] text-xs ml-2">{isExpanded ? "▲" : "▼"}</span>
               </button>
@@ -643,6 +804,30 @@ function MockResults({
                         <summary className="text-xs text-[var(--indigo)] cursor-pointer">查看标准答案</summary>
                         <div className="mt-2 text-xs bg-white rounded-lg border border-[var(--border)] p-3">
                           <MathRenderer text={longQ.fullSolution} block />
+                        </div>
+                      </details>
+                    </div>
+                  )}
+                  {longQ && result?.gradingError && (
+                    <div className="space-y-3">
+                      <div className="rounded-lg border border-[color:var(--warning)]/25 bg-[var(--warning-bg)] p-3 text-xs text-[var(--warning)]">
+                        {result.gradingError} 本题未按 0 分处理，也未计入总分。
+                      </div>
+                      <details>
+                        <summary className="text-xs text-[var(--indigo)] cursor-pointer">展开评分要点与标准答案自评</summary>
+                        <div className="mt-2 space-y-3">
+                          {longQ.parts.map((part) => (
+                            <div key={part.label} className="bg-white rounded-lg border border-[var(--border)] p-3">
+                              <div className="flex justify-between text-xs font-semibold mb-1">
+                                <span>{part.label}</span>
+                                <span>{part.marks} 分</span>
+                              </div>
+                              <MathRenderer text={part.solutionOutline} className="text-xs text-[var(--ink-soft)]" block />
+                            </div>
+                          ))}
+                          <div className="text-xs bg-white rounded-lg border border-[var(--border)] p-3">
+                            <MathRenderer text={longQ.fullSolution} block />
+                          </div>
                         </div>
                       </details>
                     </div>

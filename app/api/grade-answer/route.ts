@@ -33,7 +33,7 @@ export interface GradeResponse {
   modelSolution: string;
 }
 
-const GRADE_SYSTEM_PROMPT = `You are an expert mathematics examiner for UK university admissions tests (MAT, STEP, ESAT).
+const GRADE_SYSTEM_PROMPT = `You are an expert examiner for UK admissions tests and academic olympiads (MAT, STEP, ESAT, BPhO, BMO).
 Your task is to grade a student's handwritten/typed solution against the marking scheme.
 
 Rules:
@@ -132,14 +132,27 @@ export async function POST(req: NextRequest) {
       overallFeedback: string;
     };
 
-    const totalEarned = parsed.perPart.reduce((s, p) => s + p.earned, 0);
+    const partsByLabel = new Map(parsed.perPart.map((part) => [part.label, part]));
+    const normalizedParts = body.parts.map((part) => {
+      const graded = partsByLabel.get(part.label);
+      const earned = Math.max(0, Math.min(part.marks, Number(graded?.earned) || 0));
+      return {
+        label: part.label,
+        earned,
+        max: part.marks,
+        feedback: graded?.feedback || "未识别到有效作答，请对照评分要点检查。",
+        keyStepsFound: graded && Array.isArray(graded.keyStepsFound) ? graded.keyStepsFound : [],
+        keyStepsMissing: graded && Array.isArray(graded.keyStepsMissing) ? graded.keyStepsMissing : [],
+      };
+    });
+    const totalEarned = normalizedParts.reduce((s, p) => s + p.earned, 0);
     const totalMax = body.parts.reduce((s, p) => s + p.marks, 0);
 
     const response: GradeResponse = {
       questionId: body.questionId,
       totalEarned,
       totalMax,
-      perPart: parsed.perPart,
+      perPart: normalizedParts,
       overallFeedback: parsed.overallFeedback,
       modelSolution: body.fullSolution,
     };

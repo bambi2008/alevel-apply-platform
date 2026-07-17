@@ -222,7 +222,7 @@ export const BPHO_S1_C: MCQQuestion[] = [
     question: "In a nuclear fission event, about $200$ MeV is released per fission. Roughly how many joules is this? ($1$ MeV $=1.6\\times10^{-13}$ J)",
     options: [{ key: "A", text: "$\\approx3.2\\times10^{-11}$ J" },{ key: "B", text: "$\\approx3.2\\times10^{-8}$ J" },{ key: "C", text: "$\\approx200$ J" },{ key: "D", text: "$\\approx1.6\\times10^{-13}$ J" },{ key: "E", text: "$\\approx3.2\\times10^{-13}$ J" }],
     answer: "A", solution: "$200\\times1.6\\times10^{-13}=3.2\\times10^{-11}$ J per fission." },
-  { id: "bpho-s1-c-056", type: "mcq", testId: "bpho", topicId: "bpho-modern", difficulty: 2, marks: 3,
+  { id: "bpho-s1-c-056", type: "mcq", testId: "bpho", topicId: "bpho-modern", difficulty: 1, marks: 3,
     question: "Which of these electromagnetic radiations has photons of the highest energy?",
     options: [{ key: "A", text: "microwaves" },{ key: "B", text: "visible light" },{ key: "C", text: "infrared" },{ key: "D", text: "radio waves" },{ key: "E", text: "gamma rays" }],
     answer: "E", solution: "Photon energy $E=hf$ increases with frequency; gamma rays have the highest frequency of the listed options." },

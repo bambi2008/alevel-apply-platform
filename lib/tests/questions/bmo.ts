@@ -4,7 +4,8 @@ import type { Question } from "./types";
 import { BMO_SMC_SAMPLE } from "./bmo-smc-sample";
 import { BMO_SMC_MAIN } from "./bmo-smc-main";
 import { BMO_SMC_B } from "./bmo-smc-b";
+import { BMO_SMC_TOPUP } from "./bmo-smc-topup";
 import { BMO_LONG_SAMPLE } from "./bmo-long";
 import { BMO2_LONG_SAMPLE } from "./bmo2-long";
 
-export const BMO_QUESTIONS: Question[] = [...BMO_SMC_SAMPLE, ...BMO_SMC_MAIN, ...BMO_SMC_B, ...BMO_LONG_SAMPLE, ...BMO2_LONG_SAMPLE];
+export const BMO_QUESTIONS: Question[] = [...BMO_SMC_SAMPLE, ...BMO_SMC_MAIN, ...BMO_SMC_B, ...BMO_SMC_TOPUP, ...BMO_LONG_SAMPLE, ...BMO2_LONG_SAMPLE];

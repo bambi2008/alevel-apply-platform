@@ -6,6 +6,7 @@ import { TMUA_QUESTIONS } from "@/lib/tests/questions/tmua";
 import { BPHO_QUESTIONS } from "@/lib/tests/questions/bpho";
 import { BPHO4_LONG_SAMPLE } from "@/lib/tests/questions/bpho4-long";
 import { BPHO5_LONG_SAMPLE } from "@/lib/tests/questions/bpho5-long";
+import { BMO_SMC_TOPUP } from "@/lib/tests/questions/bmo-smc-topup";
 import { getAllMockQuestions } from "@/lib/tests/mock-papers";
 import { getTestById } from "@/lib/tests";
 import { getQuestionById } from "@/lib/tests/lookup";
@@ -78,6 +79,24 @@ describe("BPhO fifth long-question batch", () => {
       expect(question.parts.length).toBeGreaterThanOrEqual(5);
       expect(question.parts.reduce((sum, part) => sum + part.marks, 0)).toBe(25);
     }
+  });
+});
+
+describe("BMO number theory and geometry top-up", () => {
+  it("adds ten questions to each under-represented topic", () => {
+    expect(BMO_SMC_TOPUP).toHaveLength(20);
+    expect(BMO_SMC_TOPUP.filter((q) => q.topicId === "bmo-number")).toHaveLength(10);
+    expect(BMO_SMC_TOPUP.filter((q) => q.topicId === "bmo-geometry")).toHaveLength(10);
+  });
+
+  it("contains a deliberate difficulty spread", () => {
+    const counts = BMO_SMC_TOPUP.reduce<Record<number, number>>((acc, question) => {
+      acc[question.difficulty] = (acc[question.difficulty] ?? 0) + 1;
+      return acc;
+    }, {});
+    expect(counts[1]).toBeGreaterThanOrEqual(3);
+    expect(counts[2]).toBeGreaterThanOrEqual(8);
+    expect(counts[3]).toBeGreaterThanOrEqual(5);
   });
 });
 
