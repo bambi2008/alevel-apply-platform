@@ -28,3 +28,9 @@ export const STEP_WRITTEN_3 = select(3, [
   "step-028", "step-029", "step-030", "step-038",
   "step-042", "step-043", "step-044", "step-045",
 ]);
+
+export const STEP_WRITTEN_4 = select(4, [
+  "step-005", "step-015", "step-016", "step-035",
+  "step-036", "step-039", "step-040", "step-041",
+  "step-054", "step-055", "step-057", "step-058",
+]);

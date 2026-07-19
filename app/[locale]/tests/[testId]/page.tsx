@@ -8,6 +8,7 @@ import { getKnowledgeByTopicId } from "@/lib/tests/knowledge";
 import { REGISTRATION_INFO } from "@/lib/tests/registration";
 import { ExamTimer, getTimerPresets } from "@/components/exam-timer";
 import { getMockPapersForTest } from "@/lib/tests/mock-papers";
+import { ArrowRight, FileText } from "lucide-react";
 
 export default function TestDetailPage({
   params,
@@ -319,6 +320,7 @@ function PlanTab({ test }: { test: AdmissionsTest }) {
 }
 
 function PracticeTab({ test }: { test: AdmissionsTest }) {
+  const mockPapers = getMockPapersForTest(test.id);
   if (!test.hasQuestionBank) {
     return (
       <div className="text-center py-16">
@@ -423,26 +425,38 @@ function PracticeTab({ test }: { test: AdmissionsTest }) {
       </div>
 
       {/* 完整模拟卷 */}
-      {getMockPapersForTest(test.id).length > 0 && (
+      {mockPapers.length > 0 && (
         <div className="rounded-xl border border-indigo-100 bg-indigo-50/50 px-4 py-4">
-          <h4 className="font-semibold text-indigo-900 text-sm mb-1">📝 完整模拟卷（计时考试）</h4>
+          <h4 className="flex items-center gap-2 font-semibold text-indigo-900 text-sm mb-1">
+            <FileText className="size-4" aria-hidden="true" />
+            固定套卷（计时考试）
+          </h4>
           <p className="text-xs text-indigo-700 mb-3">
-            按真实考试结构组卷、分模块独立计时、全新原创题（未在练习中出现），模拟真实考场。
+            每套题目与顺序固定，便于限时作答、复盘和比较进步；卷面标签会说明其格式定位。
           </p>
           <div className="space-y-2">
-            {getMockPapersForTest(test.id).map((paper) => (
+            {mockPapers.map((paper) => (
               <Link
                 key={paper.id}
                 href={`/tests/${test.id}/paper/${paper.id}`}
                 className="flex items-center justify-between rounded-lg border border-indigo-200 bg-white px-3 py-2.5 hover:bg-indigo-50 transition group"
               >
-                <div>
-                  <span className="text-sm font-medium text-indigo-900">{paper.title}</span>
+                <div className="min-w-0 pr-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-sm font-medium text-indigo-900">{paper.title}</span>
+                    {paper.formatType && (
+                      <span className="rounded border border-indigo-200 bg-indigo-50 px-1.5 py-0.5 text-[11px] leading-none text-indigo-700">
+                        {paper.formatType === "current" ? "现行结构" : paper.formatType === "legacy" ? "历史格式" : "能力拓展"}
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xs text-indigo-500 mt-0.5">
-                    {paper.modules.map((m) => `${m.title} ${Math.round(m.durationSec / 60)}分钟`).join(" · ")}
+                    {paper.modules.reduce((sum, module) => sum + module.questions.length, 0)} 题 · {paper.modules.map((m) => `${m.title} ${Math.round(m.durationSec / 60)}分钟`).join(" · ")}
                   </p>
                 </div>
-                <span className="text-indigo-400 text-sm group-hover:text-indigo-700">开始 →</span>
+                <span className="inline-flex shrink-0 items-center gap-1 text-indigo-500 text-sm group-hover:text-indigo-700">
+                  开始 <ArrowRight className="size-3.5" aria-hidden="true" />
+                </span>
               </Link>
             ))}
           </div>

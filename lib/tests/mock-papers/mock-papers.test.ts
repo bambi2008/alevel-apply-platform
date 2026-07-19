@@ -97,9 +97,9 @@ describe("mock papers", () => {
     }
   });
 
-  it("offers three MAT 2025 typed-response sets", () => {
+  it("offers five MAT 2025 typed-response sets", () => {
     const papers = getMockPapersForTest("mat").filter((paper) => paper.id.startsWith("mat-written-"));
-    expect(papers).toHaveLength(3);
+    expect(papers).toHaveLength(5);
     for (const paper of papers) {
       const questions = paper.modules.flatMap((module) => module.questions);
       expect(paper.modules).toHaveLength(1);
@@ -107,6 +107,7 @@ describe("mock papers", () => {
       expect(questions).toHaveLength(2);
       expect(questions.every((question) => question.type === "long")).toBe(true);
       expect(questions.reduce((sum, question) => sum + (question.type === "long" ? question.totalMarks : 0), 0)).toBe(30);
+      expect(paper.formatType).toBe("legacy");
     }
   });
 
@@ -121,20 +122,22 @@ describe("mock papers", () => {
       expect(new Set(questions.map((question) => question.topicId))).toEqual(new Set([
         "pat-mech", "pat-em", "pat-wave", "pat-thermo", "pat-modern", "pat-math",
       ]));
+      expect(paper.formatType).toBe("extension");
     }
   });
 
-  it("offers two STEP 2 papers and one STEP 3 paper with best-six scoring", () => {
+  it("offers two STEP 2 papers and two STEP 3 papers with best-six scoring", () => {
     const papers = getMockPapersForTest("step").filter((paper) => paper.id.includes("-written-"));
-    expect(papers).toHaveLength(3);
+    expect(papers).toHaveLength(4);
     expect(papers.filter((paper) => paper.id.startsWith("step2-"))).toHaveLength(2);
-    expect(papers.filter((paper) => paper.id.startsWith("step3-"))).toHaveLength(1);
+    expect(papers.filter((paper) => paper.id.startsWith("step3-"))).toHaveLength(2);
 
     for (const paper of papers) {
       const questions = paper.modules.flatMap((module) => module.questions);
       expect(paper.modules).toHaveLength(1);
       expect(paper.modules[0].durationSec).toBe(180 * 60);
       expect(paper.bestQuestionCount).toBe(6);
+      expect(paper.formatType).toBe("current");
       expect(questions).toHaveLength(12);
       expect(questions.filter((question) => question.topicId.startsWith("step-pure"))).toHaveLength(8);
       expect(questions.filter((question) => question.topicId === "step-mech")).toHaveLength(2);

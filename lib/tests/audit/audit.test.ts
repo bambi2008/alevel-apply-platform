@@ -7,9 +7,11 @@ describe("question bank audit", () => {
     const report = buildQuestionBankAudit();
     expect(report.totals.tests).toBe(9);
     expect(report.totals.questions).toBe(2346);
+    expect(report.totals.mockPapers).toBe(88);
     expect(report.totals.topicsCovered).toBe(53);
     expect(report.totals.topicsTotal).toBe(62);
     expect(report.totals.critical).toBe(0);
+    expect(report.totals.warning).toBe(28);
   });
 
   it("tracks remaining written-format gaps without flagging completed paper sets", () => {
