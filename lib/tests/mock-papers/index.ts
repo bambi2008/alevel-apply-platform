@@ -1,5 +1,5 @@
 // 完整模拟卷注册表。每套卷 = 若干个独立计时的模块。
-import type { MCQQuestion } from "@/lib/tests/questions/types";
+import type { Question } from "@/lib/tests/questions/types";
 import { ESAT_MK1_MATH, ESAT_MK1_PHYS } from "./esat-mock-1";
 import { ESAT_MK2_MATH, ESAT_MK2_PHYS } from "./esat-mock-2";
 import { ESAT_MK3_MATH, ESAT_MK3_CHEM } from "./esat-mock-3";
@@ -70,13 +70,14 @@ import { BMO_R2M5_T1, BMO_R2M5_T2, BMO_R2M5_T3, BMO_R2M5_T4 } from "./bmo-r2-moc
 import { BMO_R2M6_T1, BMO_R2M6_T2, BMO_R2M6_T3, BMO_R2M6_T4 } from "./bmo-r2-mock-6";
 import { BMO_R2M7_T1, BMO_R2M7_T2, BMO_R2M7_T3, BMO_R2M7_T4 } from "./bmo-r2-mock-7";
 import { BMO_R2M8_T1, BMO_R2M8_T2, BMO_R2M8_T3, BMO_R2M8_T4 } from "./bmo-r2-mock-8";
+import { BMO1_WRITTEN_1, BMO1_WRITTEN_2, BMO1_WRITTEN_3 } from "./bmo1-written-papers";
 
 export interface MockModule {
   id: string;
   title: string;
   titleEn: string;
   durationSec: number; // 该模块独立计时时长
-  questions: MCQQuestion[];
+  questions: Question[];
 }
 
 export interface MockPaper {
@@ -883,6 +884,27 @@ export const BMO_MOCK_8: MockPaper = {
   modules: [{ id: "mcq", title: "选择题（25 题 / 90 分钟）", titleEn: "Multiple Choice (Q1–25)", durationSec: 90 * 60, questions: BMO_MK8_MCQ }],
 };
 
+const BMO1_WRITTEN_DESC =
+  "按现行 BMO1 结构编排的固定书面模拟卷：3.5 小时、6 道完整证明题、每题 10 分。题目为桥申原创并经题库审计，不是 UKMT 官方历年真题；固定题序便于复盘、复测和比较进步。交卷后按证明步骤评分，AI 不可用时提供评分要点自评且不计零分。";
+
+export const BMO1_WRITTEN_PAPER_1: MockPaper = {
+  id: "bmo1-written-1", testId: "bmo", title: "BMO1 固定书面卷一（结构校准）", titleEn: "BMO1 Written Mock 1",
+  description: BMO1_WRITTEN_DESC,
+  modules: [{ id: "written", title: "完整证明卷（6 题 / 210 分钟）", titleEn: "Written Paper (6 problems)", durationSec: 210 * 60, questions: BMO1_WRITTEN_1 }],
+};
+
+export const BMO1_WRITTEN_PAPER_2: MockPaper = {
+  id: "bmo1-written-2", testId: "bmo", title: "BMO1 固定书面卷二（结构校准）", titleEn: "BMO1 Written Mock 2",
+  description: BMO1_WRITTEN_DESC,
+  modules: [{ id: "written", title: "完整证明卷（6 题 / 210 分钟）", titleEn: "Written Paper (6 problems)", durationSec: 210 * 60, questions: BMO1_WRITTEN_2 }],
+};
+
+export const BMO1_WRITTEN_PAPER_3: MockPaper = {
+  id: "bmo1-written-3", testId: "bmo", title: "BMO1 固定书面卷三（结构校准）", titleEn: "BMO1 Written Mock 3",
+  description: BMO1_WRITTEN_DESC,
+  modules: [{ id: "written", title: "完整证明卷（6 题 / 210 分钟）", titleEn: "Written Paper (6 problems)", durationSec: 210 * 60, questions: BMO1_WRITTEN_3 }],
+};
+
 const BMO_R2_MOCK_DESC =
   "对标真实 BMO2：3.5 小时、4 道主题证明长题、每题 10 分、IMO 选拔级难度。本卷把每个主题化为一个「链式选择题阶梯」——沿推导路径逐级上难度，支持自动判分。真实 R2 需完整手写证明：请配合练习区的 8 道 BMO2 风格长题与官方历年真题练习书写。题目 100% 原创，仅以 2006–2026 年 BMO2 真题做主题与难度校准。";
 
@@ -971,6 +993,7 @@ export const BMO_R2_MOCK_8: MockPaper = {
 };
 
 const ALL_MOCK_PAPERS: MockPaper[] = [BMO_R2_MOCK_1, BMO_R2_MOCK_2, BMO_R2_MOCK_3, BMO_R2_MOCK_4, BMO_R2_MOCK_5, BMO_R2_MOCK_6, BMO_R2_MOCK_7, BMO_R2_MOCK_8, BMO_MOCK_1, BMO_MOCK_2, BMO_MOCK_3, BMO_MOCK_4, BMO_MOCK_5, BMO_MOCK_6, BMO_MOCK_7, BMO_MOCK_8, ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3, BPHO_MOCK_1, BPHO_MOCK_2, BPHO_MOCK_3, BPHO_MOCK_4, BPHO_MOCK_5, BPHO_MOCK_6, BPHO_MOCK_7, BPHO_MOCK_8, BPHO_R2_MOCK_1, BPHO_R2_MOCK_2, BPHO_R2_MOCK_3, BPHO_R2_MOCK_4];
+ALL_MOCK_PAPERS.unshift(BMO1_WRITTEN_PAPER_1, BMO1_WRITTEN_PAPER_2, BMO1_WRITTEN_PAPER_3);
 
 export function getMockPapersForTest(testId: string): MockPaper[] {
   return ALL_MOCK_PAPERS.filter((p) => p.testId === testId);
@@ -981,6 +1004,6 @@ export function getMockPaper(paperId: string): MockPaper | undefined {
 }
 
 /** 给 lookup 用：扁平化所有模拟卷题目，便于历史回看/学情分析按 id 反查 */
-export function getAllMockQuestions(): MCQQuestion[] {
+export function getAllMockQuestions(): Question[] {
   return ALL_MOCK_PAPERS.flatMap((p) => p.modules.flatMap((m) => m.questions));
 }

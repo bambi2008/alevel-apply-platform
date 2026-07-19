@@ -6,8 +6,12 @@ import { Link } from "@/i18n/navigation";
 import { getMockPaper, type MockPaper } from "@/lib/tests/mock-papers";
 import type { MCQQuestion } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
+import { WrittenPaperRunner } from "@/components/written-paper-runner";
 
 type Phase = "briefing" | "running" | "results";
+type ObjectivePaper = Omit<MockPaper, "modules"> & {
+  modules: Array<Omit<MockPaper["modules"][number], "questions"> & { questions: MCQQuestion[] }>;
+};
 
 export default function MockPaperPage({
   params,
@@ -18,10 +22,13 @@ export default function MockPaperPage({
   const paper = getMockPaper(paperId);
   if (!paper || paper.testId !== testId) notFound();
 
-  return <PaperRunner paper={paper!} />;
+  const hasWrittenQuestions = paper.modules.some((module) => module.questions.some((question) => question.type === "long"));
+  return hasWrittenQuestions
+    ? <WrittenPaperRunner paper={paper} />
+    : <PaperRunner paper={paper as ObjectivePaper} />;
 }
 
-function PaperRunner({ paper }: { paper: MockPaper }) {
+function PaperRunner({ paper }: { paper: ObjectivePaper }) {
   const [phase, setPhase] = useState<Phase>("briefing");
   const [moduleIndex, setModuleIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
@@ -125,7 +132,7 @@ function PaperRunner({ paper }: { paper: MockPaper }) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-6">
         {/* 顶部模块计时条 */}
-        <div className="sticky top-0 z-10 -mx-4 px-4 py-3 bg-white/95 backdrop-blur border-b border-neutral-200 flex items-center justify-between">
+        <div className="sticky top-16 z-10 -mx-4 px-4 py-3 bg-white/95 backdrop-blur border-b border-neutral-200 flex items-center justify-between">
           <div>
             <p className="text-xs text-neutral-500">模块 {moduleIndex + 1}/{paper.modules.length}</p>
             <p className="text-sm font-semibold text-neutral-800">{currentModule.title}</p>
@@ -195,7 +202,7 @@ function McqCard({
   );
 }
 
-function PaperResults({ paper, answers }: { paper: MockPaper; answers: Record<string, string> }) {
+function PaperResults({ paper, answers }: { paper: ObjectivePaper; answers: Record<string, string> }) {
   const [open, setOpen] = useState<Record<string, boolean>>({});
 
   // 分模块计分

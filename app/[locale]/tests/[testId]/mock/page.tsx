@@ -379,7 +379,7 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
   return (
     <div className="min-h-screen flex flex-col">
       {/* Top bar */}
-      <div className={`sticky top-0 z-20 border-b px-4 py-2 flex items-center gap-4 ${isUrgent ? "bg-[var(--danger-bg)] border-[color:var(--danger)]/25" : "bg-white border-[var(--border)]"}`}>
+      <div className={`sticky top-16 z-20 border-b px-4 py-2 flex items-center gap-4 ${isUrgent ? "bg-[var(--danger-bg)] border-[color:var(--danger)]/25" : "bg-white border-[var(--border)]"}`}>
         <span className="font-bold text-sm text-[var(--ink-soft)]">{test.abbr} 模拟考试</span>
         <div className="flex-1" />
         <span className="text-xs text-[var(--ink-faint)]">{answeredCount}/{queue.length} 已作答</span>
