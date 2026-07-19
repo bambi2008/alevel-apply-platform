@@ -154,4 +154,22 @@ describe("mock papers", () => {
     expect(counted.map((result) => result.grading.totalEarned)).toEqual([20, 18, 15, 12, 9, 7]);
     expect(counted.reduce((sum, result) => sum + result.grading.totalEarned, 0)).toBe(81);
   });
+
+  it("keeps the calibrated STEP 3 paper 2 options at extended-response difficulty", () => {
+    const paper = getMockPaper("step3-written-2");
+    expect(paper).toBeTruthy();
+    const finalFour = paper!.modules[0].questions.slice(-4);
+    expect(finalFour).toHaveLength(4);
+    expect(finalFour.map((question) => question.topicId)).toEqual([
+      "step-mech", "step-mech", "step-stats", "step-stats",
+    ]);
+    for (const question of finalFour) {
+      expect(question.type).toBe("long");
+      expect(question.difficulty).toBe(3);
+      if (question.type === "long") {
+        expect(question.totalMarks).toBe(20);
+        expect(question.parts.length).toBeGreaterThanOrEqual(4);
+      }
+    }
+  });
 });

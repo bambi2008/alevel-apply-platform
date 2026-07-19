@@ -2166,19 +2166,39 @@ $$M^n=PD^nP^{-1}=\\begin{pmatrix}1&1\\\\0&-1\\end{pmatrix}\\begin{pmatrix}3^n&0\
     type: "long",
     testId: "step",
     topicId: "step-mech",
-    difficulty: 2,
+    difficulty: 3,
     totalMarks: 20,
-    context: "A block of mass $5\\,\\text{kg}$ rests on a rough plane inclined at $30^\\circ$ to the horizontal. Take $g=9.8\\,\\text{m s}^{-2}$.",
+    context: "A particle of mass $m$ is on a rough plane inclined at an angle $\\alpha$ to the horizontal. The coefficient of friction is $\\mu$. A force of magnitude $P$ acts at an angle $\\beta$ above the line of greatest slope and is just sufficient to move the particle up the plane. You may assume that the particle remains in contact with the plane.",
     parts: [
-      { label: "(i)", marks: 6, question: "Find the component of the weight acting down the slope.", solutionOutline: "mg sin30=5·9.8·0.5=24.5 N." },
-      { label: "(ii)", marks: 6, question: "The block is on the point of slipping down. Find the coefficient of friction.", solutionOutline: "μ=mg sin30/(mg cos30)=tan30=1/√3≈0.577." },
-      { label: "(iii)", marks: 8, question: "A force $P$ is applied up the slope so the block moves up at constant speed. Find $P$.", solutionOutline: "P=mg sin30+μ mg cos30=24.5+24.5=49 N (since μ mg cos30=mg sin30)." },
+      { label: "(i)", marks: 5, question: "By resolving perpendicular and parallel to the plane, show that $$P(\\cos\\beta+\\mu\\sin\\beta)=mg(\\sin\\alpha+\\mu\\cos\\alpha).$$", solutionOutline: "$R=mg\\cos\\alpha-P\\sin\\beta$. Limiting friction $\\mu R$ acts down the plane, so $P\\cos\\beta=mg\\sin\\alpha+\\mu R$. Substitute and rearrange." },
+      { label: "(ii)", marks: 6, question: "Write $\\mu=\\tan\\phi$, where $0<\\phi<\\tfrac{\\pi}{2}$. Show that $$P=\\frac{mg\\sin(\\alpha+\\phi)}{\\cos(\\beta-\\phi)},$$ and hence find the value of $\\beta$ for which $P$ is least.", solutionOutline: "Use sum formulae after multiplying numerator and denominator by $\\cos\\phi$. Since $\\cos(\\beta-\\phi)\\le1$, $P$ is least when $\\beta=\\phi$." },
+      { label: "(iii)", marks: 5, question: "For $\\alpha=30^\\circ$ and $\\mu=1/\\sqrt3$, find the least force and the corresponding normal reaction.", solutionOutline: "$\\phi=30^\\circ$, so $\\beta=30^\\circ$ and $P_{min}=mg\\sin60^\\circ=\\sqrt3mg/2$. Then $R=mg\\cos30^\\circ-P\\sin30^\\circ=\\sqrt3mg/4$." },
+      { label: "(iv)", marks: 4, question: "For the same values of $\\alpha$ and $\\mu$, find the force required if it acts parallel to the plane, and determine the percentage reduction achieved by using the optimal direction.", solutionOutline: "Put $\\beta=0$: $P=mg\\sin60^\\circ/\\cos30^\\circ=mg$. Reduction $=(1-\\sqrt3/2)\\times100\\%\\approx13.4\\%$." },
     ],
-    fullSolution: `(i) Down-slope weight component $=mg\\sin30^\\circ=5\\times9.8\\times0.5=24.5\\,\\text{N}.$
+    fullSolution: `(i) Let the normal reaction be $R$. Resolving perpendicular to the plane gives
+$$R+P\sin\beta=mg\cos\alpha,$$
+so $R=mg\cos\alpha-P\sin\beta$. Since motion is impending up the plane, limiting friction $\mu R$ acts down the plane. Resolving along the plane,
+$$P\cos\beta=mg\sin\alpha+\mu R.$$
+Substitution gives
+$$P(\cos\beta+\mu\sin\beta)=mg(\sin\alpha+\mu\cos\alpha).$$
 
-(ii) On the point of slipping, friction $=\\mu N=\\mu mg\\cos30^\\circ$ balances $mg\\sin30^\\circ$, so $\\mu=\\tan30^\\circ=\\tfrac{1}{\\sqrt3}\\approx0.577.$
+(ii) Put $\mu=\tan\phi$. Then
+$$\sin\alpha+\mu\cos\alpha=\frac{\sin(\alpha+\phi)}{\cos\phi},\qquad
+\cos\beta+\mu\sin\beta=\frac{\cos(\beta-\phi)}{\cos\phi}.$$
+Hence
+$$P=\frac{mg\sin(\alpha+\phi)}{\cos(\beta-\phi)}.$$
+The numerator is fixed and $\cos(\beta-\phi)\le1$, so $P$ is least when $\beta=\phi$.
 
-(iii) Moving up at constant speed, $P=mg\\sin30^\\circ+\\mu mg\\cos30^\\circ$. Here $\\mu mg\\cos30^\\circ=mg\\sin30^\\circ=24.5\\,\\text{N}$, so $P=24.5+24.5=49\\,\\text{N}.$`,
+(iii) Here $\phi=30^\circ$. Thus $\beta=30^\circ$ and
+$$P_{\min}=mg\sin60^\circ=\frac{\sqrt3}{2}mg.$$
+Also
+$$R=mg\cos30^\circ-P_{\min}\sin30^\circ
+=\frac{\sqrt3}{2}mg-\frac{\sqrt3}{4}mg=\frac{\sqrt3}{4}mg>0.$$
+
+(iv) For a force parallel to the plane, $\beta=0$, so
+$$P=\frac{mg\sin60^\circ}{\cos30^\circ}=mg.$$
+The percentage reduction is
+$$\frac{mg-(\sqrt3/2)mg}{mg}\times100\%=left(1-\frac{\sqrt3}{2}\right)100\%\approx13.4\%.$$`,
   },
 
   {
@@ -2188,17 +2208,42 @@ $$M^n=PD^nP^{-1}=\\begin{pmatrix}1&1\\\\0&-1\\end{pmatrix}\\begin{pmatrix}3^n&0\
     topicId: "step-mech",
     difficulty: 3,
     totalMarks: 20,
-    context: "A particle $A$ of mass $2\\,\\text{kg}$ moving at $5\\,\\text{m s}^{-1}$ collides with a stationary particle $B$ of mass $3\\,\\text{kg}$. After the collision they move together. Take $g=10\\,\\text{m s}^{-2}$.",
+    context: "Particles $A$ and $B$, of masses $m$ and $2m$ respectively, move on a smooth horizontal line. Initially $A$ moves with speed $u$ towards the stationary particle $B$. They collide with coefficient of restitution $e$, where $0<e<\\tfrac12$. A fixed smooth vertical wall is a distance $d$ beyond the point of this first collision. Particle $B$ rebounds elastically from the wall.",
     parts: [
-      { label: "(i)", marks: 6, question: "Find their common velocity after the collision.", solutionOutline: "Momentum: 2·5=(2+3)v ⇒ v=2 m/s." },
-      { label: "(ii)", marks: 6, question: "Find the kinetic energy lost in the collision.", solutionOutline: "KE_i=½·2·25=25 J; KE_f=½·5·4=10 J; lost=15 J." },
-      { label: "(iii)", marks: 8, question: "The combined particle then slides on a rough horizontal surface with coefficient of friction $0.2$ until it stops. Find the distance it travels.", solutionOutline: "a=μg=2 m/s². 0=v²-2as ⇒ s=4/(2·2)=1 m." },
+      { label: "(i)", marks: 5, question: "Show that immediately after the first collision the velocities of $A$ and $B$ are respectively $$\\frac{(1-2e)u}{3}\quad\\text{and}\\quad\\frac{(1+e)u}{3}.$$, explaining the significance of the restriction $e<\\tfrac12$.", solutionOutline: "Use momentum $u=v_A+2v_B$ and restitution $v_B-v_A=eu$. The restriction makes $v_A>0$, so both particles initially move towards the wall." },
+      { label: "(ii)", marks: 4, question: "Find the distance between $A$ and the wall at the instant $B$ first reaches the wall.", solutionOutline: "Time $=d/v_B$. Hence the gap is $d-v_A d/v_B=d(v_B-v_A)/v_B=3ed/(1+e)$." },
+      { label: "(iii)", marks: 5, question: "After $B$ rebounds, find the time until the particles collide again and the distance of this second collision from the wall.", solutionOutline: "Closing speed $v_A+v_B=(2-e)u/3$. Time $=9ed/[(1+e)(2-e)u]$. Distance travelled left by B, and hence collision distance from wall, is $3ed/(2-e)$." },
+      { label: "(iv)", marks: 6, question: "The coefficient of restitution in the second collision is also $e$. Find the velocities of $A$ and $B$ immediately after this collision, taking the original direction of motion as positive.", solutionOutline: "Before collision velocities are $v_A$ and $-v_B$. Momentum and restitution give $V_A=(2e^2-8e-1)u/9$ and $V_B=-(1+e)^2u/9$." },
     ],
-    fullSolution: `(i) Conservation of momentum: $2(5)=(2+3)v$, so $v=2\\,\\text{m s}^{-1}.$
+    fullSolution: `(i) Let the velocities after the first collision be $v_A,v_B$. Conservation of momentum and Newton's law of restitution give
+$$u=v_A+2v_B,\qquad v_B-v_A=eu.$$
+Solving,
+$$v_A=\frac{(1-2e)u}{3},\qquad v_B=\frac{(1+e)u}{3}.$$
+Since $0<e<\tfrac12$, both are positive; also $v_B>v_A$, so $B$ reaches the wall first.
 
-(ii) $\\text{KE}_i=\\tfrac12(2)(5^2)=25\\,\\text{J}$; $\\text{KE}_f=\\tfrac12(5)(2^2)=10\\,\\text{J}$. Energy lost $=15\\,\\text{J}.$
+(ii) The time for $B$ to reach the wall is $d/v_B$. In this time $A$ travels $v_A d/v_B$, so its distance from the wall is
+$$d\left(1-\frac{v_A}{v_B}\right)
+=d\frac{v_B-v_A}{v_B}
+=\frac{3ed}{1+e}.$$
 
-(iii) Friction gives deceleration $a=\\mu g=0.2\\times10=2\\,\\text{m s}^{-2}$. Using $v^2=u^2-2as$ with final speed $0$: $0=2^2-2(2)s$, so $s=1\\,\\text{m}.$`,
+(iii) After the elastic rebound, $B$ moves left with speed $v_B$, while $A$ still moves right with speed $v_A$. Their closing speed is
+$$v_A+v_B=\frac{(2-e)u}{3}.$$
+Hence the time to the second collision is
+$$\frac{3ed}{1+e}\div\frac{(2-e)u}{3}
+=\frac{9ed}{(1+e)(2-e)u}.$$
+During this time $B$ travels
+$$v_Bt=\frac{(1+e)u}{3}\cdot\frac{9ed}{(1+e)(2-e)u}
+=\frac{3ed}{2-e}$$
+from the wall. This is less than $d$ precisely because $e<\tfrac12$.
+
+(iv) Let the new velocities be $V_A,V_B$. Before this collision the velocities are $v_A$ and $-v_B$. Thus
+$$V_A+2V_B=v_A-2v_B=-\frac{(1+4e)u}{3},$$
+and restitution gives
+$$V_B-V_A=e(v_A+v_B)=\frac{e(2-e)u}{3}.$$
+Solving these simultaneous equations,
+$$V_A=\frac{(2e^2-8e-1)u}{9},\qquad
+V_B=-\frac{(1+e)^2u}{9}.$$
+Both are negative for $0<e<\tfrac12$, so both particles move away from the wall after the second collision.`,
   },
 
   {
@@ -2226,19 +2271,38 @@ $$M^n=PD^nP^{-1}=\\begin{pmatrix}1&1\\\\0&-1\\end{pmatrix}\\begin{pmatrix}3^n&0\
     type: "long",
     testId: "step",
     topicId: "step-stats",
-    difficulty: 2,
+    difficulty: 3,
     totalMarks: 20,
-    context: "A biased coin shows heads with probability $0.4$. It is tossed $6$ times; let $X$ be the number of heads.",
+    context: "A gambler has an integer fortune $r$, where $0\\le r\\le N$. On each play the fortune increases by $1$ with probability $p$ and decreases by $1$ with probability $q=1-p$. Plays are independent, and the game ends when the fortune first reaches either $0$ or $N$.",
     parts: [
-      { label: "(i)", marks: 5, question: "State the distribution of $X$ and find $P(X=3)$.", solutionOutline: "X~B(6,0.4). P(X=3)=C(6,3)(0.4)³(0.6)³=20·0.064·0.216≈0.2765." },
-      { label: "(ii)", marks: 7, question: "Find $P(X\\le 1)$.", solutionOutline: "(0.6)^6+6(0.4)(0.6)^5=0.046656+0.186624=0.23328." },
-      { label: "(iii)", marks: 8, question: "Find $E(X)$, $\\operatorname{Var}(X)$, and the most likely number of heads.", solutionOutline: "E=2.4, Var=1.44. P(X=2)=0.311 > P(X=3)=0.276 ⇒ mode=2." },
+      { label: "(i)", marks: 5, question: "Let $u_r$ be the probability that the gambler reaches $N$ before $0$, starting with fortune $r$. Explain why $$u_r=pu_{r+1}+qu_{r-1},$$ with $u_0=0$ and $u_N=1$.", solutionOutline: "Condition on the first play. The boundary values represent certain ruin and certain success." },
+      { label: "(ii)", marks: 7, question: "For $p\\ne q$, solve the recurrence to show that $$u_r=\\frac{1-(q/p)^r}{1-(q/p)^N}.$$ You may seek solutions of the form $u_r=\\lambda^r$.", solutionOutline: "Characteristic equation $p\\lambda^2-\\lambda+q=0$ has roots $1,q/p$. Thus $u_r=A+B(q/p)^r$; apply both boundaries." },
+      { label: "(iii)", marks: 3, question: "When $p=\\tfrac13$, $N=5$ and $r=2$, find the probability of reaching $5$ before ruin.", solutionOutline: "$q/p=2$, so $u_2=(1-4)/(1-32)=3/31$." },
+      { label: "(iv)", marks: 5, question: "Now suppose $p=q=\\tfrac12$. Let $t_r$ be the expected number of further plays before the game ends. By solving an appropriate recurrence, show that $$t_r=r(N-r).$$", solutionOutline: "$t_r=1+(t_{r+1}+t_{r-1})/2$, so second difference is $-2$. Hence $t_r=-r^2+Ar+B$; use $t_0=t_N=0$." },
     ],
-    fullSolution: `(i) $X\\sim B(6,0.4)$. $P(X=3)=\\binom{6}{3}(0.4)^3(0.6)^3=20(0.064)(0.216)\\approx0.2765.$
+    fullSolution: `(i) Condition on the first play. From fortune $r$, the next state is $r+1$ with probability $p$ and $r-1$ with probability $q$. Therefore
+$$u_r=pu_{r+1}+qu_{r-1}\qquad(1\le r\le N-1).$$
+At $0$ success is impossible, while at $N$ it has already occurred, so $u_0=0$ and $u_N=1$.
 
-(ii) $P(X\\le1)=(0.6)^6+\\binom{6}{1}(0.4)(0.6)^5=0.046656+0.186624=0.23328.$
+(ii) Substitute $u_r=\lambda^r$ into the recurrence:
+$$p\lambda^2-\lambda+q=0=(\lambda-1)(p\lambda-q).$$
+Since $p\ne q$, the roots are distinct, so
+$$u_r=A+B\left(\frac qp\right)^r.$$
+The condition $u_0=0$ gives $A=-B$. The condition $u_N=1$ then gives
+$$B\left[\left(\frac qp\right)^N-1\right]=1.$$
+Consequently
+$$u_r=\frac{(q/p)^r-1}{(q/p)^N-1}
+=\frac{1-(q/p)^r}{1-(q/p)^N}.$$
 
-(iii) $E(X)=np=2.4$; $\\operatorname{Var}(X)=np(1-p)=6(0.4)(0.6)=1.44$. Since $P(X=2)=\\binom{6}{2}(0.4)^2(0.6)^4\\approx0.311$ exceeds $P(X=3)\\approx0.276$, the most likely number of heads is $2.$`,
+(iii) Here $q/p=2$, so
+$$u_2=\frac{1-2^2}{1-2^5}=\frac{-3}{-31}=\frac3{31}.$$
+
+(iv) One play is used immediately, after which the expected remaining duration is conditioned on the next state:
+$$t_r=1+\frac12t_{r+1}+\frac12t_{r-1},\qquad t_0=t_N=0.$$
+Thus
+$$t_{r+1}-2t_r+t_{r-1}=-2.$$
+A quadratic particular solution is $-r^2$, so $t_r=-r^2+Ar+B$. From $t_0=0$, $B=0$; from $t_N=0$, $A=N$. Hence
+$$t_r=r(N-r).$$`,
   },
 
   {
@@ -2248,17 +2312,41 @@ $$M^n=PD^nP^{-1}=\\begin{pmatrix}1&1\\\\0&-1\\end{pmatrix}\\begin{pmatrix}3^n&0\
     topicId: "step-stats",
     difficulty: 3,
     totalMarks: 20,
-    context: "A continuous random variable $X$ is uniformly distributed with pdf $f(x)=\\tfrac12$ for $1\\le x\\le3$, and $0$ otherwise.",
+    context: "A continuous random variable $X$ has probability density function $$f(x)=kx(1-x)\\quad(0<x<1),$$ and $f(x)=0$ otherwise. Define $Y=X/(1-X)$.",
     parts: [
-      { label: "(i)", marks: 4, question: "Verify that $f$ is a valid probability density function.", solutionOutline: "f≥0 and ∫_1^3 ½ dx=½·2=1." },
-      { label: "(ii)", marks: 6, question: "Find $E(X)$ and $\\operatorname{Var}(X)$.", solutionOutline: "E(X)=2 (midpoint). Var=(b-a)²/12=4/12=1/3." },
-      { label: "(iii)", marks: 10, question: "Find the cumulative distribution function $F(x)$ for $1\\le x\\le3$, and hence $P(1.5\\le X\\le2.5)$.", solutionOutline: "F(x)=½(x-1). P=F(2.5)-F(1.5)=0.75-0.25=0.5." },
+      { label: "(i)", marks: 4, question: "Find $k$ and the cumulative distribution function $F(x)$ for $0<x<1$.", solutionOutline: "$1=k\\int_0^1(x-x^2)dx=k/6$, so $k=6$. Then $F(x)=3x^2-2x^3$." },
+      { label: "(ii)", marks: 6, question: "Find the probability density function of $Y$, stating its range.", solutionOutline: "$x=y/(1+y)$ and $dx/dy=1/(1+y)^2$. Therefore $g(y)=6y/(1+y)^4$ for $y>0$." },
+      { label: "(iii)", marks: 6, question: "Show that $E(Y)=2$, but that $\\operatorname{Var}(Y)$ does not exist as a finite number.", solutionOutline: "$E(Y)=\\int_0^1[x/(1-x)]6x(1-x)dx=6\\int_0^1x^2dx=2$. But $E(Y^2)=6\\int_0^1x^3/(1-x)dx$, which diverges logarithmically." },
+      { label: "(iv)", marks: 4, question: "Find $$P(1<Y<3\\mid Y<3).$$", solutionOutline: "$1<Y<3$ corresponds to $1/2<X<3/4$. Ratio $[F(3/4)-F(1/2)]/F(3/4)=(11/32)/(27/32)=11/27$." },
     ],
-    fullSolution: `(i) $f(x)=\\tfrac12\\ge0$ and $\\int_1^3\\tfrac12\\,dx=\\tfrac12\\cdot2=1$, so $f$ is a valid pdf.
+    fullSolution: `(i) Normalisation requires
+$$1=k\int_0^1x(1-x)\,dx=k\left(\frac12-\frac13\right)=\frac{k}{6},$$
+so $k=6$. For $0<x<1$,
+$$F(x)=\int_0^x6t(1-t)\,dt=3x^2-2x^3.$$
 
-(ii) $E(X)=\\int_1^3 x\\cdot\\tfrac12\\,dx=\\tfrac12\\big[\\tfrac{x^2}{2}\\big]_1^3=\\tfrac12\\cdot4=2$. For a uniform distribution $\\operatorname{Var}(X)=\\tfrac{(b-a)^2}{12}=\\tfrac{4}{12}=\\tfrac13.$
+(ii) Since $Y=X/(1-X)$ is increasing on $(0,1)$, its range is $y>0$. Inverting,
+$$x=\frac{y}{1+y},\qquad \frac{dx}{dy}=\frac1{(1+y)^2}.$$
+Also $1-x=1/(1+y)$, so
+$$g(y)=f\left(\frac{y}{1+y}\right)\left|\frac{dx}{dy}\right|
+=6\frac{y}{1+y}\frac1{1+y}\frac1{(1+y)^2}
+=\frac{6y}{(1+y)^4},\qquad y>0.$$
 
-(iii) For $1\\le x\\le3$, $F(x)=\\int_1^x\\tfrac12\\,dt=\\tfrac12(x-1)$. Hence $P(1.5\\le X\\le2.5)=F(2.5)-F(1.5)=0.75-0.25=0.5.$`,
+(iii) It is simplest to calculate using $X$:
+$$E(Y)=\int_0^1\frac{x}{1-x}\,6x(1-x)\,dx
+=6\int_0^1x^2\,dx=2.$$
+However,
+$$E(Y^2)=6\int_0^1\frac{x^3}{1-x}\,dx.$$
+For $x\ge\tfrac12$, $x^3\ge\tfrac18$, so this integral is at least
+$$\frac34\int_{1/2}^1\frac{dx}{1-x},$$
+which diverges. Hence $E(Y^2)$, and therefore $\operatorname{Var}(Y)$, is not finite.
+
+(iv) The inequalities $1<Y<3$ are equivalent to $\tfrac12<X<\tfrac34$, while $Y<3$ is equivalent to $X<\tfrac34$. Now
+$$F\left(\frac12\right)=\frac12,\qquad F\left(\frac34\right)=\frac{27}{32}.$$
+Therefore
+$$P(1<Y<3\mid Y<3)
+=\frac{F(3/4)-F(1/2)}{F(3/4)}
+=\frac{11/32}{27/32}=\frac{11}{27}.$$
+`,
   },
 
 ];
