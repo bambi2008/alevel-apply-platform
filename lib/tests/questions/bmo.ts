@@ -7,5 +7,6 @@ import { BMO_SMC_B } from "./bmo-smc-b";
 import { BMO_SMC_TOPUP } from "./bmo-smc-topup";
 import { BMO_LONG_SAMPLE } from "./bmo-long";
 import { BMO2_LONG_SAMPLE } from "./bmo2-long";
+import { BMO_SHORT_PROOFS } from "./bmo-short-proofs";
 
-export const BMO_QUESTIONS: Question[] = [...BMO_SMC_SAMPLE, ...BMO_SMC_MAIN, ...BMO_SMC_B, ...BMO_SMC_TOPUP, ...BMO_LONG_SAMPLE, ...BMO2_LONG_SAMPLE];
+export const BMO_QUESTIONS: Question[] = [...BMO_SMC_SAMPLE, ...BMO_SMC_MAIN, ...BMO_SMC_B, ...BMO_SMC_TOPUP, ...BMO_SHORT_PROOFS, ...BMO_LONG_SAMPLE, ...BMO2_LONG_SAMPLE];

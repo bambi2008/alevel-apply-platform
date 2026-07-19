@@ -7,6 +7,7 @@ import { BPHO_QUESTIONS } from "@/lib/tests/questions/bpho";
 import { BPHO4_LONG_SAMPLE } from "@/lib/tests/questions/bpho4-long";
 import { BPHO5_LONG_SAMPLE } from "@/lib/tests/questions/bpho5-long";
 import { BMO_SMC_TOPUP } from "@/lib/tests/questions/bmo-smc-topup";
+import { BMO_SHORT_PROOFS } from "@/lib/tests/questions/bmo-short-proofs";
 import { getAllMockQuestions } from "@/lib/tests/mock-papers";
 import { getTestById } from "@/lib/tests";
 import { getQuestionById } from "@/lib/tests/lookup";
@@ -97,6 +98,32 @@ describe("BMO number theory and geometry top-up", () => {
     expect(counts[1]).toBeGreaterThanOrEqual(3);
     expect(counts[2]).toBeGreaterThanOrEqual(8);
     expect(counts[3]).toBeGreaterThanOrEqual(5);
+  });
+});
+
+describe("BMO number theory and geometry short proofs", () => {
+  it("adds twelve typed short proofs to each target topic", () => {
+    expect(BMO_SHORT_PROOFS).toHaveLength(24);
+    expect(BMO_SHORT_PROOFS.filter((q) => q.topicId === "bmo-number")).toHaveLength(12);
+    expect(BMO_SHORT_PROOFS.filter((q) => q.topicId === "bmo-geometry")).toHaveLength(12);
+  });
+
+  it("keeps every problem within the 4-6 mark bridge range", () => {
+    for (const question of BMO_SHORT_PROOFS) {
+      expect(question.parts).toHaveLength(1);
+      expect(question.totalMarks).toBeGreaterThanOrEqual(4);
+      expect(question.totalMarks).toBeLessThanOrEqual(6);
+      expect(question.parts[0].marks).toBe(question.totalMarks);
+    }
+  });
+
+  it("covers all three difficulty levels in both target topics", () => {
+    for (const topicId of ["bmo-number", "bmo-geometry"]) {
+      const difficulties = BMO_SHORT_PROOFS
+        .filter((question) => question.topicId === topicId)
+        .map((question) => question.difficulty);
+      expect(new Set(difficulties)).toEqual(new Set([1, 2, 3]));
+    }
   });
 });
 

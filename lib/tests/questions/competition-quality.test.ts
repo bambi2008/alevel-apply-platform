@@ -61,7 +61,12 @@ describe("competition bank quality and calibration", () => {
   it("keeps BMO proof topics balanced and strengthens short geometry/number theory", () => {
     const mcq = topicCounts(BMO_QUESTIONS, "mcq");
     const long = topicCounts(BMO_QUESTIONS, "long");
-    expect(new Set(Object.values(long))).toEqual(new Set([20]));
+    expect(long).toEqual({
+      "bmo-number": 32,
+      "bmo-geometry": 32,
+      "bmo-algebra": 20,
+      "bmo-combinatorics": 20,
+    });
     expect(mcq["bmo-number"]).toBeGreaterThanOrEqual(45);
     expect(mcq["bmo-geometry"]).toBeGreaterThanOrEqual(38);
     expect(mcq["bmo-algebra"] / Object.values(mcq).reduce((sum, count) => sum + count, 0)).toBeLessThan(0.45);

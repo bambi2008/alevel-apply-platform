@@ -32,7 +32,15 @@ const QUESTION_BANKS: Record<string, Question[]> = {
 };
 
 type PracticeMode = "topic" | "mixed";
+type PracticeFormat = "all" | "mcq" | "short-proof" | "long";
 type SessionState = "select" | "practicing" | "complete";
+
+function matchesFormat(question: Question, format: PracticeFormat): boolean {
+  if (format === "all") return true;
+  if (format === "mcq") return question.type === "mcq";
+  const isShortProof = question.type === "long" && question.id.startsWith("bmo-sp-");
+  return format === "short-proof" ? isShortProof : question.type === "long" && !isShortProof;
+}
 
 interface SessionResult {
   questionId: string;
@@ -57,6 +65,7 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
   const initialTopic = searchParams.get("topic") ?? "all";
   const [mode, setMode] = useState<PracticeMode>(initialTopic !== "all" ? "topic" : "mixed");
   const [topicId, setTopicId] = useState<string>(initialTopic);
+  const [format, setFormat] = useState<PracticeFormat>("all");
   const [questionCount, setQuestionCount] = useState(10);
   const [sessionState, setSessionState] = useState<SessionState>("select");
   const [queue, setQueue] = useState<Question[]>([]);
@@ -66,9 +75,10 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
 
   const startSession = useCallback(() => {
     let pool = allQuestions;
-    if (topicId !== "all") {
+    if (mode === "topic" && topicId !== "all") {
       pool = allQuestions.filter((q) => q.topicId === topicId);
     }
+    pool = pool.filter((question) => matchesFormat(question, format));
     // 免费额度门控：付费墙关闭 / 会员时原样返回，绝不改变现有行为。
     pool = applyFreeLimit(pool, testId, tier);
     // Weighted selection: difficulty 3 → 3×, difficulty 2 → 2×, difficulty 1 → 1×
@@ -82,7 +92,7 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
     setCurrentIdx(0);
     setResults([]);
     setSessionState("practicing");
-  }, [allQuestions, topicId, questionCount, tier, testId]);
+  }, [allQuestions, format, mode, topicId, questionCount, tier, testId]);
 
   const recordResult = useCallback((result: SessionResult) => {
     setResults((prev) => [...prev, result]);
@@ -101,9 +111,17 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
         allQuestions={allQuestions}
         mode={mode}
         topicId={topicId}
+        format={format}
         questionCount={questionCount}
         onModeChange={setMode}
         onTopicChange={setTopicId}
+        onFormatChange={(nextFormat) => {
+          setFormat(nextFormat);
+          setQuestionCount(10);
+          if (nextFormat === "short-proof" && !["bmo-number", "bmo-geometry", "all"].includes(topicId)) {
+            setTopicId("all");
+          }
+        }}
         onCountChange={setQuestionCount}
         onStart={startSession}
       />
@@ -168,9 +186,11 @@ function SessionSetup({
   allQuestions,
   mode,
   topicId,
+  format,
   questionCount,
   onModeChange,
   onTopicChange,
+  onFormatChange,
   onCountChange,
   onStart,
 }: {
@@ -178,15 +198,31 @@ function SessionSetup({
   allQuestions: Question[];
   mode: PracticeMode;
   topicId: string;
+  format: PracticeFormat;
   questionCount: number;
   onModeChange: (m: PracticeMode) => void;
   onTopicChange: (t: string) => void;
+  onFormatChange: (format: PracticeFormat) => void;
   onCountChange: (n: number) => void;
   onStart: () => void;
 }) {
   if (!test) return null;
   const mcqCount = allQuestions.filter((q) => q.type === "mcq").length;
-  const longCount = allQuestions.filter((q) => q.type === "long").length;
+  const shortProofCount = allQuestions.filter((q) => q.type === "long" && q.id.startsWith("bmo-sp-")).length;
+  const longCount = allQuestions.filter((q) => q.type === "long" && !q.id.startsWith("bmo-sp-")).length;
+  const formatOptions: { id: PracticeFormat; label: string }[] = [
+    { id: "all", label: "全部" },
+    { id: "mcq", label: "选择题" },
+    ...(shortProofCount > 0 ? [{ id: "short-proof" as const, label: "短证明" }] : []),
+    { id: "long", label: "完整大题" },
+  ];
+  const topicOptions = format === "short-proof"
+    ? test.topics.filter((topic) => ["bmo-number", "bmo-geometry"].includes(topic.id))
+    : test.topics;
+  const availableCount = allQuestions.filter((question) =>
+    (mode !== "topic" || topicId === "all" || question.topicId === topicId) && matchesFormat(question, format)
+  ).length;
+  const maxQuestionCount = Math.min(30, availableCount);
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
@@ -196,7 +232,7 @@ function SessionSetup({
 
       <h1 className="text-2xl font-bold mt-4 mb-1">{test.abbr} 专项练习</h1>
       <p className="text-[var(--ink-soft)] text-sm mb-8">
-        题库共 {allQuestions.length} 题（选择题 {mcqCount} 题 · 大题 {longCount} 题）
+        题库共 {allQuestions.length} 题（选择题 {mcqCount} 题{shortProofCount > 0 ? ` · 短证明 ${shortProofCount} 题` : ""} · 完整大题 {longCount} 题）
       </p>
 
       <div className="space-y-6">
@@ -220,6 +256,26 @@ function SessionSetup({
           </div>
         </div>
 
+        <div>
+          <label className="block text-sm font-medium text-[var(--ink)] mb-2">题型</label>
+          <div className="flex flex-wrap gap-2">
+            {formatOptions.map((option) => (
+              <button
+                key={option.id}
+                type="button"
+                onClick={() => onFormatChange(option.id)}
+                className={`rounded-md border px-3 py-2 text-sm font-medium transition ${
+                  format === option.id
+                    ? "border-[var(--indigo)] bg-[var(--indigo)] text-white"
+                    : "border-[var(--border)] bg-white text-[var(--ink-soft)] hover:bg-[var(--surface)]"
+                }`}
+              >
+                {option.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
         {mode === "topic" && (
           <div>
             <label className="block text-sm font-medium text-[var(--ink)] mb-2">选择知识点</label>
@@ -229,7 +285,7 @@ function SessionSetup({
               onChange={(e) => onTopicChange(e.target.value)}
             >
               <option value="all">全部知识点</option>
-              {test.topics.map((t) => (
+              {topicOptions.map((t) => (
                 <option key={t.id} value={t.id}>
                   {t.title} · {t.titleEn}
                 </option>
@@ -245,7 +301,7 @@ function SessionSetup({
           <input
             type="range"
             min={5}
-            max={Math.min(30, allQuestions.length)}
+            max={maxQuestionCount}
             step={5}
             value={questionCount}
             onChange={(e) => onCountChange(Number(e.target.value))}
@@ -253,7 +309,7 @@ function SessionSetup({
           />
           <div className="flex justify-between text-xs text-[var(--ink-faint)] mt-1">
             <span>5 题</span>
-            <span>{Math.min(30, allQuestions.length)} 题</span>
+            <span>{maxQuestionCount} 题可选</span>
           </div>
         </div>
 
@@ -268,7 +324,8 @@ function SessionSetup({
         <button
           type="button"
           onClick={onStart}
-          className="w-full py-3 rounded-xl bg-[var(--indigo)] text-white font-medium hover:bg-[var(--indigo-hover)] transition"
+          disabled={availableCount === 0}
+          className="w-full py-3 rounded-xl bg-[var(--indigo)] text-white font-medium hover:bg-[var(--indigo-hover)] transition disabled:cursor-not-allowed disabled:opacity-40"
         >
           开始练习 →
         </button>
