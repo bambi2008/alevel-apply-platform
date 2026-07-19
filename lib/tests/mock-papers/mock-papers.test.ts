@@ -40,7 +40,7 @@ describe("mock papers", () => {
   });
 
   it("every fixed paper keeps test ownership and valid written marks", () => {
-    for (const testId of ["mat", "pat", "step", "bmo", "bpho"]) {
+    for (const testId of ["mat", "pat", "step", "bmo", "bpho", "lnat", "tara"]) {
       for (const paper of getMockPapersForTest(testId)) {
         const questions = paper.modules.flatMap((module) => module.questions);
         expect(questions.every((question) => question.testId === testId), `${paper.id}: wrong testId`).toBe(true);
@@ -169,6 +169,30 @@ describe("mock papers", () => {
       if (question.type === "long") {
         expect(question.totalMarks).toBe(20);
         expect(question.parts.length).toBeGreaterThanOrEqual(4);
+      }
+    }
+  });
+
+  it.each([
+    { testId: "lnat", prefix: "lnat-written-" },
+    { testId: "tara", prefix: "tara-written-" },
+  ])("offers three fixed $testId writing papers with three-option tasks", ({ testId, prefix }) => {
+    const papers = getMockPapersForTest(testId).filter((paper) => paper.id.startsWith(prefix));
+    expect(papers).toHaveLength(3);
+
+    for (const paper of papers) {
+      expect(paper.formatType).toBe("current");
+      expect(paper.modules).toHaveLength(1);
+      expect(paper.modules[0].durationSec).toBe(40 * 60);
+      expect(paper.modules[0].questions).toHaveLength(1);
+
+      const question = paper.modules[0].questions[0];
+      expect(question.type).toBe("long");
+      if (question.type === "long") {
+        expect(question.responseKind).toBe("essay");
+        expect(question.essayPrompts).toHaveLength(3);
+        expect(question.maxWords).toBe(750);
+        expect(question.rubricDimensions?.reduce((sum, item) => sum + item.maxMarks, 0)).toBe(20);
       }
     }
   });

@@ -47,6 +47,8 @@ const TOPIC_LABELS: Record<string, string> = {
   "step-pure5": "纯数：线性代数",
   "step-mech": "力学",
   "step-stats": "统计与概率",
+  "lnat-essay": "LNAT 议论文写作",
+  "tara-writing": "TARA 写作任务",
 };
 
 const TEST_LABELS: Record<string, string> = {
@@ -55,7 +57,16 @@ const TEST_LABELS: Record<string, string> = {
   step: "STEP",
   bmo: "BMO",
   bpho: "BPhO",
+  lnat: "LNAT",
+  tara: "TARA",
 };
+
+const ESSAY_PROMPT_KEY = "__selectedPrompt";
+
+function countWords(text: string): number {
+  const trimmed = text.trim();
+  return trimmed ? trimmed.split(/\s+/).length : 0;
+}
 
 const DEFAULT_INSTRUCTIONS: Record<string, string[]> = {
   bmo: [
@@ -91,6 +102,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
         .reduce((sum, question) => sum + question.totalMarks, 0)
     : questions.reduce((sum, question) => sum + question.totalMarks, 0);
   const testLabel = TEST_LABELS[paper.testId] ?? paper.testId.toUpperCase();
+  const isEssayPaper = questions.some((question) => question.responseKind === "essay");
   const instructions = paper.instructions ?? DEFAULT_INSTRUCTIONS[paper.testId] ?? [
     "每题都应写出关键推导、必要说明和最终结论。",
     "题目固定，不随机抽取，适合复盘和阶段比较。",
@@ -126,6 +138,10 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
     }));
   };
 
+  const isAnswered = (question: LongQuestion) => question.parts.some(
+    (part) => (works[question.id]?.[part.label] ?? "").trim().length > 0
+  );
+
   const submit = async () => {
     if (submittingRef.current) return;
     submittingRef.current = true;
@@ -135,8 +151,8 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
     const nextGrades: WrittenGrade[] = [];
 
     for (const question of questions) {
-      const isAnswered = Object.values(works[question.id] ?? {}).some((value) => value.trim().length > 0);
-      if (!isAnswered) {
+      const answered = isAnswered(question);
+      if (!answered) {
         nextGrades.push({
           questionId: question.id,
           grading: {
@@ -159,18 +175,23 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
         continue;
       }
       try {
+        const selectedPrompt = question.essayPrompts?.find(
+          (prompt) => prompt.id === works[question.id]?.[ESSAY_PROMPT_KEY]
+        );
         const payload: GradeRequest = {
           questionId: question.id,
           testId: question.testId,
-          questionContext: question.context,
+          questionContext: [question.context, selectedPrompt ? `Selected prompt: ${selectedPrompt.title}` : undefined].filter(Boolean).join("\n\n"),
           parts: question.parts.map((part) => ({
             label: part.label,
-            question: part.question,
+            question: selectedPrompt ? `${part.question}\nSelected prompt: ${selectedPrompt.title}` : part.question,
             marks: part.marks,
             solutionOutline: part.solutionOutline,
             studentWork: works[question.id]?.[part.label] ?? "",
           })),
           fullSolution: question.fullSolution,
+          responseKind: question.responseKind,
+          rubricDimensions: question.rubricDimensions,
         };
         const response = await fetch("/api/grade-answer", {
           method: "POST",
@@ -224,15 +245,15 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
 
         <div className="mt-7 grid grid-cols-3 border-y border-[var(--border)] py-4 text-center">
           <div><strong className="block text-xl">{Math.round(durationSec / 60)}</strong><span className="text-xs text-[var(--ink-faint)]">分钟</span></div>
-          <div><strong className="block text-xl">{questions.length}</strong><span className="text-xs text-[var(--ink-faint)]">书面题</span></div>
-          <div><strong className="block text-xl">{totalMarks}</strong><span className="text-xs text-[var(--ink-faint)]">计分上限</span></div>
+          <div><strong className="block text-xl">{questions.length}</strong><span className="text-xs text-[var(--ink-faint)]">{isEssayPaper ? "写作任务" : "书面题"}</span></div>
+          <div><strong className="block text-xl">{totalMarks}</strong><span className="text-xs text-[var(--ink-faint)]">{isEssayPaper ? "训练量表" : "计分上限"}</span></div>
         </div>
 
         <ul className="mt-6 space-y-2 text-sm text-[var(--ink-soft)]">
           {instructions.map((instruction) => <li key={instruction}>{instruction}</li>)}
         </ul>
         <button type="button" onClick={begin} className="mt-8 w-full rounded-md bg-[var(--indigo)] py-3 text-sm font-semibold text-white hover:bg-[var(--indigo-hover)]">
-          开始书面考试
+          {isEssayPaper ? "开始写作任务" : "开始书面考试"}
         </button>
       </div>
     );
@@ -242,7 +263,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
     return (
       <div className="flex min-h-[70vh] flex-col items-center justify-center px-4 text-center">
         <div className="h-9 w-9 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--indigo)]" />
-        <h1 className="mt-5 text-xl font-bold">正在按证明步骤评分</h1>
+        <h1 className="mt-5 text-xl font-bold">{isEssayPaper ? "正在按写作量表生成反馈" : "正在按证明步骤评分"}</h1>
         <p className="mt-2 text-sm text-[var(--ink-soft)]">已完成 {gradingProgress} / {questions.length} 题</p>
       </div>
     );
@@ -268,9 +289,8 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
   const currentSectionLabel = paper.modules.length > 1
     ? currentModule?.title.split("·")[0]?.trim()
     : undefined;
-  const answered = questions.filter((question) =>
-    Object.values(works[question.id] ?? {}).some((value) => value.trim().length > 0)
-  ).length;
+  const answered = questions.filter(isAnswered).length;
+  const selectedPromptId = works[current.id]?.[ESSAY_PROMPT_KEY];
 
   return (
     <div className="min-h-screen bg-white">
@@ -321,6 +341,28 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
           </div>
           {current.context && <MathRenderer text={current.context} className="mt-5 text-sm leading-7 text-[var(--ink)]" block />}
 
+          {current.responseKind === "essay" && current.essayPrompts && (
+            <fieldset className="mt-6">
+              <legend className="text-sm font-semibold">选择一个题目</legend>
+              <div className="mt-3 space-y-2">
+                {current.essayPrompts.map((prompt) => {
+                  const selected = selectedPromptId === prompt.id;
+                  return (
+                    <button
+                      key={prompt.id}
+                      type="button"
+                      onClick={() => updateWork(current.id, ESSAY_PROMPT_KEY, prompt.id)}
+                      className={`flex w-full items-start gap-3 rounded-md border px-3 py-3 text-left text-sm transition ${selected ? "border-[var(--indigo)] bg-[var(--info-bg)]" : "border-[var(--border)] hover:border-[color:var(--indigo)]/40"}`}
+                    >
+                      <span className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border text-xs font-semibold ${selected ? "border-[var(--indigo)] bg-[var(--indigo)] text-white" : "border-[var(--border)] text-[var(--ink-faint)]"}`}>{prompt.id}</span>
+                      <span>{prompt.title}</span>
+                    </button>
+                  );
+                })}
+              </div>
+            </fieldset>
+          )}
+
           <div className="mt-7 space-y-7">
             {current.parts.map((part) => (
               <div key={part.label}>
@@ -331,10 +373,20 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
                 <textarea
                   value={works[current.id]?.[part.label] ?? ""}
                   onChange={(event) => updateWork(current.id, part.label, event.target.value)}
-                  rows={7}
-                  placeholder="写出定义、关键推导与结论……"
+                  rows={current.responseKind === "essay" ? 22 : 7}
+                  placeholder={current.responseKind === "essay" ? "在此输入英文作文……" : "写出定义、关键推导与结论……"}
                   className="w-full resize-y rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-3 text-sm leading-6 outline-none focus:border-[var(--indigo)] focus:ring-2 focus:ring-[color:var(--indigo)]/10"
                 />
+                {current.responseKind === "essay" && (
+                  <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs">
+                    <span className="text-[var(--ink-faint)]">
+                      建议 {current.recommendedWords?.[0]}–{current.recommendedWords?.[1]} 词 · 上限 {current.maxWords} 词
+                    </span>
+                    <span className={countWords(works[current.id]?.[part.label] ?? "") > (current.maxWords ?? Infinity) ? "font-semibold text-[var(--danger)]" : "font-semibold text-[var(--ink-soft)]"}>
+                      {countWords(works[current.id]?.[part.label] ?? "")} 词
+                    </span>
+                  </div>
+                )}
               </div>
             ))}
           </div>
@@ -415,10 +467,10 @@ function WrittenPaperResults({
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
       <p className="text-xs font-semibold uppercase text-[var(--ink-faint)]">Written paper report</p>
-      <h1 className="mt-2 text-2xl font-bold">{paper.title} · 整卷报告</h1>
+       <h1 className="mt-2 text-2xl font-bold">{paper.title} · {questions.some((question) => question.responseKind === "essay") ? "写作反馈" : "整卷报告"}</h1>
 
       <div className="mt-7 grid gap-px bg-[var(--border)] sm:grid-cols-4">
-        <div className="bg-white p-4"><strong className="block text-2xl">{earned}/{max || "-"}</strong><span className="text-xs text-[var(--ink-faint)]">{paper.bestQuestionCount ? `最高 ${paper.bestQuestionCount} 题得分` : "已评分得分"}</span></div>
+        <div className="bg-white p-4"><strong className="block text-2xl">{earned}/{max || "-"}</strong><span className="text-xs text-[var(--ink-faint)]">{questions.some((question) => question.responseKind === "essay") ? "训练量表得分" : paper.bestQuestionCount ? `最高 ${paper.bestQuestionCount} 题得分` : "已评分得分"}</span></div>
         <div className="bg-white p-4"><strong className="block text-2xl">{max ? Math.round(earned / max * 100) : 0}%</strong><span className="text-xs text-[var(--ink-faint)]">已评分得分率</span></div>
         <div className="bg-white p-4"><strong className="block text-2xl">{Math.round(timeUsedSec / 60)}</strong><span className="text-xs text-[var(--ink-faint)]">用时（分钟）</span></div>
         <div className="bg-white p-4"><strong className="block text-2xl">{pending}</strong><span className="text-xs text-[var(--ink-faint)]">待自评题目</span></div>
@@ -471,6 +523,16 @@ function WrittenPaperResults({
                   <div className="pb-5 text-sm">
                     {result?.grading ? (
                       <div className="space-y-4">
+                        {result.grading.dimensions && result.grading.dimensions.length > 0 && (
+                          <div className="divide-y divide-[var(--border)] border-y border-[var(--border)]">
+                            {result.grading.dimensions.map((dimension) => (
+                              <div key={dimension.id} className="py-3">
+                                <div className="flex justify-between font-semibold"><span>{dimension.label}</span><span>{dimension.earned}/{dimension.max}</span></div>
+                                <p className="mt-1 text-[var(--ink-soft)]">{dimension.feedback}</p>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                         {result.grading.perPart.map((part) => (
                           <div key={part.label} className="border-l-2 border-[var(--border)] pl-3">
                             <div className="flex justify-between font-semibold"><span>{part.label}</span><span>{part.earned}/{part.max}</span></div>
@@ -493,7 +555,7 @@ function WrittenPaperResults({
                       </div>
                     )}
                     <details className="mt-4">
-                      <summary className="cursor-pointer font-semibold text-[var(--indigo)]">查看完整参考解答</summary>
+                      <summary className="cursor-pointer font-semibold text-[var(--indigo)]">{question.responseKind === "essay" ? "查看评分标准说明" : "查看完整参考解答"}</summary>
                       <MathRenderer text={question.fullSolution} className="mt-3 leading-7" block />
                     </details>
                   </div>

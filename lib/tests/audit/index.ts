@@ -111,7 +111,7 @@ function difficultyCounts(questions: Question[]): DifficultyCounts {
 function normalizedPrompt(question: Question): string {
   const source = question.type === "mcq"
     ? question.question
-    : `${question.context ?? ""} ${question.parts.map((part) => part.question).join(" ")}`;
+    : `${question.context ?? ""} ${question.essayPrompts?.map((prompt) => prompt.title).join(" ") ?? ""} ${question.parts.map((part) => part.question).join(" ")}`;
   return source
     .toLowerCase()
     .replace(/\s+/g, " ")
@@ -164,6 +164,12 @@ function auditQuestion(question: Question, expectedTestId: string, validTopics: 
     }
     if (!question.fullSolution.trim() || question.parts.some((part) => !part.question.trim() || !part.solutionOutline.trim())) {
       issues.push({ ...base, code: "INCOMPLETE_LONG_SOLUTION", severity: "critical", message: "书面题题干、评分要点或完整解答缺失。" });
+    }
+    if (question.responseKind === "essay") {
+      const rubricMarks = question.rubricDimensions?.reduce((sum, dimension) => sum + dimension.maxMarks, 0) ?? 0;
+      if (!question.essayPrompts?.length || !question.maxWords || rubricMarks !== question.totalMarks) {
+        issues.push({ ...base, code: "INVALID_ESSAY_FORMAT", severity: "critical", message: "写作题缺少选题、词数上限，或量表分值与总分不一致。" });
+      }
     }
   }
   return issues;
@@ -234,8 +240,10 @@ export function buildQuestionBankAudit(): QuestionBankAuditReport {
       };
     });
 
-    const nonEmptyTopicCounts = topics.map((topic) => topic.questions).filter(Boolean);
-    if (nonEmptyTopicCounts.length > 1 && Math.max(...nonEmptyTopicCounts) / Math.min(...nonEmptyTopicCounts) > 3) {
+    const comparableTopicCounts = test.topics
+      .map((topic) => questions.filter((question) => question.topicId === topic.id && (question.type !== "long" || question.responseKind !== "essay")).length)
+      .filter(Boolean);
+    if (comparableTopicCounts.length > 1 && Math.max(...comparableTopicCounts) / Math.min(...comparableTopicCounts) > 3) {
       issues.push({ code: "TOPIC_IMBALANCE", severity: "warning", testId: test.id, message: "最多与最少知识点题量相差超过 3 倍。" });
     }
 

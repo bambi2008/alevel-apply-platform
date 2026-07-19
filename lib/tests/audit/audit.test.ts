@@ -6,12 +6,12 @@ describe("question bank audit", () => {
   it("inventories every supported test without structural blockers", () => {
     const report = buildQuestionBankAudit();
     expect(report.totals.tests).toBe(9);
-    expect(report.totals.questions).toBe(2346);
-    expect(report.totals.mockPapers).toBe(88);
-    expect(report.totals.topicsCovered).toBe(53);
+    expect(report.totals.questions).toBe(2352);
+    expect(report.totals.mockPapers).toBe(94);
+    expect(report.totals.topicsCovered).toBe(55);
     expect(report.totals.topicsTotal).toBe(62);
     expect(report.totals.critical).toBe(0);
-    expect(report.totals.warning).toBe(28);
+    expect(report.totals.warning).toBe(22);
   });
 
   it("tracks remaining written-format gaps without flagging completed paper sets", () => {
@@ -24,6 +24,14 @@ describe("question bank audit", () => {
       expect.objectContaining({ code: "MISSING_FIXED_WRITTEN_PAPER", testId: "pat" }),
       expect.objectContaining({ code: "MISSING_FIXED_WRITTEN_PAPER", testId: "step" }),
       expect.objectContaining({ code: "MISSING_WRITTEN_PRACTICE", testId: "pat" }),
+      expect.objectContaining({ code: "MISSING_FIXED_WRITTEN_PAPER", testId: "lnat" }),
+      expect.objectContaining({ code: "MISSING_FIXED_WRITTEN_PAPER", testId: "tara" }),
+      expect.objectContaining({ code: "MISSING_WRITTEN_PRACTICE", testId: "lnat" }),
+      expect.objectContaining({ code: "MISSING_WRITTEN_PRACTICE", testId: "tara" }),
+      expect.objectContaining({ code: "DUPLICATE_PROMPT", testId: "lnat" }),
+      expect.objectContaining({ code: "DUPLICATE_PROMPT", testId: "tara" }),
+      expect.objectContaining({ code: "TOPIC_IMBALANCE", testId: "lnat" }),
+      expect.objectContaining({ code: "TOPIC_IMBALANCE", testId: "tara" }),
     ]));
   });
 });

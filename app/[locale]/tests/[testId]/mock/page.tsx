@@ -71,6 +71,26 @@ function parseDurationText(duration: string): number {
 }
 
 function getMockPresets(testId: string, duration: string): MockPreset[] {
+  if (testId === "lnat") {
+    return [{
+      id: "section-a",
+      label: "Section A",
+      description: "42 道阅读理解选择题；Section B 写作请使用固定写作套卷",
+      durationSec: 95 * 60,
+      mcqCount: 42,
+      longCount: 0,
+    }];
+  }
+  if (testId === "tara") {
+    return [{
+      id: "reasoning-modules",
+      label: "推理模块",
+      description: "Critical Thinking 与 Problem Solving 共 44 道选择题；Writing Task 请使用固定写作套卷",
+      durationSec: 80 * 60,
+      mcqCount: 44,
+      longCount: 0,
+    }];
+  }
   if (testId === "bpho") {
     return [{
       id: "round-1",

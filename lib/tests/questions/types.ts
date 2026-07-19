@@ -31,6 +31,18 @@ export interface LongPart {
   hint?: string;
 }
 
+export interface EssayPrompt {
+  id: string;
+  title: string;
+}
+
+export interface EssayRubricDimension {
+  id: string;
+  label: string;
+  maxMarks: number;
+  description: string;
+}
+
 export interface LongQuestion {
   id: string;
   type: "long";
@@ -41,6 +53,11 @@ export interface LongQuestion {
   context?: string;   // shared context/preamble before parts
   parts: LongPart[];
   fullSolution: string;  // complete model solution
+  responseKind?: "structured" | "essay";
+  essayPrompts?: EssayPrompt[];
+  recommendedWords?: [number, number];
+  maxWords?: number;
+  rubricDimensions?: EssayRubricDimension[];
 }
 
 export type Question = MCQQuestion | LongQuestion;

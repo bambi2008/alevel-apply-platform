@@ -15,7 +15,7 @@ import { LNAT_QUESTIONS } from "@/lib/tests/questions/lnat";
 import { TARA_QUESTIONS } from "@/lib/tests/questions/tara";
 import { BPHO_QUESTIONS } from "@/lib/tests/questions/bpho";
 import { BMO_QUESTIONS } from "@/lib/tests/questions/bmo";
-import type { Question, MCQQuestion, LongQuestion, GradingResult } from "@/lib/tests/questions/types";
+import type { Question, MCQQuestion, LongQuestion } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
 import type { GradeRequest, GradeResponse } from "@/app/api/grade-answer/route";
 
@@ -30,6 +30,7 @@ const QUESTION_BANKS: Record<string, Question[]> = {
   bpho: BPHO_QUESTIONS,
   bmo: BMO_QUESTIONS,
 };
+const EMPTY_QUESTIONS: Question[] = [];
 
 type PracticeMode = "topic" | "mixed";
 type PracticeFormat = "all" | "mcq" | "short-proof" | "long";
@@ -60,7 +61,7 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
   const test = getTestById(testId);
   if (!test || !test.hasQuestionBank) notFound();
 
-  const allQuestions = QUESTION_BANKS[testId] ?? [];
+  const allQuestions = QUESTION_BANKS[testId] ?? EMPTY_QUESTIONS;
 
   const initialTopic = searchParams.get("topic") ?? "all";
   const [mode, setMode] = useState<PracticeMode>(initialTopic !== "all" ? "topic" : "mixed");
@@ -444,8 +445,14 @@ function LongAnswerCard({
   const [result, setResult] = useState<GradeResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [showSolution, setShowSolution] = useState(false);
+  const [selectedPromptId, setSelectedPromptId] = useState<string | null>(null);
 
-  const canSubmit = Object.values(works).some((w) => w.trim().length > 0);
+  const isEssay = q.responseKind === "essay";
+  const selectedPrompt = q.essayPrompts?.find((prompt) => prompt.id === selectedPromptId);
+  const essayText = works[q.parts[0]?.label ?? "Essay"] ?? "";
+  const wordCount = essayText.trim() ? essayText.trim().split(/\s+/).length : 0;
+  const canSubmit = Object.values(works).some((w) => w.trim().length > 0)
+    && (!isEssay || !!selectedPrompt);
 
   const handleGrade = async () => {
     setGrading(true);
@@ -454,15 +461,19 @@ function LongAnswerCard({
       const payload: GradeRequest = {
         questionId: q.id,
         testId: q.testId,
-        questionContext: q.context,
+        questionContext: [q.context, selectedPrompt ? `Selected prompt: ${selectedPrompt.title}` : undefined]
+          .filter(Boolean)
+          .join("\n\n"),
         parts: q.parts.map((p) => ({
           label: p.label,
-          question: p.question,
+          question: selectedPrompt ? `${p.question}\nSelected prompt: ${selectedPrompt.title}` : p.question,
           marks: p.marks,
           solutionOutline: p.solutionOutline,
           studentWork: works[p.label] ?? "",
         })),
         fullSolution: q.fullSolution,
+        responseKind: q.responseKind,
+        rubricDimensions: q.rubricDimensions,
       };
 
       const res = await fetch("/api/grade-answer", {
@@ -492,13 +503,33 @@ function LongAnswerCard({
           </span>
           <span>{q.totalMarks} 分</span>
           <span>·</span>
-          <span>大题</span>
+          <span>{isEssay ? "写作题" : "大题"}</span>
         </div>
 
         {q.context && (
           <div className="mb-4 p-3 bg-[var(--surface)] rounded-lg border border-[var(--border)]">
             <MathRenderer text={q.context} className="text-sm text-[var(--ink)]" block />
           </div>
+        )}
+
+        {isEssay && q.essayPrompts && (
+          <fieldset className="mb-5">
+            <legend className="text-sm font-semibold text-[var(--ink)]">选择一个题目</legend>
+            <div className="mt-3 space-y-2">
+              {q.essayPrompts.map((prompt) => (
+                <button
+                  key={prompt.id}
+                  type="button"
+                  onClick={() => setSelectedPromptId(prompt.id)}
+                  disabled={!!result}
+                  className={`flex w-full items-start gap-3 rounded-lg border px-3 py-3 text-left text-sm transition ${selectedPromptId === prompt.id ? "border-[var(--indigo)] bg-[var(--info-bg)]" : "border-[var(--border)] hover:border-[color:var(--indigo)]/40"}`}
+                >
+                  <span className={`mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full border text-xs font-semibold ${selectedPromptId === prompt.id ? "border-[var(--indigo)] bg-[var(--indigo)] text-white" : "border-[var(--border)] text-[var(--ink-faint)]"}`}>{prompt.id}</span>
+                  <span>{prompt.title}</span>
+                </button>
+              ))}
+            </div>
+          </fieldset>
         )}
 
         <div className="space-y-5">
@@ -515,13 +546,19 @@ function LongAnswerCard({
                 </div>
               )}
               <textarea
-                className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-[color:var(--indigo)]/30"
-                rows={4}
-                placeholder={`在此输入 ${part.label} 的解答（支持文字和数学符号，如 x^2 + 3x = 0）`}
+                className={`w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-[color:var(--indigo)]/30 ${isEssay ? "leading-7" : "font-mono"}`}
+                rows={isEssay ? 20 : 4}
+                placeholder={isEssay ? "在此输入英文作文……" : `在此输入 ${part.label} 的解答（支持文字和数学符号，如 x^2 + 3x = 0）`}
                 value={works[part.label] ?? ""}
                 onChange={(e) => setWorks((prev) => ({ ...prev, [part.label]: e.target.value }))}
                 disabled={!!result}
               />
+              {isEssay && (
+                <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+                  <span className="text-[var(--ink-faint)]">建议 {q.recommendedWords?.[0]}–{q.recommendedWords?.[1]} 词 · 上限 {q.maxWords} 词</span>
+                  <span className={wordCount > (q.maxWords ?? Infinity) ? "font-semibold text-[var(--danger)]" : "font-semibold text-[var(--ink-soft)]"}>{wordCount} 词</span>
+                </div>
+              )}
             </div>
           ))}
         </div>
@@ -534,7 +571,7 @@ function LongAnswerCard({
               disabled={!canSubmit || grading}
               className="px-5 py-2.5 rounded-lg bg-[var(--indigo)] text-white text-sm font-medium hover:bg-[var(--indigo-hover)] disabled:opacity-50 transition"
             >
-              {grading ? "AI 评分中…" : "提交评分 (AI)"}
+              {grading ? "AI 评分中…" : isEssay ? "提交写作反馈 (AI)" : "提交评分 (AI)"}
             </button>
             <button
               type="button"
@@ -557,11 +594,22 @@ function LongAnswerCard({
       {result && (
         <div className="rounded-2xl border border-[color:var(--indigo)]/25 bg-[var(--info-bg)] p-6 space-y-5">
           <div className="flex items-center justify-between">
-            <h3 className="font-bold text-[var(--indigo)]">AI 评分结果</h3>
+            <h3 className="font-bold text-[var(--indigo)]">{isEssay ? "AI 写作反馈" : "AI 评分结果"}</h3>
             <span className="text-lg font-bold text-[var(--indigo)]">
               {result.totalEarned} / {result.totalMax} 分
             </span>
           </div>
+
+          {result.dimensions && result.dimensions.length > 0 && (
+            <div className="divide-y divide-[var(--border)] border-y border-[var(--border)] bg-white px-4">
+              {result.dimensions.map((dimension) => (
+                <div key={dimension.id} className="py-3">
+                  <div className="flex justify-between text-sm font-semibold"><span>{dimension.label}</span><span>{dimension.earned}/{dimension.max}</span></div>
+                  <p className="mt-1 text-sm text-[var(--ink-soft)]">{dimension.feedback}</p>
+                </div>
+              ))}
+            </div>
+          )}
 
           <div className="space-y-4">
             {result.perPart.map((p) => (
@@ -611,7 +659,7 @@ function LongAnswerCard({
             onClick={() => setShowSolution((v) => !v)}
             className="text-sm text-[var(--indigo)] hover:underline"
           >
-            {showSolution ? "收起" : "查看"} 标准答案
+            {showSolution ? "收起" : "查看"} {isEssay ? "评分标准说明" : "标准答案"}
           </button>
 
           <div className="mt-4 flex gap-3">
@@ -629,7 +677,7 @@ function LongAnswerCard({
       {/* Model solution */}
       {(showSolution || (result && showSolution)) && (
         <div className="rounded-2xl border border-[var(--border)] bg-[var(--surface)] p-6">
-          <h3 className="font-semibold text-[var(--ink)] mb-3">标准答案 Model Solution</h3>
+          <h3 className="font-semibold text-[var(--ink)] mb-3">{isEssay ? "评分标准说明" : "标准答案 Model Solution"}</h3>
           <MathRenderer text={q.fullSolution} className="text-sm text-[var(--ink)] leading-relaxed" block />
         </div>
       )}

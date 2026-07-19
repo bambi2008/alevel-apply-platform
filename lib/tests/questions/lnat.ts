@@ -1,10 +1,11 @@
 // LNAT Section A 练习题库 —— 原创论述文 + 阅读/推理选择题。
 // 无可计算答案：答案由文章内容锁定，经结构自检与严谨自审。id 前缀 lnat-ex-*。
-import type { MCQQuestion } from "./types";
+import type { MCQQuestion, Question } from "./types";
 import { LNAT_EXPANSION_2 } from "./lnat-batch2";
 import { LNAT_EXPANSION_3 } from "./lnat-batch3";
 import { LNAT_EXPANSION_4 } from "./lnat-batch4";
 import { LNAT_EXPANSION_5 } from "./lnat-batch5";
+import { LNAT_ESSAY_QUESTIONS } from "./lnat-writing";
 
 const LNAT_BATCH_1: MCQQuestion[] = [
   { id: "lnat-ex-001", type: "mcq", testId: "lnat", topicId: "lnat-analyse", difficulty: 2, marks: 1,
@@ -133,4 +134,7 @@ const LNAT_BATCH_1: MCQQuestion[] = [
     answer: "A", solution: "The author separates mere audibility from real understanding, cautioning that being heard widely does not mean being genuinely understood." },
 ];
 
-export const LNAT_QUESTIONS: MCQQuestion[] = [...LNAT_BATCH_1, ...LNAT_EXPANSION_2, ...LNAT_EXPANSION_3, ...LNAT_EXPANSION_4, ...LNAT_EXPANSION_5];
+export const LNAT_QUESTIONS: Question[] = [
+  ...LNAT_BATCH_1, ...LNAT_EXPANSION_2, ...LNAT_EXPANSION_3, ...LNAT_EXPANSION_4, ...LNAT_EXPANSION_5,
+  ...LNAT_ESSAY_QUESTIONS,
+];

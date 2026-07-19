@@ -81,6 +81,7 @@ import {
 } from "./mat-written-papers";
 import { PAT_WRITTEN_1, PAT_WRITTEN_2, PAT_WRITTEN_3 } from "./pat-written-papers";
 import { STEP_WRITTEN_1, STEP_WRITTEN_2, STEP_WRITTEN_3, STEP_WRITTEN_4 } from "./step-written-papers";
+import { LNAT_WRITTEN_QUESTIONS, TARA_WRITTEN_QUESTIONS } from "./writing-papers";
 
 export interface MockModule {
   id: string;
@@ -1096,9 +1097,40 @@ export const STEP_WRITTEN_PAPERS: MockPaper[] = [
   stepPaper(2, 3, STEP_WRITTEN_4),
 ];
 
+export const LNAT_WRITTEN_PAPERS: MockPaper[] = LNAT_WRITTEN_QUESTIONS.map((question, index) => ({
+  id: `lnat-written-${index + 1}`,
+  testId: "lnat",
+  title: `LNAT Section B 固定写作卷 ${index + 1}`,
+  titleEn: `LNAT Section B Fixed Essay Paper ${index + 1}`,
+  description: "按现行 LNAT Section B 编排：40 分钟，从 3 个题目中选择 1 题作答。官方建议不超过 750 词，理想篇幅约 500–600 词。Section B 不计入 LNAT 的 42 分选择题成绩，由申请院校直接查看；平台 20 分量表仅用于形成性训练反馈。",
+  modules: [{ id: "essay", title: "Section B · 三选一议论文", titleEn: "Section B · Choose one essay", durationSec: 40 * 60, questions: [question] }],
+  instructions: [
+    "只选择一个题目作答；先用约 5 分钟确定立场和论证顺序。",
+    "建议写 500–600 词，最多 750 词，必须形成清楚结论。",
+    "平台分数是训练量表，不是 LNAT 官方成绩或院校最终评价。",
+  ],
+  formatType: "current",
+}));
+
+export const TARA_WRITTEN_PAPERS: MockPaper[] = TARA_WRITTEN_QUESTIONS.map((question, index) => ({
+  id: `tara-written-${index + 1}`,
+  testId: "tara",
+  title: `TARA Writing Task 固定写作卷 ${index + 1}`,
+  titleEn: `TARA Writing Task Fixed Paper ${index + 1}`,
+  description: "按 2026 TARA Writing Task 编排：40 分钟，从 3 个命题中选择 1 个，解释命题、提出有理由的反论证，并讨论认同程度；上限 750 词。官方写作任务不评分，原文发送申请院校；平台 20 分量表仅用于形成性训练反馈。",
+  modules: [{ id: "writing", title: "Writing Task · 三选一", titleEn: "Writing Task · Choose one", durationSec: 40 * 60, questions: [question] }],
+  instructions: [
+    "只选择一个命题，并完整回应解释、反驳、权衡立场三个要求。",
+    "最多 750 词；优先选择和组织最重要的观点，不追求材料堆积。",
+    "TARA 官方不为写作任务打分；平台分数仅用于训练反馈。",
+  ],
+  formatType: "current",
+}));
+
 const ALL_MOCK_PAPERS: MockPaper[] = [BMO_R2_MOCK_1, BMO_R2_MOCK_2, BMO_R2_MOCK_3, BMO_R2_MOCK_4, BMO_R2_MOCK_5, BMO_R2_MOCK_6, BMO_R2_MOCK_7, BMO_R2_MOCK_8, BMO_MOCK_1, BMO_MOCK_2, BMO_MOCK_3, BMO_MOCK_4, BMO_MOCK_5, BMO_MOCK_6, BMO_MOCK_7, BMO_MOCK_8, ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3, BPHO_MOCK_1, BPHO_MOCK_2, BPHO_MOCK_3, BPHO_MOCK_4, BPHO_MOCK_5, BPHO_MOCK_6, BPHO_MOCK_7, BPHO_MOCK_8, BPHO_R2_MOCK_1, BPHO_R2_MOCK_2, BPHO_R2_MOCK_3, BPHO_R2_MOCK_4];
 ALL_MOCK_PAPERS.unshift(
   ...MAT_WRITTEN_PAPERS, ...PAT_WRITTEN_PAPERS, ...STEP_WRITTEN_PAPERS,
+  ...LNAT_WRITTEN_PAPERS, ...TARA_WRITTEN_PAPERS,
   BPHO_WRITTEN_PAPER_1, BPHO_WRITTEN_PAPER_2, BPHO_WRITTEN_PAPER_3,
   BMO1_WRITTEN_PAPER_1, BMO1_WRITTEN_PAPER_2, BMO1_WRITTEN_PAPER_3
 );
