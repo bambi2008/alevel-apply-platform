@@ -102,7 +102,7 @@ export const TMUA_BASE: MCQQuestion[] = [
     answer: "B", solution: "Independence: $P(A\\cap B)=P(A)P(B)=0.6\\times0.5=0.3$." },
   { id: "tmua-stat-07", type: "mcq", testId: "tmua", topicId: "tmua-stats", difficulty: 2, marks: 1,
     question: "In how many ways can 5 distinct people stand in a line?",
-    options: [ {key:"A",text:"$25$"},{key:"B",text:"$60$"},{key:"C",text:"$120$"},{key:"D",text:"$25$"},{key:"E",text:"$720$"} ],
+    options: [ {key:"A",text:"$25$"},{key:"B",text:"$60$"},{key:"C",text:"$120$"},{key:"D",text:"$240$"},{key:"E",text:"$720$"} ],
     answer: "C", solution: "$5!=120$." },
   { id: "tmua-stat-08", type: "mcq", testId: "tmua", topicId: "tmua-stats", difficulty: 2, marks: 1,
     question: "How many ways are there to choose 3 people from 6?",

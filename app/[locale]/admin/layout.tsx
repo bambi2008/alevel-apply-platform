@@ -36,6 +36,12 @@ export default async function AdminLayout({
           >
             内容管理
           </Link>
+          <Link
+            href="/admin/question-audit"
+            className="px-3 py-1.5 rounded-md text-neutral-600 hover:bg-neutral-100"
+          >
+            题库审计
+          </Link>
         </nav>
         <Link href="/" className="ml-auto text-sm text-blue-600 hover:underline">
           ← 返回站点

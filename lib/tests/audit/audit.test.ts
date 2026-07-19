@@ -1,0 +1,36 @@
+import { describe, expect, it } from "vitest";
+import { buildQuestionBankAudit } from "./index";
+import { calibrateQuestionDifficulty } from "./calibration";
+
+describe("question bank audit", () => {
+  it("inventories every supported test without structural blockers", () => {
+    const report = buildQuestionBankAudit();
+    expect(report.totals.tests).toBe(9);
+    expect(report.totals.questions).toBe(2346);
+    expect(report.totals.topicsCovered).toBe(53);
+    expect(report.totals.topicsTotal).toBe(62);
+    expect(report.totals.critical).toBe(0);
+  });
+
+  it("tracks known written-format gaps as warnings", () => {
+    const report = buildQuestionBankAudit();
+    expect(report.issues).toEqual(expect.arrayContaining([
+      expect.objectContaining({ code: "MISSING_WRITTEN_PRACTICE", testId: "pat", severity: "warning" }),
+      expect.objectContaining({ code: "MISSING_FIXED_WRITTEN_PAPER", testId: "step", severity: "warning" }),
+      expect.objectContaining({ code: "TEST_DIFFICULTY_SKEW", testId: "lnat", severity: "warning" }),
+    ]));
+  });
+});
+
+describe("difficulty calibration", () => {
+  it("compares observed score rates with labelled difficulty bands", () => {
+    const rows = calibrateQuestionDifficulty([
+      { questionId: "bmo-sp-nt-001", attempts: 12, earned: 47, max: 48 },
+      { questionId: "bmo-sp-ge-012", attempts: 12, earned: 7, max: 72 },
+      { questionId: "bmo-sp-nt-005", attempts: 4, earned: 10, max: 20 },
+    ]);
+    expect(rows.find((row) => row.questionId === "bmo-sp-nt-001")?.status).toBe("easier-than-label");
+    expect(rows.find((row) => row.questionId === "bmo-sp-ge-012")?.status).toBe("harder-than-label");
+    expect(rows.find((row) => row.questionId === "bmo-sp-nt-005")?.status).toBe("insufficient");
+  });
+});
