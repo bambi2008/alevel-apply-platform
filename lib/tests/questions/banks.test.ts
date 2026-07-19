@@ -49,6 +49,20 @@ describe("question bank global integrity", () => {
   });
 });
 
+describe("ESAT science gap fill", () => {
+  it("keeps at least twenty questions and all difficulty levels in every target topic", () => {
+    const topics = [
+      "esat-phys4", "esat-phys5", "esat-phys6", "esat-phys7",
+      "esat-chem4", "esat-chem5", "esat-bio4",
+    ];
+    for (const topicId of topics) {
+      const questions = ESAT_QUESTIONS.filter((question) => question.topicId === topicId);
+      expect(questions.length, `${topicId}: insufficient practice`).toBeGreaterThanOrEqual(20);
+      expect(new Set(questions.map((question) => question.difficulty)), `${topicId}: missing difficulty`).toEqual(new Set([1, 2, 3]));
+    }
+  });
+});
+
 describe("BPhO fourth long-question batch", () => {
   it("covers every BPhO topic exactly once", () => {
     expect(BPHO4_LONG_SAMPLE).toHaveLength(5);

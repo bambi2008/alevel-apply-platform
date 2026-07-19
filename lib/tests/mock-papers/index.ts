@@ -10,6 +10,7 @@ import { ESAT_MK7_MATH, ESAT_MK7_PHYS } from "./esat-mock-7";
 import { ESAT_MK8_MATH, ESAT_MK8_CHEM } from "./esat-mock-8";
 import { ESAT_MK9_MATH, ESAT_MK9_BIO } from "./esat-mock-9";
 import { ESAT_MK10_MAG, ESAT_MK10_SCI } from "./esat-mock-10";
+import { ESAT_GAP_BIOLOGY_MODULE, ESAT_GAP_CHEMISTRY_MODULE, ESAT_GAP_PHYSICS_MODULE } from "./esat-gap-module-papers";
 import { TMUA_MK1_P1, TMUA_MK1_P2 } from "./tmua-mock-1";
 import { MAT_MK1_MCQ } from "./mat-mock-1";
 import { MAT_MK2_MCQ } from "./mat-mock-2";
@@ -898,6 +899,36 @@ export const BMO_MOCK_8: MockPaper = {
   modules: [{ id: "mcq", title: "选择题（25 题 / 90 分钟）", titleEn: "Multiple Choice (Q1–25)", durationSec: 90 * 60, questions: BMO_MK8_MCQ }],
 };
 
+export const ESAT_GAP_PHYSICS_PAPER: MockPaper = {
+  id: "esat-gap-physics-module",
+  testId: "esat",
+  title: "ESAT 物理考纲补齐模块卷",
+  titleEn: "ESAT Physics Specification Completion Module",
+  description: "现行 ESAT 物理模块训练：27 道五选一，40 分钟，无计算器。集中覆盖波、放射性、热与物质、磁学与电磁。",
+  modules: [{ id: "physics", title: "物理补齐模块", titleEn: "Physics completion module", durationSec: 40 * 60, questions: ESAT_GAP_PHYSICS_MODULE }],
+  formatType: "current",
+};
+
+export const ESAT_GAP_CHEMISTRY_PAPER: MockPaper = {
+  id: "esat-gap-chemistry-module",
+  testId: "esat",
+  title: "ESAT 化学考纲补齐模块卷",
+  titleEn: "ESAT Chemistry Specification Completion Module",
+  description: "现行 ESAT 化学模块训练：27 道五选一，40 分钟，无计算器。集中覆盖定量化学、化学计量与电解。",
+  modules: [{ id: "chemistry", title: "化学补齐模块", titleEn: "Chemistry completion module", durationSec: 40 * 60, questions: ESAT_GAP_CHEMISTRY_MODULE }],
+  formatType: "current",
+};
+
+export const ESAT_GAP_BIOLOGY_PAPER: MockPaper = {
+  id: "esat-gap-biology-module",
+  testId: "esat",
+  title: "ESAT 生物考纲补齐模块卷",
+  titleEn: "ESAT Biology Specification Completion Module",
+  description: "现行 ESAT 生物模块训练：27 道五选一，40 分钟，无计算器。重点覆盖基因技术、生态系统、能量流动与碳循环。",
+  modules: [{ id: "biology", title: "生物补齐模块", titleEn: "Biology completion module", durationSec: 40 * 60, questions: ESAT_GAP_BIOLOGY_MODULE }],
+  formatType: "current",
+};
+
 const BMO1_WRITTEN_DESC =
   "按现行 BMO1 结构编排的固定书面模拟卷：3.5 小时、6 道完整证明题、每题 10 分。题目为桥申原创并经题库审计，不是 UKMT 官方历年真题；固定题序便于复盘、复测和比较进步。交卷后按证明步骤评分，AI 不可用时提供评分要点自评且不计零分。";
 
@@ -1127,7 +1158,7 @@ export const TARA_WRITTEN_PAPERS: MockPaper[] = TARA_WRITTEN_QUESTIONS.map((ques
   formatType: "current",
 }));
 
-const ALL_MOCK_PAPERS: MockPaper[] = [BMO_R2_MOCK_1, BMO_R2_MOCK_2, BMO_R2_MOCK_3, BMO_R2_MOCK_4, BMO_R2_MOCK_5, BMO_R2_MOCK_6, BMO_R2_MOCK_7, BMO_R2_MOCK_8, BMO_MOCK_1, BMO_MOCK_2, BMO_MOCK_3, BMO_MOCK_4, BMO_MOCK_5, BMO_MOCK_6, BMO_MOCK_7, BMO_MOCK_8, ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3, BPHO_MOCK_1, BPHO_MOCK_2, BPHO_MOCK_3, BPHO_MOCK_4, BPHO_MOCK_5, BPHO_MOCK_6, BPHO_MOCK_7, BPHO_MOCK_8, BPHO_R2_MOCK_1, BPHO_R2_MOCK_2, BPHO_R2_MOCK_3, BPHO_R2_MOCK_4];
+const ALL_MOCK_PAPERS: MockPaper[] = [BMO_R2_MOCK_1, BMO_R2_MOCK_2, BMO_R2_MOCK_3, BMO_R2_MOCK_4, BMO_R2_MOCK_5, BMO_R2_MOCK_6, BMO_R2_MOCK_7, BMO_R2_MOCK_8, BMO_MOCK_1, BMO_MOCK_2, BMO_MOCK_3, BMO_MOCK_4, BMO_MOCK_5, BMO_MOCK_6, BMO_MOCK_7, BMO_MOCK_8, ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, ESAT_GAP_PHYSICS_PAPER, ESAT_GAP_CHEMISTRY_PAPER, ESAT_GAP_BIOLOGY_PAPER, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3, BPHO_MOCK_1, BPHO_MOCK_2, BPHO_MOCK_3, BPHO_MOCK_4, BPHO_MOCK_5, BPHO_MOCK_6, BPHO_MOCK_7, BPHO_MOCK_8, BPHO_R2_MOCK_1, BPHO_R2_MOCK_2, BPHO_R2_MOCK_3, BPHO_R2_MOCK_4];
 ALL_MOCK_PAPERS.unshift(
   ...MAT_WRITTEN_PAPERS, ...PAT_WRITTEN_PAPERS, ...STEP_WRITTEN_PAPERS,
   ...LNAT_WRITTEN_PAPERS, ...TARA_WRITTEN_PAPERS,

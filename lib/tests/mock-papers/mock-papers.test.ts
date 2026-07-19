@@ -8,8 +8,8 @@ import type { MCQQuestion } from "@/lib/tests/questions/types";
 import { getCountedResults } from "./scoring";
 
 describe("mock papers", () => {
-  it("ESAT has 10 mock papers", () => {
-    expect(getMockPapersForTest("esat").length).toBe(10);
+  it("ESAT has ten general papers and three specification-completion modules", () => {
+    expect(getMockPapersForTest("esat").length).toBe(13);
   });
 
   it("getMockPaper resolves known ids and rejects unknown", () => {
@@ -31,6 +31,18 @@ describe("mock papers", () => {
     for (const q of getAllMockQuestions().filter((question): question is MCQQuestion => question.type === "mcq")) {
       const keys = q.options.map((o) => o.key);
       expect(keys, `${q.id}: answer not in options`).toContain(q.answer);
+    }
+  });
+
+  it("offers three current-format ESAT science completion modules", () => {
+    const papers = getMockPapersForTest("esat").filter((paper) => paper.id.startsWith("esat-gap-"));
+    expect(papers).toHaveLength(3);
+    for (const paper of papers) {
+      expect(paper.formatType).toBe("current");
+      expect(paper.modules).toHaveLength(1);
+      expect(paper.modules[0].durationSec).toBe(40 * 60);
+      expect(paper.modules[0].questions).toHaveLength(27);
+      expect(paper.modules[0].questions.every((question) => question.type === "mcq")).toBe(true);
     }
   });
 
