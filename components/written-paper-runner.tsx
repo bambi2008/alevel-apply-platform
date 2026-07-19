@@ -21,6 +21,11 @@ const TOPIC_LABELS: Record<string, string> = {
   "bmo-algebra": "代数与不等式",
   "bmo-geometry": "几何",
   "bmo-combinatorics": "组合",
+  "bpho-mechanics": "力学",
+  "bpho-waves": "波动与光学",
+  "bpho-em": "电磁学",
+  "bpho-thermal": "热学",
+  "bpho-modern": "近代物理",
 };
 
 function formatTime(seconds: number): string {
@@ -35,6 +40,8 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
     (question): question is LongQuestion => question.type === "long"
   );
   const durationSec = paper.modules.reduce((sum, module) => sum + module.durationSec, 0);
+  const totalMarks = questions.reduce((sum, question) => sum + question.totalMarks, 0);
+  const isBpho = paper.testId === "bpho";
   const [phase, setPhase] = useState<Phase>("briefing");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [works, setWorks] = useState<WrittenWorks>({});
@@ -74,6 +81,29 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
     const nextGrades: WrittenGrade[] = [];
 
     for (const question of questions) {
+      const isAnswered = Object.values(works[question.id] ?? {}).some((value) => value.trim().length > 0);
+      if (!isAnswered) {
+        nextGrades.push({
+          questionId: question.id,
+          grading: {
+            questionId: question.id,
+            totalEarned: 0,
+            totalMax: question.totalMarks,
+            perPart: question.parts.map((part) => ({
+              label: part.label,
+              earned: 0,
+              max: part.marks,
+              feedback: "本小题未作答。",
+              keyStepsFound: [],
+              keyStepsMissing: [],
+            })),
+            overallFeedback: "本题未作答，计 0 分。",
+            modelSolution: question.fullSolution,
+          },
+        });
+        setGradingProgress(nextGrades.length);
+        continue;
+      }
       try {
         const payload: GradeRequest = {
           questionId: question.id,
@@ -131,7 +161,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-10">
         <Link href={`/tests/${paper.testId}`} className="text-sm text-[var(--indigo)] hover:underline">
-          ← 返回 BMO
+          ← 返回 {isBpho ? "BPhO" : "BMO"}
         </Link>
         <p className="mt-8 text-xs font-semibold uppercase text-[var(--ink-faint)]">Fixed written paper</p>
         <h1 className="mt-2 text-2xl font-bold text-[var(--ink)]">{paper.title}</h1>
@@ -139,13 +169,14 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
         <p className="mt-5 text-sm leading-7 text-[var(--ink-soft)]">{paper.description}</p>
 
         <div className="mt-7 grid grid-cols-3 border-y border-[var(--border)] py-4 text-center">
-          <div><strong className="block text-xl">210</strong><span className="text-xs text-[var(--ink-faint)]">分钟</span></div>
-          <div><strong className="block text-xl">6</strong><span className="text-xs text-[var(--ink-faint)]">证明题</span></div>
-          <div><strong className="block text-xl">60</strong><span className="text-xs text-[var(--ink-faint)]">总分</span></div>
+          <div><strong className="block text-xl">{Math.round(durationSec / 60)}</strong><span className="text-xs text-[var(--ink-faint)]">分钟</span></div>
+          <div><strong className="block text-xl">{questions.length}</strong><span className="text-xs text-[var(--ink-faint)]">书面题</span></div>
+          <div><strong className="block text-xl">{totalMarks}</strong><span className="text-xs text-[var(--ink-faint)]">总分</span></div>
         </div>
 
         <ul className="mt-6 space-y-2 text-sm text-[var(--ink-soft)]">
-          <li>每题 10 分，必须写出完整证明过程。</li>
+          <li>{isBpho ? "Section 1 共 13 题、50 分；Section 2 共 2 题、50 分。" : "每题 10 分，必须写出完整证明过程。"}</li>
+          <li>{isBpho ? "请写出物理原理、关键公式、代入过程和带单位的结论。" : "结论必须由清晰、完整的数学论证支持。"}</li>
           <li>题目固定，不随机抽取，适合复盘和阶段比较。</li>
           <li>AI 评分失败的题目会标记为待自评，不会按零分计入。</li>
         </ul>
@@ -180,6 +211,12 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
   }
 
   const current = questions[currentIndex];
+  const currentModule = paper.modules.find((module) =>
+    module.questions.some((question) => question.id === current.id)
+  );
+  const currentSectionLabel = paper.modules.length > 1
+    ? currentModule?.title.split("·")[0]?.trim()
+    : undefined;
   const answered = questions.filter((question) =>
     Object.values(works[question.id] ?? {}).some((value) => value.trim().length > 0)
   ).length;
@@ -190,7 +227,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
         <div className="mx-auto flex max-w-5xl items-center gap-4">
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold">{paper.title}</p>
-            <p className="text-xs text-[var(--ink-faint)]">{answered}/6 已作答</p>
+            <p className="text-xs text-[var(--ink-faint)]">{answered}/{questions.length} 已作答</p>
           </div>
           <span className={`font-mono text-lg font-bold tabular-nums ${timeLeft < 600 ? "text-[var(--danger)]" : "text-[var(--ink)]"}`}>
             {formatTime(timeLeft)}
@@ -227,7 +264,9 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
         <section className="min-w-0">
           <div className="flex items-center justify-between border-b border-[var(--border)] pb-3">
             <span className="text-sm font-semibold">第 {currentIndex + 1} 题</span>
-            <span className="text-xs text-[var(--ink-faint)]">{TOPIC_LABELS[current.topicId] ?? current.topicId} · 10 分</span>
+            <span className="text-right text-xs text-[var(--ink-faint)]">
+              {currentSectionLabel ? `${currentSectionLabel} · ` : ""}{TOPIC_LABELS[current.topicId] ?? current.topicId} · {current.totalMarks} 分
+            </span>
           </div>
           {current.context && <MathRenderer text={current.context} className="mt-5 text-sm leading-7 text-[var(--ink)]" block />}
 
@@ -414,7 +453,7 @@ function WrittenPaperResults({
       </section>
 
       <div className="mt-8 flex gap-3">
-        <Link href={`/tests/${paper.testId}`} className="flex-1 rounded-md border border-[var(--border)] py-3 text-center text-sm">返回 BMO</Link>
+        <Link href={`/tests/${paper.testId}`} className="flex-1 rounded-md border border-[var(--border)] py-3 text-center text-sm">返回 {paper.testId === "bpho" ? "BPhO" : "BMO"}</Link>
         <button type="button" onClick={onRetry} className="flex-1 rounded-md bg-[var(--indigo)] py-3 text-sm font-semibold text-white">重做本卷</button>
       </div>
     </div>

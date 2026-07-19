@@ -71,6 +71,11 @@ import { BMO_R2M6_T1, BMO_R2M6_T2, BMO_R2M6_T3, BMO_R2M6_T4 } from "./bmo-r2-moc
 import { BMO_R2M7_T1, BMO_R2M7_T2, BMO_R2M7_T3, BMO_R2M7_T4 } from "./bmo-r2-mock-7";
 import { BMO_R2M8_T1, BMO_R2M8_T2, BMO_R2M8_T3, BMO_R2M8_T4 } from "./bmo-r2-mock-8";
 import { BMO1_WRITTEN_1, BMO1_WRITTEN_2, BMO1_WRITTEN_3 } from "./bmo1-written-papers";
+import {
+  BPHO_WRITTEN_1_S1, BPHO_WRITTEN_1_S2,
+  BPHO_WRITTEN_2_S1, BPHO_WRITTEN_2_S2,
+  BPHO_WRITTEN_3_S1, BPHO_WRITTEN_3_S2,
+} from "./bpho-written-papers";
 
 export interface MockModule {
   id: string;
@@ -905,6 +910,36 @@ export const BMO1_WRITTEN_PAPER_3: MockPaper = {
   modules: [{ id: "written", title: "完整证明卷（6 题 / 210 分钟）", titleEn: "Written Paper (6 problems)", durationSec: 210 * 60, questions: BMO1_WRITTEN_3 }],
 };
 
+const BPHO_WRITTEN_DESC =
+  "固定原创书面套卷，按 Section 1 短答与 Section 2 长题组织。学生直接输入推导过程，交卷后按物理原理、关键步骤和最终结论分步评分；本卷不是历年真题。";
+
+export const BPHO_WRITTEN_PAPER_1: MockPaper = {
+  id: "bpho-written-1", testId: "bpho", title: "BPhO 固定书面套卷一", titleEn: "BPhO Fixed Written Paper 1",
+  description: BPHO_WRITTEN_DESC,
+  modules: [
+    { id: "section-1", title: "Section 1 · 书面短答（13 题 / 50 分）", titleEn: "Section 1 · Short Written Problems", durationSec: 80 * 60, questions: BPHO_WRITTEN_1_S1 },
+    { id: "section-2", title: "Section 2 · 书面长题（2 题 / 50 分）", titleEn: "Section 2 · Long Written Problems", durationSec: 80 * 60, questions: BPHO_WRITTEN_1_S2 },
+  ],
+};
+
+export const BPHO_WRITTEN_PAPER_2: MockPaper = {
+  id: "bpho-written-2", testId: "bpho", title: "BPhO 固定书面套卷二", titleEn: "BPhO Fixed Written Paper 2",
+  description: BPHO_WRITTEN_DESC,
+  modules: [
+    { id: "section-1", title: "Section 1 · 书面短答（13 题 / 50 分）", titleEn: "Section 1 · Short Written Problems", durationSec: 80 * 60, questions: BPHO_WRITTEN_2_S1 },
+    { id: "section-2", title: "Section 2 · 书面长题（2 题 / 50 分）", titleEn: "Section 2 · Long Written Problems", durationSec: 80 * 60, questions: BPHO_WRITTEN_2_S2 },
+  ],
+};
+
+export const BPHO_WRITTEN_PAPER_3: MockPaper = {
+  id: "bpho-written-3", testId: "bpho", title: "BPhO 固定书面套卷三", titleEn: "BPhO Fixed Written Paper 3",
+  description: BPHO_WRITTEN_DESC,
+  modules: [
+    { id: "section-1", title: "Section 1 · 书面短答（13 题 / 50 分）", titleEn: "Section 1 · Short Written Problems", durationSec: 80 * 60, questions: BPHO_WRITTEN_3_S1 },
+    { id: "section-2", title: "Section 2 · 书面长题（2 题 / 50 分）", titleEn: "Section 2 · Long Written Problems", durationSec: 80 * 60, questions: BPHO_WRITTEN_3_S2 },
+  ],
+};
+
 const BMO_R2_MOCK_DESC =
   "对标真实 BMO2：3.5 小时、4 道主题证明长题、每题 10 分、IMO 选拔级难度。本卷把每个主题化为一个「链式选择题阶梯」——沿推导路径逐级上难度，支持自动判分。真实 R2 需完整手写证明：请配合练习区的 8 道 BMO2 风格长题与官方历年真题练习书写。题目 100% 原创，仅以 2006–2026 年 BMO2 真题做主题与难度校准。";
 
@@ -993,7 +1028,10 @@ export const BMO_R2_MOCK_8: MockPaper = {
 };
 
 const ALL_MOCK_PAPERS: MockPaper[] = [BMO_R2_MOCK_1, BMO_R2_MOCK_2, BMO_R2_MOCK_3, BMO_R2_MOCK_4, BMO_R2_MOCK_5, BMO_R2_MOCK_6, BMO_R2_MOCK_7, BMO_R2_MOCK_8, BMO_MOCK_1, BMO_MOCK_2, BMO_MOCK_3, BMO_MOCK_4, BMO_MOCK_5, BMO_MOCK_6, BMO_MOCK_7, BMO_MOCK_8, ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3, BPHO_MOCK_1, BPHO_MOCK_2, BPHO_MOCK_3, BPHO_MOCK_4, BPHO_MOCK_5, BPHO_MOCK_6, BPHO_MOCK_7, BPHO_MOCK_8, BPHO_R2_MOCK_1, BPHO_R2_MOCK_2, BPHO_R2_MOCK_3, BPHO_R2_MOCK_4];
-ALL_MOCK_PAPERS.unshift(BMO1_WRITTEN_PAPER_1, BMO1_WRITTEN_PAPER_2, BMO1_WRITTEN_PAPER_3);
+ALL_MOCK_PAPERS.unshift(
+  BPHO_WRITTEN_PAPER_1, BPHO_WRITTEN_PAPER_2, BPHO_WRITTEN_PAPER_3,
+  BMO1_WRITTEN_PAPER_1, BMO1_WRITTEN_PAPER_2, BMO1_WRITTEN_PAPER_3
+);
 
 export function getMockPapersForTest(testId: string): MockPaper[] {
   return ALL_MOCK_PAPERS.filter((p) => p.testId === testId);

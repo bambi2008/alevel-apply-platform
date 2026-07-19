@@ -54,4 +54,24 @@ describe("mock papers", () => {
       );
     }
   });
+
+  it("offers three fixed BPhO written papers with balanced 100-mark structure", () => {
+    const papers = getMockPapersForTest("bpho").filter((paper) => paper.id.startsWith("bpho-written-"));
+    expect(papers).toHaveLength(3);
+
+    for (const paper of papers) {
+      expect(paper.modules).toHaveLength(2);
+      expect(paper.modules.map((module) => module.durationSec)).toEqual([80 * 60, 80 * 60]);
+
+      const [section1, section2] = paper.modules;
+      expect(section1.questions).toHaveLength(13);
+      expect(section2.questions).toHaveLength(2);
+      expect([...section1.questions, ...section2.questions].every((question) => question.type === "long")).toBe(true);
+      expect(section1.questions.reduce((sum, question) => sum + (question.type === "long" ? question.totalMarks : 0), 0)).toBe(50);
+      expect(section2.questions.reduce((sum, question) => sum + (question.type === "long" ? question.totalMarks : 0), 0)).toBe(50);
+      expect(new Set(section1.questions.map((question) => question.topicId))).toEqual(
+        new Set(["bpho-mechanics", "bpho-waves", "bpho-em", "bpho-thermal", "bpho-modern"])
+      );
+    }
+  });
 });
