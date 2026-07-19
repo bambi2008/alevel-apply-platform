@@ -76,6 +76,9 @@ import {
   BPHO_WRITTEN_2_S1, BPHO_WRITTEN_2_S2,
   BPHO_WRITTEN_3_S1, BPHO_WRITTEN_3_S2,
 } from "./bpho-written-papers";
+import { MAT_WRITTEN_1, MAT_WRITTEN_2, MAT_WRITTEN_3 } from "./mat-written-papers";
+import { PAT_WRITTEN_1, PAT_WRITTEN_2, PAT_WRITTEN_3 } from "./pat-written-papers";
+import { STEP_WRITTEN_1, STEP_WRITTEN_2, STEP_WRITTEN_3 } from "./step-written-papers";
 
 export interface MockModule {
   id: string;
@@ -92,6 +95,8 @@ export interface MockPaper {
   titleEn: string;
   description: string;
   modules: MockModule[];
+  instructions?: string[];
+  bestQuestionCount?: number;
 }
 
 export const ESAT_MOCK_1: MockPaper = {
@@ -1027,8 +1032,64 @@ export const BMO_R2_MOCK_8: MockPaper = {
   ],
 };
 
+const MAT_WRITTEN_DESC =
+  "按 Oxford MAT 2025 最后一年格式中的键入长题部分编排：每套 2 道多小问长题、共 30 分。MAT 已于 2026 年停用并由 TMUA 取代；本卷用于保留深度数学推理训练，不是当前申请考试。题目为桥申原创固定题组。";
+
+export const MAT_WRITTEN_PAPERS: MockPaper[] = [MAT_WRITTEN_1, MAT_WRITTEN_2, MAT_WRITTEN_3].map((questions, index) => ({
+  id: `mat-written-${index + 1}`,
+  testId: "mat",
+  title: `MAT 2025 历史格式键入长题 ${index + 1}`,
+  titleEn: `MAT 2025 Typed-Response Set ${index + 1}`,
+  description: MAT_WRITTEN_DESC,
+  modules: [{ id: "typed-response", title: "键入长题（2 题 / 30 分）", titleEn: "Typed-response questions", durationSec: 45 * 60, questions }],
+  instructions: [
+    "这是 2025 历史格式的长题专项，不是 2026 年现行入学考试。",
+    "每个小问都应写出关键推理；只填最终答案不能获得完整分数。",
+    "建议使用标准键盘可输入的数学表达，复杂排版不是评分重点。",
+  ],
+}));
+
+const PAT_WRITTEN_DESC =
+  "非官方 PAT 书面能力拓展卷：把历史 PAT 风格选择题改为必须写出物理原理、公式和计算过程的短答题。PAT 已于 2026 年由 ESAT 取代，且最后阶段为全选择题；本卷用于牛津物理面试与深度问题解决训练，不应当作现行考试模拟。";
+
+export const PAT_WRITTEN_PAPERS: MockPaper[] = [PAT_WRITTEN_1, PAT_WRITTEN_2, PAT_WRITTEN_3].map((questions, index) => ({
+  id: `pat-written-extension-${index + 1}`,
+  testId: "pat",
+  title: `PAT 历史能力书面拓展卷 ${index + 1}`,
+  titleEn: `PAT Legacy Written Extension ${index + 1}`,
+  description: PAT_WRITTEN_DESC,
+  modules: [{ id: "written-extension", title: "物理书面短答（12 题）", titleEn: "Written problem-solving extension", durationSec: 120 * 60, questions }],
+  instructions: [
+    "本卷是非官方能力拓展，不对应 2026 年 ESAT 的选择题结构。",
+    "每题写明所用定律、符号含义、代入过程和带单位的结论。",
+    "遇到估算题应说明近似假设，并检查量纲与数量级。",
+  ],
+}));
+
+const stepPaper = (number: number, level: 2 | 3, questions: Question[]): MockPaper => ({
+  id: `step${level}-written-${number}`,
+  testId: "step",
+  title: `STEP ${level} 固定书面套卷 ${number}`,
+  titleEn: `STEP ${level} Fixed Written Paper ${number}`,
+  description: `按现行 STEP ${level} 结构编排：3 小时、12 道书面长题（8 道纯数、2 道力学、2 道统计与概率），最终成绩只取最高 6 题，每题 20 分。题目为桥申原创固定题组，不是 OCR 官方历年真题。`,
+  modules: [{ id: "written", title: "完整书面卷（12 题 / 最高六题计分）", titleEn: "Full written paper", durationSec: 180 * 60, questions }],
+  instructions: [
+    "先浏览全部 12 题，再选择最有把握的题目作答；不要求完成全部题目。",
+    "最终只计得分最高的 6 题，每题 20 分，计分上限 120 分。",
+    "必须保留完整推导、证明与必要文字说明。",
+  ],
+  bestQuestionCount: 6,
+});
+
+export const STEP_WRITTEN_PAPERS: MockPaper[] = [
+  stepPaper(1, 2, STEP_WRITTEN_1),
+  stepPaper(2, 2, STEP_WRITTEN_2),
+  stepPaper(1, 3, STEP_WRITTEN_3),
+];
+
 const ALL_MOCK_PAPERS: MockPaper[] = [BMO_R2_MOCK_1, BMO_R2_MOCK_2, BMO_R2_MOCK_3, BMO_R2_MOCK_4, BMO_R2_MOCK_5, BMO_R2_MOCK_6, BMO_R2_MOCK_7, BMO_R2_MOCK_8, BMO_MOCK_1, BMO_MOCK_2, BMO_MOCK_3, BMO_MOCK_4, BMO_MOCK_5, BMO_MOCK_6, BMO_MOCK_7, BMO_MOCK_8, ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3, BPHO_MOCK_1, BPHO_MOCK_2, BPHO_MOCK_3, BPHO_MOCK_4, BPHO_MOCK_5, BPHO_MOCK_6, BPHO_MOCK_7, BPHO_MOCK_8, BPHO_R2_MOCK_1, BPHO_R2_MOCK_2, BPHO_R2_MOCK_3, BPHO_R2_MOCK_4];
 ALL_MOCK_PAPERS.unshift(
+  ...MAT_WRITTEN_PAPERS, ...PAT_WRITTEN_PAPERS, ...STEP_WRITTEN_PAPERS,
   BPHO_WRITTEN_PAPER_1, BPHO_WRITTEN_PAPER_2, BPHO_WRITTEN_PAPER_3,
   BMO1_WRITTEN_PAPER_1, BMO1_WRITTEN_PAPER_2, BMO1_WRITTEN_PAPER_3
 );

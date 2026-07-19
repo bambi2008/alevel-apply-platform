@@ -5,6 +5,7 @@ import {
   getAllMockQuestions,
 } from "@/lib/tests/mock-papers";
 import type { MCQQuestion } from "@/lib/tests/questions/types";
+import { getCountedResults } from "./scoring";
 
 describe("mock papers", () => {
   it("ESAT has 10 mock papers", () => {
@@ -36,6 +37,27 @@ describe("mock papers", () => {
   it("mock question ids are unique", () => {
     const ids = getAllMockQuestions().map((q) => q.id);
     expect(new Set(ids).size).toBe(ids.length);
+  });
+
+  it("every fixed paper keeps test ownership and valid written marks", () => {
+    for (const testId of ["mat", "pat", "step", "bmo", "bpho"]) {
+      for (const paper of getMockPapersForTest(testId)) {
+        const questions = paper.modules.flatMap((module) => module.questions);
+        expect(questions.every((question) => question.testId === testId), `${paper.id}: wrong testId`).toBe(true);
+        for (const question of questions) {
+          if (question.type !== "long") continue;
+          expect(question.parts.length, `${question.id}: no parts`).toBeGreaterThan(0);
+          expect(
+            question.parts.reduce((sum, part) => sum + part.marks, 0),
+            `${question.id}: part marks do not match total`
+          ).toBe(question.totalMarks);
+          expect(question.fullSolution.trim(), `${question.id}: missing solution`).not.toBe("");
+        }
+        if (paper.bestQuestionCount) {
+          expect(paper.bestQuestionCount).toBeLessThanOrEqual(questions.length);
+        }
+      }
+    }
   });
 
   it("offers three fixed BMO1 written papers with official paper structure", () => {
@@ -73,5 +95,60 @@ describe("mock papers", () => {
         new Set(["bpho-mechanics", "bpho-waves", "bpho-em", "bpho-thermal", "bpho-modern"])
       );
     }
+  });
+
+  it("offers three MAT 2025 typed-response sets", () => {
+    const papers = getMockPapersForTest("mat").filter((paper) => paper.id.startsWith("mat-written-"));
+    expect(papers).toHaveLength(3);
+    for (const paper of papers) {
+      const questions = paper.modules.flatMap((module) => module.questions);
+      expect(paper.modules).toHaveLength(1);
+      expect(paper.modules[0].durationSec).toBe(45 * 60);
+      expect(questions).toHaveLength(2);
+      expect(questions.every((question) => question.type === "long")).toBe(true);
+      expect(questions.reduce((sum, question) => sum + (question.type === "long" ? question.totalMarks : 0), 0)).toBe(30);
+    }
+  });
+
+  it("offers three balanced PAT written extension papers without claiming official format", () => {
+    const papers = getMockPapersForTest("pat").filter((paper) => paper.id.startsWith("pat-written-extension-"));
+    expect(papers).toHaveLength(3);
+    for (const paper of papers) {
+      const questions = paper.modules.flatMap((module) => module.questions);
+      expect(paper.description).toContain("非官方");
+      expect(questions).toHaveLength(12);
+      expect(questions.every((question) => question.type === "long")).toBe(true);
+      expect(new Set(questions.map((question) => question.topicId))).toEqual(new Set([
+        "pat-mech", "pat-em", "pat-wave", "pat-thermo", "pat-modern", "pat-math",
+      ]));
+    }
+  });
+
+  it("offers two STEP 2 papers and one STEP 3 paper with best-six scoring", () => {
+    const papers = getMockPapersForTest("step").filter((paper) => paper.id.includes("-written-"));
+    expect(papers).toHaveLength(3);
+    expect(papers.filter((paper) => paper.id.startsWith("step2-"))).toHaveLength(2);
+    expect(papers.filter((paper) => paper.id.startsWith("step3-"))).toHaveLength(1);
+
+    for (const paper of papers) {
+      const questions = paper.modules.flatMap((module) => module.questions);
+      expect(paper.modules).toHaveLength(1);
+      expect(paper.modules[0].durationSec).toBe(180 * 60);
+      expect(paper.bestQuestionCount).toBe(6);
+      expect(questions).toHaveLength(12);
+      expect(questions.filter((question) => question.topicId.startsWith("step-pure"))).toHaveLength(8);
+      expect(questions.filter((question) => question.topicId === "step-mech")).toHaveLength(2);
+      expect(questions.filter((question) => question.topicId === "step-stats")).toHaveLength(2);
+      expect(questions.reduce((sum, question) => sum + (question.type === "long" ? question.totalMarks : 0), 0)).toBe(240);
+    }
+  });
+
+  it("counts only the six strongest STEP answers", () => {
+    const results = [3, 18, 7, 12, 20, 5, 15, 9].map((earned) => ({
+      grading: { totalEarned: earned, totalMax: 20 },
+    }));
+    const counted = getCountedResults(results, 6);
+    expect(counted.map((result) => result.grading.totalEarned)).toEqual([20, 18, 15, 12, 9, 7]);
+    expect(counted.reduce((sum, result) => sum + result.grading.totalEarned, 0)).toBe(81);
   });
 });

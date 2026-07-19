@@ -89,7 +89,8 @@ const QUESTION_BANKS: Record<string, Question[]> = {
 
 const FORMAT_RULES: Record<string, { needsWrittenPractice: boolean; needsFixedWrittenPaper: boolean }> = {
   mat: { needsWrittenPractice: true, needsFixedWrittenPaper: true },
-  pat: { needsWrittenPractice: true, needsFixedWrittenPaper: true },
+  // PAT ended in 2025 and its final official format was objective; written sets are extension work only.
+  pat: { needsWrittenPractice: false, needsFixedWrittenPaper: false },
   step: { needsWrittenPractice: true, needsFixedWrittenPaper: true },
   esat: { needsWrittenPractice: false, needsFixedWrittenPaper: false },
   tmua: { needsWrittenPractice: false, needsFixedWrittenPaper: false },

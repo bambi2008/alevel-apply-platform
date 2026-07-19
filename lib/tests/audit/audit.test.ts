@@ -12,12 +12,16 @@ describe("question bank audit", () => {
     expect(report.totals.critical).toBe(0);
   });
 
-  it("tracks known written-format gaps as warnings", () => {
+  it("tracks remaining written-format gaps without flagging completed paper sets", () => {
     const report = buildQuestionBankAudit();
     expect(report.issues).toEqual(expect.arrayContaining([
-      expect.objectContaining({ code: "MISSING_WRITTEN_PRACTICE", testId: "pat", severity: "warning" }),
-      expect.objectContaining({ code: "MISSING_FIXED_WRITTEN_PAPER", testId: "step", severity: "warning" }),
       expect.objectContaining({ code: "TEST_DIFFICULTY_SKEW", testId: "lnat", severity: "warning" }),
+    ]));
+    expect(report.issues).not.toEqual(expect.arrayContaining([
+      expect.objectContaining({ code: "MISSING_FIXED_WRITTEN_PAPER", testId: "mat" }),
+      expect.objectContaining({ code: "MISSING_FIXED_WRITTEN_PAPER", testId: "pat" }),
+      expect.objectContaining({ code: "MISSING_FIXED_WRITTEN_PAPER", testId: "step" }),
+      expect.objectContaining({ code: "MISSING_WRITTEN_PRACTICE", testId: "pat" }),
     ]));
   });
 });

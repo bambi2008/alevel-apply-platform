@@ -6,6 +6,7 @@ import { MathRenderer } from "@/components/math-renderer";
 import type { GradeRequest, GradeResponse } from "@/app/api/grade-answer/route";
 import type { MockPaper } from "@/lib/tests/mock-papers";
 import type { LongQuestion } from "@/lib/tests/questions/types";
+import { getCountedResults } from "@/lib/tests/mock-papers/scoring";
 
 type Phase = "briefing" | "running" | "grading" | "results";
 type WrittenWorks = Record<string, Record<string, string>>;
@@ -26,6 +27,49 @@ const TOPIC_LABELS: Record<string, string> = {
   "bpho-em": "电磁学",
   "bpho-thermal": "热学",
   "bpho-modern": "近代物理",
+  "mat-poly": "多项式与代数",
+  "mat-trig": "三角函数",
+  "mat-calc": "微积分",
+  "mat-log": "对数与指数",
+  "mat-geo": "坐标几何",
+  "mat-seq": "数列与级数",
+  "mat-logic": "逻辑与证明",
+  "pat-mech": "力学",
+  "pat-em": "电磁学",
+  "pat-wave": "波动与光学",
+  "pat-thermo": "热力学",
+  "pat-modern": "现代物理",
+  "pat-math": "数学工具",
+  "step-pure1": "纯数：代数",
+  "step-pure2": "纯数：微积分",
+  "step-pure3": "纯数：曲线与几何",
+  "step-pure4": "纯数：复数",
+  "step-pure5": "纯数：线性代数",
+  "step-mech": "力学",
+  "step-stats": "统计与概率",
+};
+
+const TEST_LABELS: Record<string, string> = {
+  mat: "MAT",
+  pat: "PAT",
+  step: "STEP",
+  bmo: "BMO",
+  bpho: "BPhO",
+};
+
+const DEFAULT_INSTRUCTIONS: Record<string, string[]> = {
+  bmo: [
+    "每题 10 分，必须写出完整证明过程。",
+    "结论必须由清晰、完整的数学论证支持。",
+    "题目固定，不随机抽取，适合复盘和阶段比较。",
+    "AI 评分失败的题目会标记为待自评，不会按零分计入。",
+  ],
+  bpho: [
+    "Section 1 共 13 题、50 分；Section 2 共 2 题、50 分。",
+    "请写出物理原理、关键公式、代入过程和带单位的结论。",
+    "题目固定，不随机抽取，适合复盘和阶段比较。",
+    "AI 评分失败的题目会标记为待自评，不会按零分计入。",
+  ],
 };
 
 function formatTime(seconds: number): string {
@@ -40,8 +84,18 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
     (question): question is LongQuestion => question.type === "long"
   );
   const durationSec = paper.modules.reduce((sum, module) => sum + module.durationSec, 0);
-  const totalMarks = questions.reduce((sum, question) => sum + question.totalMarks, 0);
-  const isBpho = paper.testId === "bpho";
+  const totalMarks = paper.bestQuestionCount
+    ? [...questions]
+        .sort((a, b) => b.totalMarks - a.totalMarks)
+        .slice(0, paper.bestQuestionCount)
+        .reduce((sum, question) => sum + question.totalMarks, 0)
+    : questions.reduce((sum, question) => sum + question.totalMarks, 0);
+  const testLabel = TEST_LABELS[paper.testId] ?? paper.testId.toUpperCase();
+  const instructions = paper.instructions ?? DEFAULT_INSTRUCTIONS[paper.testId] ?? [
+    "每题都应写出关键推导、必要说明和最终结论。",
+    "题目固定，不随机抽取，适合复盘和阶段比较。",
+    "AI 评分失败的题目会标记为待自评，不会按零分计入。",
+  ];
   const [phase, setPhase] = useState<Phase>("briefing");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [works, setWorks] = useState<WrittenWorks>({});
@@ -161,7 +215,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-10">
         <Link href={`/tests/${paper.testId}`} className="text-sm text-[var(--indigo)] hover:underline">
-          ← 返回 {isBpho ? "BPhO" : "BMO"}
+          ← 返回 {testLabel}
         </Link>
         <p className="mt-8 text-xs font-semibold uppercase text-[var(--ink-faint)]">Fixed written paper</p>
         <h1 className="mt-2 text-2xl font-bold text-[var(--ink)]">{paper.title}</h1>
@@ -171,14 +225,11 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
         <div className="mt-7 grid grid-cols-3 border-y border-[var(--border)] py-4 text-center">
           <div><strong className="block text-xl">{Math.round(durationSec / 60)}</strong><span className="text-xs text-[var(--ink-faint)]">分钟</span></div>
           <div><strong className="block text-xl">{questions.length}</strong><span className="text-xs text-[var(--ink-faint)]">书面题</span></div>
-          <div><strong className="block text-xl">{totalMarks}</strong><span className="text-xs text-[var(--ink-faint)]">总分</span></div>
+          <div><strong className="block text-xl">{totalMarks}</strong><span className="text-xs text-[var(--ink-faint)]">计分上限</span></div>
         </div>
 
         <ul className="mt-6 space-y-2 text-sm text-[var(--ink-soft)]">
-          <li>{isBpho ? "Section 1 共 13 题、50 分；Section 2 共 2 题、50 分。" : "每题 10 分，必须写出完整证明过程。"}</li>
-          <li>{isBpho ? "请写出物理原理、关键公式、代入过程和带单位的结论。" : "结论必须由清晰、完整的数学论证支持。"}</li>
-          <li>题目固定，不随机抽取，适合复盘和阶段比较。</li>
-          <li>AI 评分失败的题目会标记为待自评，不会按零分计入。</li>
+          {instructions.map((instruction) => <li key={instruction}>{instruction}</li>)}
         </ul>
         <button type="button" onClick={begin} className="mt-8 w-full rounded-md bg-[var(--indigo)] py-3 text-sm font-semibold text-white hover:bg-[var(--indigo-hover)]">
           开始书面考试
@@ -319,12 +370,13 @@ function WrittenPaperResults({
 }) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const graded = grades.filter((result) => result.grading);
-  const earned = graded.reduce((sum, result) => sum + (result.grading?.totalEarned ?? 0), 0);
-  const max = graded.reduce((sum, result) => sum + (result.grading?.totalMax ?? 0), 0);
+  const scoredGrades = getCountedResults(grades, paper.bestQuestionCount);
+  const earned = scoredGrades.reduce((sum, result) => sum + (result.grading?.totalEarned ?? 0), 0);
+  const max = scoredGrades.reduce((sum, result) => sum + (result.grading?.totalMax ?? 0), 0);
   const pending = grades.length - graded.length;
   const topicRows = [...new Set(questions.map((question) => question.topicId))].map((topicId) => {
     const topicQuestions = questions.filter((question) => question.topicId === topicId);
-    const topicGrades = grades.filter((result) => topicQuestions.some((question) => question.id === result.questionId) && result.grading);
+    const topicGrades = scoredGrades.filter((result) => topicQuestions.some((question) => question.id === result.questionId));
     return {
       topicId,
       earned: topicGrades.reduce((sum, result) => sum + (result.grading?.totalEarned ?? 0), 0),
@@ -366,7 +418,7 @@ function WrittenPaperResults({
       <h1 className="mt-2 text-2xl font-bold">{paper.title} · 整卷报告</h1>
 
       <div className="mt-7 grid gap-px bg-[var(--border)] sm:grid-cols-4">
-        <div className="bg-white p-4"><strong className="block text-2xl">{earned}/{max || "-"}</strong><span className="text-xs text-[var(--ink-faint)]">已评分得分</span></div>
+        <div className="bg-white p-4"><strong className="block text-2xl">{earned}/{max || "-"}</strong><span className="text-xs text-[var(--ink-faint)]">{paper.bestQuestionCount ? `最高 ${paper.bestQuestionCount} 题得分` : "已评分得分"}</span></div>
         <div className="bg-white p-4"><strong className="block text-2xl">{max ? Math.round(earned / max * 100) : 0}%</strong><span className="text-xs text-[var(--ink-faint)]">已评分得分率</span></div>
         <div className="bg-white p-4"><strong className="block text-2xl">{Math.round(timeUsedSec / 60)}</strong><span className="text-xs text-[var(--ink-faint)]">用时（分钟）</span></div>
         <div className="bg-white p-4"><strong className="block text-2xl">{pending}</strong><span className="text-xs text-[var(--ink-faint)]">待自评题目</span></div>
@@ -453,7 +505,7 @@ function WrittenPaperResults({
       </section>
 
       <div className="mt-8 flex gap-3">
-        <Link href={`/tests/${paper.testId}`} className="flex-1 rounded-md border border-[var(--border)] py-3 text-center text-sm">返回 {paper.testId === "bpho" ? "BPhO" : "BMO"}</Link>
+        <Link href={`/tests/${paper.testId}`} className="flex-1 rounded-md border border-[var(--border)] py-3 text-center text-sm">返回 {TEST_LABELS[paper.testId] ?? paper.testId.toUpperCase()}</Link>
         <button type="button" onClick={onRetry} className="flex-1 rounded-md bg-[var(--indigo)] py-3 text-sm font-semibold text-white">重做本卷</button>
       </div>
     </div>
