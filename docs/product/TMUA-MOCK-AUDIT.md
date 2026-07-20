@@ -18,25 +18,31 @@ pnpm audit:tmua
 ## Result
 
 - Critical findings: 0
+- Quality warnings: 0
 - Exact duplicate prompts: 0
-- Newly calibrated mocks with no findings: 2, 3, 5, 7, and 8
-- Previously calibrated mocks meeting the benchmark: calibration 1, 6, 9, and 10
-- Remaining warning backlog: mocks 1 and 4
+- Fixed papers meeting the benchmark: all 11
+- Sealed question slots: 440
 
-The five papers calibrated in this round each retain 12 original opening questions and replace the final eight questions in both Paper 1 and Paper 2. This adds 80 original calibrated question slots. Their Paper 1 modules now contain seven difficulty-3 questions, while Paper 2 contains eight to ten. Paper 2 uses up to eight continuous options and the dominant answer position is no greater than 50%.
+Mocks 1 and 4 retain their first ten questions and replace the final ten questions in both modules. This adds 40 final-calibration question slots. Their Paper 1 modules now contain seven difficulty-3 questions and their Paper 2 modules contain ten. Both Paper 2 modules include ten A-H statement-combination questions; dominant answer share is at most 45%.
 
 Five duplicate prompts in retained opening sections were replaced during the audit. No exact prompt duplicates remain across the 440 slots.
 
-## Remaining warnings
+## Web acceptance
 
-Mock 1 and mock 4 remain below the current acceptance benchmark:
+All 11 papers were exercised in a production build at desktop (1440 x 900) and mobile (390 x 844) viewports. The acceptance run checked:
 
-- too few difficulty-3 questions in both modules;
-- strong answer-position bias in Paper 2;
-- no six-to-eight-option reasoning items;
-- mock 4 Paper 1 has especially severe answer-position concentration.
+- 20 questions in each module and a decrementing 75-minute timer;
+- KaTeX rendering in Paper 1 and Paper 2;
+- continuous A-H option rendering in every Paper 2;
+- module submission, final score, and expandable worked solutions;
+- no page-level horizontal overflow on desktop or mobile;
+- the session-history UI contract with an intercepted test response, without writing acceptance data to the local database.
 
-These papers remain usable for introductory timed practice, but should not be presented as the hardest full-fidelity mocks until recalibrated.
+The math renderer now separates plain text from generated KaTeX markup before inserting line breaks, preventing SVG path corruption. Display formulae are constrained to a local horizontal scroll area on narrow screens.
+
+## Seal status
+
+TMUA is sealed as of 2026-07-21. Do not add more generic practice questions or fixed mocks. Future changes are limited to verified correctness fixes, browser regressions, and evidence-backed difficulty calibration from real student attempts.
 
 ## Student-data calibration
 
@@ -50,4 +56,4 @@ Difficulty labels use expert calibration until a question has at least 10 valid 
 
 When a sufficiently sampled question falls outside its band, the audit returns a one-level `suggestedDifficulty`. It does not silently rewrite the static bank.
 
-No student-data adjustment was applied in this audit because the current workspace has no configured `DATABASE_URL` and no available TMUA attempt cohort. Fabricated or undersampled data must not be used to change labels.
+No student-data adjustment was applied in this audit because no eligible TMUA attempt cohort was available. Fabricated or undersampled data must not be used to change labels.

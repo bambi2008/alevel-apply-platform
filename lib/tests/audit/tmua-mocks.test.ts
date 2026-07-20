@@ -11,18 +11,10 @@ describe("TMUA mock-paper audit", () => {
     expect(report.papers.flatMap((paper) => paper.modules).every((module) => module.questions === 20)).toBe(true);
   });
 
-  it("leaves no quality warnings on the five newly calibrated mocks", () => {
+  it("keeps the sealed eleven-paper suite free of quality warnings", () => {
     const report = buildTmuaMockAudit();
-    const calibrated = new Set(["tmua-mock-2", "tmua-mock-3", "tmua-mock-5", "tmua-mock-7", "tmua-mock-8"]);
-    expect(report.issues.filter((issue) => calibrated.has(issue.paperId))).toEqual([]);
-  });
-
-  it("keeps the remaining calibration backlog explicit", () => {
-    const report = buildTmuaMockAudit();
-    expect(new Set(report.issues.map((issue) => issue.paperId))).toEqual(new Set(["tmua-mock-1", "tmua-mock-4"]));
-    expect(report.issues).toEqual(expect.arrayContaining([
-      expect.objectContaining({ paperId: "tmua-mock-1", code: "PAPER1_TOO_EASY" }),
-      expect.objectContaining({ paperId: "tmua-mock-4", code: "ANSWER_POSITION_BIAS" }),
-    ]));
+    expect(report.warnings).toBe(0);
+    expect(report.issues).toEqual([]);
+    expect(report.papers.every((paper) => paper.issueCount === 0)).toBe(true);
   });
 });

@@ -1,6 +1,6 @@
 # TMUA Source Audit
 
-Last reviewed: 2026-07-20
+Last reviewed: 2026-07-21
 
 ## Source inventory
 
@@ -32,10 +32,10 @@ At the time of this audit:
 - The general TMUA bank contains 241 questions.
 - All 241 questions use exactly five options.
 - The platform has 11 fixed mocks, totaling 440 question slots.
-- The original 10 mocks contain 400 five-option question slots.
-- `tmua-calibration-1` adds 40 original questions using five to eight options.
-- Across all fixed mocks there are 77 difficulty-1, 267 difficulty-2, and 96 difficulty-3 questions.
-- The original mocks were concentrated in algebra, calculus, logic, and discrete mathematics. The calibration paper and the upgraded endings for mocks 6, 9, and 10 add geometry, number, statistics, multi-step applications, and contextual proof reasoning. The remaining older papers still require gradual replacement.
+- All 11 fixed mocks now use five to eight options where the reasoning structure requires them.
+- Across the 440 fixed-mock slots there are 63 difficulty-1, 206 difficulty-2, and 171 difficulty-3 questions.
+- Every Paper 2 contains A-H reasoning questions. Across the suite there are 94 statement-combination questions.
+- The calibrated endings cover geometry, number, statistics, multi-step applications, and contextual proof reasoning. No fixed-paper calibration backlog remains.
 
 ## Material gaps
 
@@ -63,18 +63,18 @@ Current mocks contain too many one-step textbook exercises. Official-style quest
 - reverse reasoning from answer choices;
 - distractors corresponding to plausible partial arguments rather than arithmetic slips alone.
 
-### 4. Mock-paper calibration
+### 4. Mock-paper calibration (closed)
 
-Several current mocks have no difficulty-3 Paper 1 questions, and the aggregate difficulty-3 share is low. A fixed mock should also preserve the distinction between Paper 1 and Paper 2 instead of treating them as two interchangeable topic batches.
+All fixed papers now meet the difficulty, option architecture, answer-position, and Paper 1/Paper 2 differentiation thresholds enforced by `pnpm audit:tmua`.
 
 ## Recommended implementation order
 
 1. Completed: extend MCQ option keys to A-H and add integrity checks.
 2. Completed: build one 40-question original calibration mock with 20 Paper 1 and 20 Paper 2 questions.
 3. Completed: add a 70-question advanced practice layer, with ten medium-to-hard questions in each of the seven specification modules.
-4. Use that mock as the acceptance benchmark for timing, option layout, explanations, and mobile rendering.
-5. Completed: mocks 2, 3, 5, 6, 7, 8, 9, and 10 now have calibrated medium-to-hard endings. The remaining backlog is mocks 1 and 4.
-6. Recalibrate the general practice bank after the fixed-paper standard is stable.
+4. Completed: use the calibration mock as the acceptance benchmark for timing, option layout, explanations, and mobile rendering.
+5. Completed: all ten numbered mocks now have calibrated medium-to-hard endings; mocks 1 and 4 were the final batch.
+6. Sealed: stop adding generic TMUA questions. Adjust difficulty only from a sufficiently sampled cohort of real student attempts.
 
 ## Originality rule
 

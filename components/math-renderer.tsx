@@ -21,37 +21,39 @@ export function MathRenderer({ text, className, block = false }: MathRendererPro
   }, [text]);
 
   if (block) {
-    return <div ref={ref} className={className} />;
+    return <div ref={ref} className={`min-w-0 max-w-full overflow-x-auto overflow-y-hidden ${className ?? ""}`} />;
   }
-  return <span ref={ref} className={className} />;
+  return <span ref={ref} className={`min-w-0 max-w-full overflow-x-auto overflow-y-hidden ${className ?? ""}`} />;
 }
 
 function renderMixedMath(text: string): string {
-  // Replace $$...$$ first (display), then $...$ (inline)
-  let result = text;
-
-  // Display math $$...$$
-  result = result.replace(/\$\$([\s\S]+?)\$\$/g, (_, math) => {
-    try {
-      return katex.renderToString(math.trim(), { displayMode: true, throwOnError: false });
-    } catch {
-      return `<span class="text-red-500">[math error]</span>`;
+  const segments = text.split(/(\$\$[\s\S]+?\$\$|\$[^$\n]+?\$)/g);
+  return segments.map((segment) => {
+    if (segment.startsWith("$$") && segment.endsWith("$$")) {
+      return renderMath(segment.slice(2, -2), true);
     }
-  });
-
-  // Inline math $...$
-  result = result.replace(/\$([^$\n]+?)\$/g, (_, math) => {
-    try {
-      return katex.renderToString(math.trim(), { displayMode: false, throwOnError: false });
-    } catch {
-      return `<span class="text-red-500">[math error]</span>`;
+    if (segment.startsWith("$") && segment.endsWith("$")) {
+      return renderMath(segment.slice(1, -1), false);
     }
-  });
+    return escapeHtml(segment).replace(/\n/g, "<br>");
+  }).join("");
+}
 
-  // Convert newlines to <br> for plain text segments
-  result = result.replace(/\n/g, "<br>");
+function renderMath(math: string, displayMode: boolean): string {
+  try {
+    return katex.renderToString(math.trim(), { displayMode, throwOnError: false });
+  } catch {
+    return `<span class="text-red-500">[math error]</span>`;
+  }
+}
 
-  return result;
+function escapeHtml(text: string): string {
+  return text
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
 }
 
 /** Simple inline math-only renderer, no mixed text */
