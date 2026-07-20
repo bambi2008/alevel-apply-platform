@@ -19,6 +19,7 @@ export interface QuestionCalibration {
   expectedMin: number;
   expectedMax: number;
   status: CalibrationStatus;
+  suggestedDifficulty: 1 | 2 | 3;
 }
 
 const EXPECTED_RANGES: Record<1 | 2 | 3, [number, number]> = {
@@ -41,6 +42,11 @@ export function calibrateQuestionDifficulty(
     if (aggregate.attempts < minimumAttempts) status = "insufficient";
     else if (scoreRate > expectedMax) status = "easier-than-label";
     else if (scoreRate < expectedMin) status = "harder-than-label";
+    const suggestedDifficulty = status === "easier-than-label"
+      ? Math.max(1, question.difficulty - 1) as 1 | 2 | 3
+      : status === "harder-than-label"
+        ? Math.min(3, question.difficulty + 1) as 1 | 2 | 3
+        : question.difficulty;
     return [{
       questionId: question.id,
       testId: question.testId,
@@ -51,6 +57,7 @@ export function calibrateQuestionDifficulty(
       expectedMin,
       expectedMax,
       status,
+      suggestedDifficulty,
     }];
   }).sort((a, b) => b.attempts - a.attempts || a.questionId.localeCompare(b.questionId));
 }

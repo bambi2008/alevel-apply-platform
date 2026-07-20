@@ -72,9 +72,9 @@ Several current mocks have no difficulty-3 Paper 1 questions, and the aggregate 
 1. Completed: extend MCQ option keys to A-H and add integrity checks.
 2. Completed: build one 40-question original calibration mock with 20 Paper 1 and 20 Paper 2 questions.
 3. Completed: add a 70-question advanced practice layer, with ten medium-to-hard questions in each of the seven specification modules.
-3. Use that mock as the acceptance benchmark for timing, option layout, explanations, and mobile rendering.
-4. In progress: mocks 6, 9, and 10 now have calibrated medium-to-hard endings; continue with the next weakest fixed papers.
-5. Recalibrate the general practice bank after the fixed-paper standard is stable.
+4. Use that mock as the acceptance benchmark for timing, option layout, explanations, and mobile rendering.
+5. Completed: mocks 2, 3, 5, 6, 7, 8, 9, and 10 now have calibrated medium-to-hard endings. The remaining backlog is mocks 1 and 4.
+6. Recalibrate the general practice bank after the fixed-paper standard is stable.
 
 ## Originality rule
 

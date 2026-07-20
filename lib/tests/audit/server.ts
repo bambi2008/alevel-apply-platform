@@ -18,6 +18,7 @@ export async function getQuestionAuditDashboardData(): Promise<QuestionAuditDash
   try {
     const rows = await db.examAnswer.groupBy({
       by: ["questionId"],
+      where: { session: { testId: "tmua" } },
       _count: { _all: true },
       _sum: { earned: true, max: true },
     });
@@ -31,7 +32,10 @@ export async function getQuestionAuditDashboardData(): Promise<QuestionAuditDash
     return {
       report,
       calibration: calibrateQuestionDifficulty(aggregates),
-      calibrationAvailable: true,
+      calibrationAvailable: aggregates.some((aggregate) => aggregate.attempts >= 10),
+      calibrationMessage: aggregates.some((aggregate) => aggregate.attempts >= 10)
+        ? undefined
+        : "TMUA difficulty labels remain expert-calibrated until at least one question has 10 valid attempts.",
     };
   } catch {
     return {

@@ -38,7 +38,10 @@ describe("difficulty calibration", () => {
       { questionId: "bmo-sp-nt-005", attempts: 4, earned: 10, max: 20 },
     ]);
     expect(rows.find((row) => row.questionId === "bmo-sp-nt-001")?.status).toBe("easier-than-label");
+    expect(rows.find((row) => row.questionId === "bmo-sp-nt-001")?.suggestedDifficulty).toBe(1);
     expect(rows.find((row) => row.questionId === "bmo-sp-ge-012")?.status).toBe("harder-than-label");
+    expect(rows.find((row) => row.questionId === "bmo-sp-ge-012")?.suggestedDifficulty).toBe(3);
     expect(rows.find((row) => row.questionId === "bmo-sp-nt-005")?.status).toBe("insufficient");
+    expect(rows.find((row) => row.questionId === "bmo-sp-nt-005")?.suggestedDifficulty).toBe(2);
   });
 });

@@ -61,6 +61,13 @@ import {
   TMUA_MK9_P1_CALIBRATED, TMUA_MK9_P2_CALIBRATED,
   TMUA_MK10_P1_CALIBRATED, TMUA_MK10_P2_CALIBRATED,
 } from "./tmua-calibrated-replacements";
+import {
+  TMUA_MK2_P1_CALIBRATED, TMUA_MK2_P2_CALIBRATED,
+  TMUA_MK3_P1_CALIBRATED, TMUA_MK3_P2_CALIBRATED,
+  TMUA_MK5_P1_CALIBRATED, TMUA_MK5_P2_CALIBRATED,
+  TMUA_MK7_P1_CALIBRATED, TMUA_MK7_P2_CALIBRATED,
+  TMUA_MK8_P1_CALIBRATED, TMUA_MK8_P2_CALIBRATED,
+} from "./tmua-calibrated-replacements-2";
 import { BMO_MK1_MCQ } from "./bmo-mock-1";
 import { BMO_MK2_MCQ } from "./bmo-mock-2";
 import { BMO_MK3_MCQ } from "./bmo-mock-3";
@@ -739,8 +746,8 @@ export const TMUA_MOCK_2: MockPaper = {
   description:
     "第二套完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与模拟卷一、练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
   modules: [
-    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK2_P1 },
-    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK2_P2 },
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: [...TMUA_MK2_P1.slice(0, 12), ...TMUA_MK2_P1_CALIBRATED] },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: [...TMUA_MK2_P2.slice(0, 12), ...TMUA_MK2_P2_CALIBRATED] },
   ],
 };
 
@@ -752,8 +759,8 @@ export const TMUA_MOCK_3: MockPaper = {
   description:
     "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
   modules: [
-    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK3_P1 },
-    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK3_P2 },
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: [...TMUA_MK3_P1.slice(0, 12), ...TMUA_MK3_P1_CALIBRATED] },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: [...TMUA_MK3_P2.slice(0, 12), ...TMUA_MK3_P2_CALIBRATED] },
   ],
 };
 
@@ -778,8 +785,8 @@ export const TMUA_MOCK_5: MockPaper = {
   description:
     "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
   modules: [
-    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK5_P1 },
-    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK5_P2 },
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: [...TMUA_MK5_P1.slice(0, 12), ...TMUA_MK5_P1_CALIBRATED] },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: [...TMUA_MK5_P2.slice(0, 12), ...TMUA_MK5_P2_CALIBRATED] },
   ],
 };
 
@@ -804,8 +811,8 @@ export const TMUA_MOCK_7: MockPaper = {
   description:
     "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
   modules: [
-    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK7_P1 },
-    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK7_P2 },
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: [...TMUA_MK7_P1.slice(0, 12), ...TMUA_MK7_P1_CALIBRATED] },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: [...TMUA_MK7_P2.slice(0, 12), ...TMUA_MK7_P2_CALIBRATED] },
   ],
 };
 
@@ -817,8 +824,8 @@ export const TMUA_MOCK_8: MockPaper = {
   description:
     "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
   modules: [
-    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK8_P1 },
-    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK8_P2 },
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: [...TMUA_MK8_P1.slice(0, 12), ...TMUA_MK8_P1_CALIBRATED] },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: [...TMUA_MK8_P2.slice(0, 12), ...TMUA_MK8_P2_CALIBRATED] },
   ],
 };
 
