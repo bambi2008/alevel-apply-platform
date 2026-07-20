@@ -7,6 +7,7 @@ import { TMUA_HARD } from "@/lib/tests/questions/tmua-hard";
 import { TMUA_EXPANSION } from "@/lib/tests/questions/tmua-expansion";
 import { TMUA_REASONING_ROUND_2 } from "@/lib/tests/questions/tmua-reasoning-round-2";
 import { TMUA_SPEC_COVERAGE } from "@/lib/tests/questions/tmua-spec-coverage";
+import { TMUA_ADVANCED_ROUND_3 } from "@/lib/tests/questions/tmua-advanced-round-3";
 
 export const TMUA_BASE: MCQQuestion[] = [
   // ── 代数与函数 ────────────────────────────────────────────────
@@ -270,4 +271,5 @@ export const TMUA_QUESTIONS: MCQQuestion[] = [
   ...TMUA_EXPANSION,
   ...TMUA_REASONING_ROUND_2,
   ...TMUA_SPEC_COVERAGE,
+  ...TMUA_ADVANCED_ROUND_3,
 ];

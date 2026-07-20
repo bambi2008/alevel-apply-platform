@@ -9,6 +9,7 @@ import { LNAT_QUESTIONS } from "@/lib/tests/questions/lnat";
 import { TARA_QUESTIONS } from "@/lib/tests/questions/tara";
 import { TMUA_REASONING_ROUND_2 } from "@/lib/tests/questions/tmua-reasoning-round-2";
 import { TMUA_SPEC_COVERAGE } from "@/lib/tests/questions/tmua-spec-coverage";
+import { TMUA_ADVANCED_ROUND_3 } from "@/lib/tests/questions/tmua-advanced-round-3";
 import { BPHO4_LONG_SAMPLE } from "@/lib/tests/questions/bpho4-long";
 import { BPHO5_LONG_SAMPLE } from "@/lib/tests/questions/bpho5-long";
 import { BMO_SMC_TOPUP } from "@/lib/tests/questions/bmo-smc-topup";
@@ -141,6 +142,37 @@ describe("TMUA official specification coverage", () => {
       const questions = TMUA_QUESTIONS.filter((question) => question.topicId === topic.id);
       expect(questions.length, `${topic.id}: insufficient practice`).toBeGreaterThanOrEqual(20);
       expect(new Set(questions.map((question) => question.difficulty)), `${topic.id}: missing difficulty`).toEqual(new Set([1, 2, 3]));
+    }
+  });
+});
+
+describe("TMUA advanced round three", () => {
+  const topicIds = [
+    "tmua-algebra",
+    "tmua-calc",
+    "tmua-stats",
+    "tmua-logic",
+    "tmua-discrete",
+    "tmua-geometry",
+    "tmua-number",
+  ];
+
+  it("adds ten medium-to-hard questions to every TMUA module", () => {
+    expect(TMUA_ADVANCED_ROUND_3).toHaveLength(70);
+    for (const topicId of topicIds) {
+      const questions = TMUA_ADVANCED_ROUND_3.filter((question) => question.topicId === topicId);
+      expect(questions, topicId).toHaveLength(10);
+      expect(questions.every((question) => question.difficulty >= 2)).toBe(true);
+      expect(questions.some((question) => question.difficulty === 3)).toBe(true);
+    }
+  });
+
+  it("keeps option keys continuous and every answer selectable", () => {
+    for (const question of TMUA_ADVANCED_ROUND_3) {
+      const keys = question.options.map((option) => option.key);
+      expect(keys, question.id).toEqual(keys.map((_, index) => String.fromCharCode(65 + index)));
+      expect(keys, question.id).toContain(question.answer);
+      expect(question.solution.trim().length, question.id).toBeGreaterThan(20);
     }
   });
 });

@@ -29,8 +29,8 @@ That gives 16 dated papers (320 official question slots) plus 40 specimen questi
 
 At the time of this audit:
 
-- The general TMUA bank contains 171 questions.
-- All 171 questions use exactly five options.
+- The general TMUA bank contains 241 questions.
+- All 241 questions use exactly five options.
 - The platform has 11 fixed mocks, totaling 440 question slots.
 - The original 10 mocks contain 400 five-option question slots.
 - `tmua-calibration-1` adds 40 original questions using five to eight options.
@@ -71,6 +71,7 @@ Several current mocks have no difficulty-3 Paper 1 questions, and the aggregate 
 
 1. Completed: extend MCQ option keys to A-H and add integrity checks.
 2. Completed: build one 40-question original calibration mock with 20 Paper 1 and 20 Paper 2 questions.
+3. Completed: add a 70-question advanced practice layer, with ten medium-to-hard questions in each of the seven specification modules.
 3. Use that mock as the acceptance benchmark for timing, option layout, explanations, and mobile rendering.
 4. In progress: mocks 6, 9, and 10 now have calibrated medium-to-hard endings; continue with the next weakest fixed papers.
 5. Recalibrate the general practice bank after the fixed-paper standard is stable.
