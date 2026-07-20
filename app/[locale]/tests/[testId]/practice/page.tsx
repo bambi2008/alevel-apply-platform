@@ -215,8 +215,13 @@ function SessionSetup({
     { id: "all", label: "全部" },
     { id: "mcq", label: "选择题" },
     ...(shortProofCount > 0 ? [{ id: "short-proof" as const, label: "短证明" }] : []),
-    { id: "long", label: "完整大题" },
+    ...(longCount > 0 ? [{ id: "long" as const, label: "完整大题" }] : []),
   ];
+  const inventory = [
+    mcqCount > 0 ? `选择题 ${mcqCount} 题` : null,
+    shortProofCount > 0 ? `短证明 ${shortProofCount} 题` : null,
+    longCount > 0 ? `完整大题 ${longCount} 题` : null,
+  ].filter(Boolean).join(" · ");
   const topicOptions = format === "short-proof"
     ? test.topics.filter((topic) => ["bmo-number", "bmo-geometry"].includes(topic.id))
     : test.topics;
@@ -233,7 +238,7 @@ function SessionSetup({
 
       <h1 className="text-2xl font-bold mt-4 mb-1">{test.abbr} 专项练习</h1>
       <p className="text-[var(--ink-soft)] text-sm mb-8">
-        题库共 {allQuestions.length} 题（选择题 {mcqCount} 题{shortProofCount > 0 ? ` · 短证明 ${shortProofCount} 题` : ""} · 完整大题 {longCount} 题）
+        题库共 {allQuestions.length} 题（{inventory}）
       </p>
 
       <div className="space-y-6">
@@ -314,13 +319,15 @@ function SessionSetup({
           </div>
         </div>
 
-        <div className="rounded-xl bg-[var(--info-bg)] border border-[color:var(--indigo)]/15 p-4 text-sm text-[var(--indigo)]">
-          <p className="font-medium mb-1">关于大题（长答案）评分</p>
-          <p className="text-xs leading-relaxed">
-            大题由 Claude AI 分步评分：系统分析你的解题过程，按关键步骤给部分分。
-            评分后可查看模型解答对比学习。约需 5–10 秒。
-          </p>
-        </div>
+        {(shortProofCount > 0 || longCount > 0) && (
+          <div className="rounded-xl bg-[var(--info-bg)] border border-[color:var(--indigo)]/15 p-4 text-sm text-[var(--indigo)]">
+            <p className="font-medium mb-1">关于大题（长答案）评分</p>
+            <p className="text-xs leading-relaxed">
+              大题由 Claude AI 分步评分：系统分析你的解题过程，按关键步骤给部分分。
+              评分后可查看模型解答对比学习。约需 5–10 秒。
+            </p>
+          </div>
+        )}
 
         <button
           type="button"

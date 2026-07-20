@@ -8,6 +8,7 @@ import { PAT_QUESTIONS } from "@/lib/tests/questions/pat";
 import { LNAT_QUESTIONS } from "@/lib/tests/questions/lnat";
 import { TARA_QUESTIONS } from "@/lib/tests/questions/tara";
 import { TMUA_REASONING_ROUND_2 } from "@/lib/tests/questions/tmua-reasoning-round-2";
+import { TMUA_SPEC_COVERAGE } from "@/lib/tests/questions/tmua-spec-coverage";
 import { BPHO4_LONG_SAMPLE } from "@/lib/tests/questions/bpho4-long";
 import { BPHO5_LONG_SAMPLE } from "@/lib/tests/questions/bpho5-long";
 import { BMO_SMC_TOPUP } from "@/lib/tests/questions/bmo-smc-topup";
@@ -104,6 +105,43 @@ describe("TMUA reasoning round two", () => {
     expect(TMUA_REASONING_ROUND_2.map((question) => question.answer).join("")).toBe(
       "CBCDC" + "CCBCC" + "CDBCD" + "CDCCA" + "DCCDD",
     );
+  });
+});
+
+describe("TMUA official specification coverage", () => {
+  it("adds one full paper-equivalent across the two missing modules", () => {
+    expect(TMUA_SPEC_COVERAGE).toHaveLength(40);
+    expect(TMUA_SPEC_COVERAGE.filter((question) => question.topicId === "tmua-geometry")).toHaveLength(20);
+    expect(TMUA_SPEC_COVERAGE.filter((question) => question.topicId === "tmua-number")).toHaveLength(20);
+  });
+
+  it("covers all difficulty levels in both new modules", () => {
+    for (const topicId of ["tmua-geometry", "tmua-number"]) {
+      const levels = new Set(TMUA_SPEC_COVERAGE
+        .filter((question) => question.topicId === topicId)
+        .map((question) => question.difficulty));
+      expect(levels, `${topicId}: missing difficulty`).toEqual(new Set([1, 2, 3]));
+    }
+  });
+
+  it("repairs the missing D and E answer positions without making any option impossible", () => {
+    const counts = TMUA_QUESTIONS.reduce<Record<string, number>>((acc, question) => {
+      acc[question.answer] = (acc[question.answer] ?? 0) + 1;
+      return acc;
+    }, {});
+    for (const answer of ["A", "B", "C", "D", "E"]) {
+      expect(counts[answer], `${answer}: answer position under-represented`).toBeGreaterThanOrEqual(20);
+    }
+  });
+
+  it("keeps every TMUA module practice-ready", () => {
+    const tmua = getTestById("tmua");
+    expect(tmua).toBeDefined();
+    for (const topic of tmua!.topics) {
+      const questions = TMUA_QUESTIONS.filter((question) => question.topicId === topic.id);
+      expect(questions.length, `${topic.id}: insufficient practice`).toBeGreaterThanOrEqual(20);
+      expect(new Set(questions.map((question) => question.difficulty)), `${topic.id}: missing difficulty`).toEqual(new Set([1, 2, 3]));
+    }
   });
 });
 

@@ -2,8 +2,10 @@
 
 export type QuestionDifficulty = 1 | 2 | 3;  // 1=基础, 2=中等, 3=挑战
 
+export type MCQOptionKey = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H";
+
 export interface MCQOption {
-  key: "A" | "B" | "C" | "D" | "E";
+  key: MCQOptionKey;
   text: string;  // supports $...$ LaTeX
 }
 
@@ -17,7 +19,7 @@ export interface MCQQuestion {
   marks: number;
   question: string;   // LaTeX: $ inline, $$ display
   options: MCQOption[];
-  answer: "A" | "B" | "C" | "D" | "E";
+  answer: MCQOptionKey;
   solution: string;   // step-by-step solution in LaTeX
   hint?: string;
 }
@@ -67,7 +69,7 @@ export interface AnswerRecord {
   questionId: string;
   type: "mcq" | "long";
   // MCQ
-  chosenOption?: "A" | "B" | "C" | "D" | "E";
+  chosenOption?: MCQOptionKey;
   correct?: boolean;
   // Long
   studentWork?: string;

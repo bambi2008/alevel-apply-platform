@@ -144,11 +144,20 @@ function auditQuestion(question: Question, expectedTestId: string, validTopics: 
   }
   if (question.type === "mcq") {
     const keys = question.options.map((option) => option.key);
+    const expectedKeys = "ABCDEFGH".slice(0, keys.length).split("");
     if (!keys.includes(question.answer)) {
       issues.push({ ...base, code: "ANSWER_NOT_IN_OPTIONS", severity: "critical", message: "正确答案不在选项中。" });
     }
     if (new Set(keys).size !== keys.length) {
       issues.push({ ...base, code: "DUPLICATE_OPTION_KEY", severity: "critical", message: "选项键重复。" });
+    }
+    if (keys.join("") !== expectedKeys.join("")) {
+      issues.push({
+        ...base,
+        code: "NON_SEQUENTIAL_OPTION_KEYS",
+        severity: "critical",
+        message: "MCQ option keys must be continuous and start at A.",
+      });
     }
     const optionText = question.options.map((option) => option.text.trim().toLowerCase());
     if (new Set(optionText).size !== optionText.length) {

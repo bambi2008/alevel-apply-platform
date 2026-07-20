@@ -258,11 +258,13 @@ export const ADMISSIONS_TESTS: AdmissionsTest[] = [
     structureDetails: "Paper 1 偏知识应用（A-Level 数学范围）；Paper 2 偏逻辑推理与数学论证，需要判断数学命题的真伪。",
     scoringNote: "每题 1 分，无惩罚分。各 Paper 分别给出标准化分数（1–9），院校综合评估。",
     topics: [
+      { id: "tmua-number", title: "数、比例与估算", titleEn: "Number, Ratio & Estimation", description: "数值、单位、界限、比例与增长衰减" },
       { id: "tmua-algebra", title: "代数与函数", titleEn: "Algebra & Functions", description: "方程、不等式、多项式、复合函数" },
+      { id: "tmua-geometry", title: "坐标几何与三角", titleEn: "Geometry & Trigonometry", description: "直线、圆、圆定理、弧度与三角方程" },
       { id: "tmua-calc", title: "微积分", titleEn: "Calculus", description: "微分、积分、微分方程基础" },
       { id: "tmua-stats", title: "统计与概率", titleEn: "Statistics & Probability", description: "分布、期望、概率推导" },
       { id: "tmua-logic", title: "数学推理与证明（Paper 2）", titleEn: "Mathematical Reasoning & Proof", description: "命题真伪判断、反例、数学归纳法" },
-      { id: "tmua-discrete", title: "离散数学入门", titleEn: "Discrete Mathematics", description: "集合、逻辑门、图论基础" },
+      { id: "tmua-discrete", title: "数列与计数", titleEn: "Sequences & Counting", description: "递推、系统枚举与组合计数" },
     ],
     studyPlan: [
       { week: "第 1–3 周", focus: "A-Level 数学全面复习", tasks: ["纯数 (Paper 1 范围) 逐章精练", "统计模块 2 套历年题", "每天 20 道选择题计时练习"] },

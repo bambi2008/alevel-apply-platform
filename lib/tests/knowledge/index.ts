@@ -8,6 +8,7 @@ import { LNAT_KNOWLEDGE } from "./lnat";
 import { TARA_KNOWLEDGE } from "./tara";
 import { BPHO_KNOWLEDGE } from "./bpho";
 import { BMO_KNOWLEDGE } from "./bmo";
+import { TMUA_SPEC_KNOWLEDGE } from "./tmua-spec";
 
 const ALL_KNOWLEDGE: TopicKnowledge[] = [
   ...ESAT_KNOWLEDGE,
@@ -20,6 +21,7 @@ const ALL_KNOWLEDGE: TopicKnowledge[] = [
   ...TARA_KNOWLEDGE,
   ...BPHO_KNOWLEDGE,
   ...BMO_KNOWLEDGE,
+  ...TMUA_SPEC_KNOWLEDGE,
 ];
 
 export function getKnowledgeByTopicId(topicId: string): TopicKnowledge | undefined {

@@ -6,6 +6,7 @@ import type { MCQQuestion } from "@/lib/tests/questions/types";
 import { TMUA_HARD } from "@/lib/tests/questions/tmua-hard";
 import { TMUA_EXPANSION } from "@/lib/tests/questions/tmua-expansion";
 import { TMUA_REASONING_ROUND_2 } from "@/lib/tests/questions/tmua-reasoning-round-2";
+import { TMUA_SPEC_COVERAGE } from "@/lib/tests/questions/tmua-spec-coverage";
 
 export const TMUA_BASE: MCQQuestion[] = [
   // ── 代数与函数 ────────────────────────────────────────────────
@@ -263,4 +264,10 @@ export const TMUA_BASE: MCQQuestion[] = [
     answer: "A", solution: "$\\binom{5}{2}=\\dfrac{5\\cdot4}{2}=10$." },
 ];
 
-export const TMUA_QUESTIONS: MCQQuestion[] = [...TMUA_BASE, ...TMUA_HARD, ...TMUA_EXPANSION, ...TMUA_REASONING_ROUND_2];
+export const TMUA_QUESTIONS: MCQQuestion[] = [
+  ...TMUA_BASE,
+  ...TMUA_HARD,
+  ...TMUA_EXPANSION,
+  ...TMUA_REASONING_ROUND_2,
+  ...TMUA_SPEC_COVERAGE,
+];

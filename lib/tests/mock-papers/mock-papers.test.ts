@@ -51,6 +51,56 @@ describe("mock papers", () => {
     expect(new Set(ids).size).toBe(ids.length);
   });
 
+  it("offers one official-structure TMUA calibration paper with variable option counts", () => {
+    const paper = getMockPaper("tmua-calibration-1");
+    expect(paper).toBeTruthy();
+    expect(paper!.formatType).toBe("current");
+    expect(paper!.modules).toHaveLength(2);
+    expect(paper!.modules.map((module) => module.durationSec)).toEqual([75 * 60, 75 * 60]);
+    expect(paper!.modules.map((module) => module.questions.length)).toEqual([20, 20]);
+
+    const [paper1, paper2] = paper!.modules.map((module) => module.questions as MCQQuestion[]);
+    expect([1, 2, 3].map((level) => paper1.filter((q) => q.difficulty === level).length)).toEqual([2, 12, 6]);
+    expect([1, 2, 3].map((level) => paper2.filter((q) => q.difficulty === level).length)).toEqual([1, 10, 9]);
+    expect(new Set([...paper1, ...paper2].map((q) => q.options.length))).toEqual(new Set([5, 6, 7, 8]));
+    expect(paper1.map((q) => q.answer).join("")).toBe("CBEDDCDBBECDCCCBCDBD");
+    expect(paper2.map((q) => q.answer).join("")).toBe("CCBBBABACGFECDAABBGH");
+
+    for (const question of [...paper1, ...paper2]) {
+      const keys = question.options.map((option) => option.key).join("");
+      expect(keys, `${question.id}: non-sequential option keys`).toBe("ABCDEFGH".slice(0, question.options.length));
+    }
+  });
+
+  it("upgrades three weak TMUA mocks with calibrated medium-to-hard endings", () => {
+    const targets = [
+      { id: "tmua-mock-6", paper1Replacements: 8, paper2Replacements: 8, p1Hard: 6, p2Hard: 8 },
+      { id: "tmua-mock-9", paper1Replacements: 8, paper2Replacements: 8, p1Hard: 7, p2Hard: 9 },
+      { id: "tmua-mock-10", paper1Replacements: 8, paper2Replacements: 10, p1Hard: 6, p2Hard: 8 },
+    ];
+
+    for (const target of targets) {
+      const paper = getMockPaper(target.id)!;
+      expect(paper.modules.map((module) => module.questions.length)).toEqual([20, 20]);
+      const [paper1, paper2] = paper.modules.map((module) => module.questions as MCQQuestion[]);
+      const p1Tail = paper1.slice(-target.paper1Replacements);
+      const p2Tail = paper2.slice(-target.paper2Replacements);
+
+      expect(p1Tail.every((question) => question.id.includes("-cal-"))).toBe(true);
+      expect(p2Tail.every((question) => question.id.includes("-cal-"))).toBe(true);
+      expect(paper1.filter((question) => question.difficulty === 3)).toHaveLength(target.p1Hard);
+      expect(paper2.filter((question) => question.difficulty === 3)).toHaveLength(target.p2Hard);
+      expect(Math.max(...[...paper1, ...paper2].map((question) => question.options.length))).toBe(8);
+      const answerPositions = new Set(p2Tail.map((question) => question.answer));
+      for (const answer of ["F", "G", "H"]) expect(answerPositions).toContain(answer);
+
+      for (const question of [...p1Tail, ...p2Tail]) {
+        expect(question.options.map((option) => option.key).join(""))
+          .toBe("ABCDEFGH".slice(0, question.options.length));
+      }
+    }
+  });
+
   it("every fixed paper keeps test ownership and valid written marks", () => {
     for (const testId of ["mat", "pat", "step", "bmo", "bpho", "lnat", "tara"]) {
       for (const paper of getMockPapersForTest(testId)) {

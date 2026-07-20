@@ -55,6 +55,12 @@ import { TMUA_MK7_P1, TMUA_MK7_P2 } from "./tmua-mock-7";
 import { TMUA_MK8_P1, TMUA_MK8_P2 } from "./tmua-mock-8";
 import { TMUA_MK9_P1, TMUA_MK9_P2 } from "./tmua-mock-9";
 import { TMUA_MK10_P1, TMUA_MK10_P2 } from "./tmua-mock-10";
+import { TMUA_CALIBRATION_1_P1, TMUA_CALIBRATION_1_P2 } from "./tmua-calibration-1";
+import {
+  TMUA_MK6_P1_CALIBRATED, TMUA_MK6_P2_CALIBRATED,
+  TMUA_MK9_P1_CALIBRATED, TMUA_MK9_P2_CALIBRATED,
+  TMUA_MK10_P1_CALIBRATED, TMUA_MK10_P2_CALIBRATED,
+} from "./tmua-calibrated-replacements";
 import { BMO_MK1_MCQ } from "./bmo-mock-1";
 import { BMO_MK2_MCQ } from "./bmo-mock-2";
 import { BMO_MK3_MCQ } from "./bmo-mock-3";
@@ -785,8 +791,8 @@ export const TMUA_MOCK_6: MockPaper = {
   description:
     "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
   modules: [
-    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK6_P1 },
-    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK6_P2 },
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: [...TMUA_MK6_P1.slice(0, 12), ...TMUA_MK6_P1_CALIBRATED] },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: [...TMUA_MK6_P2.slice(0, 12), ...TMUA_MK6_P2_CALIBRATED] },
   ],
 };
 
@@ -824,8 +830,8 @@ export const TMUA_MOCK_9: MockPaper = {
   description:
     "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
   modules: [
-    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK9_P1 },
-    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK9_P2 },
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: [...TMUA_MK9_P1.slice(0, 12), ...TMUA_MK9_P1_CALIBRATED] },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: [...TMUA_MK9_P2.slice(0, 12), ...TMUA_MK9_P2_CALIBRATED] },
   ],
 };
 
@@ -837,8 +843,8 @@ export const TMUA_MOCK_10: MockPaper = {
   description:
     "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
   modules: [
-    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK10_P1 },
-    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK10_P2 },
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: [...TMUA_MK10_P1.slice(0, 12), ...TMUA_MK10_P1_CALIBRATED] },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: [...TMUA_MK10_P2.slice(0, 10), ...TMUA_MK10_P2_CALIBRATED] },
   ],
 };
 
@@ -897,6 +903,25 @@ export const BMO_MOCK_8: MockPaper = {
   id: "bmo-mock-8", testId: "bmo", title: "SMC 模拟卷八（25 题 · 难度递增）", titleEn: "SMC Mock Paper 8",
   description: BMO_SMC_MOCK_DESC,
   modules: [{ id: "mcq", title: "选择题（25 题 / 90 分钟）", titleEn: "Multiple Choice (Q1–25)", durationSec: 90 * 60, questions: BMO_MK8_MCQ }],
+};
+
+export const TMUA_CALIBRATION_1: MockPaper = {
+  id: "tmua-calibration-1",
+  testId: "tmua",
+  title: "TMUA 原创校准卷一（真题结构基准）",
+  titleEn: "TMUA Calibration Paper 1 (Official-structure benchmark)",
+  description:
+    "依据 2016-2023 真题结构与 2025 官方考纲重新校准的原创完整套卷。Paper 1 与 Paper 2 各 20 题、各 75 分钟、无计算器、无负分；选项按题目需要使用 A-E 至 A-H。题目只借鉴官方题型结构、推理密度与干扰项逻辑，不复制真题题面、数值或解答。",
+  formatType: "current",
+  instructions: [
+    "每个 Paper 独立计时 75 分钟。",
+    "不使用计算器或公式册。",
+    "每题只有一个正确答案；答错不倒扣。",
+  ],
+  modules: [
+    { id: "paper1", title: "Paper 1：数学知识应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_CALIBRATION_1_P1 },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_CALIBRATION_1_P2 },
+  ],
 };
 
 export const ESAT_GAP_PHYSICS_PAPER: MockPaper = {
@@ -1158,7 +1183,7 @@ export const TARA_WRITTEN_PAPERS: MockPaper[] = TARA_WRITTEN_QUESTIONS.map((ques
   formatType: "current",
 }));
 
-const ALL_MOCK_PAPERS: MockPaper[] = [BMO_R2_MOCK_1, BMO_R2_MOCK_2, BMO_R2_MOCK_3, BMO_R2_MOCK_4, BMO_R2_MOCK_5, BMO_R2_MOCK_6, BMO_R2_MOCK_7, BMO_R2_MOCK_8, BMO_MOCK_1, BMO_MOCK_2, BMO_MOCK_3, BMO_MOCK_4, BMO_MOCK_5, BMO_MOCK_6, BMO_MOCK_7, BMO_MOCK_8, ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, ESAT_GAP_PHYSICS_PAPER, ESAT_GAP_CHEMISTRY_PAPER, ESAT_GAP_BIOLOGY_PAPER, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3, BPHO_MOCK_1, BPHO_MOCK_2, BPHO_MOCK_3, BPHO_MOCK_4, BPHO_MOCK_5, BPHO_MOCK_6, BPHO_MOCK_7, BPHO_MOCK_8, BPHO_R2_MOCK_1, BPHO_R2_MOCK_2, BPHO_R2_MOCK_3, BPHO_R2_MOCK_4];
+const ALL_MOCK_PAPERS: MockPaper[] = [BMO_R2_MOCK_1, BMO_R2_MOCK_2, BMO_R2_MOCK_3, BMO_R2_MOCK_4, BMO_R2_MOCK_5, BMO_R2_MOCK_6, BMO_R2_MOCK_7, BMO_R2_MOCK_8, BMO_MOCK_1, BMO_MOCK_2, BMO_MOCK_3, BMO_MOCK_4, BMO_MOCK_5, BMO_MOCK_6, BMO_MOCK_7, BMO_MOCK_8, ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, ESAT_GAP_PHYSICS_PAPER, ESAT_GAP_CHEMISTRY_PAPER, ESAT_GAP_BIOLOGY_PAPER, TMUA_CALIBRATION_1, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3, BPHO_MOCK_1, BPHO_MOCK_2, BPHO_MOCK_3, BPHO_MOCK_4, BPHO_MOCK_5, BPHO_MOCK_6, BPHO_MOCK_7, BPHO_MOCK_8, BPHO_R2_MOCK_1, BPHO_R2_MOCK_2, BPHO_R2_MOCK_3, BPHO_R2_MOCK_4];
 ALL_MOCK_PAPERS.unshift(
   ...MAT_WRITTEN_PAPERS, ...PAT_WRITTEN_PAPERS, ...STEP_WRITTEN_PAPERS,
   ...LNAT_WRITTEN_PAPERS, ...TARA_WRITTEN_PAPERS,
