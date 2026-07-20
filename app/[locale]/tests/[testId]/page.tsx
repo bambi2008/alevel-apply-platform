@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, use } from "react";
-import { notFound } from "next/navigation";
+import { notFound, useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { getTestById, type AdmissionsTest } from "@/lib/tests";
 import { getKnowledgeByTopicId } from "@/lib/tests/knowledge";
@@ -25,7 +25,8 @@ export default function TestDetailPage({
 type TabId = "overview" | "topics" | "plan" | "practice" | "history" | "analysis";
 
 function TestDetailContent({ test }: { test: AdmissionsTest }) {
-  const [tab, setTab] = useState<TabId>("overview");
+  const searchParams = useSearchParams();
+  const requestedTab = searchParams.get("tab");
 
   const tabs: { id: TabId; label: string; labelEn: string }[] = [
     { id: "overview", label: "考试结构", labelEn: "Structure" },
@@ -35,6 +36,7 @@ function TestDetailContent({ test }: { test: AdmissionsTest }) {
     ...(test.hasQuestionBank ? [{ id: "history" as TabId, label: "历史记录", labelEn: "History" }] : []),
     ...(test.hasQuestionBank ? [{ id: "analysis" as TabId, label: "学情分析", labelEn: "Analysis" }] : []),
   ];
+  const tab = tabs.some((item) => item.id === requestedTab) ? requestedTab as TabId : "overview";
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
@@ -109,10 +111,10 @@ function TestDetailContent({ test }: { test: AdmissionsTest }) {
       {/* Tabs */}
       <div className="flex gap-1 border-b border-[var(--border)] mb-6 overflow-x-auto">
         {tabs.map((t) => (
-          <button
+          <Link
             key={t.id}
-            type="button"
-            onClick={() => setTab(t.id)}
+            href={`/tests/${test.id}?tab=${t.id}`}
+            aria-current={tab === t.id ? "page" : undefined}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition whitespace-nowrap ${
               tab === t.id
                 ? "border-[var(--indigo)] text-[var(--indigo)]"
@@ -121,7 +123,7 @@ function TestDetailContent({ test }: { test: AdmissionsTest }) {
           >
             {t.label}
             <span className="ml-1 text-xs opacity-60">{t.labelEn}</span>
-          </button>
+          </Link>
         ))}
       </div>
 

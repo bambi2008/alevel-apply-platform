@@ -33,11 +33,9 @@ export function TopNav({
   const ta = useTranslations("auth");
   const pathname = usePathname();
   const router = useRouter();
-  const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
   const [q, setQ] = useState("");
-  const navRef = useRef<HTMLDivElement>(null);
   const userRef = useRef<HTMLDivElement>(null);
 
   const groups: { key: string; title: string; items: NavItem[] }[] = [
@@ -78,17 +76,15 @@ export function TopNav({
 
   useEffect(() => {
     const onClick = (e: MouseEvent) => {
-      if (navRef.current && !navRef.current.contains(e.target as Node)) setOpenMenu(null);
       if (userRef.current && !userRef.current.contains(e.target as Node)) setUserOpen(false);
     };
     document.addEventListener("mousedown", onClick);
     return () => document.removeEventListener("mousedown", onClick);
   }, []);
-  useEffect(() => { setOpenMenu(null); setDrawerOpen(false); setUserOpen(false); }, [pathname]);
-
   const onSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const term = q.trim();
+    setDrawerOpen(false);
     router.push(term ? `/universities?q=${encodeURIComponent(term)}` : "/universities");
   };
 
@@ -96,56 +92,52 @@ export function TopNav({
     <header className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-[var(--border)]">
       <div className="mx-auto max-w-6xl px-5 h-16 flex items-center gap-4">
         {/* Brand */}
-        <Link href="/" className="flex items-center gap-2 shrink-0">
+        <Link href="/" onClick={() => { setDrawerOpen(false); setUserOpen(false); }} className="flex items-center gap-2 shrink-0">
           <BridgeMark />
           <span className="font-extrabold text-lg tracking-tight text-[var(--ink)]">桥申</span>
         </Link>
 
         {/* 桌面导航：悬停下拉 */}
-        <nav ref={navRef} className="hidden lg:flex items-center gap-1 ml-2">
+        <nav className="hidden lg:flex items-center gap-1 ml-2">
           {groups.map((g) => {
-            const open = openMenu === g.key;
             const groupActive = g.items.some((i) => isActive(i.href));
             return (
               <div
                 key={g.key}
-                className="relative"
-                onMouseEnter={() => setOpenMenu(g.key)}
-                onMouseLeave={() => setOpenMenu(null)}
+                className="group relative"
               >
                 <button
                   type="button"
-                  onClick={() => setOpenMenu(open ? null : g.key)}
+                  aria-haspopup="menu"
                   className={`flex items-center gap-1 px-3 py-2 rounded-lg text-[15px] font-semibold transition-colors ${
                     groupActive ? "text-[var(--indigo)]" : "text-[var(--ink)] hover:text-[var(--indigo)]"
                   }`}
                 >
                   {g.title}
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className={`transition-transform ${open ? "rotate-180" : ""}`}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="transition-transform group-hover:rotate-180 group-focus-within:rotate-180">
                     <path d="M6 9l6 6 6-6" strokeLinecap="round" strokeLinejoin="round" />
                   </svg>
                 </button>
-                {open && (
-                  <div className="absolute left-0 top-full pt-2 w-[340px]">
-                    <div className="rounded-2xl border border-[var(--border)] bg-white shadow-[var(--shadow-lg)] p-2">
-                      {g.items.map((i) => (
-                        <Link
-                          key={i.href}
-                          href={i.href}
-                          className="flex items-start gap-3 p-3 rounded-xl hover:bg-[var(--surface)] transition-colors"
-                        >
-                          <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-[var(--info-bg)] text-[var(--indigo)] shrink-0">
-                            <NavIcon name={i.icon} width={18} height={18} />
-                          </span>
-                          <span className="min-w-0">
-                            <span className="block text-sm font-semibold text-[var(--ink)]">{i.label}</span>
-                            {i.desc && <span className="block text-xs text-[var(--ink-faint)] mt-0.5">{i.desc}</span>}
-                          </span>
-                        </Link>
-                      ))}
-                    </div>
+                <div className="invisible pointer-events-none absolute left-0 top-full z-50 w-[340px] translate-y-1 pt-2 opacity-0 transition group-hover:visible group-hover:pointer-events-auto group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:visible group-focus-within:pointer-events-auto group-focus-within:translate-y-0 group-focus-within:opacity-100">
+                  <div role="menu" className="rounded-xl border border-[var(--border)] bg-white shadow-[var(--shadow-lg)] p-2">
+                    {g.items.map((i) => (
+                      <Link
+                        key={i.href}
+                        href={i.href}
+                        role="menuitem"
+                        className="flex items-start gap-3 p-3 rounded-lg hover:bg-[var(--surface)] transition-colors"
+                      >
+                        <span className="flex items-center justify-center w-9 h-9 rounded-lg bg-[var(--info-bg)] text-[var(--indigo)] shrink-0">
+                          <NavIcon name={i.icon} width={18} height={18} />
+                        </span>
+                        <span className="min-w-0">
+                          <span className="block text-sm font-semibold text-[var(--ink)]">{i.label}</span>
+                          {i.desc && <span className="block text-xs text-[var(--ink-faint)] mt-0.5">{i.desc}</span>}
+                        </span>
+                      </Link>
+                    ))}
                   </div>
-                )}
+                </div>
               </div>
             );
           })}
@@ -182,7 +174,7 @@ export function TopNav({
                 <div className="absolute right-0 top-full mt-1.5 w-52 rounded-xl border border-[var(--border)] bg-white shadow-lg p-1.5 z-50">
                   <p className="px-3 py-2 text-xs text-[var(--ink-faint)] truncate">{userEmail}</p>
                   {isAdmin && (
-                    <Link href="/admin" className="block px-3 py-2 rounded-lg text-sm text-[var(--ink-soft)] hover:bg-[var(--surface)]">
+                    <Link href="/admin" onClick={() => setUserOpen(false)} className="block px-3 py-2 rounded-lg text-sm text-[var(--ink-soft)] hover:bg-[var(--surface)]">
                       {t("adminConsole")}
                     </Link>
                   )}
@@ -231,7 +223,7 @@ export function TopNav({
                   <p className="text-[11px] font-semibold uppercase tracking-[0.1em] text-[var(--ink-faint)] mb-1.5 px-1">{g.title}</p>
                   <div className="space-y-0.5">
                     {g.items.map((i) => (
-                      <Link key={i.href} href={i.href} className="flex items-center gap-3 px-2 py-2.5 rounded-lg hover:bg-[var(--surface)]">
+                      <Link key={i.href} href={i.href} onClick={() => setDrawerOpen(false)} className="flex items-center gap-3 px-2 py-2.5 rounded-lg hover:bg-[var(--surface)]">
                         <span className="text-[var(--ink-faint)]"><NavIcon name={i.icon} width={18} height={18} /></span>
                         <span className="text-sm font-medium text-[var(--ink)]">{i.label}</span>
                       </Link>
@@ -240,11 +232,11 @@ export function TopNav({
                 </div>
               ))}
               <div className="pt-3 border-t border-[var(--border)] flex items-center justify-between">
-                <LocaleSwitcher />
+                <div onClick={() => setDrawerOpen(false)}><LocaleSwitcher /></div>
                 {isLoggedIn ? (
                   <form action={logoutAction}><button type="submit" className="text-sm text-[var(--ink-soft)]">{ta("logout")}</button></form>
                 ) : (
-                  <Link href="/login" className="text-sm font-semibold text-[var(--indigo)]">{ta("login")}</Link>
+                  <Link href="/login" onClick={() => setDrawerOpen(false)} className="text-sm font-semibold text-[var(--indigo)]">{ta("login")}</Link>
                 )}
               </div>
             </div>

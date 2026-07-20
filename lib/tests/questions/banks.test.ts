@@ -7,6 +7,7 @@ import { BPHO_QUESTIONS } from "@/lib/tests/questions/bpho";
 import { PAT_QUESTIONS } from "@/lib/tests/questions/pat";
 import { LNAT_QUESTIONS } from "@/lib/tests/questions/lnat";
 import { TARA_QUESTIONS } from "@/lib/tests/questions/tara";
+import { TMUA_REASONING_ROUND_2 } from "@/lib/tests/questions/tmua-reasoning-round-2";
 import { BPHO4_LONG_SAMPLE } from "@/lib/tests/questions/bpho4-long";
 import { BPHO5_LONG_SAMPLE } from "@/lib/tests/questions/bpho5-long";
 import { BMO_SMC_TOPUP } from "@/lib/tests/questions/bmo-smc-topup";
@@ -86,6 +87,23 @@ describe("question bank difficulty calibration", () => {
     const hardWaveQuestions = PAT_QUESTIONS.filter((question) => question.topicId === "pat-wave" && question.difficulty === 3);
     expect(hardWaveQuestions).toHaveLength(5);
     expect(hardWaveQuestions.every((question) => question.id.startsWith("pat-wave-cal-"))).toBe(true);
+  });
+});
+
+describe("TMUA reasoning round two", () => {
+  it("adds five medium-to-hard questions to every TMUA topic", () => {
+    expect(TMUA_REASONING_ROUND_2).toHaveLength(25);
+    for (const topicId of ["tmua-algebra", "tmua-calc", "tmua-stats", "tmua-logic", "tmua-discrete"]) {
+      const questions = TMUA_REASONING_ROUND_2.filter((question) => question.topicId === topicId);
+      expect(questions, `${topicId}: wrong batch size`).toHaveLength(5);
+      expect(questions.every((question) => question.difficulty >= 2)).toBe(true);
+    }
+  });
+
+  it("keeps the independently checked answer key stable", () => {
+    expect(TMUA_REASONING_ROUND_2.map((question) => question.answer).join("")).toBe(
+      "CBCDC" + "CCBCC" + "CDBCD" + "CDCCA" + "DCCDD",
+    );
   });
 });
 

@@ -10,7 +10,9 @@ export default function proxy(request: NextRequest) {
   }
 
   // 默认跳转到中文
-  return NextResponse.redirect(new URL("/zh-CN" + pathname, request.url));
+  const url = request.nextUrl.clone();
+  url.pathname = "/zh-CN" + pathname;
+  return NextResponse.redirect(url);
 }
 
 export const config = {
