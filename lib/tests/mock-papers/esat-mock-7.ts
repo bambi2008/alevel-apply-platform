@@ -21,9 +21,9 @@ export const ESAT_MK7_MATH: MCQQuestion[] = [
     answer: "C", solution: "$16^{1/4}=2$, then $2^3=8$." },
 
   { id: "esat-mk7-m-03", type: "mcq", testId: "esat", topicId: "esat-math1", difficulty: 2, marks: 1,
-    question: "Solve $3x^2-12=0$.",
-    options: [ {key:"A",text:"$x=2$"},{key:"B",text:"$x=\\pm2$"},{key:"C",text:"$x=\\pm4$"},{key:"D",text:"$x=4$"},{key:"E",text:"$x=\\pm\\sqrt2$"} ],
-    answer: "B", solution: "$x^2=4\\Rightarrow x=\\pm2$." },
+    question: "For which values of $k$ does $x^2+4x+k=0$ have no real roots?",
+    options: [ {key:"A",text:"$k<4$"},{key:"B",text:"$k=4$"},{key:"C",text:"$k>4$"},{key:"D",text:"$k\\leq4$"},{key:"E",text:"all real $k$"} ],
+    answer: "C", solution: "No real roots require $16-4k<0$, hence $k>4$." },
 
   { id: "esat-mk7-m-04", type: "mcq", testId: "esat", topicId: "esat-math1", difficulty: 2, marks: 1,
     question: "Factorise fully $2x^2-8$.",
@@ -141,9 +141,9 @@ export const ESAT_MK7_MATH: MCQQuestion[] = [
     answer: "B", solution: "$x^2-4x+3=(x-1)(x-3)=0\\Rightarrow x=1,3$; distance $=2$." },
 
   { id: "esat-mk7-m-27", type: "mcq", testId: "esat", topicId: "esat-math1", difficulty: 2, marks: 1,
-    question: "Simplify $\\dfrac{2}{3}+\\dfrac{1}{4}$.",
-    options: [ {key:"A",text:"$\\dfrac{3}{7}$"},{key:"B",text:"$\\dfrac{11}{12}$"},{key:"C",text:"$\\dfrac{5}{6}$"},{key:"D",text:"$\\dfrac{3}{4}$"},{key:"E",text:"$\\dfrac{2}{12}$"} ],
-    answer: "B", solution: "$\\dfrac{8}{12}+\\dfrac{3}{12}=\\dfrac{11}{12}$." },
+    question: "Flour and sugar are mixed in the ratio $5:2$. How much sugar is needed for $350\\,\\text{g}$ of flour?",
+    options: [ {key:"A",text:"$70\\,\\text{g}$"},{key:"B",text:"$120\\,\\text{g}$"},{key:"C",text:"$140\\,\\text{g}$"},{key:"D",text:"$175\\,\\text{g}$"},{key:"E",text:"$875\\,\\text{g}$"} ],
+    answer: "C", solution: "One ratio part is $350/5=70\\,\\text{g}$, so the sugar mass is $2\\times70=140\\,\\text{g}$." },
 ];
 
 // ── 模块二：物理（高频核心）——27 题 / 40 分钟 ───────────────────────────────
@@ -235,9 +235,9 @@ export const ESAT_MK7_PHYS: MCQQuestion[] = [
     answer: "B", solution: "$I=\\dfrac{Q}{t}=\\dfrac{60}{20}=3.0\\,\\text{A}$." },
 
   { id: "esat-mk7-p-18", type: "mcq", testId: "esat", topicId: "esat-phys6", difficulty: 2, marks: 1,
-    question: "A force of $50\\,\\text{N}$ acts on an area of $0.20\\,\\text{m}^2$. The pressure is:",
-    options: [ {key:"A",text:"$10\\,\\text{Pa}$"},{key:"B",text:"$25\\,\\text{Pa}$"},{key:"C",text:"$100\\,\\text{Pa}$"},{key:"D",text:"$250\\,\\text{Pa}$"},{key:"E",text:"$2.5\\,\\text{Pa}$"} ],
-    answer: "D", solution: "$P=\\dfrac{F}{A}=\\dfrac{50}{0.20}=250\\,\\text{Pa}$." },
+    question: "Take water density as $1000\\,\\text{kg m}^{-3}$ and $g=10\\,\\text{N kg}^{-1}$. What is the gauge pressure $3.0\\,\\text{m}$ below a calm water surface?",
+    options: [ {key:"A",text:"$300\\,\\text{Pa}$"},{key:"B",text:"$3000\\,\\text{Pa}$"},{key:"C",text:"$30000\\,\\text{Pa}$"},{key:"D",text:"$300000\\,\\text{Pa}$"},{key:"E",text:"$3.0\\times10^6\\,\\text{Pa}$"} ],
+    answer: "C", solution: "$p=\\rho gh=1000\\times10\\times3.0=30000\\,\\text{Pa}$." },
 
   { id: "esat-mk7-p-19", type: "mcq", testId: "esat", topicId: "esat-phys1", difficulty: 3, marks: 1,
     question: "A $1000\\,\\text{kg}$ car accelerates from $10\\,\\text{m/s}$ to $20\\,\\text{m/s}$ in $5.0\\,\\text{s}$. The resultant force on it is:",

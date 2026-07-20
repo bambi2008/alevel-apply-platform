@@ -11,6 +11,7 @@ import { ESAT_MK8_MATH, ESAT_MK8_CHEM } from "./esat-mock-8";
 import { ESAT_MK9_MATH, ESAT_MK9_BIO } from "./esat-mock-9";
 import { ESAT_MK10_MAG, ESAT_MK10_SCI } from "./esat-mock-10";
 import { ESAT_GAP_BIOLOGY_MODULE, ESAT_GAP_CHEMISTRY_MODULE, ESAT_GAP_PHYSICS_MODULE } from "./esat-gap-module-papers";
+import { balanceEsatAnswers } from "./esat-calibration";
 import { TMUA_MK1_P1, TMUA_MK1_P2 } from "./tmua-mock-1";
 import { MAT_MK1_MCQ } from "./mat-mock-1";
 import { MAT_MK2_MCQ } from "./mat-mock-2";
@@ -134,14 +135,14 @@ export const ESAT_MOCK_1: MockPaper = {
       title: "数学（模块一）",
       titleEn: "Mathematics (Module 1)",
       durationSec: 40 * 60,
-      questions: ESAT_MK1_MATH,
+      questions: balanceEsatAnswers(ESAT_MK1_MATH),
     },
     {
       id: "physics",
       title: "物理（模块二）",
       titleEn: "Physics (Module 2)",
       durationSec: 40 * 60,
-      questions: ESAT_MK1_PHYS,
+      questions: balanceEsatAnswers(ESAT_MK1_PHYS),
     },
   ],
 };
@@ -159,14 +160,14 @@ export const ESAT_MOCK_2: MockPaper = {
       title: "数学（模块一）",
       titleEn: "Mathematics (Module 1)",
       durationSec: 40 * 60,
-      questions: ESAT_MK2_MATH,
+      questions: balanceEsatAnswers(ESAT_MK2_MATH),
     },
     {
       id: "physics",
       title: "物理（模块二）",
       titleEn: "Physics (Module 2)",
       durationSec: 40 * 60,
-      questions: ESAT_MK2_PHYS,
+      questions: balanceEsatAnswers(ESAT_MK2_PHYS),
     },
   ],
 };
@@ -184,14 +185,14 @@ export const ESAT_MOCK_3: MockPaper = {
       title: "数学（模块一）",
       titleEn: "Mathematics (Module 1)",
       durationSec: 40 * 60,
-      questions: ESAT_MK3_MATH,
+      questions: balanceEsatAnswers(ESAT_MK3_MATH),
     },
     {
       id: "chemistry",
       title: "化学（模块二）",
       titleEn: "Chemistry (Module 2)",
       durationSec: 40 * 60,
-      questions: ESAT_MK3_CHEM,
+      questions: balanceEsatAnswers(ESAT_MK3_CHEM),
     },
   ],
 };
@@ -209,14 +210,14 @@ export const ESAT_MOCK_4: MockPaper = {
       title: "数学（模块一）",
       titleEn: "Mathematics (Module 1)",
       durationSec: 40 * 60,
-      questions: ESAT_MK4_MATH,
+      questions: balanceEsatAnswers(ESAT_MK4_MATH),
     },
     {
       id: "biology",
       title: "生物（模块二）",
       titleEn: "Biology (Module 2)",
       durationSec: 40 * 60,
-      questions: ESAT_MK4_BIO,
+      questions: balanceEsatAnswers(ESAT_MK4_BIO),
     },
   ],
 };
@@ -234,14 +235,14 @@ export const ESAT_MOCK_5: MockPaper = {
       title: "数学（含进阶）",
       titleEn: "Mathematics (incl. advanced)",
       durationSec: 40 * 60,
-      questions: ESAT_MK5_MATH,
+      questions: balanceEsatAnswers(ESAT_MK5_MATH),
     },
     {
       id: "physics",
       title: "物理（含进阶）",
       titleEn: "Physics (incl. advanced)",
       durationSec: 40 * 60,
-      questions: ESAT_MK5_PHYS,
+      questions: balanceEsatAnswers(ESAT_MK5_PHYS),
     },
   ],
 };
@@ -254,8 +255,8 @@ export const ESAT_MOCK_6: MockPaper = {
   description:
     "依据 ENGAA 2016–2023 真题演变设计：出题人自 2019 年将卷子由 54 题/80 分钟改为 40 题/60 分钟，以「少而精、多步推理」的更硬题目补偿，并加重进阶数学与电路/波/热。本卷据此校准，难度偏高、综合多步题为主。数学 + 物理各 27 题、每模块 40 分钟、五选一、无负分。题目全新原创，与真题及其他卷均不重复。",
   modules: [
-    { id: "math", title: "数学（含进阶）", titleEn: "Mathematics (incl. advanced)", durationSec: 40 * 60, questions: ESAT_MK6_MATH },
-    { id: "physics", title: "物理（含进阶）", titleEn: "Physics (incl. advanced)", durationSec: 40 * 60, questions: ESAT_MK6_PHYS },
+    { id: "math", title: "数学（含进阶）", titleEn: "Mathematics (incl. advanced)", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MK6_MATH) },
+    { id: "physics", title: "物理（含进阶）", titleEn: "Physics (incl. advanced)", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MK6_PHYS) },
   ],
 };
 
@@ -267,8 +268,8 @@ export const ESAT_MOCK_7: MockPaper = {
   description:
     "提取 ENGAA 2016–2023 八年真题中跨年稳定、几乎每年必考的「高频核心」考点，组成的打基本功均衡卷（与偏难的卷六互补）。数学 + 物理各 27 题、每模块 40 分钟、五选一、无负分。难度以基础—中等为主。题目全新原创，与真题及其他卷均不重复。",
   modules: [
-    { id: "math", title: "数学（高频核心）", titleEn: "Mathematics (core)", durationSec: 40 * 60, questions: ESAT_MK7_MATH },
-    { id: "physics", title: "物理（高频核心）", titleEn: "Physics (core)", durationSec: 40 * 60, questions: ESAT_MK7_PHYS },
+    { id: "math", title: "数学（高频核心）", titleEn: "Mathematics (core)", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MK7_MATH) },
+    { id: "physics", title: "物理（高频核心）", titleEn: "Physics (core)", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MK7_PHYS) },
   ],
 };
 
@@ -280,8 +281,8 @@ export const ESAT_MOCK_8: MockPaper = {
   description:
     "依据 NSAA 2016–2023 真题校准的自然科学方向卷，补足化学（与工程卷五/六/七的数理侧互补）。数学 + 化学各 27 题、每模块 40 分钟、五选一、无负分。题目全新原创，与真题及其他卷均不重复。",
   modules: [
-    { id: "math", title: "数学", titleEn: "Mathematics", durationSec: 40 * 60, questions: ESAT_MK8_MATH },
-    { id: "chemistry", title: "化学", titleEn: "Chemistry", durationSec: 40 * 60, questions: ESAT_MK8_CHEM },
+    { id: "math", title: "数学", titleEn: "Mathematics", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MK8_MATH) },
+    { id: "chemistry", title: "化学", titleEn: "Chemistry", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MK8_CHEM) },
   ],
 };
 
@@ -293,8 +294,8 @@ export const ESAT_MOCK_9: MockPaper = {
   description:
     "依据 NSAA 2016–2023 真题校准的自然科学方向卷，补足生物（与化学卷八、工程卷共同构成完整科目覆盖）。数学 + 生物各 27 题、每模块 40 分钟、五选一、无负分。题目全新原创，与真题及其他卷均不重复。",
   modules: [
-    { id: "math", title: "数学", titleEn: "Mathematics", durationSec: 40 * 60, questions: ESAT_MK9_MATH },
-    { id: "biology", title: "生物", titleEn: "Biology", durationSec: 40 * 60, questions: ESAT_MK9_BIO },
+    { id: "math", title: "数学", titleEn: "Mathematics", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MK9_MATH) },
+    { id: "biology", title: "生物", titleEn: "Biology", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MK9_BIO) },
   ],
 };
 
@@ -306,8 +307,8 @@ export const ESAT_MOCK_10: MockPaper = {
   description:
     "对照官方 ESAT 物理考纲（P1–P7）审计题库后补齐薄弱考点的专项卷：模块一为磁学与电磁（官方 P2，此前完全缺失），模块二覆盖热物理、物质、波与放射性。各 27 题、每模块 40 分钟、五选一、无负分。题目全新原创，仅以官方考纲做结构校准，未照搬任何指南或真题。",
   modules: [
-    { id: "magnetism", title: "磁学与电磁", titleEn: "Magnetism & Electromagnetism", durationSec: 40 * 60, questions: ESAT_MK10_MAG },
-    { id: "science", title: "热 / 物质 / 波 / 放射性", titleEn: "Thermal / Matter / Waves / Radioactivity", durationSec: 40 * 60, questions: ESAT_MK10_SCI },
+    { id: "magnetism", title: "磁学与电磁", titleEn: "Magnetism & Electromagnetism", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MK10_MAG) },
+    { id: "science", title: "热 / 物质 / 波 / 放射性", titleEn: "Thermal / Matter / Waves / Radioactivity", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MK10_SCI) },
   ],
 };
 
@@ -941,7 +942,7 @@ export const ESAT_GAP_PHYSICS_PAPER: MockPaper = {
   title: "ESAT 物理考纲补齐模块卷",
   titleEn: "ESAT Physics Specification Completion Module",
   description: "现行 ESAT 物理模块训练：27 道五选一，40 分钟，无计算器。集中覆盖波、放射性、热与物质、磁学与电磁。",
-  modules: [{ id: "physics", title: "物理补齐模块", titleEn: "Physics completion module", durationSec: 40 * 60, questions: ESAT_GAP_PHYSICS_MODULE }],
+  modules: [{ id: "physics", title: "物理补齐模块", titleEn: "Physics completion module", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_GAP_PHYSICS_MODULE) }],
   formatType: "current",
 };
 
@@ -951,7 +952,7 @@ export const ESAT_GAP_CHEMISTRY_PAPER: MockPaper = {
   title: "ESAT 化学考纲补齐模块卷",
   titleEn: "ESAT Chemistry Specification Completion Module",
   description: "现行 ESAT 化学模块训练：27 道五选一，40 分钟，无计算器。集中覆盖定量化学、化学计量与电解。",
-  modules: [{ id: "chemistry", title: "化学补齐模块", titleEn: "Chemistry completion module", durationSec: 40 * 60, questions: ESAT_GAP_CHEMISTRY_MODULE }],
+  modules: [{ id: "chemistry", title: "化学补齐模块", titleEn: "Chemistry completion module", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_GAP_CHEMISTRY_MODULE) }],
   formatType: "current",
 };
 
@@ -961,7 +962,7 @@ export const ESAT_GAP_BIOLOGY_PAPER: MockPaper = {
   title: "ESAT 生物考纲补齐模块卷",
   titleEn: "ESAT Biology Specification Completion Module",
   description: "现行 ESAT 生物模块训练：27 道五选一，40 分钟，无计算器。重点覆盖基因技术、生态系统、能量流动与碳循环。",
-  modules: [{ id: "biology", title: "生物补齐模块", titleEn: "Biology completion module", durationSec: 40 * 60, questions: ESAT_GAP_BIOLOGY_MODULE }],
+  modules: [{ id: "biology", title: "生物补齐模块", titleEn: "Biology completion module", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_GAP_BIOLOGY_MODULE) }],
   formatType: "current",
 };
 

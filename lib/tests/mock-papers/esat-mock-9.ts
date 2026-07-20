@@ -16,9 +16,9 @@ export const ESAT_MK9_MATH: MCQQuestion[] = [
     answer: "B", solution: "$0.15\\times60=9$." },
 
   { id: "esat-mk9-m-02", type: "mcq", testId: "esat", topicId: "esat-math1", difficulty: 1, marks: 1,
-    question: "Simplify $\\dfrac{4}{6}+\\dfrac{1}{6}$.",
-    options: [ {key:"A",text:"$\\dfrac{5}{12}$"},{key:"B",text:"$\\dfrac{5}{6}$"},{key:"C",text:"$\\dfrac{5}{3}$"},{key:"D",text:"$\\dfrac{1}{2}$"},{key:"E",text:"$\\dfrac{2}{3}$"} ],
-    answer: "B", solution: "$\\dfrac{4+1}{6}=\\dfrac56$." },
+    question: "A bag contains $3$ red counters and $7$ blue counters. One counter is chosen at random. What is the probability that it is red?",
+    options: [ {key:"A",text:"$\\dfrac{3}{7}$"},{key:"B",text:"$\\dfrac{3}{10}$"},{key:"C",text:"$\\dfrac{7}{10}$"},{key:"D",text:"$\\dfrac{1}{3}$"},{key:"E",text:"$\\dfrac{1}{10}$"} ],
+    answer: "B", solution: "There are $10$ counters in total and $3$ favourable outcomes, so the probability is $3/10$." },
 
   { id: "esat-mk9-m-03", type: "mcq", testId: "esat", topicId: "esat-math1", difficulty: 2, marks: 1,
     question: "A population of $2000$ bacteria doubles every hour. After $3$ hours it is:",
@@ -41,9 +41,9 @@ export const ESAT_MK9_MATH: MCQQuestion[] = [
     answer: "C", solution: "Range $=13-4=9$." },
 
   { id: "esat-mk9-m-07", type: "mcq", testId: "esat", topicId: "esat-math1", difficulty: 2, marks: 1,
-    question: "Solve $4x-7=2x+5$.",
-    options: [ {key:"A",text:"$x=3$"},{key:"B",text:"$x=6$"},{key:"C",text:"$x=-6$"},{key:"D",text:"$x=1$"},{key:"E",text:"$x=12$"} ],
-    answer: "B", solution: "$2x=12\\Rightarrow x=6$." },
+    question: "The arithmetic sequence $5,9,13,\\ldots$ contains the term $53$. What is its position in the sequence?",
+    options: [ {key:"A",text:"$10$th"},{key:"B",text:"$12$th"},{key:"C",text:"$13$th"},{key:"D",text:"$14$th"},{key:"E",text:"$16$th"} ],
+    answer: "C", solution: "$5+4(n-1)=53$, so $4(n-1)=48$ and $n=13$." },
 
   { id: "esat-mk9-m-08", type: "mcq", testId: "esat", topicId: "esat-math1", difficulty: 3, marks: 1,
     question: "A sample loses half its mass every $5\\,\\text{days}$. What fraction remains after $15\\,\\text{days}$?",
@@ -106,9 +106,9 @@ export const ESAT_MK9_MATH: MCQQuestion[] = [
     answer: "C", solution: "$80\\times1.35=108$." },
 
   { id: "esat-mk9-m-20", type: "mcq", testId: "esat", topicId: "esat-math2", difficulty: 2, marks: 1,
-    question: "Evaluate $\\displaystyle\\int_1^2 3x^2\\,dx$.",
-    options: [ {key:"A",text:"$5$"},{key:"B",text:"$7$"},{key:"C",text:"$8$"},{key:"D",text:"$9$"},{key:"E",text:"$12$"} ],
-    answer: "B", solution: "$[x^3]_1^2=8-1=7$." },
+    question: "What is the gradient of the tangent to $y=x^2+2x$ at $x=3$?",
+    options: [ {key:"A",text:"$5$"},{key:"B",text:"$6$"},{key:"C",text:"$8$"},{key:"D",text:"$11$"},{key:"E",text:"$15$"} ],
+    answer: "C", solution: "$dy/dx=2x+2$, which equals $8$ at $x=3$." },
 
   { id: "esat-mk9-m-21", type: "mcq", testId: "esat", topicId: "esat-math1", difficulty: 2, marks: 1,
     question: "A biological reaction rate triples for every $10^\\circ\\text{C}$ rise. By what factor does it change for a $20^\\circ\\text{C}$ rise?",
