@@ -6,33 +6,17 @@ describe("question bank audit", () => {
   it("inventories every supported test without structural blockers", () => {
     const report = buildQuestionBankAudit();
     expect(report.totals.tests).toBe(9);
-    expect(report.totals.questions).toBe(2492);
+    expect(report.totals.questions).toBe(2497);
     expect(report.totals.mockPapers).toBe(97);
     expect(report.totals.topicsCovered).toBe(62);
     expect(report.totals.topicsTotal).toBe(62);
     expect(report.totals.critical).toBe(0);
-    expect(report.totals.warning).toBe(15);
+    expect(report.totals.warning).toBe(0);
   });
 
-  it("tracks remaining written-format gaps without flagging completed paper sets", () => {
+  it("keeps the supported question banks free of audit findings", () => {
     const report = buildQuestionBankAudit();
-    expect(report.issues).toEqual(expect.arrayContaining([
-      expect.objectContaining({ code: "TEST_DIFFICULTY_SKEW", testId: "lnat", severity: "warning" }),
-    ]));
-    expect(report.issues).not.toEqual(expect.arrayContaining([
-      expect.objectContaining({ code: "MISSING_FIXED_WRITTEN_PAPER", testId: "mat" }),
-      expect.objectContaining({ code: "MISSING_FIXED_WRITTEN_PAPER", testId: "pat" }),
-      expect.objectContaining({ code: "MISSING_FIXED_WRITTEN_PAPER", testId: "step" }),
-      expect.objectContaining({ code: "MISSING_WRITTEN_PRACTICE", testId: "pat" }),
-      expect.objectContaining({ code: "MISSING_FIXED_WRITTEN_PAPER", testId: "lnat" }),
-      expect.objectContaining({ code: "MISSING_FIXED_WRITTEN_PAPER", testId: "tara" }),
-      expect.objectContaining({ code: "MISSING_WRITTEN_PRACTICE", testId: "lnat" }),
-      expect.objectContaining({ code: "MISSING_WRITTEN_PRACTICE", testId: "tara" }),
-      expect.objectContaining({ code: "DUPLICATE_PROMPT", testId: "lnat" }),
-      expect.objectContaining({ code: "DUPLICATE_PROMPT", testId: "tara" }),
-      expect.objectContaining({ code: "TOPIC_IMBALANCE", testId: "lnat" }),
-      expect.objectContaining({ code: "TOPIC_IMBALANCE", testId: "tara" }),
-    ]));
+    expect(report.issues.filter((issue) => issue.severity !== "info")).toEqual([]);
   });
 
   it("tracks complete ESAT topic coverage without empty science modules", () => {

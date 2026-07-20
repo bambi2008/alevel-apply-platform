@@ -1156,16 +1156,16 @@ export const ESAT_MATH_2: MCQQuestion[] = [
     difficulty: 2,
     marks: 1,
     question:
-      "Solve the inequality $\\dfrac{x-1}{x+2}>1$.",
+      "Solve the inequality $\\dfrac{2x-3}{x+1}\\leq 1$.",
     options: [
-      { key: "A", text: "$x<-2$" },
-      { key: "B", text: "$x>-2$" },
-      { key: "C", text: "$-2<x<1$" },
-      { key: "D", text: "$x<-2$ or $x>1$" },
+      { key: "A", text: "$x\\leq -1$" },
+      { key: "B", text: "$-1<x\\leq4$" },
+      { key: "C", text: "$x<-1$ or $x\\geq4$" },
+      { key: "D", text: "$x>4$" },
     ],
-    answer: "A",
+    answer: "B",
     solution:
-      "$\\dfrac{x-1}{x+2}-1>0\\Rightarrow\\dfrac{x-1-(x+2)}{x+2}>0\\Rightarrow\\dfrac{-3}{x+2}>0\\Rightarrow x+2<0\\Rightarrow x<-2$.",
+      "$\\dfrac{2x-3}{x+1}-1=\\dfrac{x-4}{x+1}\\leq0$. A sign chart at $x=-1$ and $x=4$ gives $-1<x\\leq4$; $x=-1$ is excluded from the domain.",
   },
 
   {

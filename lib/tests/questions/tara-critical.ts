@@ -2,11 +2,11 @@
 import type { MCQQuestion } from "./types";
 
 export const TARA_CRITICAL: MCQQuestion[] = [
-  { id: "tara-ct-001", type: "mcq", testId: "tara", topicId: "tara-critical", difficulty: 2, marks: 1,
+  { id: "tara-ct-001", type: "mcq", testId: "tara", topicId: "tara-critical", difficulty: 1, marks: 1,
     question: "The new bypass was built to reduce traffic in the town centre. Since it opened, congestion in the centre has indeed fallen. However, traffic on the residential roads leading to the bypass has increased sharply, and accidents there have risen. The bypass has simply moved the problem rather than solving it.\n\nWhich of the following best expresses the main conclusion of the argument?",
     options: [{ key: "A", text: "The bypass was built to reduce town-centre traffic." },{ key: "B", text: "Congestion in the town centre has fallen." },{ key: "C", text: "The bypass has moved the traffic problem rather than solving it." },{ key: "D", text: "Accidents on residential roads have risen." },{ key: "E", text: "Traffic on residential roads has increased." }],
     answer: "C", solution: "The final sentence is the conclusion; the earlier statements are evidence leading to it. B, D and E are supporting facts, and A is background." },
-  { id: "tara-ct-002", type: "mcq", testId: "tara", topicId: "tara-critical", difficulty: 2, marks: 1,
+  { id: "tara-ct-002", type: "mcq", testId: "tara", topicId: "tara-critical", difficulty: 1, marks: 1,
     question: "Companies claim that longer opening hours improve customer service. But staff forced to work late become tired and make more errors, and customers report worse experiences in the final hours. Extending opening hours can therefore harm the very service it is meant to improve.\n\nWhich of the following is the main conclusion?",
     options: [{ key: "A", text: "Staff who work late become tired." },{ key: "B", text: "Extending opening hours can harm customer service." },{ key: "C", text: "Companies want to improve customer service." },{ key: "D", text: "Tired staff make more errors." },{ key: "E", text: "Customers report worse experiences late at night." }],
     answer: "B", solution: "The conclusion is signalled by 'therefore'; the rest are premises supporting it." },
@@ -46,7 +46,7 @@ export const TARA_CRITICAL: MCQQuestion[] = [
     question: "Principle: A person should not be blamed for an outcome they could not reasonably have foreseen or prevented.\n\nApplying this principle, in which case should the person NOT be blamed?",
     options: [{ key: "A", text: "A driver obeying all rules brakes immediately when a child suddenly darts into the road, but cannot avoid a collision." },{ key: "B", text: "A driver who was texting causes a crash." },{ key: "C", text: "A shopkeeper knowingly sells food past its safe date and customers fall ill." },{ key: "D", text: "A cyclist rides through a red light and hits a pedestrian." },{ key: "E", text: "A builder uses materials he knows to be unsafe and a wall collapses." }],
     answer: "A", solution: "Only A involves an outcome the person could neither foresee nor prevent; by the principle they should not be blamed. In the others the person could have foreseen or prevented the harm." },
-  { id: "tara-ct-012", type: "mcq", testId: "tara", topicId: "tara-critical", difficulty: 2, marks: 1,
+  { id: "tara-ct-012", type: "mcq", testId: "tara", topicId: "tara-critical", difficulty: 3, marks: 1,
     question: "If the bridge were unsafe, it would have been closed. It has not been closed. So the bridge is not unsafe.\n\nWhich of the following arguments has the same logical structure as the argument above?",
     options: [{ key: "A", text: "If it rains, the match is cancelled. The match was not cancelled. So it did not rain." },{ key: "B", text: "If it rains, the match is cancelled. It rained. So the match was cancelled." },{ key: "C", text: "The match is cancelled only when it rains. It did not rain. So the match went ahead." },{ key: "D", text: "If it rains, the match is cancelled. The match was cancelled. So it rained." },{ key: "E", text: "It never rains during matches, so matches are never cancelled." }],
     answer: "A", solution: "The original is: if P then Q; not Q; therefore not P (valid, modus tollens). A matches exactly: if rain then cancelled; not cancelled; so no rain." },
@@ -90,7 +90,7 @@ export const TARA_CRITICAL: MCQQuestion[] = [
     question: "A charity states that donations rose after it launched an advertising campaign, proving that the campaign was effective.\n\nWhich of the following is an assumption the charity's reasoning depends on?",
     options: [{ key: "A", text: "The rise in donations was due to the campaign rather than to some other cause." },{ key: "B", text: "The campaign was expensive." },{ key: "C", text: "Donors are generous." },{ key: "D", text: "The charity is well known." },{ key: "E", text: "Advertising is common." }],
     answer: "A", solution: "Concluding the campaign was effective assumes it, rather than an unrelated factor (a news event, the season), caused the rise in donations." },
-  { id: "tara-ct-023", type: "mcq", testId: "tara", topicId: "tara-critical", difficulty: 2, marks: 1,
+  { id: "tara-ct-023", type: "mcq", testId: "tara", topicId: "tara-critical", difficulty: 3, marks: 1,
     question: "If a student has revised properly, they will pass. Priya has not passed. So Priya cannot have revised properly.\n\nWhich of the following arguments has the same structure as the one above?",
     options: [{ key: "A", text: "If a plant is watered, it grows. This plant has not grown. So it was not watered." },{ key: "B", text: "If a plant is watered, it grows. This plant was watered. So it grew." },{ key: "C", text: "If a plant is watered, it grows. This plant grew. So it was watered." },{ key: "D", text: "Plants grow only in summer. It is not summer. So plants are not growing." },{ key: "E", text: "This plant grew, so it must be summer." }],
     answer: "A", solution: "Original: if P then Q; not Q; so not P (modus tollens). A has exactly this form: if watered then grows; not grown; so not watered." },

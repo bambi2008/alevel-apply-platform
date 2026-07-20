@@ -4,6 +4,9 @@ import { STEP_QUESTIONS } from "@/lib/tests/questions/step";
 import { ESAT_QUESTIONS } from "@/lib/tests/questions/esat";
 import { TMUA_QUESTIONS } from "@/lib/tests/questions/tmua";
 import { BPHO_QUESTIONS } from "@/lib/tests/questions/bpho";
+import { PAT_QUESTIONS } from "@/lib/tests/questions/pat";
+import { LNAT_QUESTIONS } from "@/lib/tests/questions/lnat";
+import { TARA_QUESTIONS } from "@/lib/tests/questions/tara";
 import { BPHO4_LONG_SAMPLE } from "@/lib/tests/questions/bpho4-long";
 import { BPHO5_LONG_SAMPLE } from "@/lib/tests/questions/bpho5-long";
 import { BMO_SMC_TOPUP } from "@/lib/tests/questions/bmo-smc-topup";
@@ -60,6 +63,29 @@ describe("ESAT science gap fill", () => {
       expect(questions.length, `${topicId}: insufficient practice`).toBeGreaterThanOrEqual(20);
       expect(new Set(questions.map((question) => question.difficulty)), `${topicId}: missing difficulty`).toEqual(new Set([1, 2, 3]));
     }
+  });
+});
+
+describe("question bank difficulty calibration", () => {
+  it("keeps every calibrated topic represented at all three relative difficulty levels", () => {
+    const targets = [
+      { bank: PAT_QUESTIONS, topicId: "pat-wave" },
+      { bank: LNAT_QUESTIONS, topicId: "lnat-read" },
+      { bank: LNAT_QUESTIONS, topicId: "lnat-analyse" },
+      { bank: TARA_QUESTIONS, topicId: "tara-critical" },
+      ...["step-pure1", "step-pure2", "step-pure3", "step-pure4", "step-mech"]
+        .map((topicId) => ({ bank: STEP_QUESTIONS, topicId })),
+    ];
+    for (const { bank, topicId } of targets) {
+      const levels = new Set(bank.filter((question) => question.topicId === topicId).map((question) => question.difficulty));
+      expect(levels, `${topicId}: missing relative difficulty level`).toEqual(new Set([1, 2, 3]));
+    }
+  });
+
+  it("retains a genuine high-difficulty PAT wave set", () => {
+    const hardWaveQuestions = PAT_QUESTIONS.filter((question) => question.topicId === "pat-wave" && question.difficulty === 3);
+    expect(hardWaveQuestions).toHaveLength(5);
+    expect(hardWaveQuestions.every((question) => question.id.startsWith("pat-wave-cal-"))).toBe(true);
   });
 });
 
