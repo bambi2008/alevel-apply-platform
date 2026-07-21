@@ -30,4 +30,15 @@ describe("TARA fixed-paper audit", () => {
       expect(answerText).toBe(services[0].label);
     }
   });
+
+  it("keeps ranking-similarity answers structurally equal but numerically different", () => {
+    const rankPattern = (values: number[]) => values.map((value) => [...values].sort((left, right) => right - left).indexOf(value));
+    for (const questions of TARA_FIXED_PS_PAPERS) {
+      const question = questions[19];
+      const source = question.question.match(/scores \$([^$]+)\$/)?.[1].split(",").map(Number) ?? [];
+      const answer = question.options.find((option) => option.key === question.answer)?.text.split(",").map(Number) ?? [];
+      expect(answer).not.toEqual(source);
+      expect(rankPattern(answer)).toEqual(rankPattern(source));
+    }
+  });
 });

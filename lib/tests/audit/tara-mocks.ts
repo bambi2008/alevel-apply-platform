@@ -44,6 +44,10 @@ function structure(value: string): string {
   return normalize(value).replace(/\d+(?:\.\d+)?/g, "#");
 }
 
+function criticalStructure(value: string): string {
+  return structure(value).replace(/\b(?:amber|birch|cobalt|dahlia|elm|flint|archive|clinic|college|gallery|harbour|library|museum|orchard|railway|theatre|workshop)\b/g, "{context}");
+}
+
 function count(values: string[]): Record<string, number> {
   return values.reduce<Record<string, number>>((result, value) => {
     result[value] = (result[value] ?? 0) + 1;
@@ -145,6 +149,17 @@ export function buildTaraMockAudit(): TaraAuditReport {
   for (const paper of written) {
     if (paper.modules.length !== 1 || paper.modules[0].durationSec !== 40 * 60 || paper.modules[0].questions.length !== 1 || paper.modules[0].questions[0].type !== "long") {
       issues.push({ paperId: paper.id, code: "WRITING_STRUCTURE", severity: "critical", message: "Each fixed writing paper must contain one 40-minute writing task." });
+    }
+  }
+
+  const expandedCritical = objective
+    .filter((paper) => /^tara-mock-[456]$/.test(paper.id))
+    .flatMap((paper) => paper.modules.find((module) => module.id === "ct")?.questions ?? [])
+    .filter((question): question is MCQQuestion => question.type === "mcq");
+  for (const skill of TARA_CRITICAL_SKILLS) {
+    const variants = new Set(expandedCritical.filter((question) => classifyTaraCritical(question) === skill).map((question) => criticalStructure(question.question)));
+    if (variants.size < 3) {
+      issues.push({ paperId: "tara-mock-4-6", moduleId: "ct", code: "CT_STRUCTURE_VARIETY", severity: "warning", message: `${skill} must use at least three independent reasoning structures; found ${variants.size}.` });
     }
   }
 

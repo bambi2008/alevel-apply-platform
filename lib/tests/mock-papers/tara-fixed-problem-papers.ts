@@ -93,7 +93,7 @@ function identifyingSimilarity(paper: number): MCQQuestion[] {
 
   const rankingTarget = (paper + 2) % 5;
   const rankingOptions = ["9, 7, 4, 2", "4, 9, 7, 2", "9, 4, 2, 7", "7, 2, 9, 4", "5, 10, 3, 8"];
-  rankingOptions[rankingTarget] = `${10 + paper}, ${4 + paper}, ${8 + paper}, ${2 + paper}`;
+  rankingOptions[rankingTarget] = `${30 + paper}, ${10 + paper}, ${20 + paper}, ${5 + paper}`;
 
   const changeTarget = (paper + 3) % 5;
   const changeOptions = ["12, 15, 14, 16", "20, 18, 21, 21", "9, 12, 10, 11", "14, 11, 13, 13", "8, 10, 7, 9"];

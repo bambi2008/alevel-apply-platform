@@ -124,3 +124,5 @@ Problem Solving 必须覆盖三类能力：
 - Mock 4-6 added only after the original three papers passed the same audit gate.
 - Every objective module has 22 five-option questions, a 40-minute timer, a 4/12/6 difficulty split, and a 5/5/4/4/4 answer-position distribution.
 - `pnpm audit:tara` result: 6 objective papers, 3 writing papers, 264 objective slots, 0 critical issues, 0 warnings.
+- Second-pass quality calibration requires at least three independent reasoning structures for each of the seven Critical Thinking skills across Mock 4-6.
+- Semantic regression tests verify that generated service choices are eligible and cheapest, and that ranking-similarity answers preserve order without copying the source values.
