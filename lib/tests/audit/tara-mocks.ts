@@ -1,6 +1,7 @@
 import { getMockPapersForTest } from "@/lib/tests/mock-papers";
 import { classifyTaraCritical, TARA_CRITICAL_SKILLS, type TaraCriticalSkill } from "@/lib/tests/mock-papers/tara-fixed-critical-papers";
 import { TARA_FIXED_PS_SKILLS, type TaraProblemSkill } from "@/lib/tests/mock-papers/tara-fixed-problem-papers";
+import { TARA_QUESTIONS } from "@/lib/tests/questions/tara";
 import type { MCQQuestion } from "@/lib/tests/questions/types";
 
 export interface TaraAuditIssue {
@@ -189,6 +190,30 @@ export function buildTaraMockAudit(): TaraAuditReport {
     if (variants.size < 3) {
       issues.push({ paperId: "tara-mock-4-6", moduleId: "ct", code: "CT_STRUCTURE_VARIETY", severity: "warning", message: `${skill} must use at least three independent reasoning structures; found ${variants.size}.` });
     }
+  }
+
+  const practiceMcq = TARA_QUESTIONS.filter((question): question is MCQQuestion => question.type === "mcq");
+  const practiceCritical = practiceMcq.filter((question) => question.topicId === "tara-critical");
+  const practiceProblem = practiceMcq.filter((question) => question.topicId === "tara-problem");
+  const practiceWriting = TARA_QUESTIONS.filter((question) => question.topicId === "tara-writing");
+  if (practiceCritical.length !== 69 || practiceProblem.length !== 132 || practiceWriting.length !== 3) {
+    issues.push({ paperId: "tara-practice", code: "PRACTICE_INVENTORY", severity: "critical", message: `Expected 69 CT, 132 sealed PS and 3 writing tasks; found ${practiceCritical.length}/${practiceProblem.length}/${practiceWriting.length}.` });
+  }
+  const practiceIds = practiceMcq.map((question) => question.id);
+  const practicePrompts = practiceMcq.map((question) => normalize(question.question));
+  if (new Set(practiceIds).size !== practiceIds.length || new Set(practicePrompts).size !== practicePrompts.length) {
+    issues.push({ paperId: "tara-practice", code: "PRACTICE_DUPLICATES", severity: "critical", message: "Practice MCQs must have unique IDs and prompts." });
+  }
+  if (practiceProblem.some((question) => OFF_SPEC_DIRECT_MATH.test(question.question))) {
+    issues.push({ paperId: "tara-practice", code: "PRACTICE_OFF_SPEC", severity: "critical", message: "Practice mode contains mathematics outside the official TARA knowledge list." });
+  }
+  const practiceCriticalSkills = new Set(practiceCritical.map(classifyTaraCritical));
+  if (TARA_CRITICAL_SKILLS.some((skill) => !practiceCriticalSkills.has(skill))) {
+    issues.push({ paperId: "tara-practice", code: "PRACTICE_CT_COVERAGE", severity: "warning", message: "Practice Critical Thinking must cover all seven official skills." });
+  }
+  const practiceProblemSkills = count(practiceProblem.map((question) => TARA_FIXED_PS_SKILLS.get(question.id) ?? "finding-procedures"));
+  if (practiceProblemSkills["relevant-selection"] !== 30 || practiceProblemSkills["finding-procedures"] !== 72 || practiceProblemSkills["identifying-similarity"] !== 30) {
+    issues.push({ paperId: "tara-practice", code: "PRACTICE_PS_COVERAGE", severity: "warning", message: "Practice Problem Solving must preserve the sealed 30/72/30 skill inventory." });
   }
 
   return {

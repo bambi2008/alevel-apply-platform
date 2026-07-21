@@ -128,3 +128,4 @@ Problem Solving 必须覆盖三类能力：
 - Semantic regression tests verify that generated service choices are eligible and cheapest, and that ranking-similarity answers preserve order without copying the source values.
 - Writing-paper audit locks three unique prompts per paper, the official three-part task wording, the 750-word limit, five formative rubric dimensions, and explicit disclosure that the official task is unscored.
 - Typed submission now blocks an answered essay with no selected statement and blocks manual submission above 750 words; timer expiry still auto-submits safely.
+- Practice mode now uses the sealed inventory of 69 Critical Thinking MCQs, 132 calibrated Problem Solving MCQs and 3 writing tasks; the legacy off-spec and number-swap Problem Solving pool is no longer exposed to students.

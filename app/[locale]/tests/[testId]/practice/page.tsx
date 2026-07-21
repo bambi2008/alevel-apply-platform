@@ -73,6 +73,10 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
   const [currentIdx, setCurrentIdx] = useState(0);
   const [results, setResults] = useState<SessionResult[]>([]);
   const tier = useTier();
+  const availableQuestionCount = allQuestions.filter((question) =>
+    (mode !== "topic" || topicId === "all" || question.topicId === topicId) && matchesFormat(question, format)
+  ).length;
+  const effectiveQuestionCount = Math.min(questionCount, 30, availableQuestionCount);
 
   const startSession = useCallback(() => {
     let pool = allQuestions;
@@ -88,12 +92,12 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
       .map((q) => ({ q, score: Math.random() * diffWeight(q.difficulty) }))
       .sort((a, b) => b.score - a.score)
       .map((w) => w.q)
-      .slice(0, questionCount);
+      .slice(0, effectiveQuestionCount);
     setQueue(shuffled);
     setCurrentIdx(0);
     setResults([]);
     setSessionState("practicing");
-  }, [allQuestions, format, mode, topicId, questionCount, tier, testId]);
+  }, [allQuestions, format, mode, topicId, effectiveQuestionCount, tier, testId]);
 
   const recordResult = useCallback((result: SessionResult) => {
     setResults((prev) => [...prev, result]);
@@ -113,7 +117,7 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
         mode={mode}
         topicId={topicId}
         format={format}
-        questionCount={questionCount}
+        questionCount={effectiveQuestionCount}
         onModeChange={setMode}
         onTopicChange={setTopicId}
         onFormatChange={(nextFormat) => {
@@ -229,6 +233,7 @@ function SessionSetup({
     (mode !== "topic" || topicId === "all" || question.topicId === topicId) && matchesFormat(question, format)
   ).length;
   const maxQuestionCount = Math.min(30, availableCount);
+  const minQuestionCount = Math.min(5, maxQuestionCount);
 
   return (
     <div className="mx-auto max-w-2xl px-4 py-10">
@@ -306,7 +311,7 @@ function SessionSetup({
           </label>
           <input
             type="range"
-            min={5}
+            min={minQuestionCount}
             max={maxQuestionCount}
             step={5}
             value={questionCount}
@@ -314,7 +319,7 @@ function SessionSetup({
             className="w-full"
           />
           <div className="flex justify-between text-xs text-[var(--ink-faint)] mt-1">
-            <span>5 题</span>
+            <span>{minQuestionCount} 题</span>
             <span>{maxQuestionCount} 题可选</span>
           </div>
         </div>
@@ -323,7 +328,7 @@ function SessionSetup({
           <div className="rounded-xl bg-[var(--info-bg)] border border-[color:var(--indigo)]/15 p-4 text-sm text-[var(--indigo)]">
             <p className="font-medium mb-1">关于大题（长答案）评分</p>
             <p className="text-xs leading-relaxed">
-              大题由 Claude AI 分步评分：系统分析你的解题过程，按关键步骤给部分分。
+              大题由 AI 分步评分：系统分析你的解题过程，按关键步骤给部分分。
               评分后可查看模型解答对比学习。约需 5–10 秒。
             </p>
           </div>
@@ -459,7 +464,7 @@ function LongAnswerCard({
   const essayText = works[q.parts[0]?.label ?? "Essay"] ?? "";
   const wordCount = essayText.trim() ? essayText.trim().split(/\s+/).length : 0;
   const canSubmit = Object.values(works).some((w) => w.trim().length > 0)
-    && (!isEssay || !!selectedPrompt);
+    && (!isEssay || (!!selectedPrompt && wordCount <= (q.maxWords ?? Infinity)));
 
   const handleGrade = async () => {
     setGrading(true);
