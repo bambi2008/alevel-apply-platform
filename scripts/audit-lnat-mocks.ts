@@ -9,7 +9,7 @@ console.table(report.papers.map((paper) => ({
   passages: paper.passages,
   passageSplit: paper.passageSplit,
   difficulty: `${paper.difficulty[1]}/${paper.difficulty[2]}/${paper.difficulty[3]}`,
-  answers: ["A", "B", "C", "D", "E"].map((key) => paper.answerCounts[key] ?? 0).join("/"),
+  answers: ["A", "B", "C", "D"].map((key) => paper.answerCounts[key] ?? 0).join("/"),
 })));
 if (report.issues.length) console.table(report.issues);
 console.log(`Total: ${report.objectivePapers} objective papers, ${report.writtenPapers} writing papers, ${report.questionCount} objective slots, ${report.critical} critical, ${report.warnings} warnings.`);

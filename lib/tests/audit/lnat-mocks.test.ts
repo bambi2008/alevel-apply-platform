@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { getMockPaper } from "../mock-papers";
+import { getMockPapersForTest } from "../mock-papers";
+import { LNAT_QUESTIONS } from "../questions/lnat";
 import { buildLnatMockAudit } from "./lnat-mocks";
 
 describe("LNAT fixed-paper audit", () => {
@@ -18,8 +20,9 @@ describe("LNAT fixed-paper audit", () => {
       passages: 12,
       passageSplit: "3/3/3/3/3/3/4/4/4/4/4/4",
       difficulty: { 1: 8, 2: 24, 3: 10 },
-      answerCounts: { A: 9, B: 9, C: 8, D: 8, E: 8 },
+      answerCounts: { A: 11, B: 11, C: 10, D: 10 },
     });
+    expect(paper!.modules[0].questions.every((question) => question.type !== "mcq" || question.options.map((option) => option.key).join("") === "ABCD")).toBe(true);
     expect(report.issues.filter((issue) => issue.paperId === "lnat-mock-1")).toEqual([]);
   });
 
@@ -27,5 +30,17 @@ describe("LNAT fixed-paper audit", () => {
     const report = buildLnatMockAudit();
     expect(report.writtenPapers).toBe(3);
     expect(report.issues.filter((issue) => issue.paperId.startsWith("lnat-written-"))).toEqual([]);
+  });
+
+  it("exposes only current four-option MCQs in practice and fixed papers", () => {
+    const practiceMcqs = LNAT_QUESTIONS.filter((question) => question.type === "mcq");
+    const fixedMcqs = getMockPapersForTest("lnat")
+      .flatMap((paper) => paper.modules.flatMap((module) => module.questions))
+      .filter((question) => question.type === "mcq");
+
+    for (const question of [...practiceMcqs, ...fixedMcqs]) {
+      expect(question.options.map((option) => option.key).join(""), question.id).toBe("ABCD");
+      expect(question.options.some((option) => option.key === question.answer), question.id).toBe(true);
+    }
   });
 });

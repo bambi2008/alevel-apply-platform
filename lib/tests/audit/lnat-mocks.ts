@@ -28,7 +28,7 @@ export interface LnatAuditReport {
   issues: LnatAuditIssue[];
 }
 
-const ANSWERS = ["A", "B", "C", "D", "E"];
+const ANSWERS = ["A", "B", "C", "D"];
 
 function normalize(value: string): string {
   return value.toLowerCase().replace(/\s+/g, " ").trim();
@@ -85,8 +85,8 @@ export function buildLnatMockAudit(): LnatAuditReport {
     const localStructures = new Map<string, string>();
     for (const question of questions) {
       const keys = question.options.map((option) => option.key).join("");
-      if (question.testId !== "lnat" || keys !== "ABCDE" || !keys.includes(question.answer)) {
-        issues.push({ paperId: paper.id, questionId: question.id, code: "OPTION_SCHEMA", severity: "critical", message: "Every Section A item must be an LNAT five-option MCQ with a valid answer." });
+      if (question.testId !== "lnat" || keys !== "ABCD" || !keys.includes(question.answer)) {
+        issues.push({ paperId: paper.id, questionId: question.id, code: "OPTION_SCHEMA", severity: "critical", message: "Every current-format Section A item must be an LNAT four-option MCQ with a valid answer." });
       }
       if (new Set(question.options.map((option) => normalize(option.text))).size !== question.options.length) {
         issues.push({ paperId: paper.id, questionId: question.id, code: "DUPLICATE_DISTRACTOR", severity: "critical", message: "Question contains duplicate option text." });
@@ -149,8 +149,8 @@ export function buildLnatMockAudit(): LnatAuditReport {
     if (questions.length === 42 && (difficulty[1] < 6 || difficulty[2] < 20 || difficulty[3] < 8)) {
       issues.push({ paperId: paper.id, code: "DIFFICULTY_BALANCE", severity: "warning", message: `A full paper needs a real gradient; found ${difficulty[1]}/${difficulty[2]}/${difficulty[3]}.` });
     }
-    if (questions.length === 42 && ANSWERS.some((answer) => (answerCounts[answer] ?? 0) < 7 || (answerCounts[answer] ?? 0) > 10)) {
-      issues.push({ paperId: paper.id, code: "ANSWER_BALANCE", severity: "warning", message: "Each answer position should occur 7-10 times across a full paper." });
+    if (questions.length === 42 && ANSWERS.some((answer) => (answerCounts[answer] ?? 0) < 10 || (answerCounts[answer] ?? 0) > 11)) {
+      issues.push({ paperId: paper.id, code: "ANSWER_BALANCE", severity: "warning", message: "Each answer position should occur 10-11 times across a full paper." });
     }
 
     return {

@@ -1,8 +1,9 @@
 // LNAT 模拟卷1 —— Section A（原创论述文 + 阅读推理），id 前缀 lnat-mk1-*。
 import type { MCQQuestion } from "@/lib/tests/questions/types";
+import { toCurrentLnatMcqs } from "@/lib/tests/questions/lnat-current";
 import { LNAT_MK1_EXPANSION } from "./lnat-mock-1-expansion";
 
-export const LNAT_MK1_MCQ: MCQQuestion[] = [
+const LNAT_MK1_SOURCE: MCQQuestion[] = [
   { id: "lnat-mk1-01", type: "mcq", testId: "lnat", topicId: "lnat-analyse", difficulty: 2, marks: 1,
     question: "**Passage**\n\nAdvocates of replacing human judges with algorithms in sentencing argue that machines are free of the moods and prejudices that afflict people. A tired judge, they note, is harsher before lunch than after. But an algorithm trained on past sentences will absorb the very patterns it was meant to escape: if certain groups were treated more severely before, the machine will learn to treat them severely too, now wearing the mask of objectivity.\n\n**Question**\n\nWhich of the following best states the author's main objection to sentencing algorithms?",
     options: [{ key: "A", text: "Algorithms are too expensive to build." },{ key: "B", text: "An algorithm trained on biased past data can reproduce that bias while appearing objective." },{ key: "C", text: "Judges are never affected by mood." },{ key: "D", text: "Machines cannot process legal language." },{ key: "E", text: "Sentencing should always be harsher." }],
@@ -49,3 +50,7 @@ export const LNAT_MK1_MCQ: MCQQuestion[] = [
     answer: "A", solution: "The author rejects a 'slippery slope' style inference: that permitting one case forces us down an unlimited chain of like actions." },
   ...LNAT_MK1_EXPANSION,
 ];
+
+const LNAT_MK1_ANSWER_PATTERN = "CADBBDACACBDBCACADBDACACBDBCACADBDACABDBDB";
+
+export const LNAT_MK1_MCQ = toCurrentLnatMcqs(LNAT_MK1_SOURCE, LNAT_MK1_ANSWER_PATTERN);

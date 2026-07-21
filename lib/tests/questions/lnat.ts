@@ -6,6 +6,7 @@ import { LNAT_EXPANSION_3 } from "./lnat-batch3";
 import { LNAT_EXPANSION_4 } from "./lnat-batch4";
 import { LNAT_EXPANSION_5 } from "./lnat-batch5";
 import { LNAT_ESSAY_QUESTIONS } from "./lnat-writing";
+import { toCurrentLnatMcqs } from "./lnat-current";
 
 const LNAT_BATCH_1: MCQQuestion[] = [
   { id: "lnat-ex-001", type: "mcq", testId: "lnat", topicId: "lnat-analyse", difficulty: 2, marks: 1,
@@ -135,6 +136,8 @@ const LNAT_BATCH_1: MCQQuestion[] = [
 ];
 
 export const LNAT_QUESTIONS: Question[] = [
-  ...LNAT_BATCH_1, ...LNAT_EXPANSION_2, ...LNAT_EXPANSION_3, ...LNAT_EXPANSION_4, ...LNAT_EXPANSION_5,
+  ...toCurrentLnatMcqs([
+    ...LNAT_BATCH_1, ...LNAT_EXPANSION_2, ...LNAT_EXPANSION_3, ...LNAT_EXPANSION_4, ...LNAT_EXPANSION_5,
+  ]),
   ...LNAT_ESSAY_QUESTIONS,
 ];

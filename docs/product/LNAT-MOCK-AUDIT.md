@@ -6,7 +6,7 @@ Audit date: 2026-07-21
 
 The current LNAT format requires:
 
-- Section A: 42 five-option questions in 95 minutes;
+- Section A: 42 four-option questions in 95 minutes;
 - 12 argumentative passages, with three or four questions attached to each passage;
 - Section B: one essay selected from three prompts in 40 minutes;
 - a recommended maximum of 750 words for Section B.
@@ -15,6 +15,18 @@ Primary sources:
 
 - https://lnat.ac.uk/what-is-lnat/test-format/
 - https://lnat.ac.uk/how-to-prepare/practice-test/
+
+The official practice page warns that its older sample test still has five options per question, while the current live test has four. The current-format audit therefore requires sequential A-D options.
+
+## Supplied source archive
+
+- Archive: `D:/alevel/LNAT.zip`
+- SHA-256: `5979D6FB46E2D45BB17A3FD784CEE5D8DED2AF35FD4A870297620EDE45107CAA`
+- Contents: two official 2010 practice papers, official commentary, mark scheme and preparation guide.
+- Paper inventory: two 42-question papers, each arranged as 12 passages with three or four questions.
+- Format warning: both 2010 papers use the former A-E five-option format and their Section B instructions predate the current three-prompt presentation.
+
+These files are calibration sources, not unpublished past papers. Their passages and questions must not be copied into the public bank; they are used to study passage length, inference depth, distractor design and official explanation style.
 
 ## Current diagnosis
 
@@ -45,5 +57,5 @@ The three fixed Section B papers already have the correct 40-minute, three-promp
 - Mock 1 rebuilt as a complete 42-question, 12-passage, 95-minute paper.
 - Mock 1 passage split: six passages with three questions and six with four questions.
 - Mock 1 difficulty split: 8 easy / 24 medium / 10 hard.
-- Mock 1 answer distribution: 9 / 9 / 8 / 8 / 8 across A-E.
+- Mock 1 answer distribution: 11 / 11 / 10 / 10 across A-D.
 - Current audit result: 16 critical issues and 0 warnings, all remaining critical issues belonging to the four short Mock 2-5 papers.
