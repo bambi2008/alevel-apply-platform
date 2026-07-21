@@ -721,9 +721,9 @@ export const LNAT_MOCK_1: MockPaper = {
   title: "LNAT 模拟卷1（Section A 阅读推理）",
   titleEn: "LNAT Mock Paper 1 (Section A)",
   description:
-    "对标 LNAT 第一节：原创论述文 + 阅读/推理选择题（主旨、推断、假设、削弱/加强、谬误识别）。真实考试为 42 题 95 分钟、外加第二节 essay；本卷为 Section A 精选练习。题目原创，仅以官方结构校准。",
+    "对标 LNAT Section A 的完整模拟卷：12 篇原创议论文、42 道阅读与推理选择题、95 分钟独立计时，覆盖主旨、推断、假设、削弱/加强与谬误识别。题目原创，仅以官方结构校准。",
   modules: [
-    { id: "mcq", title: "Section A 阅读推理", titleEn: "Section A Reading", durationSec: 40 * 60, questions: LNAT_MK1_MCQ },
+    { id: "mcq", title: "Section A 阅读推理", titleEn: "Section A Reading", durationSec: 95 * 60, questions: LNAT_MK1_MCQ },
   ],
 };
 
