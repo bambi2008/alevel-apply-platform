@@ -27,9 +27,11 @@ import { LNAT_MK2_MCQ } from "./lnat-mock-2";
 import { LNAT_MK3_MCQ } from "./lnat-mock-3";
 import { LNAT_MK4_MCQ } from "./lnat-mock-4";
 import { LNAT_MK5_MCQ } from "./lnat-mock-5";
-import { TARA_MK1_CT, TARA_MK1_PS } from "./tara-mock-1";
-import { TARA_MK2_CT, TARA_MK2_PS } from "./tara-mock-2";
-import { TARA_MK3_CT, TARA_MK3_PS } from "./tara-mock-3";
+import { TARA_MK1_CT } from "./tara-mock-1";
+import { TARA_MK2_CT } from "./tara-mock-2";
+import { TARA_MK3_CT } from "./tara-mock-3";
+import { calibrateTaraCriticalModule, TARA_FIXED_CT_PAPERS } from "./tara-fixed-critical-papers";
+import { TARA_FIXED_PS_PAPERS } from "./tara-fixed-problem-papers";
 import { BPHO_MK1_S1, BPHO_MK1_S2 } from "./bpho-mock-1";
 import { BPHO_MK2_S1, BPHO_MK2_S2 } from "./bpho-mock-2";
 import { BPHO_MK3_S1, BPHO_MK3_S2 } from "./bpho-mock-3";
@@ -662,10 +664,10 @@ export const TARA_MOCK_1: MockPaper = {
   title: "TARA 模拟卷1",
   titleEn: "TARA Mock Paper 1",
   description:
-    "对标 TARA 三模块结构：批判性思维 22 题 + 问题解决 22 题（各 40 分钟）。问题解决题 sympy 验算；批判性思维题答案由文段锁定。写作任务见讲解卡。",
+    "按官方能力模型校准：批判性思维覆盖七类论证题，问题解决按相关选择 / 寻找程序 / 识别相似编排。两个客观模块各 22 题、40 分钟；写作任务使用独立固定写作卷。",
   modules: [
-    { id: "ct", title: "批判性思维", titleEn: "Critical Thinking", durationSec: 40 * 60, questions: TARA_MK1_CT },
-    { id: "ps", title: "问题解决", titleEn: "Problem Solving", durationSec: 40 * 60, questions: TARA_MK1_PS },
+    { id: "ct", title: "批判性思维", titleEn: "Critical Thinking", durationSec: 40 * 60, questions: calibrateTaraCriticalModule(TARA_MK1_CT, "tara-mk1-ct") },
+    { id: "ps", title: "问题解决", titleEn: "Problem Solving", durationSec: 40 * 60, questions: TARA_FIXED_PS_PAPERS[0] },
   ],
 };
 
@@ -675,10 +677,10 @@ export const TARA_MOCK_2: MockPaper = {
   title: "TARA 模拟卷2",
   titleEn: "TARA Mock Paper 2",
   description:
-    "对标 TARA 三模块结构：批判性思维 22 题 + 问题解决 22 题（各 40 分钟）。问题解决题 sympy 验算；批判性思维题答案由文段锁定。写作任务见讲解卡。",
+    "按官方能力模型校准：批判性思维覆盖七类论证题，问题解决按相关选择 / 寻找程序 / 识别相似编排。两个客观模块各 22 题、40 分钟；写作任务使用独立固定写作卷。",
   modules: [
-    { id: "ct", title: "批判性思维", titleEn: "Critical Thinking", durationSec: 40 * 60, questions: TARA_MK2_CT },
-    { id: "ps", title: "问题解决", titleEn: "Problem Solving", durationSec: 40 * 60, questions: TARA_MK2_PS },
+    { id: "ct", title: "批判性思维", titleEn: "Critical Thinking", durationSec: 40 * 60, questions: calibrateTaraCriticalModule(TARA_MK2_CT, "tara-mk2-ct") },
+    { id: "ps", title: "问题解决", titleEn: "Problem Solving", durationSec: 40 * 60, questions: TARA_FIXED_PS_PAPERS[1] },
   ],
 };
 
@@ -688,12 +690,30 @@ export const TARA_MOCK_3: MockPaper = {
   title: "TARA 模拟卷3",
   titleEn: "TARA Mock Paper 3",
   description:
-    "对标 TARA 三模块结构：批判性思维 22 题 + 问题解决 22 题（各 40 分钟）。问题解决题 sympy 验算；批判性思维题答案由文段锁定。写作任务见讲解卡。",
+    "按官方能力模型校准：批判性思维覆盖七类论证题，问题解决按相关选择 / 寻找程序 / 识别相似编排。两个客观模块各 22 题、40 分钟；写作任务使用独立固定写作卷。",
   modules: [
-    { id: "ct", title: "批判性思维", titleEn: "Critical Thinking", durationSec: 40 * 60, questions: TARA_MK3_CT },
-    { id: "ps", title: "问题解决", titleEn: "Problem Solving", durationSec: 40 * 60, questions: TARA_MK3_PS },
+    { id: "ct", title: "批判性思维", titleEn: "Critical Thinking", durationSec: 40 * 60, questions: calibrateTaraCriticalModule(TARA_MK3_CT, "tara-mk3-ct") },
+    { id: "ps", title: "问题解决", titleEn: "Problem Solving", durationSec: 40 * 60, questions: TARA_FIXED_PS_PAPERS[2] },
   ],
 };
+
+function taraFixedMock(paperNumber: number): MockPaper {
+  return {
+    id: `tara-mock-${paperNumber}`,
+    testId: "tara",
+    title: `TARA 模拟卷${paperNumber}`,
+    titleEn: `TARA Mock Paper ${paperNumber}`,
+    description: "按官方能力模型校准：批判性思维覆盖七类论证题，问题解决按相关选择 / 寻找程序 / 识别相似编排。两个客观模块各 22 题、40 分钟；写作任务使用独立固定写作卷。",
+    modules: [
+      { id: "ct", title: "批判性思维", titleEn: "Critical Thinking", durationSec: 40 * 60, questions: TARA_FIXED_CT_PAPERS[paperNumber - 4] },
+      { id: "ps", title: "问题解决", titleEn: "Problem Solving", durationSec: 40 * 60, questions: TARA_FIXED_PS_PAPERS[paperNumber - 1] },
+    ],
+  };
+}
+
+export const TARA_MOCK_4 = taraFixedMock(4);
+export const TARA_MOCK_5 = taraFixedMock(5);
+export const TARA_MOCK_6 = taraFixedMock(6);
 
 export const LNAT_MOCK_1: MockPaper = {
   id: "lnat-mock-1",
@@ -1195,7 +1215,7 @@ export const TARA_WRITTEN_PAPERS: MockPaper[] = TARA_WRITTEN_QUESTIONS.map((ques
   formatType: "current",
 }));
 
-const ALL_MOCK_PAPERS: MockPaper[] = [BMO_R2_MOCK_1, BMO_R2_MOCK_2, BMO_R2_MOCK_3, BMO_R2_MOCK_4, BMO_R2_MOCK_5, BMO_R2_MOCK_6, BMO_R2_MOCK_7, BMO_R2_MOCK_8, BMO_MOCK_1, BMO_MOCK_2, BMO_MOCK_3, BMO_MOCK_4, BMO_MOCK_5, BMO_MOCK_6, BMO_MOCK_7, BMO_MOCK_8, ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, ESAT_GAP_PHYSICS_PAPER, ESAT_GAP_CHEMISTRY_PAPER, ESAT_GAP_BIOLOGY_PAPER, TMUA_CALIBRATION_1, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3, BPHO_MOCK_1, BPHO_MOCK_2, BPHO_MOCK_3, BPHO_MOCK_4, BPHO_MOCK_5, BPHO_MOCK_6, BPHO_MOCK_7, BPHO_MOCK_8, BPHO_R2_MOCK_1, BPHO_R2_MOCK_2, BPHO_R2_MOCK_3, BPHO_R2_MOCK_4];
+const ALL_MOCK_PAPERS: MockPaper[] = [BMO_R2_MOCK_1, BMO_R2_MOCK_2, BMO_R2_MOCK_3, BMO_R2_MOCK_4, BMO_R2_MOCK_5, BMO_R2_MOCK_6, BMO_R2_MOCK_7, BMO_R2_MOCK_8, BMO_MOCK_1, BMO_MOCK_2, BMO_MOCK_3, BMO_MOCK_4, BMO_MOCK_5, BMO_MOCK_6, BMO_MOCK_7, BMO_MOCK_8, ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, ESAT_GAP_PHYSICS_PAPER, ESAT_GAP_CHEMISTRY_PAPER, ESAT_GAP_BIOLOGY_PAPER, TMUA_CALIBRATION_1, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3, TARA_MOCK_4, TARA_MOCK_5, TARA_MOCK_6, BPHO_MOCK_1, BPHO_MOCK_2, BPHO_MOCK_3, BPHO_MOCK_4, BPHO_MOCK_5, BPHO_MOCK_6, BPHO_MOCK_7, BPHO_MOCK_8, BPHO_R2_MOCK_1, BPHO_R2_MOCK_2, BPHO_R2_MOCK_3, BPHO_R2_MOCK_4];
 ALL_MOCK_PAPERS.unshift(
   ...MAT_WRITTEN_PAPERS, ...PAT_WRITTEN_PAPERS, ...STEP_WRITTEN_PAPERS,
   ...LNAT_WRITTEN_PAPERS, ...TARA_WRITTEN_PAPERS,

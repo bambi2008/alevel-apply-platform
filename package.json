@@ -12,6 +12,7 @@
     "audit:questions": "tsx scripts/audit-question-bank.ts",
     "audit:tmua": "tsx scripts/audit-tmua-mocks.ts",
     "audit:esat": "tsx scripts/audit-esat-mocks.ts",
+    "audit:tara": "tsx scripts/audit-tara-mocks.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
