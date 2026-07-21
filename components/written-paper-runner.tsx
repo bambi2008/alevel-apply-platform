@@ -115,6 +115,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
   const [grades, setGrades] = useState<WrittenGrade[]>([]);
   const [gradingProgress, setGradingProgress] = useState(0);
   const [timeUsedSec, setTimeUsedSec] = useState(0);
+  const [validationMessage, setValidationMessage] = useState<string | null>(null);
   const startedAt = useRef(0);
   const submittingRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -126,12 +127,14 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
     setGrades([]);
     setGradingProgress(0);
     setTimeUsedSec(0);
+    setValidationMessage(null);
     submittingRef.current = false;
     startedAt.current = Date.now();
     setPhase("running");
   };
 
   const updateWork = (questionId: string, label: string, value: string) => {
+    setValidationMessage(null);
     setWorks((current) => ({
       ...current,
       [questionId]: { ...current[questionId], [label]: value },
@@ -142,8 +145,21 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
     (part) => (works[question.id]?.[part.label] ?? "").trim().length > 0
   );
 
-  const submit = async () => {
+  const submit = async (force = false) => {
     if (submittingRef.current) return;
+    if (!force) {
+      for (const question of questions.filter((item) => item.responseKind === "essay" && isAnswered(item))) {
+        if (!works[question.id]?.[ESSAY_PROMPT_KEY]) {
+          setValidationMessage("请先选择一道写作题目，再提交作答。");
+          return;
+        }
+        const overLimit = question.parts.some((part) => countWords(works[question.id]?.[part.label] ?? "") > (question.maxWords ?? Infinity));
+        if (overLimit) {
+          setValidationMessage(`作答超过 ${question.maxWords} 词上限，请精简后再提交。`);
+          return;
+        }
+      }
+    }
     submittingRef.current = true;
     if (timerRef.current) clearInterval(timerRef.current);
     setTimeUsedSec(Math.min(durationSec, Math.max(0, Math.round((Date.now() - startedAt.current) / 1000))));
@@ -214,7 +230,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
   };
 
   const handleAutoSubmit = useEffectEvent(() => {
-    void submit();
+    void submit(true);
   });
 
   useEffect(() => {
@@ -340,6 +356,12 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
             </span>
           </div>
           {current.context && <MathRenderer text={current.context} className="mt-5 text-sm leading-7 text-[var(--ink)]" block />}
+
+          {validationMessage && (
+            <p role="alert" className="mt-4 border-l-2 border-[var(--danger)] pl-3 text-sm text-[var(--danger)]">
+              {validationMessage}
+            </p>
+          )}
 
           {current.responseKind === "essay" && current.essayPrompts && (
             <fieldset className="mt-6">

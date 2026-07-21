@@ -62,6 +62,7 @@ export function buildTaraMockAudit(): TaraAuditReport {
   const issues: TaraAuditIssue[] = [];
   const seenIds = new Map<string, string>();
   const seenPrompts = new Map<string, string>();
+  const seenWritingPrompts = new Set<string>();
 
   if (objective.length !== 6 || written.length !== 3) {
     issues.push({ paperId: "suite", code: "PAPER_INVENTORY", severity: "critical", message: "TARA must contain six objective papers and three fixed writing papers." });
@@ -147,8 +148,35 @@ export function buildTaraMockAudit(): TaraAuditReport {
   });
 
   for (const paper of written) {
-    if (paper.modules.length !== 1 || paper.modules[0].durationSec !== 40 * 60 || paper.modules[0].questions.length !== 1 || paper.modules[0].questions[0].type !== "long") {
+    const question = paper.modules[0]?.questions[0];
+    if (paper.modules.length !== 1 || paper.modules[0].durationSec !== 40 * 60 || paper.modules[0].questions.length !== 1 || question?.type !== "long") {
       issues.push({ paperId: paper.id, code: "WRITING_STRUCTURE", severity: "critical", message: "Each fixed writing paper must contain one 40-minute writing task." });
+      continue;
+    }
+    const rubricMarks = question.rubricDimensions?.reduce((total, dimension) => total + dimension.maxMarks, 0) ?? 0;
+    const rubricIds = question.rubricDimensions?.map((dimension) => dimension.id).sort().join(",") ?? "";
+    if (question.responseKind !== "essay" || question.maxWords !== 750 || question.totalMarks !== 20 || rubricMarks !== 20) {
+      issues.push({ paperId: paper.id, questionId: question.id, code: "WRITING_RUBRIC", severity: "critical", message: "Writing tasks require the 750-word cap and a 20-point formative rubric." });
+    }
+    if (rubricIds !== "evaluation,expression,interpretation,objection,organisation") {
+      issues.push({ paperId: paper.id, questionId: question.id, code: "WRITING_DIMENSIONS", severity: "warning", message: "Writing rubric must cover interpretation, objection, evaluation, organisation and expression." });
+    }
+    if (question.essayPrompts?.length !== 3) {
+      issues.push({ paperId: paper.id, questionId: question.id, code: "WRITING_PROMPTS", severity: "critical", message: "Each writing paper must offer exactly three statements." });
+    }
+    for (const prompt of question.essayPrompts ?? []) {
+      const title = normalize(prompt.title);
+      if (seenWritingPrompts.has(title)) {
+        issues.push({ paperId: paper.id, questionId: question.id, code: "DUPLICATE_WRITING_PROMPT", severity: "critical", message: `Writing statement is duplicated: ${prompt.title}` });
+      }
+      seenWritingPrompts.add(title);
+    }
+    const task = normalize(`${question.context} ${question.parts.map((part) => part.question).join(" ")}`);
+    if (!["explain", "against", "extent"].every((term) => task.includes(term))) {
+      issues.push({ paperId: paper.id, questionId: question.id, code: "WRITING_TASK_COVERAGE", severity: "critical", message: "Writing task must explicitly require explanation, a reasoned argument against, and extent of agreement." });
+    }
+    if (!/official tara writing task is unscored/i.test(question.fullSolution)) {
+      issues.push({ paperId: paper.id, questionId: question.id, code: "WRITING_SCORE_DISCLOSURE", severity: "warning", message: "Formative guidance must disclose that the official writing task is unscored." });
     }
   }
 

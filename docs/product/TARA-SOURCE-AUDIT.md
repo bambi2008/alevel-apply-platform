@@ -126,3 +126,5 @@ Problem Solving 必须覆盖三类能力：
 - `pnpm audit:tara` result: 6 objective papers, 3 writing papers, 264 objective slots, 0 critical issues, 0 warnings.
 - Second-pass quality calibration requires at least three independent reasoning structures for each of the seven Critical Thinking skills across Mock 4-6.
 - Semantic regression tests verify that generated service choices are eligible and cheapest, and that ranking-similarity answers preserve order without copying the source values.
+- Writing-paper audit locks three unique prompts per paper, the official three-part task wording, the 750-word limit, five formative rubric dimensions, and explicit disclosure that the official task is unscored.
+- Typed submission now blocks an answered essay with no selected statement and blocks manual submission above 750 words; timer expiry still auto-submits safely.
