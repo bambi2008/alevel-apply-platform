@@ -10,6 +10,9 @@ interface DocItem {
   fileName: string;
   mime: string | null;
   size: number | null;
+  version: number;
+  validUntil: string | null;
+  supersedesId: string | null;
   createdAt: string;
 }
 
@@ -40,6 +43,8 @@ export default function DocumentsPage() {
   const [loaded, setLoaded] = useState(false);
   const [authed, setAuthed] = useState(true);
   const [type, setType] = useState("TRANSCRIPT");
+  const [validUntil, setValidUntil] = useState("");
+  const [supersedesId, setSupersedesId] = useState("");
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -58,7 +63,8 @@ export default function DocumentsPage() {
   };
 
   useEffect(() => {
-    load();
+    const timer = window.setTimeout(() => void load(), 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
   const onUpload = async () => {
@@ -77,6 +83,8 @@ export default function DocumentsPage() {
       const form = new FormData();
       form.append("file", file);
       form.append("type", type);
+      if (validUntil) form.append("validUntil", validUntil);
+      if (supersedesId) form.append("supersedesId", supersedesId);
       const res = await fetch("/api/documents", { method: "POST", body: form });
       if (res.status === 401) {
         setAuthed(false);
@@ -92,6 +100,7 @@ export default function DocumentsPage() {
         return;
       }
       if (fileRef.current) fileRef.current.value = "";
+      setSupersedesId("");
       await load();
     } finally {
       setUploading(false);
@@ -139,10 +148,10 @@ export default function DocumentsPage() {
       {/* 上传区 */}
       <div className="rounded-2xl border border-neutral-200 bg-white p-5 mb-8">
         <h2 className="text-sm font-semibold text-neutral-800 mb-3">上传资料</h2>
-        <div className="flex flex-col sm:flex-row gap-3">
+        <div className="grid gap-3 sm:grid-cols-2">
           <select
             value={type}
-            onChange={(e) => setType(e.target.value)}
+            onChange={(e) => { setType(e.target.value); setSupersedesId(""); }}
             className="rounded-lg border border-neutral-300 px-3 py-2 text-sm bg-white"
           >
             {DOC_TYPES.map((t) => (
@@ -151,10 +160,15 @@ export default function DocumentsPage() {
               </option>
             ))}
           </select>
+          <select value={supersedesId} onChange={(e) => setSupersedesId(e.target.value)} className="rounded-lg border border-neutral-300 px-3 py-2 text-sm bg-white">
+            <option value="">新文件</option>
+            {docs.filter((doc) => doc.type === type).map((doc) => <option key={doc.id} value={doc.id}>替换 {doc.fileName} · v{doc.version}</option>)}
+          </select>
+          <input type="date" value={validUntil} onChange={(e) => setValidUntil(e.target.value)} title="文件有效期（可选）" className="rounded-lg border border-neutral-300 px-3 py-2 text-sm" />
           <input
             ref={fileRef}
             type="file"
-            className="flex-1 text-sm text-neutral-600 file:mr-3 file:rounded-lg file:border-0 file:bg-neutral-100 file:px-3 file:py-2 file:text-sm file:text-neutral-700 hover:file:bg-neutral-200"
+            className="text-sm text-neutral-600 file:mr-3 file:rounded-lg file:border-0 file:bg-neutral-100 file:px-3 file:py-2 file:text-sm file:text-neutral-700 hover:file:bg-neutral-200 sm:col-span-2"
           />
           <button
             onClick={onUpload}
@@ -191,8 +205,8 @@ export default function DocumentsPage() {
               <div className="min-w-0 flex-1">
                 <p className="text-sm text-neutral-800 truncate">{d.fileName}</p>
                 <p className="text-xs text-neutral-400">
-                  {fmtSize(d.size)} ·{" "}
-                  {new Date(d.createdAt).toLocaleDateString()}
+                  v{d.version} · {fmtSize(d.size)} · {new Date(d.createdAt).toLocaleDateString()}
+                  {d.validUntil ? ` · 有效期至 ${new Date(d.validUntil).toLocaleDateString()}` : ""}
                 </p>
               </div>
               <a

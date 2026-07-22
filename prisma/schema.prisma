@@ -300,23 +300,85 @@ enum AppStatus {
 }
 
 model Application {
-  id          String                @id @default(cuid())
+  id          String                  @id @default(cuid())
   studentId   String
-  student     StudentProfile        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  student     StudentProfile          @relation(fields: [studentId], references: [id], onDelete: Cascade)
   programId   String
-  program     Program               @relation(fields: [programId], references: [id])
+  program     Program                 @relation(fields: [programId], references: [id])
   choiceType  ChoiceType
-  status      AppStatus             @default(PLANNING)
+  status      AppStatus               @default(PLANNING)
   externalRef String?
   submittedAt DateTime?
   offer       Offer?
   documents   ApplicationDocument[]
   tasks       Task[]
-  createdAt   DateTime              @default(now())
-  updatedAt   DateTime              @updatedAt
+  materials   ApplicationMaterial[]
+  references  RecommendationRequest[]
+  feePaid     Boolean                 @default(false)
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
 
   @@index([studentId])
   @@index([programId])
+}
+
+enum MaterialStatus {
+  MISSING
+  READY
+  NEEDS_UPDATE
+  WAIVED
+}
+
+model ApplicationMaterial {
+  id                String                  @id @default(cuid())
+  applicationId     String
+  application       Application             @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  key               String
+  label             String
+  category          String
+  required          Boolean                 @default(true)
+  acceptedTypes     DocType[]
+  status            MaterialStatus          @default(MISSING)
+  documentId        String?
+  document          Document?               @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  dueDate           DateTime?
+  notes             String?
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+  referenceRequests RecommendationRequest[]
+
+  @@unique([applicationId, key])
+  @@index([applicationId, status])
+  @@index([documentId])
+}
+
+enum RecommendationStatus {
+  PENDING
+  SUBMITTED
+  REVOKED
+  EXPIRED
+}
+
+model RecommendationRequest {
+  id               String               @id @default(cuid())
+  applicationId    String
+  application      Application          @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  materialId       String?
+  material         ApplicationMaterial? @relation(fields: [materialId], references: [id], onDelete: SetNull)
+  recommenderName  String
+  recommenderEmail String?
+  message          String?
+  tokenHash        String               @unique
+  status           RecommendationStatus @default(PENDING)
+  expiresAt        DateTime
+  documentId       String?
+  document         Document?            @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  submittedAt      DateTime?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  @@index([applicationId, status])
+  @@index([materialId])
 }
 
 enum OfferType {
@@ -356,18 +418,26 @@ enum DocType {
 }
 
 model Document {
-  id        String                @id @default(cuid())
-  ownerId   String
-  owner     User                  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  type      DocType
-  fileKey   String // 存储适配器的 key
-  fileName  String
-  mime      String?
-  size      Int?
-  createdAt DateTime              @default(now())
-  links     ApplicationDocument[]
+  id              String                  @id @default(cuid())
+  ownerId         String
+  owner           User                    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  type            DocType
+  fileKey         String // 存储适配器的 key
+  fileName        String
+  mime            String?
+  size            Int?
+  createdAt       DateTime                @default(now())
+  links           ApplicationDocument[]
+  version         Int                     @default(1)
+  validUntil      DateTime?
+  supersedesId    String?
+  supersedes      Document?               @relation("DocumentVersions", fields: [supersedesId], references: [id], onDelete: SetNull)
+  revisions       Document[]              @relation("DocumentVersions")
+  materials       ApplicationMaterial[]
+  recommendations RecommendationRequest[]
 
   @@index([ownerId])
+  @@index([supersedesId])
 }
 
 model ApplicationDocument {

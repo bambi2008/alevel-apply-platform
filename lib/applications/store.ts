@@ -51,6 +51,7 @@ export interface OfferInfo {
 }
 
 export interface ApplicationItem {
+  id?: string;
   programId: string;
   addedAt: number;
   status: AppStatus;
