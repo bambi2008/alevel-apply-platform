@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Flag, LayoutGrid, RotateCcw, Save, Send } from "lucide-react";
+import { Calculator, ChevronLeft, ChevronRight, Delete, Flag, LayoutGrid, RotateCcw, Save, Send, X } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { MathRenderer } from "@/components/math-renderer";
 import type { MockPaper } from "@/lib/tests/mock-papers";
@@ -13,7 +13,12 @@ import { decodeMatrixAnswer, encodeMatrixAnswer, estimateSjtBand, estimateUcatSc
 type ObjectivePaper = Omit<MockPaper, "modules"> & {
   modules: Array<Omit<MockPaper["modules"][number], "questions"> & { questions: MCQQuestion[] }>;
 };
-type Phase = "briefing" | "running" | "results";
+type Phase = "briefing" | "instructions" | "running" | "results";
+
+function instructionDuration(paper: ObjectivePaper, moduleId: string): number {
+  if (paper.testId !== "ucat") return 0;
+  return moduleId === "qr" ? 120 : 90;
+}
 
 export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
   const [phase, setPhase] = useState<Phase>("briefing");
@@ -27,6 +32,8 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
   const [behavior, setBehavior] = useState<Record<string, QuestionTelemetrySnapshot>>({});
   const [timeUsedSec, setTimeUsedSec] = useState(0);
   const [startedAt, setStartedAt] = useState(0);
+  const [instructionTimeLeft, setInstructionTimeLeft] = useState(instructionDuration(paper, paper.modules[0].id));
+  const [calculatorOpen, setCalculatorOpen] = useState(false);
   const startedAtRef = useRef(0);
   const telemetryRef = useRef<QuestionTelemetryTracker>(createQuestionTelemetry());
   const storageKey = useMemo(() => examProgressKey(paper.id), [paper.id]);
@@ -64,8 +71,26 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
     setQuestionIndex(0);
     setReviewing(false);
     setTimeLeft(paper.modules[nextModule].durationSec);
+    setInstructionTimeLeft(instructionDuration(paper, paper.modules[nextModule].id));
+    setCalculatorOpen(false);
+    setPhase(instructionDuration(paper, paper.modules[nextModule].id) > 0 ? "instructions" : "running");
     window.scrollTo({ top: 0 });
-  }, [finish, moduleIndex, paper.modules]);
+  }, [finish, moduleIndex, paper]);
+
+  const startCurrentModule = useCallback(() => {
+    setCalculatorOpen(false);
+    setPhase("running");
+  }, []);
+
+  useEffect(() => {
+    if (phase !== "instructions") return;
+    if (instructionTimeLeft <= 0) {
+      const timeout = window.setTimeout(startCurrentModule, 0);
+      return () => window.clearTimeout(timeout);
+    }
+    const timer = window.setInterval(() => setInstructionTimeLeft((seconds) => Math.max(0, seconds - 1)), 1000);
+    return () => window.clearInterval(timer);
+  }, [instructionTimeLeft, phase, startCurrentModule]);
 
   useEffect(() => {
     if (phase !== "running") return;
@@ -102,6 +127,11 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
     if (phase === "running" && !reviewing) telemetryRef.current.visit(currentQuestion.id);
   }, [currentQuestion.id, phase, reviewing]);
 
+  const choose = useCallback((key: string) => {
+    telemetryRef.current.answer(currentQuestion.id, key);
+    setAnswers((current) => ({ ...current, [currentQuestion.id]: key }));
+  }, [currentQuestion.id]);
+
   const toggleFlag = useCallback(() => {
     const next = !flagged[currentQuestion.id];
     telemetryRef.current.flag(currentQuestion.id, next);
@@ -114,6 +144,13 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
       if (!event.altKey) return;
       const key = event.key.toLowerCase();
       if (key === "f") { event.preventDefault(); toggleFlag(); }
+      if (key === "c" && paper.testId === "ucat" && ["dm", "qr"].includes(currentModule.id)) {
+        event.preventDefault(); setCalculatorOpen((open) => !open);
+      }
+      if (["a", "b", "c", "d", "e"].includes(key) && currentQuestion.responseMode !== "matrix") {
+        const option = currentQuestion.options.find((item) => item.key.toLowerCase() === key);
+        if (option) { event.preventDefault(); choose(option.key); }
+      }
       if (key === "n" && questionIndex < currentModule.questions.length - 1) {
         event.preventDefault(); setQuestionIndex((index) => index + 1);
       }
@@ -123,7 +160,7 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [currentModule.questions.length, phase, questionIndex, reviewing, toggleFlag]);
+  }, [choose, currentModule.id, currentModule.questions.length, currentQuestion, paper.testId, phase, questionIndex, reviewing, toggleFlag]);
 
   const begin = () => {
     window.localStorage.removeItem(storageKey);
@@ -137,7 +174,9 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
     setStartedAt(startedAtRef.current);
     telemetryRef.current = createQuestionTelemetry();
     setSavedSession(null);
-    setPhase("running");
+    const instructions = instructionDuration(paper, paper.modules[0].id);
+    setInstructionTimeLeft(instructions);
+    setPhase(instructions > 0 ? "instructions" : "running");
   };
 
   const resume = () => {
@@ -159,17 +198,14 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
     setSavedSession(null);
   };
 
-  const choose = (key: string) => {
-    telemetryRef.current.answer(currentQuestion.id, key);
-    setAnswers((current) => ({ ...current, [currentQuestion.id]: key }));
-  };
-
   const chooseMatrix = (statementIndex: number, value: "yes" | "no") => {
-    const values = decodeMatrixAnswer(answers[currentQuestion.id], currentQuestion.statements?.length ?? 0);
-    values[statementIndex] = value;
-    const encoded = encodeMatrixAnswer(values);
-    telemetryRef.current.answer(currentQuestion.id, encoded);
-    setAnswers((current) => ({ ...current, [currentQuestion.id]: encoded }));
+    setAnswers((current) => {
+      const values = decodeMatrixAnswer(current[currentQuestion.id], currentQuestion.statements?.length ?? 0);
+      values[statementIndex] = value;
+      const encoded = encodeMatrixAnswer(values);
+      telemetryRef.current.answer(currentQuestion.id, encoded);
+      return { ...current, [currentQuestion.id]: encoded };
+    });
   };
 
   if (phase === "briefing") return (
@@ -194,9 +230,32 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
 
   if (phase === "results") return <ObjectiveResults paper={paper} answers={answers} behavior={behavior} startedAt={startedAt} timeUsedSec={timeUsedSec} />;
 
+  if (phase === "instructions") {
+    const instructionMinutes = String(Math.floor(instructionTimeLeft / 60)).padStart(2, "0");
+    const instructionSeconds = String(instructionTimeLeft % 60).padStart(2, "0");
+    const calculatorAvailable = ["dm", "qr"].includes(currentModule.id);
+    return <main className="mx-auto max-w-3xl px-4 py-10">
+      <header className="flex items-start justify-between gap-4 border-b border-neutral-200 pb-5">
+        <div><p className="text-xs font-semibold text-blue-600">模块 {moduleIndex + 1}/{paper.modules.length}</p><h1 className="mt-1 text-2xl font-bold">{currentModule.title}说明</h1><p className="mt-1 text-sm text-neutral-500">{currentModule.titleEn}</p></div>
+        <p className="font-mono text-2xl font-bold tabular-nums">{instructionMinutes}:{instructionSeconds}</p>
+      </header>
+      <section className="mt-6 border-y border-neutral-200 py-6">
+        <p className="text-base font-semibold">本模块共 {currentModule.questions.length} 题，作答时间 {Math.round(currentModule.durationSec / 60)} 分钟。</p>
+        <ul className="mt-4 space-y-2 text-sm leading-6 text-neutral-600">
+          <li>所有题目都应作答，答错不倒扣；可标记题目并在交卷总览中返回检查。</li>
+          <li>使用 Alt+N / Alt+P 前后翻题，Alt+F 标记，Alt+A-D 选择单选答案。</li>
+          {calculatorAvailable && <li>本模块可使用基础屏幕计算器；点击工具栏计算器或按 Alt+C 打开。</li>}
+          {currentModule.id === "dm" && <li>五陈述 Yes/No 题须逐条作答；全部正确得 2 分，仅错一项得 1 分。</li>}
+          {currentModule.id === "sjt" && <li>情境判断最佳等级得满分，相邻等级可获部分分。</li>}
+        </ul>
+      </section>
+      <button type="button" onClick={startCurrentModule} className="mt-6 w-full rounded-md bg-blue-600 py-3 text-sm font-semibold text-white">开始本模块</button>
+    </main>;
+  }
+
   const minutes = String(Math.floor(timeLeft / 60)).padStart(2, "0");
   const seconds = String(timeLeft % 60).padStart(2, "0");
-  const urgent = timeLeft <= 60;
+  const urgent = timeLeft < 5 * 60;
   const completeAnswers = Object.fromEntries(currentModule.questions
     .filter((question) => isObjectiveAnswerComplete(question, answers[question.id]))
     .map((question) => [question.id, answers[question.id]]));
@@ -216,8 +275,9 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
     <main className="mx-auto max-w-5xl px-4 py-4 sm:py-6">
       <header className="sticky top-16 z-20 -mx-4 flex items-center justify-between border-b border-neutral-200 bg-white/95 px-4 py-3 backdrop-blur">
         <div><p className="text-xs text-neutral-500">模块 {moduleIndex + 1}/{paper.modules.length} · Q{questionIndex + 1}/{currentModule.questions.length}</p><p className="text-sm font-semibold text-neutral-800">{currentModule.title}</p></div>
-        <div className="flex items-center gap-3"><span className="hidden items-center gap-1 text-xs text-neutral-400 sm:flex"><Save className="size-3.5" />自动保存</span><p className={`font-mono text-xl font-bold tabular-nums ${urgent ? "text-red-600" : "text-neutral-900"}`}>{minutes}:{seconds}</p><button type="button" onClick={() => setReviewing(true)} title="交卷总览" className="flex size-9 items-center justify-center rounded border border-neutral-300 text-neutral-700 hover:bg-neutral-50"><LayoutGrid className="size-4" /></button></div>
+        <div className="flex items-center gap-2"><span className="hidden items-center gap-1 text-xs text-neutral-400 sm:flex"><Save className="size-3.5" />自动保存</span>{paper.testId === "ucat" && ["dm", "qr"].includes(currentModule.id) && <button type="button" onClick={() => setCalculatorOpen((open) => !open)} title="计算器（Alt+C）" aria-label="计算器" className="flex size-9 items-center justify-center rounded border border-neutral-300 text-neutral-700 hover:bg-neutral-50"><Calculator className="size-4" /></button>}<p className={`font-mono text-xl font-bold tabular-nums ${urgent ? "text-amber-600" : "text-neutral-900"}`}>{minutes}:{seconds}</p><button type="button" onClick={() => setReviewing(true)} title="交卷总览" className="flex size-9 items-center justify-center rounded border border-neutral-300 text-neutral-700 hover:bg-neutral-50"><LayoutGrid className="size-4" /></button></div>
       </header>
+      {calculatorOpen && <BasicCalculator onClose={() => setCalculatorOpen(false)} />}
       <div className="mt-5 grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_15rem]">
         <section className="min-w-0 rounded-lg border border-neutral-200 bg-white p-5 sm:p-7">
           <div className="flex items-start justify-between gap-3"><span className="text-xs font-semibold text-neutral-400">QUESTION {questionIndex + 1}</span><button type="button" onClick={toggleFlag} className={`inline-flex h-8 items-center gap-1.5 rounded border px-2.5 text-xs font-medium ${flagged[currentQuestion.id] ? "border-amber-400 bg-amber-50 text-amber-800" : "border-neutral-300 text-neutral-600"}`}><Flag className="size-3.5" fill={flagged[currentQuestion.id] ? "currentColor" : "none"} />{flagged[currentQuestion.id] ? "已标记" : "标记"}</button></div>
@@ -230,6 +290,59 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
       </div>
     </main>
   );
+}
+
+function BasicCalculator({ onClose }: { onClose: () => void }) {
+  const [display, setDisplay] = useState("0");
+  const [stored, setStored] = useState<number | null>(null);
+  const [operation, setOperation] = useState<"+" | "-" | "*" | "/" | null>(null);
+  const [replace, setReplace] = useState(true);
+
+  const calculate = useCallback((left: number, right: number, op: "+" | "-" | "*" | "/") => {
+    if (op === "+") return left + right;
+    if (op === "-") return left - right;
+    if (op === "*") return left * right;
+    return right === 0 ? NaN : left / right;
+  }, []);
+  const inputDigit = useCallback((digit: string) => setDisplay((current) => {
+    if (replace) { setReplace(false); return digit === "." ? "0." : digit; }
+    if (digit === "." && current.includes(".")) return current;
+    return current.length >= 14 ? current : current === "0" && digit !== "." ? digit : current + digit;
+  }), [replace]);
+  const selectOperation = useCallback((next: "+" | "-" | "*" | "/") => {
+    const value = Number(display);
+    if (stored !== null && operation && !replace) {
+      const result = calculate(stored, value, operation);
+      setDisplay(Number.isFinite(result) ? String(Number(result.toPrecision(12))) : "Error");
+      setStored(result);
+    } else setStored(value);
+    setOperation(next); setReplace(true);
+  }, [calculate, display, operation, replace, stored]);
+  const equals = useCallback(() => {
+    if (stored === null || !operation) return;
+    const result = calculate(stored, Number(display), operation);
+    setDisplay(Number.isFinite(result) ? String(Number(result.toPrecision(12))) : "Error");
+    setStored(null); setOperation(null); setReplace(true);
+  }, [calculate, display, operation, stored]);
+  const clear = useCallback(() => { setDisplay("0"); setStored(null); setOperation(null); setReplace(true); }, []);
+
+  useEffect(() => {
+    const handler = (event: KeyboardEvent) => {
+      if (/^[0-9.]$/.test(event.key)) { event.preventDefault(); inputDigit(event.key); }
+      if (["+", "-", "*", "/"].includes(event.key)) { event.preventDefault(); selectOperation(event.key as "+" | "-" | "*" | "/"); }
+      if (event.key === "Enter" || event.key === "=") { event.preventDefault(); equals(); }
+      if (event.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, [equals, inputDigit, onClose, selectOperation]);
+
+  const keys = ["7", "8", "9", "/", "4", "5", "6", "*", "1", "2", "3", "-", "0", ".", "=", "+"];
+  return <aside role="dialog" aria-label="基础计算器" className="fixed right-3 top-36 z-40 w-[min(18rem,calc(100vw-1.5rem))] rounded-lg border border-neutral-300 bg-white p-3 shadow-xl">
+    <div className="flex items-center justify-between"><span className="text-xs font-semibold text-neutral-600">Calculator</span><button type="button" onClick={onClose} aria-label="关闭计算器" className="flex size-7 items-center justify-center rounded hover:bg-neutral-100"><X className="size-4" /></button></div>
+    <output className="mt-2 block min-h-12 overflow-hidden rounded border border-neutral-300 bg-neutral-50 px-3 py-2 text-right font-mono text-xl tabular-nums">{display}</output>
+    <div className="mt-2 grid grid-cols-4 gap-1.5"><button type="button" onClick={clear} className="col-span-2 rounded border border-neutral-300 py-2 text-sm font-semibold">ON/C</button><button type="button" onClick={() => setDisplay((value) => value.length > 1 ? value.slice(0, -1) : "0")} aria-label="退格" className="col-span-2 flex items-center justify-center rounded border border-neutral-300 py-2"><Delete className="size-4" /></button>{keys.map((key) => <button key={key} type="button" onClick={() => key === "=" ? equals() : ["+", "-", "*", "/"].includes(key) ? selectOperation(key as "+" | "-" | "*" | "/") : inputDigit(key)} className={`rounded border py-2.5 text-sm font-semibold ${["+", "-", "*", "/", "="].includes(key) ? "border-blue-200 bg-blue-50 text-blue-800" : "border-neutral-300"}`}>{key === "*" ? "×" : key === "/" ? "÷" : key}</button>)}</div>
+  </aside>;
 }
 
 function QuestionNumber({ index, active, answered, flagged, onClick }: { index: number; active: boolean; answered: boolean; flagged: boolean; onClick: () => void }) {

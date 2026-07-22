@@ -136,7 +136,7 @@ const dmMatrices = [
 ];
 
 const matrixQuestions: MCQQuestion[] = dmMatrices.map((item, index) => ({
-  ...mcq(`ucat-m1-dm-matrix-${index + 1}`, "ucat-dm", "For each conclusion, decide whether it follows from the information.", matrixOptions, "A", "A conclusion receives Yes only when it must follow from the stated relationships.", item.stem, 3),
+  ...mcq(`ucat-m1-dm-matrix-${index + 1}`, "ucat-dm", `For matrix scenario 1-${index + 1}, decide whether each conclusion follows from the information.`, matrixOptions, "A", "A conclusion receives Yes only when it must follow from the stated relationships.", item.stem, 3),
   responseMode: "matrix",
   statements: item.rows.map((row, rowIndex) => ({ id: `s${rowIndex + 1}`, text: row[0] })),
   matrixAnswer: item.rows.map((row) => row[1] as "yes" | "no"),
@@ -225,8 +225,8 @@ export const UCAT_M1_QR: MCQQuestion[] = qrDatasets.flatMap((dataset, datasetInd
   const percentage = dataset.values[1] / total * 100;
   const context = `${dataset.name}: ${dataset.labels.map((label, index) => `${label} = ${dataset.values[index]} ${dataset.unit}`).join("; ")}.`;
   const rows = [
-    [`What is the total across all four categories?`, total, "", `Add the four values to obtain ${total}.`],
-    [`What is the mean per category?`, average, "", `Divide the total ${total} by 4.`],
+    [`What is the total across all four ${dataset.name} categories?`, total, "", `Add the four values to obtain ${total}.`],
+    [`What is the mean per category in the ${dataset.name} data?`, average, "", `Divide the total ${total} by 4.`],
     [`What is the difference between ${dataset.labels[3]} and ${dataset.labels[0]}?`, difference, "", `Calculate the absolute difference |${dataset.values[3]}-${dataset.values[0]}|=${difference}.`],
     [`Approximately what percentage of the total is ${dataset.labels[1]}?`, percentage, "%", `${dataset.values[1]}/${total}×100≈${percentage.toFixed(1)}%.`],
   ] as const;

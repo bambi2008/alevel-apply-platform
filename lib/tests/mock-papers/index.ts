@@ -1,5 +1,5 @@
 // 完整模拟卷注册表。每套卷 = 若干个独立计时的模块。
-import type { Question } from "@/lib/tests/questions/types";
+import type { MCQQuestion, Question } from "@/lib/tests/questions/types";
 import { ESAT_MK1_MATH, ESAT_MK1_PHYS } from "./esat-mock-1";
 import { ESAT_MK2_MATH, ESAT_MK2_PHYS } from "./esat-mock-2";
 import { ESAT_MK3_MATH, ESAT_MK3_CHEM } from "./esat-mock-3";
@@ -105,6 +105,7 @@ import { PAT_WRITTEN_1, PAT_WRITTEN_2, PAT_WRITTEN_3 } from "./pat-written-paper
 import { STEP_WRITTEN_1, STEP_WRITTEN_2, STEP_WRITTEN_3, STEP_WRITTEN_4 } from "./step-written-papers";
 import { LNAT_WRITTEN_QUESTIONS, TARA_WRITTEN_QUESTIONS } from "./writing-papers";
 import { UCAT_M1_VR, UCAT_M1_DM, UCAT_M1_QR, UCAT_M1_SJT } from "./ucat-mock-1";
+import { UCAT_GENERATED_MOCKS } from "./ucat-mocks-2-5";
 
 export interface MockModule {
   id: string;
@@ -126,6 +127,38 @@ export interface MockPaper {
   formatType?: "current" | "legacy" | "extension";
 }
 
+function balanceUcatOptions(questions: MCQQuestion[]): MCQQuestion[] {
+  let singleIndex = 0;
+  return questions.map((question) => {
+    if (question.responseMode === "matrix" || question.options.length !== 4) return question;
+    const targetIndex = singleIndex % 4;
+    singleIndex += 1;
+    const correct = question.options.find((option) => option.key === question.answer);
+    if (!correct) return question;
+    const reordered = question.options.filter((option) => option.key !== question.answer);
+    reordered.splice(targetIndex, 0, correct);
+    return {
+      ...question,
+      options: reordered.map((option, index) => ({ ...option, key: "ABCD"[index] as MCQQuestion["answer"] })),
+      answer: "ABCD"[targetIndex] as MCQQuestion["answer"],
+    };
+  });
+}
+
+function calibrateUcatQrDifficulty(questions: MCQQuestion[]): MCQQuestion[] {
+  return questions.map((question, index) => ({
+    ...question,
+    difficulty: (index % 4 === 3 ? 3 : index % 4 >= 2 ? 2 : 1) as 1 | 2 | 3,
+  }));
+}
+
+function calibrateUcatSjtDifficulty(questions: MCQQuestion[]): MCQQuestion[] {
+  return questions.map((question, index) => ({
+    ...question,
+    difficulty: (question.difficulty === 3 || index % 5 === 4 ? 3 : question.difficulty) as 1 | 2 | 3,
+  }));
+}
+
 export const UCAT_MOCK_1: MockPaper = {
   id: "ucat-mock-1",
   testId: "ucat",
@@ -134,9 +167,9 @@ export const UCAT_MOCK_1: MockPaper = {
   description: "184 道原创题，严格按现行 UCAT 四模块题量和作答时间编排，包含 Decision Making 多陈述部分得分和 SJT 相邻等级部分得分。",
   modules: [
     { id: "vr", title: "文字推理", titleEn: "Verbal Reasoning", durationSec: 22 * 60, questions: UCAT_M1_VR },
-    { id: "dm", title: "决策判断", titleEn: "Decision Making", durationSec: 37 * 60, questions: UCAT_M1_DM },
-    { id: "qr", title: "数量推理", titleEn: "Quantitative Reasoning", durationSec: 26 * 60, questions: UCAT_M1_QR },
-    { id: "sjt", title: "情境判断", titleEn: "Situational Judgement", durationSec: 26 * 60, questions: UCAT_M1_SJT },
+    { id: "dm", title: "决策判断", titleEn: "Decision Making", durationSec: 37 * 60, questions: balanceUcatOptions(UCAT_M1_DM) },
+    { id: "qr", title: "数量推理", titleEn: "Quantitative Reasoning", durationSec: 26 * 60, questions: calibrateUcatQrDifficulty(balanceUcatOptions(UCAT_M1_QR)) },
+    { id: "sjt", title: "情境判断", titleEn: "Situational Judgement", durationSec: 26 * 60, questions: calibrateUcatSjtDifficulty(UCAT_M1_SJT) },
   ],
   instructions: [
     "四个模块独立计时；模块提交后不能返回上一模块。",
@@ -145,6 +178,22 @@ export const UCAT_MOCK_1: MockPaper = {
   ],
   formatType: "current",
 };
+
+export const UCAT_MOCKS_2_TO_5: MockPaper[] = UCAT_GENERATED_MOCKS.map((generated) => ({
+  id: `ucat-mock-${generated.number}`,
+  testId: "ucat",
+  title: `UCAT 全真模拟卷${["", "", "二", "三", "四", "五"][generated.number]}`,
+  titleEn: `UCAT Full Mock ${generated.number}`,
+  description: "原创 UCAT 四模块固定卷，严格按现行题量、作答时间、Decision Making 部分得分与 SJT 相邻等级得分规则编排。",
+  modules: [
+    { id: "vr", title: "文字推理", titleEn: "Verbal Reasoning", durationSec: 22 * 60, questions: generated.vr },
+    { id: "dm", title: "决策判断", titleEn: "Decision Making", durationSec: 37 * 60, questions: balanceUcatOptions(generated.dm) },
+    { id: "qr", title: "数量推理", titleEn: "Quantitative Reasoning", durationSec: 26 * 60, questions: calibrateUcatQrDifficulty(balanceUcatOptions(generated.qr)) },
+    { id: "sjt", title: "情境判断", titleEn: "Situational Judgement", durationSec: 26 * 60, questions: calibrateUcatSjtDifficulty(generated.sjt) },
+  ],
+  instructions: UCAT_MOCK_1.instructions,
+  formatType: "current",
+}));
 
 export const ESAT_MOCK_1: MockPaper = {
   id: "esat-mock-1",
@@ -1239,7 +1288,7 @@ export const TARA_WRITTEN_PAPERS: MockPaper[] = TARA_WRITTEN_QUESTIONS.map((ques
 
 const ALL_MOCK_PAPERS: MockPaper[] = [BMO_R2_MOCK_1, BMO_R2_MOCK_2, BMO_R2_MOCK_3, BMO_R2_MOCK_4, BMO_R2_MOCK_5, BMO_R2_MOCK_6, BMO_R2_MOCK_7, BMO_R2_MOCK_8, BMO_MOCK_1, BMO_MOCK_2, BMO_MOCK_3, BMO_MOCK_4, BMO_MOCK_5, BMO_MOCK_6, BMO_MOCK_7, BMO_MOCK_8, ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, ESAT_GAP_PHYSICS_PAPER, ESAT_GAP_CHEMISTRY_PAPER, ESAT_GAP_BIOLOGY_PAPER, TMUA_CALIBRATION_1, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3, TARA_MOCK_4, TARA_MOCK_5, TARA_MOCK_6, BPHO_MOCK_1, BPHO_MOCK_2, BPHO_MOCK_3, BPHO_MOCK_4, BPHO_MOCK_5, BPHO_MOCK_6, BPHO_MOCK_7, BPHO_MOCK_8, BPHO_R2_MOCK_1, BPHO_R2_MOCK_2, BPHO_R2_MOCK_3, BPHO_R2_MOCK_4];
 ALL_MOCK_PAPERS.unshift(
-  UCAT_MOCK_1,
+  UCAT_MOCK_1, ...UCAT_MOCKS_2_TO_5,
   ...MAT_WRITTEN_PAPERS, ...PAT_WRITTEN_PAPERS, ...STEP_WRITTEN_PAPERS,
   ...LNAT_WRITTEN_PAPERS, ...TARA_WRITTEN_PAPERS,
   BPHO_WRITTEN_PAPER_1, BPHO_WRITTEN_PAPER_2, BPHO_WRITTEN_PAPER_3,
