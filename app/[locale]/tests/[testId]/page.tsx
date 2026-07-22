@@ -9,6 +9,7 @@ import { REGISTRATION_INFO } from "@/lib/tests/registration";
 import { ExamTimer, getTimerPresets } from "@/components/exam-timer";
 import { getMockPapersForTest } from "@/lib/tests/mock-papers";
 import { ArrowRight, FileText } from "lucide-react";
+import { AdaptiveLearningPanel } from "@/components/adaptive-learning-panel";
 
 export default function TestDetailPage({
   params,
@@ -291,7 +292,11 @@ function TopicsTab({ test }: { test: AdmissionsTest }) {
 
 function PlanTab({ test }: { test: AdmissionsTest }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
+      <AdaptiveLearningPanel testId={test.id} variant="plan" />
+      <div className="border-t border-[var(--border)] pt-6">
+        <h3 className="font-semibold text-[var(--ink)]">长期阶段参考</h3>
+      </div>
       <p className="text-sm text-[var(--ink-soft)]">
         以下是针对 {test.abbr} 的系统备考计划，可根据自己距考试的时间弹性调整。
         考试通常在 10–11 月，Year 13 开学（9 月）应开始密集备考。
@@ -630,114 +635,8 @@ function HistoryTab({ test }: { test: AdmissionsTest }) {
   );
 }
 
-interface TopicStat {
-  topicId: string;
-  title: string;
-  earned: number;
-  max: number;
-  count: number;
-  accuracy: number;
-}
-
 function AnalysisTab({ test }: { test: AdmissionsTest }) {
-  const [data, setData] = useState<{ topics: TopicStat[]; totalAnswered: number } | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetch(`/api/exam-sessions/stats?testId=${test.id}`)
-      .then((r) => {
-        if (r.status === 401) throw new Error("请先登录查看学情分析");
-        if (!r.ok) throw new Error("加载失败");
-        return r.json() as Promise<{ topics: TopicStat[]; totalAnswered: number }>;
-      })
-      .then(setData)
-      .catch((e) => setError(e.message));
-  }, [test.id]);
-
-  if (error) {
-    return (
-      <div className="text-center py-16 text-[var(--ink-soft)]">
-        <p className="text-lg mb-2">⚠️ {error}</p>
-        {error.includes("登录") && (
-          <Link href="/login" className="mt-3 inline-block px-4 py-2 rounded-lg bg-[var(--indigo)] text-white text-sm">
-            前往登录
-          </Link>
-        )}
-      </div>
-    );
-  }
-
-  if (!data) {
-    return <div className="text-center py-16 text-[var(--ink-faint)] text-sm">加载中…</div>;
-  }
-
-  if (data.topics.length === 0) {
-    return (
-      <div className="text-center py-16 text-[var(--ink-faint)]">
-        <p className="text-5xl mb-4">📊</p>
-        <p>还没有足够的练习数据</p>
-        <p className="text-sm mt-1">完成一些练习或模拟后，这里会按知识点显示你的正确率和薄弱点。</p>
-        <Link href={`/tests/${test.id}/practice`} className="mt-6 inline-block px-4 py-2 rounded-lg bg-[var(--indigo)] text-white text-sm">
-          开始练习
-        </Link>
-      </div>
-    );
-  }
-
-  const weakest = data.topics.filter((t) => t.accuracy < 0.6).slice(0, 3);
-
-  return (
-    <div className="space-y-6">
-      <p className="text-sm text-[var(--ink-soft)]">
-        基于你累计作答的 {data.totalAnswered} 道题，按知识点统计正确率（由低到高排列）。
-      </p>
-
-      {weakest.length > 0 && (
-        <div className="rounded-2xl border border-[color:var(--warning)]/25 bg-[var(--warning-bg)] p-5">
-          <h3 className="font-semibold text-[var(--warning)] mb-2">🎯 建议优先突破</h3>
-          <div className="flex flex-wrap gap-2">
-            {weakest.map((t) => (
-              <Link
-                key={t.topicId}
-                href={`/tests/${test.id}/practice?topic=${t.topicId}`}
-                className="text-sm px-3 py-1.5 rounded-lg bg-white border border-[color:var(--warning)]/40 text-[var(--warning)] hover:bg-[var(--warning-bg)]"
-              >
-                {t.title}（{Math.round(t.accuracy * 100)}%）→ 去练习
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div className="space-y-3">
-        {data.topics.map((t) => {
-          const pct = Math.round(t.accuracy * 100);
-          const barColor = pct >= 80 ? "bg-[var(--success-bg)]0" : pct >= 60 ? "bg-[var(--warning-bg)]0" : "bg-[var(--danger-bg)]0";
-          return (
-            <div key={t.topicId} className="rounded-xl border border-[var(--border)] bg-white px-4 py-3">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-sm font-medium text-[var(--ink)]">{t.title}</span>
-                <span className="text-xs text-[var(--ink-soft)]">
-                  {t.earned}/{t.max} 分 · {t.count} 题 · <span className="font-semibold">{pct}%</span>
-                </span>
-              </div>
-              <div className="h-2 bg-[var(--surface-2)] rounded-full overflow-hidden">
-                <div className={`h-full ${barColor} rounded-full transition-all`} style={{ width: `${pct}%` }} />
-              </div>
-              <div className="mt-2 text-right">
-                <Link
-                  href={`/tests/${test.id}/practice?topic=${t.topicId}`}
-                  className="text-xs text-[var(--indigo)] hover:underline"
-                >
-                  专项练习 →
-                </Link>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
+  return <AdaptiveLearningPanel testId={test.id} variant="analysis" />;
 }
 
 function Section({

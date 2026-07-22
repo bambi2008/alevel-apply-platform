@@ -32,7 +32,7 @@ const QUESTION_BANKS: Record<string, Question[]> = {
 };
 const EMPTY_QUESTIONS: Question[] = [];
 
-type PracticeMode = "topic" | "mixed";
+type PracticeMode = "topic" | "mixed" | "adaptive";
 type PracticeFormat = "all" | "mcq" | "short-proof" | "long";
 type SessionState = "select" | "practicing" | "complete";
 
@@ -68,11 +68,16 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
   const allQuestions = QUESTION_BANKS[testId] ?? EMPTY_QUESTIONS;
 
   const initialTopic = searchParams.get("topic") ?? "all";
-  const [mode, setMode] = useState<PracticeMode>(initialTopic !== "all" ? "topic" : "mixed");
+  const initialCount = Number(searchParams.get("count") ?? 10);
+  const [mode, setMode] = useState<PracticeMode>(
+    searchParams.get("adaptive") === "1" ? "adaptive" : initialTopic !== "all" ? "topic" : "mixed"
+  );
   const [topicId, setTopicId] = useState<string>(initialTopic);
   const [format, setFormat] = useState<PracticeFormat>("all");
-  const [questionCount, setQuestionCount] = useState(10);
+  const [questionCount, setQuestionCount] = useState(Number.isFinite(initialCount) ? Math.max(5, Math.min(30, initialCount)) : 10);
   const [sessionState, setSessionState] = useState<SessionState>("select");
+  const [startError, setStartError] = useState<string | null>(null);
+  const [starting, setStarting] = useState(false);
   const [queue, setQueue] = useState<Question[]>([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [results, setResults] = useState<SessionResult[]>([]);
@@ -80,32 +85,56 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
   const questionStartedAt = useRef(0);
   const tier = useTier();
   const availableQuestionCount = allQuestions.filter((question) =>
-    (mode !== "topic" || topicId === "all" || question.topicId === topicId) && matchesFormat(question, format)
+    (!["topic", "adaptive"].includes(mode) || topicId === "all" || question.topicId === topicId) && matchesFormat(question, format)
   ).length;
   const effectiveQuestionCount = Math.min(questionCount, 30, availableQuestionCount);
 
-  const startSession = useCallback(() => {
+  const startSession = useCallback(async () => {
+    setStarting(true);
+    setStartError(null);
     let pool = allQuestions;
-    if (mode === "topic" && topicId !== "all") {
+    if (["topic", "adaptive"].includes(mode) && topicId !== "all") {
       pool = allQuestions.filter((q) => q.topicId === topicId);
     }
     pool = pool.filter((question) => matchesFormat(question, format));
     // 免费额度门控：付费墙关闭 / 会员时原样返回，绝不改变现有行为。
     pool = applyFreeLimit(pool, testId, tier);
-    // Weighted selection: difficulty 3 → 3×, difficulty 2 → 2×, difficulty 1 → 1×
-    const diffWeight = (d: number) => (d === 3 ? 3 : d === 2 ? 2 : 1);
-    const shuffled = [...pool]
-      .map((q) => ({ q, score: Math.random() * diffWeight(q.difficulty) }))
-      .sort((a, b) => b.score - a.score)
-      .map((w) => w.q)
-      .slice(0, effectiveQuestionCount);
+    let shuffled: Question[];
+    if (mode === "adaptive") {
+      try {
+        const query = new URLSearchParams({ testId, count: String(effectiveQuestionCount) });
+        if (topicId !== "all") query.set("topicId", topicId);
+        if (format !== "all") query.set("format", format);
+        if (searchParams.get("review") === "1") query.set("review", "1");
+        const response = await fetch(`/api/exam-sessions/adaptive?${query}`);
+        if (!response.ok) throw new Error("暂时无法生成智能训练，请稍后重试。");
+        const data = await response.json() as { authenticated: boolean; recommendedQuestionIds?: string[] };
+        if (!data.authenticated) throw new Error("智能训练需要登录，登录后系统才能保存并分析你的进步。");
+        const byId = new Map(pool.map((question) => [question.id, question]));
+        shuffled = (data.recommendedQuestionIds ?? []).map((id) => byId.get(id)).filter((question): question is Question => !!question);
+        if (shuffled.length === 0) throw new Error("当前没有到期复习题，可以切换为智能训练继续刷新题。");
+      } catch (error) {
+        setStartError(error instanceof Error ? error.message : "暂时无法生成智能训练。");
+        setStarting(false);
+        return;
+      }
+    } else {
+      // Weighted selection: difficulty 3 → 3×, difficulty 2 → 2×, difficulty 1 → 1×
+      const diffWeight = (d: number) => (d === 3 ? 3 : d === 2 ? 2 : 1);
+      shuffled = [...pool]
+        .map((q) => ({ q, score: Math.random() * diffWeight(q.difficulty) }))
+        .sort((a, b) => b.score - a.score)
+        .map((w) => w.q)
+        .slice(0, effectiveQuestionCount);
+    }
     setQueue(shuffled);
     setCurrentIdx(0);
     setResults([]);
     setSessionStartedAt(Date.now());
     questionStartedAt.current = Date.now();
     setSessionState("practicing");
-  }, [allQuestions, format, mode, topicId, effectiveQuestionCount, tier, testId]);
+    setStarting(false);
+  }, [allQuestions, format, mode, topicId, effectiveQuestionCount, tier, testId, searchParams]);
 
   const recordResult = useCallback((result: SessionResult) => {
     const enriched = { ...result, timeSpentSec: Math.max(1, Math.round((Date.now() - questionStartedAt.current) / 1000)), visits: 1 };
@@ -128,6 +157,8 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
         topicId={topicId}
         format={format}
         questionCount={effectiveQuestionCount}
+        starting={starting}
+        startError={startError}
         onModeChange={setMode}
         onTopicChange={setTopicId}
         onFormatChange={(nextFormat) => {
@@ -150,6 +181,7 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
         results={results}
         queue={queue}
         startedAt={sessionStartedAt}
+        strategy={mode}
         onRestart={() => setSessionState("select")}
       />
     );
@@ -204,6 +236,8 @@ function SessionSetup({
   topicId,
   format,
   questionCount,
+  starting,
+  startError,
   onModeChange,
   onTopicChange,
   onFormatChange,
@@ -216,11 +250,13 @@ function SessionSetup({
   topicId: string;
   format: PracticeFormat;
   questionCount: number;
+  starting: boolean;
+  startError: string | null;
   onModeChange: (m: PracticeMode) => void;
   onTopicChange: (t: string) => void;
   onFormatChange: (format: PracticeFormat) => void;
   onCountChange: (n: number) => void;
-  onStart: () => void;
+  onStart: () => void | Promise<void>;
 }) {
   if (!test) return null;
   const mcqCount = allQuestions.filter((q) => q.type === "mcq").length;
@@ -241,7 +277,7 @@ function SessionSetup({
     ? test.topics.filter((topic) => ["bmo-number", "bmo-geometry"].includes(topic.id))
     : test.topics;
   const availableCount = allQuestions.filter((question) =>
-    (mode !== "topic" || topicId === "all" || question.topicId === topicId) && matchesFormat(question, format)
+    (!["topic", "adaptive"].includes(mode) || topicId === "all" || question.topicId === topicId) && matchesFormat(question, format)
   ).length;
   const maxQuestionCount = Math.min(30, availableCount);
   const minQuestionCount = Math.min(5, maxQuestionCount);
@@ -260,8 +296,8 @@ function SessionSetup({
       <div className="space-y-6">
         <div>
           <label className="block text-sm font-medium text-[var(--ink)] mb-2">练习模式</label>
-          <div className="flex gap-3">
-            {(["mixed", "topic"] as PracticeMode[]).map((m) => (
+          <div className="flex flex-wrap gap-3">
+            {(["adaptive", "mixed", "topic"] as PracticeMode[]).map((m) => (
               <button
                 key={m}
                 type="button"
@@ -272,7 +308,7 @@ function SessionSetup({
                     : "bg-white text-[var(--ink-soft)] border-[var(--border)] hover:bg-[var(--surface)]"
                 }`}
               >
-                {m === "mixed" ? "综合练习（随机）" : "知识点专项"}
+                {m === "adaptive" ? "智能训练" : m === "mixed" ? "综合练习（随机）" : "知识点专项"}
               </button>
             ))}
           </div>
@@ -298,7 +334,13 @@ function SessionSetup({
           </div>
         </div>
 
-        {mode === "topic" && (
+        {mode === "adaptive" && (
+          <div className="rounded-lg border border-[color:var(--indigo)]/20 bg-[var(--info-bg)] px-3 py-2 text-xs leading-relaxed text-[var(--indigo)]">
+            系统会优先安排到期错题、薄弱知识点和适合你当前掌握度的新题。首次使用会自动生成跨知识点诊断。
+          </div>
+        )}
+
+        {(mode === "topic" || mode === "adaptive") && (
           <div>
             <label className="block text-sm font-medium text-[var(--ink)] mb-2">选择知识点</label>
             <select
@@ -348,11 +390,12 @@ function SessionSetup({
         <button
           type="button"
           onClick={onStart}
-          disabled={availableCount === 0}
+          disabled={availableCount === 0 || starting}
           className="w-full py-3 rounded-xl bg-[var(--indigo)] text-white font-medium hover:bg-[var(--indigo-hover)] transition disabled:cursor-not-allowed disabled:opacity-40"
         >
-          开始练习 →
+          {starting ? "正在生成训练…" : mode === "adaptive" ? "开始智能训练 →" : "开始练习 →"}
         </button>
+        {startError && <p className="text-sm text-[var(--danger)]">{startError}</p>}
       </div>
     </div>
   );
@@ -713,12 +756,14 @@ function SessionSummary({
   results,
   queue,
   startedAt,
+  strategy,
   onRestart,
 }: {
   testId: string;
   results: SessionResult[];
   queue: Question[];
   startedAt: number;
+  strategy: PracticeMode;
   onRestart: () => void;
 }) {
   const mcqResults = results.filter((r) => r.type === "mcq");
@@ -742,7 +787,7 @@ function SessionSummary({
         totalMax,
         startedAt: startedAt ? new Date(startedAt).toISOString() : undefined,
         timeUsedSec: startedAt ? Math.max(0, Math.round((Date.now() - startedAt) / 1000)) : undefined,
-        clientMeta: { schemaVersion: 1, viewport: `${window.innerWidth}x${window.innerHeight}`, locale: navigator.language },
+        clientMeta: { schemaVersion: 1, viewport: `${window.innerWidth}x${window.innerHeight}`, locale: navigator.language, practiceStrategy: strategy },
         answers: results.map((r) => ({
           questionId: r.questionId,
           type: r.type,
@@ -796,10 +841,10 @@ function SessionSummary({
           再练一轮
         </button>
         <Link
-          href={`/tests/${testId}`}
+          href={`/tests/${testId}?tab=analysis`}
           className="px-6 py-3 rounded-xl border border-[var(--border)] font-medium hover:bg-[var(--surface)]"
         >
-          返回备考详情
+          查看能力画像
         </Link>
       </div>
     </div>

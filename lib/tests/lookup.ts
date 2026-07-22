@@ -15,7 +15,7 @@ import type { Question } from "@/lib/tests/questions/types";
 import { getTestById } from "@/lib/tests";
 import { getAllMockQuestions } from "@/lib/tests/mock-papers";
 
-const ALL_QUESTIONS: Question[] = [
+const PRACTICE_QUESTIONS: Question[] = [
   ...MAT_QUESTIONS,
   ...STEP_QUESTIONS,
   ...ESAT_QUESTIONS,
@@ -25,6 +25,10 @@ const ALL_QUESTIONS: Question[] = [
   ...TARA_QUESTIONS,
   ...BPHO_QUESTIONS,
   ...BMO_QUESTIONS,
+];
+
+const ALL_QUESTIONS: Question[] = [
+  ...PRACTICE_QUESTIONS,
   ...getAllMockQuestions(), // 完整模拟卷题目（不进练习库，但回看/分析需可反查）
 ];
 
@@ -34,6 +38,11 @@ const BY_ID = new Map<string, Question>(ALL_QUESTIONS.map((q) => [q.id, q]));
 /** 按 id 取回完整题目（含题干、选项/小问、解答）。找不到返回 undefined。 */
 export function getQuestionById(id: string): Question | undefined {
   return BY_ID.get(id);
+}
+
+/** 只返回专项练习题库，不混入固定模拟卷。 */
+export function getPracticeQuestionsForTest(testId: string): Question[] {
+  return PRACTICE_QUESTIONS.filter((question) => question.testId === testId);
 }
 
 /** 取该题所属知识点 id（从静态题库读取，作答记录里没有存 topicId）。 */
