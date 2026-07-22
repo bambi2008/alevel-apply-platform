@@ -22,6 +22,11 @@ export interface MCQQuestion {
   answer: MCQOptionKey;
   solution: string;   // step-by-step solution in LaTeX
   hint?: string;
+  context?: string;
+  responseMode?: "single" | "matrix";
+  statements?: Array<{ id: string; text: string }>;
+  matrixAnswer?: Array<"yes" | "no">;
+  scoringMode?: "exact" | "adjacent";
 }
 
 /** 大题（MAT Part B, STEP 等）—— 需 AI 分步评分 */

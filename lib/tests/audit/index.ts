@@ -10,6 +10,7 @@ import { PAT_QUESTIONS } from "@/lib/tests/questions/pat";
 import { STEP_QUESTIONS } from "@/lib/tests/questions/step";
 import { TARA_QUESTIONS } from "@/lib/tests/questions/tara";
 import { TMUA_QUESTIONS } from "@/lib/tests/questions/tmua";
+import { UCAT_QUESTIONS } from "@/lib/tests/questions/ucat";
 import type { Question } from "@/lib/tests/questions/types";
 
 export type AuditSeverity = "critical" | "warning" | "info";
@@ -85,6 +86,7 @@ const QUESTION_BANKS: Record<string, Question[]> = {
   lnat: LNAT_QUESTIONS,
   bmo: BMO_QUESTIONS,
   bpho: BPHO_QUESTIONS,
+  ucat: UCAT_QUESTIONS,
 };
 
 const FORMAT_RULES: Record<string, { needsWrittenPractice: boolean; needsFixedWrittenPaper: boolean }> = {
@@ -98,6 +100,7 @@ const FORMAT_RULES: Record<string, { needsWrittenPractice: boolean; needsFixedWr
   lnat: { needsWrittenPractice: true, needsFixedWrittenPaper: true },
   bmo: { needsWrittenPractice: true, needsFixedWrittenPaper: true },
   bpho: { needsWrittenPractice: true, needsFixedWrittenPaper: true },
+  ucat: { needsWrittenPractice: false, needsFixedWrittenPaper: false },
 };
 
 function difficultyCounts(questions: Question[]): DifficultyCounts {

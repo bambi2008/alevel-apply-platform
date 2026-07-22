@@ -15,9 +15,11 @@ import { LNAT_QUESTIONS } from "@/lib/tests/questions/lnat";
 import { TARA_QUESTIONS } from "@/lib/tests/questions/tara";
 import { BPHO_QUESTIONS } from "@/lib/tests/questions/bpho";
 import { BMO_QUESTIONS } from "@/lib/tests/questions/bmo";
+import { UCAT_QUESTIONS } from "@/lib/tests/questions/ucat";
 import type { Question, MCQQuestion, LongQuestion } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
 import type { GradeRequest, GradeResponse } from "@/app/api/grade-answer/route";
+import { scoreObjectiveAnswer } from "@/lib/tests/objective-scoring";
 
 const QUESTION_BANKS: Record<string, Question[]> = {
   mat: MAT_QUESTIONS,
@@ -29,6 +31,7 @@ const QUESTION_BANKS: Record<string, Question[]> = {
   tara: TARA_QUESTIONS,
   bpho: BPHO_QUESTIONS,
   bmo: BMO_QUESTIONS,
+  ucat: UCAT_QUESTIONS,
 };
 const EMPTY_QUESTIONS: Question[] = [];
 
@@ -179,7 +182,6 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
       <SessionSummary
         testId={testId}
         results={results}
-        queue={queue}
         startedAt={sessionStartedAt}
         strategy={mode}
         onRestart={() => setSessionState("select")}
@@ -212,8 +214,8 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
         <MCQCard
           key={currentQ.id}
           question={currentQ as MCQQuestion}
-          onAnswer={(correct, selected) =>
-            recordResult({ questionId: currentQ.id, type: "mcq", correct, selected })
+          onAnswer={(correct, selected, earned, max) =>
+            recordResult({ questionId: currentQ.id, type: "mcq", correct, selected, earned, max })
           }
         />
       ) : (
@@ -406,7 +408,7 @@ function MCQCard({
   onAnswer,
 }: {
   question: MCQQuestion;
-  onAnswer: (correct: boolean, selected: string) => void;
+  onAnswer: (correct: boolean, selected: string, earned: number, max: number) => void;
 }) {
   const [selected, setSelected] = useState<string | null>(null);
   const [showSolution, setShowSolution] = useState(false);
@@ -418,6 +420,8 @@ function MCQCard({
   };
 
   const isCorrect = selected === q.answer;
+  const score = scoreObjectiveAnswer(q, selected ?? undefined);
+  const isPartial = score.earned > 0 && score.earned < score.max;
 
   return (
     <div className="space-y-6">
@@ -468,7 +472,7 @@ function MCQCard({
               {isCorrect ? "✓" : "✗"}
             </span>
             <span className={`font-semibold ${isCorrect ? "text-[var(--success)]" : "text-[var(--danger)]"}`}>
-              {isCorrect ? "答案正确！" : `答案有误。正确答案：${q.answer}`}
+              {isCorrect ? "答案正确！" : isPartial ? `获得部分分（${score.earned}/${score.max}）` : `答案有误。正确答案：${q.answer}`}
             </span>
           </div>
           {q.hint && (
@@ -483,7 +487,7 @@ function MCQCard({
           </div>
           <button
             type="button"
-            onClick={() => onAnswer(isCorrect, selected ?? "")}
+            onClick={() => onAnswer(isCorrect, selected ?? "", score.earned, score.max)}
             className="mt-4 px-5 py-2 rounded-lg bg-[var(--indigo)] text-white text-sm font-medium hover:bg-[var(--indigo-hover)]"
           >
             下一题 →
@@ -754,14 +758,12 @@ function LongAnswerCard({
 function SessionSummary({
   testId,
   results,
-  queue,
   startedAt,
   strategy,
   onRestart,
 }: {
   testId: string;
   results: SessionResult[];
-  queue: Question[];
   startedAt: number;
   strategy: PracticeMode;
   onRestart: () => void;
@@ -772,7 +774,7 @@ function SessionSummary({
   const mcqCorrect = mcqResults.filter((r) => r.correct).length;
   const longEarned = longResults.reduce((s, r) => s + (r.earned ?? 0), 0);
   const longMax = longResults.reduce((s, r) => s + (r.max ?? 0), 0);
-  const totalEarned = mcqResults.reduce((s, r) => s + (r.correct ? (queue.find((q) => q.id === r.questionId) as MCQQuestion | undefined)?.marks ?? 0 : 0), 0) + longEarned;
+  const totalEarned = mcqResults.reduce((s, r) => s + (r.earned ?? 0), 0) + longEarned;
   const totalMax = results.reduce((s, r) => s + (r.max ?? 0), 0);
 
   // Save to DB silently (best-effort, non-blocking)

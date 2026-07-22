@@ -1,5 +1,5 @@
 // 题目检索助手 —— 把已接入的题库扁平化建索引，供「练习记录回看」按 questionId 还原题目。
-// 注意：这里只收录已在 practice/mock 页面接入 QUESTION_BANKS 的题库（mat / step / esat）。
+// 注意：这里只收录已在 practice/mock 页面接入 QUESTION_BANKS 的题库。
 // 若以后接入新题库（如 tmua），在此处补一行 import 即可。
 
 import { MAT_QUESTIONS } from "@/lib/tests/questions/mat";
@@ -11,6 +11,7 @@ import { LNAT_QUESTIONS } from "@/lib/tests/questions/lnat";
 import { TARA_QUESTIONS } from "@/lib/tests/questions/tara";
 import { BPHO_QUESTIONS } from "@/lib/tests/questions/bpho";
 import { BMO_QUESTIONS } from "@/lib/tests/questions/bmo";
+import { UCAT_QUESTIONS } from "@/lib/tests/questions/ucat";
 import type { Question } from "@/lib/tests/questions/types";
 import { getTestById } from "@/lib/tests";
 import { getAllMockQuestions } from "@/lib/tests/mock-papers";
@@ -25,6 +26,7 @@ const PRACTICE_QUESTIONS: Question[] = [
   ...TARA_QUESTIONS,
   ...BPHO_QUESTIONS,
   ...BMO_QUESTIONS,
+  ...UCAT_QUESTIONS,
 ];
 
 const ALL_QUESTIONS: Question[] = [

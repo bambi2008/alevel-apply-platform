@@ -3,6 +3,7 @@ import { getMockPaper } from "../mock-papers";
 import { getMockPapersForTest } from "../mock-papers";
 import { LNAT_QUESTIONS } from "../questions/lnat";
 import { buildLnatMockAudit } from "./lnat-mocks";
+import type { MCQQuestion } from "../questions/types";
 
 describe("LNAT fixed-paper audit", () => {
   it("locks Mock 1 as a complete official-structure Section A paper", () => {
@@ -35,10 +36,10 @@ describe("LNAT fixed-paper audit", () => {
   });
 
   it("exposes only current four-option MCQs in practice and fixed papers", () => {
-    const practiceMcqs = LNAT_QUESTIONS.filter((question) => question.type === "mcq");
+    const practiceMcqs = LNAT_QUESTIONS.filter((question): question is MCQQuestion => question.type === "mcq");
     const fixedMcqs = getMockPapersForTest("lnat")
       .flatMap((paper) => paper.modules.flatMap((module) => module.questions))
-      .filter((question) => question.type === "mcq");
+      .filter((question): question is MCQQuestion => question.type === "mcq");
 
     expect(practiceMcqs).toHaveLength(31);
 

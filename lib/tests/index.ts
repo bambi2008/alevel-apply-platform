@@ -1,4 +1,4 @@
-// 英国大学入学笔试数据层 — 9 种考试
+// 英国大学入学笔试数据层 — 10 种考试
 
 export type TestCategory = "mathematics" | "science" | "law" | "thinking" | "competition";
 
@@ -399,6 +399,50 @@ export const ADMISSIONS_TESTS: AdmissionsTest[] = [
       "Section 2 只选 2 题：开考先花 3 分钟通读所有题，选最顺手的主题，每题约 40 分钟。",
       "写过程！评分按步骤给分，只有答案不得分；关键中间结果圈出来方便阅卷人找到。",
       "报名由学校老师在 BPhO 平台统一注册（每校一位教师账号），个人无法直接报名——尽早与学校沟通。",
+    ],
+  },
+
+  {
+    id: "ucat",
+    name: "University Clinical Aptitude Test",
+    abbr: "UCAT",
+    nameZh: "大学临床能力倾向测试",
+    category: "thinking",
+    icon: "✚",
+    universities: ["UK and partner consortium medical and dental schools"],
+    programs: ["医学", "牙医学"],
+    programsEn: ["Medicine", "Dentistry"],
+    duration: "约 2 小时（正式作答 111 分钟）",
+    format: "VR 44 questions / 22 min; DM 35 / 37 min; QR 36 / 26 min; SJT 69 / 26 min",
+    formatZh: "四个独立计时模块：文字推理 44 题/22 分钟、决策判断 35 题/37 分钟、数量推理 36 题/26 分钟、情境判断 69 题/26 分钟。",
+    registrationUrl: "https://www.ucat.ac.uk/register/",
+    officialSampleUrl: "https://www.ucat.ac.uk/prepare/practice-tests/",
+    hasQuestionBank: true,
+    statusNote: "本题库按现行四模块结构制作；抽象推理已从 2025 年起移除。平台换算分与 SJT Band 仅作训练估计，不是官方成绩。",
+    overview: "UCAT 是英国及合作地区医学、牙医学申请广泛使用的计算机能力倾向测试。它不考医学知识，核心挑战是高时间压力下的阅读、逻辑、数量处理与职业判断。",
+    structureDetails: "全卷分为 Verbal Reasoning、Decision Making、Quantitative Reasoning 和 Situational Judgement。模块独立计时；Decision Making 含五陈述 Yes/No 组合题，Situational Judgement 按与最佳答案的接近程度给予部分分。",
+    scoringNote: "前三个认知模块各按 300-900 报告，总分 900-2700；SJT 单独报告 Band 1-4。答错不倒扣。本站显示的是基于原始得分率的训练估计，不能替代官方等值换算。",
+    topics: [
+      { id: "ucat-vr", title: "文字推理", titleEn: "Verbal Reasoning", description: "快速阅读、证据定位、True/False/Can't Tell 与观点推断" },
+      { id: "ucat-dm", title: "决策判断", titleEn: "Decision Making", description: "三段论、逻辑谜题、论证、概率、维恩图与多陈述判断" },
+      { id: "ucat-qr", title: "数量推理", titleEn: "Quantitative Reasoning", description: "表格图表、比例百分比、汇率、速率与多步估算" },
+      { id: "ucat-sjt", title: "情境判断", titleEn: "Situational Judgement", description: "患者安全、诚信、沟通、保密、团队合作与职业边界" },
+    ],
+    studyPlan: [
+      { week: "第 1-2 周", focus: "摸底与方法", tasks: ["完成四模块短诊断", "建立错题原因标签", "熟悉屏幕计算器与计时节奏"] },
+      { week: "第 3-4 周", focus: "分模块提速", tasks: ["VR 每日两组证据定位", "DM 轮换逻辑与概率", "QR 训练心算、估算和跳题"] },
+      { week: "第 5-6 周", focus: "SJT 与混合训练", tasks: ["按患者安全和诚信原则复盘 SJT", "完成半套混合计时", "减少无效重读与答案修改"] },
+      { week: "第 7-8 周", focus: "全真机考", tasks: ["每周完成两次整卷或四模块连做", "按模块分析速度与正确率", "固定跳题、标记和回看策略"] },
+    ],
+    tips: [
+      "UCAT 是速度考试：卡住时先标记并前进，避免一题吞掉整个模块。",
+      "VR 只依据给定文本作答，不用常识补全；Can't Tell 需要确认文本既未证明也未否定。",
+      "DM 多陈述题要逐条判断，不能用第一条的结论代替其余判断。",
+      "QR 先估算数量级，再使用屏幕计算器确认，注意单位和百分比基数。",
+      "SJT 优先患者安全、诚实、及时升级、尊重保密和自身能力边界。",
+    ],
+    pastPaperLinks: [
+      { label: "UCAT 官方练习题与全真测试", url: "https://www.ucat.ac.uk/prepare/practice-tests/", note: "官方界面与题型最接近正式考试" },
     ],
   },
 

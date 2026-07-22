@@ -13,10 +13,12 @@ import { LNAT_QUESTIONS } from "@/lib/tests/questions/lnat";
 import { TARA_QUESTIONS } from "@/lib/tests/questions/tara";
 import { BPHO_QUESTIONS } from "@/lib/tests/questions/bpho";
 import { BMO_QUESTIONS } from "@/lib/tests/questions/bmo";
+import { UCAT_QUESTIONS } from "@/lib/tests/questions/ucat";
 import type { Question, MCQQuestion, LongQuestion } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
 import type { GradeRequest, GradeResponse } from "@/app/api/grade-answer/route";
 import { createQuestionTelemetry, type QuestionTelemetrySnapshot, type QuestionTelemetryTracker } from "@/lib/tests/telemetry";
+import { scoreObjectiveAnswer } from "@/lib/tests/objective-scoring";
 
 const QUESTION_BANKS: Record<string, Question[]> = {
   mat: MAT_QUESTIONS,
@@ -28,6 +30,7 @@ const QUESTION_BANKS: Record<string, Question[]> = {
   tara: TARA_QUESTIONS,
   bpho: BPHO_QUESTIONS,
   bmo: BMO_QUESTIONS,
+  ucat: UCAT_QUESTIONS,
 };
 
 type ExamState = "briefing" | "running" | "grading" | "results";
@@ -72,6 +75,16 @@ function parseDurationText(duration: string): number {
 }
 
 function getMockPresets(testId: string, duration: string): MockPreset[] {
+  if (testId === "ucat") {
+    return [{
+      id: "diagnostic",
+      label: "UCAT 混合诊断",
+      description: "四模块专项题混合训练；完整 184 题机考请进入固定全真卷。",
+      durationSec: 30 * 60,
+      mcqCount: 24,
+      longCount: 0,
+    }];
+  }
   if (testId === "lnat") {
     return [{
       id: "section-a",
@@ -271,14 +284,15 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
 
       if (q.type === "mcq" && ans.type === "mcq") {
         const mcq = q as MCQQuestion;
-        const isCorrect = ans.selected === mcq.answer;
+        const score = scoreObjectiveAnswer(mcq, ans.selected ?? undefined);
+        const isCorrect = score.earned === score.max;
         const isSmc = testId === "bmo" && selectedPreset.id === "smc";
         results.push({
           questionId: q.id,
           type: "mcq",
           correct: isCorrect,
-          earned: isCorrect ? mcq.marks : isSmc && ans.selected !== null ? -1 : 0,
-          max: mcq.marks,
+          earned: isSmc ? (isCorrect ? mcq.marks : ans.selected !== null ? -1 : 0) : score.earned,
+          max: score.max,
         });
         progress++;
         setGradingProgress(progress);
