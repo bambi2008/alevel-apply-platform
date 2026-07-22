@@ -3,6 +3,7 @@ import { z } from "zod";
 import type { Prisma } from "@prisma/client";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
+import { addUtcDays, shanghaiDateKey, utcDateFromKey } from "@/lib/study/dates";
 
 // 严格校验写入体，避免脏数据导致 500 或写入垃圾。
 const answerSchema = z.object({
@@ -97,6 +98,15 @@ export async function POST(req: NextRequest) {
     },
     select: { id: true },
   });
+
+  const today = utcDateFromKey(shanghaiDateKey());
+  const tomorrow = addUtcDays(today, 1);
+  const matchingTask = await db.studyTask.findFirst({
+    where: { studentId: profile.id, testId: body.testId, status: "PLANNED", scheduledFor: { gte: today, lt: tomorrow } },
+    orderBy: { scheduledFor: "asc" },
+    select: { id: true },
+  });
+  if (matchingTask) await db.studyTask.update({ where: { id: matchingTask.id }, data: { status: "DONE", completedAt: new Date() } });
 
   return NextResponse.json({ id: examSession.id }, { status: 201 });
 }

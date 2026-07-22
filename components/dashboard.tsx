@@ -9,6 +9,7 @@ import { buildTimeline, type Milestone } from "@/lib/timeline";
 import { ProcessOverview } from "@/components/process-overview";
 import { RoadmapTree } from "@/components/roadmap-tree";
 import { DashboardHub } from "@/components/dashboard-hub";
+import { StudyTodayPreview } from "@/components/study-today-preview";
 
 export function Dashboard({ email }: { email?: string | null }) {
   const t = useTranslations();
@@ -69,6 +70,7 @@ export function Dashboard({ email }: { email?: string | null }) {
         appCount={appCount}
         msLabels={{ keyDates: "关键日期", fullTimeline: t("dashboard.fullTimeline") as string }}
       >
+        <StudyTodayPreview />
         <RoadmapTree />
       </DashboardHub>
 

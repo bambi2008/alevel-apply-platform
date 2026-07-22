@@ -78,6 +78,8 @@ model StudentProfile {
   applications    Application[]
   statements      PersonalStatement[]
   tasks           Task[]
+  studyGoals      StudyGoal[]
+  studyTasks      StudyTask[]
   examSessions    ExamSession[]
   backgroundItems BackgroundItem[]
   createdAt       DateTime            @default(now())
@@ -422,6 +424,61 @@ model Task {
 
   @@index([studentId])
   @@index([applicationId])
+}
+
+enum StudyTaskStatus {
+  PLANNED
+  DONE
+  SKIPPED
+}
+
+enum StudyTaskKind {
+  DIAGNOSTIC
+  REVIEW
+  FOCUS
+  MOCK
+}
+
+model StudyGoal {
+  id            String         @id @default(cuid())
+  studentId     String
+  student       StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  testId        String
+  targetDate    DateTime
+  targetLevel   String?
+  weeklyMinutes Int            @default(180)
+  active        Boolean        @default(true)
+  tasks         StudyTask[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@unique([studentId, testId])
+  @@index([studentId, active])
+}
+
+model StudyTask {
+  id               String          @id @default(cuid())
+  studentId        String
+  student          StudentProfile  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  goalId           String?
+  goal             StudyGoal?      @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  testId           String
+  sourceKey        String
+  kind             StudyTaskKind
+  title            String
+  detail           String?
+  href             String
+  topicId          String?
+  scheduledFor     DateTime
+  estimatedMinutes Int
+  status           StudyTaskStatus @default(PLANNED)
+  completedAt      DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@unique([studentId, sourceKey, scheduledFor])
+  @@index([studentId, scheduledFor, status])
+  @@index([goalId])
 }
 
 // ---------- 内容 / 合规 ----------

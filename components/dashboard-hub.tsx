@@ -29,6 +29,7 @@ const TILES: { id?: string; label: string; href: string; icon: string }[] = [
   { label: "院校库", href: "/universities", icon: "building" },
   { id: "background", label: "背景提升", href: "/background", icon: "star" },
   { id: "tests", label: "入学笔试", href: "/tests", icon: "compass" },
+  { label: "备考中心", href: "/study", icon: "calendar" },
   { label: "面试准备", href: "/interview", icon: "mic" },
   { id: "statements", label: "文书写作", href: "/statements", icon: "pen" },
   { id: "prep", label: "填表助手", href: "/apply-prep", icon: "listChecks" },

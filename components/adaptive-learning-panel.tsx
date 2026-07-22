@@ -95,12 +95,15 @@ export function AdaptiveLearningPanel({ testId, variant }: { testId: string; var
             {variant === "plan" ? "你的本周训练重点" : "当前能力画像"}
           </h3>
         </div>
-        <Link
-          href={`/tests/${testId}/practice?adaptive=1&count=15`}
-          className="inline-flex items-center gap-2 rounded-md bg-[var(--indigo)] px-4 py-2.5 text-sm font-medium text-white hover:bg-[var(--indigo-hover)]"
-        >
-          <Play className="size-4" aria-hidden="true" /> 开始智能训练
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link href={`/study?test=${testId}`} className="inline-flex items-center gap-2 rounded-md border border-[var(--border)] px-4 py-2.5 text-sm font-medium text-[var(--ink)] hover:bg-[var(--surface)]">加入备考日历</Link>
+          <Link
+            href={`/tests/${testId}/practice?adaptive=1&count=15`}
+            className="inline-flex items-center gap-2 rounded-md bg-[var(--indigo)] px-4 py-2.5 text-sm font-medium text-white hover:bg-[var(--indigo-hover)]"
+          >
+            <Play className="size-4" aria-hidden="true" /> 开始智能训练
+          </Link>
+        </div>
       </div>
 
       <div className="grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--border)] sm:grid-cols-4">
