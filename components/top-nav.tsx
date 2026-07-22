@@ -6,6 +6,7 @@ import { Link, usePathname, useRouter } from "@/i18n/navigation";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { NavIcon } from "@/components/nav-icons";
 import { logoutAction } from "@/lib/auth/actions";
+import { NotificationBell } from "@/components/notification-bell";
 
 type NavItem = { href: string; label: string; icon: string; desc?: string };
 
@@ -160,6 +161,8 @@ export function TopNav({
 
           <div className="hidden lg:block"><LocaleSwitcher /></div>
 
+          {isLoggedIn && <NotificationBell />}
+
           {isLoggedIn ? (
             <div className="relative" ref={userRef}>
               <button
@@ -239,6 +242,11 @@ export function TopNav({
                   <Link href="/login" onClick={() => setDrawerOpen(false)} className="text-sm font-semibold text-[var(--indigo)]">{ta("login")}</Link>
                 )}
               </div>
+              {isLoggedIn && (
+                <Link href="/notifications" onClick={() => setDrawerOpen(false)} className="flex items-center gap-3 border-t border-[var(--border)] px-2 pt-4 text-sm font-medium text-[var(--ink)]">
+                  <NavIcon name="bell" width={18} height={18} /> 消息中心
+                </Link>
+              )}
             </div>
           </div>
         </div>

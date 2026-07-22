@@ -200,7 +200,7 @@ export default function StudyPage() {
         )}
       </section>
 
-      <section className="border-t border-[var(--border)] py-7">
+      <section id="weekly-report" className="scroll-mt-24 border-t border-[var(--border)] py-7">
         <h2 className="text-xl font-bold">未来七天</h2>
         <div className="mt-4 grid grid-cols-2 gap-px overflow-hidden rounded-lg border border-[var(--border)] bg-[var(--border)] sm:grid-cols-4 lg:grid-cols-7">
           {dateKeys.length ? dateKeys.map((key) => {

@@ -20,21 +20,72 @@ enum Role {
 }
 
 model User {
-  id                   String                @id @default(cuid())
-  phone                String?               @unique
-  email                String?               @unique
-  passwordHash         String?
-  role                 Role                  @default(STUDENT)
-  locale               String                @default("zh-CN")
-  profile              StudentProfile?
-  consents             Consent[]
-  documents            Document[]
-  studentProjects      StudentProject[]
-  applicationPreps     ApplicationPrep[]
-  auditLogs            AuditLog[]
-  calibrationDecisions CalibrationDecision[]
-  createdAt            DateTime              @default(now())
-  updatedAt            DateTime              @updatedAt
+  id                     String                  @id @default(cuid())
+  phone                  String?                 @unique
+  email                  String?                 @unique
+  passwordHash           String?
+  role                   Role                    @default(STUDENT)
+  locale                 String                  @default("zh-CN")
+  profile                StudentProfile?
+  consents               Consent[]
+  documents              Document[]
+  studentProjects        StudentProject[]
+  applicationPreps       ApplicationPrep[]
+  auditLogs              AuditLog[]
+  calibrationDecisions   CalibrationDecision[]
+  notifications          Notification[]
+  notificationPreference NotificationPreference?
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+}
+
+enum NotificationCategory {
+  STUDY
+  APPLICATION
+  DEADLINE
+  REPORT
+  SYSTEM
+}
+
+enum NotificationPriority {
+  INFO
+  IMPORTANT
+  URGENT
+}
+
+model Notification {
+  id           String               @id @default(cuid())
+  userId       String
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sourceKey    String
+  category     NotificationCategory
+  priority     NotificationPriority @default(INFO)
+  title        String
+  body         String
+  href         String?
+  scheduledFor DateTime             @default(now())
+  readAt       DateTime?
+  dismissedAt  DateTime?
+  expiresAt    DateTime?
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  @@unique([userId, sourceKey])
+  @@index([userId, dismissedAt, scheduledFor])
+  @@index([userId, readAt])
+}
+
+model NotificationPreference {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  studyEnabled        Boolean  @default(true)
+  applicationEnabled  Boolean  @default(true)
+  deadlineEnabled     Boolean  @default(true)
+  weeklyReportEnabled Boolean  @default(true)
+  emailDigestEnabled  Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 }
 
 enum ConsentType {
@@ -582,7 +633,6 @@ model CalibrationDecision {
 // model Booking { ... }           // 预约
 // model Order / Payment { ... }   // 支付订单
 // model Reference { ... }         // 推荐信
-// model Notification { ... }      // 通知记录
 // model Embedding { ... }         // pgvector 向量（RAG）
 
 model BackgroundItem {
