@@ -13,10 +13,6 @@ export function toCurrentLnatMcqs(
   }
 
   return questions.map((question, index) => {
-    if (question.options.length === 4 && question.options.map((option) => option.key).join("") === "ABCD") {
-      return question;
-    }
-
     const correct = question.options.find((option) => option.key === question.answer);
     if (!correct) throw new Error(`${question.id}: correct option is missing.`);
     const distractors = question.options.filter((option) => option.key !== question.answer);

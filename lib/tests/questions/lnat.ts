@@ -135,9 +135,41 @@ const LNAT_BATCH_1: MCQQuestion[] = [
     answer: "A", solution: "The author separates mere audibility from real understanding, cautioning that being heard widely does not mean being genuinely understood." },
 ];
 
+const LNAT_CURRENT_MCQ = toCurrentLnatMcqs([
+  ...LNAT_BATCH_1, ...LNAT_EXPANSION_2, ...LNAT_EXPANSION_3, ...LNAT_EXPANSION_4, ...LNAT_EXPANSION_5,
+]);
+
+function passageOf(question: MCQQuestion): string {
+  return question.question.split("**Question**")[0].replace("**Passage**", "").replace(/\s+/g, " ").trim();
+}
+
+const passageGroups = [...LNAT_CURRENT_MCQ.reduce<Map<string, MCQQuestion[]>>((groups, question) => {
+  const passage = passageOf(question);
+  groups.set(passage, [...(groups.get(passage) ?? []), question]);
+  return groups;
+}, new Map()).values()];
+
+const MOCK_GROUP_INDICES: Record<2 | 3 | 4 | 5, number[]> = {
+  2: [0, 1, 2, 3, 4, 5, 7, 8, 9],
+  3: [10, 11, 12, 13, 14, 15, 16, 17, 18],
+  4: [19, 20, 21, 22, 23, 24, 25, 26, 27],
+  5: [28, 29, 30, 31, 32, 33, 34, 35, 36],
+};
+
+export const LNAT_MOCK_EXPANSIONS = Object.fromEntries(
+  Object.entries(MOCK_GROUP_INDICES).map(([paperNumber, indices]) => [
+    Number(paperNumber),
+    indices.flatMap((groupIndex, index) => passageGroups[groupIndex].slice(0, index < 6 ? 3 : 4)),
+  ])
+) as Record<2 | 3 | 4 | 5, MCQQuestion[]>;
+
+const reservedMockIds = new Set(
+  Object.values(MOCK_GROUP_INDICES)
+    .flatMap((indices) => indices.flatMap((groupIndex) => passageGroups[groupIndex]))
+    .map((question) => question.id)
+);
+
 export const LNAT_QUESTIONS: Question[] = [
-  ...toCurrentLnatMcqs([
-    ...LNAT_BATCH_1, ...LNAT_EXPANSION_2, ...LNAT_EXPANSION_3, ...LNAT_EXPANSION_4, ...LNAT_EXPANSION_5,
-  ]),
+  ...LNAT_CURRENT_MCQ.filter((question) => !reservedMockIds.has(question.id)),
   ...LNAT_ESSAY_QUESTIONS,
 ];

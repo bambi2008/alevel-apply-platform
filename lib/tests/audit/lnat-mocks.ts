@@ -1,4 +1,5 @@
 import { getMockPapersForTest } from "@/lib/tests/mock-papers";
+import { LNAT_QUESTIONS } from "@/lib/tests/questions/lnat";
 import type { LongQuestion, MCQQuestion } from "@/lib/tests/questions/types";
 
 export interface LnatAuditIssue {
@@ -16,11 +17,14 @@ export interface LnatPaperSummary {
   passageSplit: string;
   difficulty: Record<1 | 2 | 3, number>;
   answerCounts: Record<string, number>;
+  passageWords: { min: number; average: number; max: number };
+  questionTypes: Record<LnatQuestionType, number>;
 }
 
 export interface LnatAuditReport {
   objectivePapers: number;
   writtenPapers: number;
+  practiceQuestions: number;
   questionCount: number;
   critical: number;
   warnings: number;
@@ -29,6 +33,7 @@ export interface LnatAuditReport {
 }
 
 const ANSWERS = ["A", "B", "C", "D"];
+type LnatQuestionType = "core" | "interpretation" | "evaluation";
 
 function normalize(value: string): string {
   return value.toLowerCase().replace(/\s+/g, " ").trim();
@@ -41,6 +46,21 @@ function structure(value: string): string {
 function passageOf(question: string): string {
   const match = question.match(/\*\*Passage\*\*\s*([\s\S]*?)\s*\*\*Question\*\*/i);
   return normalize(match?.[1] ?? "");
+}
+
+function questionStem(question: string): string {
+  return normalize(question.split(/\*\*Question\*\*/i)[1] ?? question);
+}
+
+function wordCount(value: string): number {
+  return value.match(/[A-Za-z]+(?:['’-][A-Za-z]+)*/g)?.length ?? 0;
+}
+
+function questionType(question: string): LnatQuestionType {
+  const stem = questionStem(question);
+  if (/strengthen|weaken|assum|flaw|objection|reasoning|support|challenge/.test(stem)) return "evaluation";
+  if (/main point|main conclusion|main argument|best states|overall assessment|central/.test(stem)) return "core";
+  return "interpretation";
 }
 
 function count(values: string[]): Record<string, number> {
@@ -63,6 +83,7 @@ export function buildLnatMockAudit(): LnatAuditReport {
   const seenPrompts = new Map<string, string>();
   const seenPassages = new Map<string, string>();
   const seenEssayPrompts = new Set<string>();
+  const practiceMcqs = LNAT_QUESTIONS.filter(isMcq);
 
   if (objective.length !== 5 || written.length !== 3) {
     issues.push({ paperId: "suite", code: "PAPER_INVENTORY", severity: "critical", message: "LNAT must contain five objective papers and three fixed writing papers." });
@@ -146,11 +167,24 @@ export function buildLnatMockAudit(): LnatAuditReport {
       3: questions.filter((question) => question.difficulty === 3).length,
     };
     const answerCounts = count(questions.map((question) => question.answer));
+    const passageWordCounts = [...passageGroups.keys()].map(wordCount);
+    const passageWords = {
+      min: Math.min(...passageWordCounts),
+      average: Math.round(passageWordCounts.reduce((total, words) => total + words, 0) / passageWordCounts.length),
+      max: Math.max(...passageWordCounts),
+    };
+    const questionTypes = count(questions.map((question) => questionType(question.question))) as Record<LnatQuestionType, number>;
     if (questions.length === 42 && (difficulty[1] < 6 || difficulty[2] < 20 || difficulty[3] < 8)) {
       issues.push({ paperId: paper.id, code: "DIFFICULTY_BALANCE", severity: "warning", message: `A full paper needs a real gradient; found ${difficulty[1]}/${difficulty[2]}/${difficulty[3]}.` });
     }
     if (questions.length === 42 && ANSWERS.some((answer) => (answerCounts[answer] ?? 0) < 10 || (answerCounts[answer] ?? 0) > 11)) {
       issues.push({ paperId: paper.id, code: "ANSWER_BALANCE", severity: "warning", message: "Each answer position should occur 10-11 times across a full paper." });
+    }
+    if (passageGroups.size === 12 && (passageWords.min < 50 || passageWords.average < 65 || passageWords.max < 75)) {
+      issues.push({ paperId: paper.id, code: "PASSAGE_LENGTH", severity: "warning", message: `Passages are too compressed for a full reading paper; found min/average/max ${passageWords.min}/${passageWords.average}/${passageWords.max} words.` });
+    }
+    if (questions.length === 42 && ((questionTypes.core ?? 0) < 3 || (questionTypes.evaluation ?? 0) < 7 || (questionTypes.interpretation ?? 0) < 20)) {
+      issues.push({ paperId: paper.id, code: "QUESTION_TYPE_BALANCE", severity: "warning", message: `Paper needs main-point, interpretation and argument-evaluation coverage; found ${questionTypes.core ?? 0}/${questionTypes.interpretation ?? 0}/${questionTypes.evaluation ?? 0}.` });
     }
 
     return {
@@ -160,8 +194,32 @@ export function buildLnatMockAudit(): LnatAuditReport {
       passageSplit: passageSizes.join("/"),
       difficulty,
       answerCounts,
+      passageWords,
+      questionTypes,
     };
   });
+
+  if (practiceMcqs.length !== 31) {
+    issues.push({ paperId: "practice", code: "PRACTICE_INVENTORY", severity: "critical", message: `Expected 31 passage-isolated practice MCQs; found ${practiceMcqs.length}.` });
+  }
+  const practiceIds = new Set<string>();
+  const practicePrompts = new Set<string>();
+  for (const question of practiceMcqs) {
+    const keys = question.options.map((option) => option.key).join("");
+    if (keys !== "ABCD" || !keys.includes(question.answer)) {
+      issues.push({ paperId: "practice", questionId: question.id, code: "PRACTICE_OPTION_SCHEMA", severity: "critical", message: "Every practice item must use the current A-D option format." });
+    }
+    const prompt = normalize(question.question);
+    if (practiceIds.has(question.id) || practicePrompts.has(prompt)) {
+      issues.push({ paperId: "practice", questionId: question.id, code: "PRACTICE_DUPLICATE", severity: "critical", message: "Practice question repeats an ID or prompt." });
+    }
+    practiceIds.add(question.id);
+    practicePrompts.add(prompt);
+    const passage = passageOf(question.question);
+    if (seenPassages.has(passage)) {
+      issues.push({ paperId: "practice", questionId: question.id, code: "PRACTICE_MOCK_PASSAGE_OVERLAP", severity: "critical", message: `Practice passage is already used in ${seenPassages.get(passage)}.` });
+    }
+  }
 
   for (const paper of written) {
     const module = paper.modules[0];
@@ -189,6 +247,7 @@ export function buildLnatMockAudit(): LnatAuditReport {
   return {
     objectivePapers: objective.length,
     writtenPapers: written.length,
+    practiceQuestions: practiceMcqs.length,
     questionCount: papers.reduce((total, paper) => total + paper.questions, 0),
     critical: issues.filter((issue) => issue.severity === "critical").length,
     warnings: issues.filter((issue) => issue.severity === "warning").length,

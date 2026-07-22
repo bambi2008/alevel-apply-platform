@@ -27,7 +27,7 @@ import { LNAT_MK2_MCQ } from "./lnat-mock-2";
 import { LNAT_MK3_MCQ } from "./lnat-mock-3";
 import { LNAT_MK4_MCQ } from "./lnat-mock-4";
 import { LNAT_MK5_MCQ } from "./lnat-mock-5";
-import { toCurrentLnatMcqs } from "@/lib/tests/questions/lnat-current";
+import { buildFullLnatPaper } from "./lnat-full-papers";
 import { TARA_MK1_CT } from "./tara-mock-1";
 import { TARA_MK2_CT } from "./tara-mock-2";
 import { TARA_MK3_CT } from "./tara-mock-3";
@@ -395,7 +395,7 @@ export const LNAT_MOCK_2: MockPaper = {
   description:
     "对标 LNAT 第一节：原创论述文 + 阅读/推理选择题（因果谬误、动机性推理、激励逻辑等）。题目原创，仅以官方结构校准。",
   modules: [
-    { id: "mcq", title: "Section A 阅读推理", titleEn: "Section A Reading", durationSec: 40 * 60, questions: toCurrentLnatMcqs(LNAT_MK2_MCQ, undefined, 2) },
+    { id: "mcq", title: "Section A 阅读推理", titleEn: "Section A Reading", durationSec: 95 * 60, questions: buildFullLnatPaper(LNAT_MK2_MCQ, 2) },
   ],
 };
 
@@ -407,7 +407,7 @@ export const LNAT_MOCK_3: MockPaper = {
   description:
     "对标 LNAT 第一节：原创论述文 + 阅读/推理选择题（幸存者偏差、诉诸出身谬误、内生性需求等）。题目原创，仅以官方结构校准。",
   modules: [
-    { id: "mcq", title: "Section A 阅读推理", titleEn: "Section A Reading", durationSec: 40 * 60, questions: toCurrentLnatMcqs(LNAT_MK3_MCQ, undefined, 3) },
+    { id: "mcq", title: "Section A 阅读推理", titleEn: "Section A Reading", durationSec: 95 * 60, questions: buildFullLnatPaper(LNAT_MK3_MCQ, 3) },
   ],
 };
 
@@ -419,7 +419,7 @@ export const LNAT_MOCK_4: MockPaper = {
   description:
     "对标 LNAT 第一节：原创论述文 + 阅读/推理选择题（基率忽视、偷换概念、假两难等）。题目原创，仅以官方结构校准。",
   modules: [
-    { id: "mcq", title: "Section A 阅读推理", titleEn: "Section A Reading", durationSec: 40 * 60, questions: toCurrentLnatMcqs(LNAT_MK4_MCQ, undefined, 4) },
+    { id: "mcq", title: "Section A 阅读推理", titleEn: "Section A Reading", durationSec: 95 * 60, questions: buildFullLnatPaper(LNAT_MK4_MCQ, 4) },
   ],
 };
 
@@ -431,7 +431,7 @@ export const LNAT_MOCK_5: MockPaper = {
   description:
     "对标 LNAT 第一节：原创论述文 + 阅读/推理选择题（以偏概全、诉诸自然、你也一样谬误等）。题目原创，仅以官方结构校准。",
   modules: [
-    { id: "mcq", title: "Section A 阅读推理", titleEn: "Section A Reading", durationSec: 40 * 60, questions: toCurrentLnatMcqs(LNAT_MK5_MCQ, undefined, 5) },
+    { id: "mcq", title: "Section A 阅读推理", titleEn: "Section A Reading", durationSec: 95 * 60, questions: buildFullLnatPaper(LNAT_MK5_MCQ, 5) },
   ],
 };
 
