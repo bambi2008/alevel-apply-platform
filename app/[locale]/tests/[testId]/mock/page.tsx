@@ -16,6 +16,7 @@ import { BMO_QUESTIONS } from "@/lib/tests/questions/bmo";
 import type { Question, MCQQuestion, LongQuestion } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
 import type { GradeRequest, GradeResponse } from "@/app/api/grade-answer/route";
+import { createQuestionTelemetry, type QuestionTelemetrySnapshot, type QuestionTelemetryTracker } from "@/lib/tests/telemetry";
 
 const QUESTION_BANKS: Record<string, Question[]> = {
   mat: MAT_QUESTIONS,
@@ -191,6 +192,11 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
   const [gradedResults, setGradedResults] = useState<GradedResult[]>([]);
   const [gradingProgress, setGradingProgress] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
+  const startedAtRef = useRef(0);
+  const telemetryRef = useRef<QuestionTelemetryTracker>(createQuestionTelemetry());
+  const [startedAtValue, setStartedAtValue] = useState(0);
+  const [timeUsedSec, setTimeUsedSec] = useState(0);
+  const [behavior, setBehavior] = useState<Record<string, QuestionTelemetrySnapshot>>({});
   const presets = getMockPresets(testId, test.duration);
   const [presetId, setPresetId] = useState(presets[0].id);
   const selectedPreset = presets.find((preset) => preset.id === presetId) ?? presets[0];
@@ -216,6 +222,9 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
       )
     );
     setTimeLeft(selectedPreset.durationSec);
+    startedAtRef.current = Date.now();
+    setStartedAtValue(startedAtRef.current);
+    telemetryRef.current = createQuestionTelemetry();
     setExamState("running");
   };
 
@@ -231,6 +240,7 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
   };
 
   const updateMCQAnswer = (questionId: string, selected: string) => {
+    telemetryRef.current.answer(questionId, selected);
     setAnswers((prev) =>
       prev.map((a) => (a.questionId === questionId && a.type === "mcq" ? { ...a, selected } : a))
     );
@@ -248,6 +258,8 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
 
   const handleSubmitAll = async () => {
     if (timerRef.current) clearInterval(timerRef.current);
+    setTimeUsedSec(startedAtRef.current ? Math.max(0, Math.round((Date.now() - startedAtRef.current) / 1000)) : 0);
+    setBehavior(telemetryRef.current.snapshot(queue.map((question) => question.id)));
     setExamState("grading");
 
     const results: GradedResult[] = [];
@@ -324,6 +336,10 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
     setExamState("results");
   };
 
+  useEffect(() => {
+    if (examState === "running" && queue[currentIdx]) telemetryRef.current.visit(queue[currentIdx].id);
+  }, [currentIdx, examState, queue]);
+
   const handleAutoSubmit = useEffectEvent(() => {
     void handleSubmitAll();
   });
@@ -382,6 +398,9 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
         queue={queue}
         results={gradedResults}
         answers={answers}
+        behavior={behavior}
+        startedAt={startedAtValue}
+        timeUsedSec={timeUsedSec}
         onRetry={() => setExamState("briefing")}
       />
     );
@@ -681,6 +700,9 @@ function MockResults({
   queue,
   results,
   answers,
+  behavior,
+  startedAt,
+  timeUsedSec,
   onRetry,
 }: {
   testId: string;
@@ -688,6 +710,9 @@ function MockResults({
   queue: Question[];
   results: GradedResult[];
   answers: Answer[];
+  behavior: Record<string, QuestionTelemetrySnapshot>;
+  startedAt: number;
+  timeUsedSec: number;
   onRetry: () => void;
 }) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -705,6 +730,10 @@ function MockResults({
     const payload = {
       testId,
       mode: "mock",
+      presetId,
+      startedAt: startedAt ? new Date(startedAt).toISOString() : undefined,
+      timeUsedSec,
+      clientMeta: { schemaVersion: 1, viewport: `${window.innerWidth}x${window.innerHeight}`, locale: navigator.language },
       totalEarned,
       totalMax,
       answers: results.map((r) => {
@@ -717,6 +746,7 @@ function MockResults({
           earned: r.earned ?? 0,
           max: r.max ?? 0,
           feedback: r.grading?.perPart ?? undefined,
+          ...behavior[r.questionId],
         };
       }),
     };

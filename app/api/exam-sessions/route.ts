@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import type { Prisma } from "@prisma/client";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 
@@ -12,6 +13,11 @@ const answerSchema = z.object({
   earned: z.number().int().min(0).max(1000),
   max: z.number().int().min(0).max(1000),
   feedback: z.unknown().optional(),
+  timeSpentSec: z.number().int().min(0).max(86400).optional(),
+  answerChanges: z.number().int().min(0).max(1000).default(0),
+  visits: z.number().int().min(1).max(1000).default(1),
+  flagged: z.boolean().default(false),
+  firstSelected: z.string().max(20).optional(),
 });
 
 const saveSessionSchema = z.object({
@@ -20,6 +26,10 @@ const saveSessionSchema = z.object({
   totalEarned: z.number().int().min(0).max(100000),
   totalMax: z.number().int().min(0).max(100000),
   timeUsedSec: z.number().int().min(0).max(86400).optional(),
+  paperId: z.string().min(1).max(120).optional(),
+  presetId: z.string().min(1).max(120).optional(),
+  startedAt: z.string().datetime().optional(),
+  clientMeta: z.record(z.unknown()).optional(),
   answers: z.array(answerSchema).max(300),
 });
 
@@ -64,6 +74,10 @@ export async function POST(req: NextRequest) {
       totalEarned: body.totalEarned,
       totalMax: body.totalMax,
       timeUsedSec: body.timeUsedSec,
+      paperId: body.paperId,
+      presetId: body.presetId,
+      startedAt: body.startedAt ? new Date(body.startedAt) : undefined,
+      clientMeta: body.clientMeta as Prisma.InputJsonValue | undefined,
       answers: {
         create: body.answers.map((a) => ({
           questionId: a.questionId,
@@ -73,6 +87,11 @@ export async function POST(req: NextRequest) {
           earned: a.earned,
           max: a.max,
           feedback: a.feedback ? (a.feedback as object) : undefined,
+          timeSpentSec: a.timeSpentSec,
+          answerChanges: a.answerChanges,
+          visits: a.visits,
+          flagged: a.flagged,
+          firstSelected: a.firstSelected,
         })),
       },
     },
@@ -112,6 +131,9 @@ export async function GET(req: NextRequest) {
       totalEarned: true,
       totalMax: true,
       timeUsedSec: true,
+      paperId: true,
+      presetId: true,
+      completedAt: true,
       createdAt: true,
       _count: { select: { answers: true } },
     },

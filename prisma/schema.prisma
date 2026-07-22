@@ -20,20 +20,21 @@ enum Role {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  phone        String?  @unique
-  email        String?  @unique
-  passwordHash String?
-  role         Role     @default(STUDENT)
-  locale       String   @default("zh-CN")
-  profile      StudentProfile?
-  consents     Consent[]
-  documents    Document[]
-  studentProjects StudentProject[]
-  applicationPreps ApplicationPrep[]
-  auditLogs    AuditLog[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                   String                @id @default(cuid())
+  phone                String?               @unique
+  email                String?               @unique
+  passwordHash         String?
+  role                 Role                  @default(STUDENT)
+  locale               String                @default("zh-CN")
+  profile              StudentProfile?
+  consents             Consent[]
+  documents            Document[]
+  studentProjects      StudentProject[]
+  applicationPreps     ApplicationPrep[]
+  auditLogs            AuditLog[]
+  calibrationDecisions CalibrationDecision[]
+  createdAt            DateTime              @default(now())
+  updatedAt            DateTime              @updatedAt
 }
 
 enum ConsentType {
@@ -61,26 +62,26 @@ enum Region {
 }
 
 model StudentProfile {
-  id             String              @id @default(cuid())
-  userId         String              @unique
-  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  fullName       String?
-  school         String?
-  isMinor        Boolean             @default(false)
-  intakeYear     Int?
-  targetRegions  Region[]
-  intendedMajors String[]
-  budgetNote     String?
-  guideProgress  Json? // 申请指南清单进度：ModuleProgress[]
-  subjects       ALevelSubject[]
-  testScores     TestScore[]
-  applications   Application[]
-  statements     PersonalStatement[]
-  tasks          Task[]
-  examSessions   ExamSession[]
+  id              String              @id @default(cuid())
+  userId          String              @unique
+  user            User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName        String?
+  school          String?
+  isMinor         Boolean             @default(false)
+  intakeYear      Int?
+  targetRegions   Region[]
+  intendedMajors  String[]
+  budgetNote      String?
+  guideProgress   Json? // 申请指南清单进度：ModuleProgress[]
+  subjects        ALevelSubject[]
+  testScores      TestScore[]
+  applications    Application[]
+  statements      PersonalStatement[]
+  tasks           Task[]
+  examSessions    ExamSession[]
   backgroundItems BackgroundItem[]
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
 }
 
 enum GradeKind {
@@ -120,19 +121,19 @@ enum AppSystem {
 }
 
 model University {
-  id                  String     @id @default(cuid())
-  name                String // 英文全称
-  nameZh              String?
-  region              Region // UK / HK
-  city                String?
-  league              String? // Russell Group / HK UGC 8 ...
-  qsRankWorld         Int?
-  qsRankSubject       Json? // { "Computer Science": 5, ... }
-  ucasCode            String? // 单字母院校代码（UK）
-  ucasInstitutionCode String? // 四位字母代码
-  website             String?
-  admissionsUrl       String?
-  logoUrl             String?
+  id                   String     @id @default(cuid())
+  name                 String // 英文全称
+  nameZh               String?
+  region               Region // UK / HK
+  city                 String?
+  league               String? // Russell Group / HK UGC 8 ...
+  qsRankWorld          Int?
+  qsRankSubject        Json? // { "Computer Science": 5, ... }
+  ucasCode             String? // 单字母院校代码（UK）
+  ucasInstitutionCode  String? // 四位字母代码
+  website              String?
+  admissionsUrl        String?
+  logoUrl              String?
   // 申请系统
   applicationSystem    AppSystem?
   applicationPortalUrl String?
@@ -140,14 +141,14 @@ model University {
   applicationFeeHkd    Int?
   maxChoices           Int? // UK=5；HK 无限制可留空
   // 截止与时间
-  openDate          DateTime?
-  deadlineEarly     DateTime? // 牛剑 / 医学等
-  deadlineMain      DateTime?
-  deadlineLate      DateTime?
-  resultReleaseFrom DateTime?
-  resultReleaseTo   DateTime?
-  ranking           Json?
-  programs          Program[]
+  openDate             DateTime?
+  deadlineEarly        DateTime? // 牛剑 / 医学等
+  deadlineMain         DateTime?
+  deadlineLate         DateTime?
+  resultReleaseFrom    DateTime?
+  resultReleaseTo      DateTime?
+  ranking              Json?
+  programs             Program[]
 
   @@index([region])
 }
@@ -337,11 +338,11 @@ model StudentProject {
   ownerId    String
   owner      User                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   title      String
-  field      String               // 专业领域（ProjectField 值或自由文本）
+  field      String // 专业领域（ProjectField 值或自由文本）
   summary    String?
-  ideaInputs Json                 // 学生填写的原始想法（研究问题/动机/方法/变量）
-  structure  Json?                // AI 生成并经学生编辑的课题结构（阶段/指标/反思/psUse）
-  progress   Json?                // 学生进度（每阶段提交/文件/反思笔记）
+  ideaInputs Json // 学生填写的原始想法（研究问题/动机/方法/变量）
+  structure  Json? // AI 生成并经学生编辑的课题结构（阶段/指标/反思/psUse）
+  progress   Json? // 学生进度（每阶段提交/文件/反思笔记）
   status     StudentProjectStatus @default(DRAFT)
   createdAt  DateTime             @default(now())
   updatedAt  DateTime             @updatedAt
@@ -360,7 +361,7 @@ model ApplicationPrep {
   ownerId   String
   owner     User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   region    AppPrepRegion
-  data      Json          // { sectionId: { fields..., done: bool } } 学生准备好的各栏内容
+  data      Json // { sectionId: { fields..., done: bool } } 学生准备好的各栏内容
   updatedAt DateTime      @updatedAt
   createdAt DateTime      @default(now())
 
@@ -457,11 +458,16 @@ model ExamSession {
   id          String         @id @default(cuid())
   studentId   String
   student     StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  testId      String         // "mat" | "step" | "engaa"
-  mode        String         // "practice" | "mock"
+  testId      String // "mat" | "step" | "engaa"
+  mode        String // "practice" | "mock"
   totalEarned Int
   totalMax    Int
   timeUsedSec Int?
+  paperId     String?
+  presetId    String?
+  startedAt   DateTime?
+  completedAt DateTime       @default(now())
+  clientMeta  Json?
   answers     ExamAnswer[]
   createdAt   DateTime       @default(now())
 
@@ -474,14 +480,44 @@ model ExamAnswer {
   sessionId  String
   session    ExamSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   questionId String
-  type       String      // "mcq" | "long"
-  selected   String?     // MCQ: 所选选项
-  work       Json?       // 大题: { "(i)": "...", ... }
+  type       String // "mcq" | "long"
+  selected   String? // MCQ: 所选选项
+  work       Json? // 大题: { "(i)": "...", ... }
   earned     Int
   max        Int
-  feedback   Json?       // AI 评分 perPart 数组
+  feedback   Json? // AI 评分 perPart 数组
+
+  timeSpentSec  Int?
+  answerChanges Int     @default(0)
+  visits        Int     @default(1)
+  flagged       Boolean @default(false)
+  firstSelected String?
 
   @@index([sessionId])
+}
+
+enum CalibrationDecisionStatus {
+  APPROVED
+  DISMISSED
+  ROLLED_BACK
+}
+
+model CalibrationDecision {
+  id             String                    @id @default(cuid())
+  questionId     String
+  testId         String
+  fromDifficulty Int
+  toDifficulty   Int
+  status         CalibrationDecisionStatus
+  metrics        Json
+  note           String?
+  actorId        String?
+  actor          User?                     @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  createdAt      DateTime                  @default(now())
+  updatedAt      DateTime                  @updatedAt
+
+  @@index([questionId, createdAt])
+  @@index([testId, status])
 }
 
 // ---------- Phase 2 预留（暂不建表）----------
@@ -515,4 +551,3 @@ model PhoneCode {
   lastSentAt DateTime
   createdAt  DateTime @default(now())
 }
-

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, use } from "react";
+import { useState, useEffect, useCallback, useRef, use } from "react";
 import { useTier } from "@/hooks/use-tier";
 import { applyFreeLimit } from "@/lib/entitlements";
 import { notFound, useSearchParams } from "next/navigation";
@@ -53,6 +53,10 @@ interface SessionResult {
   selected?: string;
   work?: Record<string, string>;
   feedback?: unknown;
+  timeSpentSec?: number;
+  answerChanges?: number;
+  visits?: number;
+  firstSelected?: string;
 }
 
 export default function PracticePage({ params }: { params: Promise<{ testId: string }> }) {
@@ -72,6 +76,8 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
   const [queue, setQueue] = useState<Question[]>([]);
   const [currentIdx, setCurrentIdx] = useState(0);
   const [results, setResults] = useState<SessionResult[]>([]);
+  const [sessionStartedAt, setSessionStartedAt] = useState(0);
+  const questionStartedAt = useRef(0);
   const tier = useTier();
   const availableQuestionCount = allQuestions.filter((question) =>
     (mode !== "topic" || topicId === "all" || question.topicId === topicId) && matchesFormat(question, format)
@@ -96,11 +102,15 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
     setQueue(shuffled);
     setCurrentIdx(0);
     setResults([]);
+    setSessionStartedAt(Date.now());
+    questionStartedAt.current = Date.now();
     setSessionState("practicing");
   }, [allQuestions, format, mode, topicId, effectiveQuestionCount, tier, testId]);
 
   const recordResult = useCallback((result: SessionResult) => {
-    setResults((prev) => [...prev, result]);
+    const enriched = { ...result, timeSpentSec: Math.max(1, Math.round((Date.now() - questionStartedAt.current) / 1000)), visits: 1 };
+    setResults((prev) => [...prev, enriched]);
+    questionStartedAt.current = Date.now();
     setCurrentIdx((i) => {
       if (i + 1 >= queue.length) {
         setSessionState("complete");
@@ -139,6 +149,7 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
         testId={testId}
         results={results}
         queue={queue}
+        startedAt={sessionStartedAt}
         onRestart={() => setSessionState("select")}
       />
     );
@@ -701,11 +712,13 @@ function SessionSummary({
   testId,
   results,
   queue,
+  startedAt,
   onRestart,
 }: {
   testId: string;
   results: SessionResult[];
   queue: Question[];
+  startedAt: number;
   onRestart: () => void;
 }) {
   const mcqResults = results.filter((r) => r.type === "mcq");
@@ -727,6 +740,9 @@ function SessionSummary({
         mode: "practice",
         totalEarned,
         totalMax,
+        startedAt: startedAt ? new Date(startedAt).toISOString() : undefined,
+        timeUsedSec: startedAt ? Math.max(0, Math.round((Date.now() - startedAt) / 1000)) : undefined,
+        clientMeta: { schemaVersion: 1, viewport: `${window.innerWidth}x${window.innerHeight}`, locale: navigator.language },
         answers: results.map((r) => ({
           questionId: r.questionId,
           type: r.type,
@@ -735,6 +751,10 @@ function SessionSummary({
           earned: r.earned ?? (r.correct ? 1 : 0),
           max: r.max ?? 1,
           feedback: r.feedback ?? undefined,
+          timeSpentSec: r.timeSpentSec,
+          answerChanges: r.answerChanges ?? 0,
+          visits: r.visits ?? 1,
+          firstSelected: r.firstSelected ?? r.selected,
         })),
       }),
     }).catch(() => {/* ignore auth/network errors */});

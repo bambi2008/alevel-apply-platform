@@ -115,6 +115,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
   const [grades, setGrades] = useState<WrittenGrade[]>([]);
   const [gradingProgress, setGradingProgress] = useState(0);
   const [timeUsedSec, setTimeUsedSec] = useState(0);
+  const [startedAtMs, setStartedAtMs] = useState(0);
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
   const startedAt = useRef(0);
   const submittingRef = useRef(false);
@@ -130,6 +131,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
     setValidationMessage(null);
     submittingRef.current = false;
     startedAt.current = Date.now();
+    setStartedAtMs(startedAt.current);
     setPhase("running");
   };
 
@@ -293,6 +295,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
         works={works}
         grades={grades}
         timeUsedSec={timeUsedSec}
+        startedAtMs={startedAtMs}
         onRetry={begin}
       />
     );
@@ -433,6 +436,7 @@ function WrittenPaperResults({
   works,
   grades,
   timeUsedSec,
+  startedAtMs,
   onRetry,
 }: {
   paper: MockPaper;
@@ -440,6 +444,7 @@ function WrittenPaperResults({
   works: WrittenWorks;
   grades: WrittenGrade[];
   timeUsedSec: number;
+  startedAtMs: number;
   onRetry: () => void;
 }) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
@@ -463,9 +468,12 @@ function WrittenPaperResults({
     const payload = {
       testId: paper.testId,
       mode: "paper",
+      paperId: paper.id,
+      startedAt: startedAtMs ? new Date(startedAtMs).toISOString() : undefined,
       totalEarned: earned,
       totalMax: max,
       timeUsedSec,
+      clientMeta: { schemaVersion: 1, viewport: `${window.innerWidth}x${window.innerHeight}`, locale: navigator.language },
       answers: questions.map((question) => {
         const result = grades.find((item) => item.questionId === question.id);
         return {

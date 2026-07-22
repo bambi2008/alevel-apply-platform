@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildQuestionBankAudit } from "./index";
-import { calibrateQuestionDifficulty } from "./calibration";
+import { buildDetailedQuestionCalibrations, calibrateQuestionDifficulty } from "./calibration";
 
 describe("question bank audit", () => {
   it("inventories every supported test without structural blockers", () => {
@@ -43,5 +43,28 @@ describe("difficulty calibration", () => {
     expect(rows.find((row) => row.questionId === "bmo-sp-ge-012")?.suggestedDifficulty).toBe(3);
     expect(rows.find((row) => row.questionId === "bmo-sp-nt-005")?.status).toBe("insufficient");
     expect(rows.find((row) => row.questionId === "bmo-sp-nt-005")?.suggestedDifficulty).toBe(2);
+  });
+
+  it("gates decisions by attempts and unique students and exposes behaviour metrics", () => {
+    const observations = Array.from({ length: 30 }, (_, index) => ({
+      questionId: "bmo-sp-nt-001",
+      sessionId: `session-${index}`,
+      studentId: `student-${index % 20}`,
+      selected: undefined,
+      earned: 4,
+      max: 4,
+      timeSpentSec: 45 + index,
+      answerChanges: index % 3 === 0 ? 1 : 0,
+      visits: 1,
+      flagged: index % 5 === 0,
+      sessionScoreRate: index / 30,
+    }));
+    const row = buildDetailedQuestionCalibrations(observations)[0];
+    expect(row.status).toBe("easier-than-label");
+    expect(row.uniqueStudents).toBe(20);
+    expect(row.telemetryCoverage).toBe(1);
+    expect(row.changeRate).toBeCloseTo(1 / 3);
+    expect(row.flagRate).toBeCloseTo(0.2);
+    expect(row.scoreInterval[0]).toBeGreaterThan(0.8);
   });
 });

@@ -8,6 +8,7 @@ import type { MCQQuestion } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
 import { WrittenPaperRunner } from "@/components/written-paper-runner";
 import { ChevronLeft, ChevronRight, Flag, Send } from "lucide-react";
+import { createQuestionTelemetry, type QuestionTelemetrySnapshot, type QuestionTelemetryTracker } from "@/lib/tests/telemetry";
 
 type Phase = "briefing" | "running" | "results";
 type ObjectivePaper = Omit<MockPaper, "modules"> & {
@@ -37,6 +38,11 @@ function PaperRunner({ paper }: { paper: ObjectivePaper }) {
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [timeLeft, setTimeLeft] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const startedAtRef = useRef(0);
+  const telemetryRef = useRef<QuestionTelemetryTracker>(createQuestionTelemetry());
+  const [startedAtValue, setStartedAtValue] = useState(0);
+  const [timeUsedSec, setTimeUsedSec] = useState(0);
+  const [behavior, setBehavior] = useState<Record<string, QuestionTelemetrySnapshot>>({});
 
   const currentModule = paper.modules[moduleIndex];
 
@@ -51,8 +57,10 @@ function PaperRunner({ paper }: { paper: ObjectivePaper }) {
 
   const finish = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
+    setTimeUsedSec(startedAtRef.current ? Math.max(0, Math.round((Date.now() - startedAtRef.current) / 1000)) : 0);
+    setBehavior(telemetryRef.current.snapshot(paper.modules.flatMap((module) => module.questions.map((question) => question.id))));
     setPhase("results");
-  }, []);
+  }, [paper.modules]);
 
   const nextModule = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
@@ -84,12 +92,17 @@ function PaperRunner({ paper }: { paper: ObjectivePaper }) {
 
   const begin = () => {
     setAnswers({});
+    startedAtRef.current = Date.now();
+    setStartedAtValue(startedAtRef.current);
+    telemetryRef.current = createQuestionTelemetry();
     setPhase("running");
     startModule(0);
   };
 
-  const choose = (qid: string, key: string) =>
+  const choose = (qid: string, key: string) => {
+    telemetryRef.current.answer(qid, key);
     setAnswers((a) => ({ ...a, [qid]: key }));
+  };
 
   if (phase === "briefing") {
     return (
@@ -164,7 +177,7 @@ function PaperRunner({ paper }: { paper: ObjectivePaper }) {
   }
 
   // results
-  return <PaperResults paper={paper} answers={answers} />;
+  return <PaperResults paper={paper} answers={answers} behavior={behavior} startedAt={startedAtValue} timeUsedSec={timeUsedSec} />;
 }
 
 function splitLnatQuestion(question: string): { passage: string; prompt: string } {
@@ -176,18 +189,25 @@ function splitLnatQuestion(question: string): { passage: string; prompt: string 
 }
 
 function LnatPaperRunner({ paper }: { paper: ObjectivePaper }) {
-  const module = paper.modules[0];
+  const paperModule = paper.modules[0];
   const [phase, setPhase] = useState<Phase>("briefing");
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [flagged, setFlagged] = useState<Record<string, boolean>>({});
   const [currentIndex, setCurrentIndex] = useState(0);
   const [reviewing, setReviewing] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(module.durationSec);
+  const [timeLeft, setTimeLeft] = useState(paperModule.durationSec);
+  const startedAtRef = useRef(0);
+  const telemetryRef = useRef<QuestionTelemetryTracker>(createQuestionTelemetry());
+  const [startedAtValue, setStartedAtValue] = useState(0);
+  const [timeUsedSec, setTimeUsedSec] = useState(0);
+  const [behavior, setBehavior] = useState<Record<string, QuestionTelemetrySnapshot>>({});
 
   const finish = useCallback(() => {
+    setTimeUsedSec(startedAtRef.current ? Math.max(0, Math.round((Date.now() - startedAtRef.current) / 1000)) : 0);
+    setBehavior(telemetryRef.current.snapshot(paperModule.questions.map((question) => question.id)));
     setReviewing(false);
     setPhase("results");
-  }, []);
+  }, [paperModule.questions]);
 
   useEffect(() => {
     if (phase !== "running") return;
@@ -209,10 +229,17 @@ function LnatPaperRunner({ paper }: { paper: ObjectivePaper }) {
     setFlagged({});
     setCurrentIndex(0);
     setReviewing(false);
-    setTimeLeft(module.durationSec);
+    setTimeLeft(paperModule.durationSec);
+    startedAtRef.current = Date.now();
+    setStartedAtValue(startedAtRef.current);
+    telemetryRef.current = createQuestionTelemetry();
     setPhase("running");
     window.scrollTo({ top: 0 });
   };
+
+  useEffect(() => {
+    if (phase === "running" && !reviewing) telemetryRef.current.visit(paperModule.questions[currentIndex].id);
+  }, [currentIndex, paperModule.questions, phase, reviewing]);
 
   const moveToQuestion = (index: number) => {
     setCurrentIndex(index);
@@ -242,13 +269,13 @@ function LnatPaperRunner({ paper }: { paper: ObjectivePaper }) {
     );
   }
 
-  if (phase === "results") return <PaperResults paper={paper} answers={answers} />;
+  if (phase === "results") return <PaperResults paper={paper} answers={answers} behavior={behavior} startedAt={startedAtValue} timeUsedSec={timeUsedSec} />;
 
-  const question = module.questions[currentIndex];
+  const question = paperModule.questions[currentIndex];
   const { passage, prompt } = splitLnatQuestion(question.question);
-  const answeredCount = module.questions.filter((item) => answers[item.id]).length;
-  const flaggedCount = module.questions.filter((item) => flagged[item.id]).length;
-  const unanswered = module.questions.length - answeredCount;
+  const answeredCount = paperModule.questions.filter((item) => answers[item.id]).length;
+  const flaggedCount = paperModule.questions.filter((item) => flagged[item.id]).length;
+  const unanswered = paperModule.questions.length - answeredCount;
   const mm = String(Math.floor(timeLeft / 60)).padStart(2, "0");
   const ss = String(timeLeft % 60).padStart(2, "0");
   const urgent = timeLeft <= 60;
@@ -269,7 +296,7 @@ function LnatPaperRunner({ paper }: { paper: ObjectivePaper }) {
           <div><p className="text-2xl font-semibold text-blue-700">{flaggedCount}</p><p className="text-xs text-neutral-500">已标记</p></div>
         </div>
         <div className="mt-6 grid grid-cols-7 gap-2 sm:grid-cols-10">
-          {module.questions.map((item, index) => (
+          {paperModule.questions.map((item, index) => (
             <button
               key={item.id}
               type="button"
@@ -323,7 +350,11 @@ function LnatPaperRunner({ paper }: { paper: ObjectivePaper }) {
             <p className="text-xs font-semibold text-neutral-400">QUESTION {currentIndex + 1}</p>
             <button
               type="button"
-              onClick={() => setFlagged((current) => ({ ...current, [question.id]: !current[question.id] }))}
+              onClick={() => setFlagged((current) => {
+                const next = !current[question.id];
+                telemetryRef.current.flag(question.id, next);
+                return { ...current, [question.id]: next };
+              })}
               title={flagged[question.id] ? "取消标记" : "标记复查"}
               className={`flex h-8 items-center gap-1.5 rounded border px-2.5 text-xs font-medium ${flagged[question.id] ? "border-amber-400 bg-amber-50 text-amber-800" : "border-neutral-300 text-neutral-600 hover:bg-neutral-50"}`}
             >
@@ -336,7 +367,10 @@ function LnatPaperRunner({ paper }: { paper: ObjectivePaper }) {
               <button
                 key={option.key}
                 type="button"
-                onClick={() => setAnswers((current) => ({ ...current, [question.id]: option.key }))}
+                onClick={() => {
+                  telemetryRef.current.answer(question.id, option.key);
+                  setAnswers((current) => ({ ...current, [question.id]: option.key }));
+                }}
                 className={`flex w-full items-start gap-3 rounded-lg border px-3 py-3 text-left transition ${answers[question.id] === option.key ? "border-blue-500 bg-blue-50" : "border-neutral-200 hover:bg-neutral-50"}`}
               >
                 <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-bold ${answers[question.id] === option.key ? "border-blue-500 bg-blue-600 text-white" : "border-neutral-300 text-neutral-500"}`}>{option.key}</span>
@@ -355,7 +389,7 @@ function LnatPaperRunner({ paper }: { paper: ObjectivePaper }) {
           </div>
 
           <div className="mt-5 grid grid-cols-7 gap-1.5 border-t border-neutral-100 pt-4">
-            {module.questions.map((item, index) => (
+            {paperModule.questions.map((item, index) => (
               <button
                 key={item.id}
                 type="button"
@@ -419,7 +453,7 @@ function McqCard({
   );
 }
 
-function PaperResults({ paper, answers }: { paper: ObjectivePaper; answers: Record<string, string> }) {
+function PaperResults({ paper, answers, behavior, startedAt, timeUsedSec }: { paper: ObjectivePaper; answers: Record<string, string>; behavior: Record<string, QuestionTelemetrySnapshot>; startedAt: number; timeUsedSec: number }) {
   const [open, setOpen] = useState<Record<string, boolean>>({});
 
   // 分模块计分
@@ -438,6 +472,10 @@ function PaperResults({ paper, answers }: { paper: ObjectivePaper; answers: Reco
     const payload = {
       testId: paper.testId,
       mode: "paper",
+      paperId: paper.id,
+      startedAt: startedAt ? new Date(startedAt).toISOString() : undefined,
+      timeUsedSec,
+      clientMeta: { schemaVersion: 1, viewport: `${window.innerWidth}x${window.innerHeight}`, locale: navigator.language },
       totalEarned,
       totalMax,
       answers: allQ.map((q) => ({
@@ -446,6 +484,7 @@ function PaperResults({ paper, answers }: { paper: ObjectivePaper; answers: Reco
         selected: answers[q.id] ?? undefined,
         earned: answers[q.id] === q.answer ? 1 : 0,
         max: 1,
+        ...behavior[q.id],
       })),
     };
     fetch("/api/exam-sessions", {
