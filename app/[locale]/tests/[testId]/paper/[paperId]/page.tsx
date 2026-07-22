@@ -7,6 +7,7 @@ import { getMockPaper, type MockPaper } from "@/lib/tests/mock-papers";
 import type { MCQQuestion } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
 import { WrittenPaperRunner } from "@/components/written-paper-runner";
+import { ObjectiveExamRunner } from "@/components/objective-exam-runner";
 import { ChevronLeft, ChevronRight, Flag, Send } from "lucide-react";
 import { createQuestionTelemetry, type QuestionTelemetrySnapshot, type QuestionTelemetryTracker } from "@/lib/tests/telemetry";
 
@@ -29,7 +30,9 @@ export default function MockPaperPage({
     ? <WrittenPaperRunner paper={paper} />
     : paper.testId === "lnat"
       ? <LnatPaperRunner paper={paper as ObjectivePaper} />
-    : <PaperRunner paper={paper as ObjectivePaper} />;
+    : paper.formatType === "legacy"
+      ? <PaperRunner paper={paper as ObjectivePaper} />
+      : <ObjectiveExamRunner paper={paper as ObjectivePaper} />;
 }
 
 function PaperRunner({ paper }: { paper: ObjectivePaper }) {
