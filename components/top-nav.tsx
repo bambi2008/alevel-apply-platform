@@ -45,6 +45,7 @@ export function TopNav({
       title: t("groupApply"),
       items: [
         { href: "/match", label: t("match"), icon: "target", desc: "选科能申什么·要考哪些笔试" },
+        { href: "/shortlist", label: "选校组合", icon: "listChecks", desc: "候选专业、横向对比与组合风险" },
         { href: "/universities", label: t("universities"), icon: "building", desc: "院校信息去哪查（含 Cialfo/UCAS）" },
         { href: "/applications", label: t("applications"), icon: "clipboard", desc: "追踪每一所志愿状态" },
         { href: "/timeline", label: t("timeline"), icon: "calendar", desc: "关键日期与截止提醒" },

@@ -131,10 +131,27 @@ model StudentProfile {
   tasks           Task[]
   studyGoals      StudyGoal[]
   studyTasks      StudyTask[]
+  shortlistItems  ShortlistItem[]
   examSessions    ExamSession[]
   backgroundItems BackgroundItem[]
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @updatedAt
+}
+
+model ShortlistItem {
+  id        String         @id @default(cuid())
+  studentId String
+  student   StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  programId String
+  program   Program        @relation(fields: [programId], references: [id], onDelete: Cascade)
+  note      String?
+  priority  Int            @default(0)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@unique([studentId, programId])
+  @@index([studentId, priority])
+  @@index([programId])
 }
 
 enum GradeKind {
@@ -277,6 +294,7 @@ model Program {
 
   requirementsText String?
   applications     Application[]
+  shortlistItems   ShortlistItem[]
 
   @@index([universityId])
   @@index([applyRoute])
