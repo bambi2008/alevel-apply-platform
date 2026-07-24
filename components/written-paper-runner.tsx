@@ -10,14 +10,24 @@ import { getCountedResults } from "@/lib/tests/mock-papers/scoring";
 import { DiagnosisSummary, QuestionDiagnosis } from "@/components/exam-diagnosis";
 import { buildSessionDiagnosis, diagnoseAnswer } from "@/lib/tests/diagnosis";
 import { persistExamSession } from "@/lib/tests/persist-session";
+import { createAttemptId, examAttemptKey, parseExamAttempt, remainingAttemptSeconds, type ExamAttemptSnapshot } from "@/lib/tests/exam-progress";
+import { useExamReliability } from "@/hooks/use-exam-reliability";
+import { ExamReliabilityStatus } from "@/components/exam-reliability-status";
 
 type Phase = "briefing" | "running" | "grading" | "results";
 type WrittenWorks = Record<string, Record<string, string>>;
+type WrittenAttemptPayload = { currentIndex: number; works: WrittenWorks };
 
 interface WrittenGrade {
   questionId: string;
   grading?: GradeResponse;
   error?: string;
+}
+
+function isWrittenAttemptPayload(payload: unknown): payload is WrittenAttemptPayload {
+  if (!payload || typeof payload !== "object") return false;
+  const value = payload as Partial<WrittenAttemptPayload>;
+  return Number.isInteger(value.currentIndex) && Boolean(value.works && typeof value.works === "object");
 }
 
 const TOPIC_LABELS: Record<string, string> = {
@@ -120,11 +130,27 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
   const [timeUsedSec, setTimeUsedSec] = useState(0);
   const [startedAtMs, setStartedAtMs] = useState(0);
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
+  const [savedAttempt, setSavedAttempt] = useState<ExamAttemptSnapshot<WrittenAttemptPayload> | null>(null);
   const startedAt = useRef(0);
+  const deadlineAt = useRef(0);
   const submittingRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const storageKey = examAttemptKey("written", paper.id);
+  const { online } = useExamReliability(phase === "running" || phase === "grading");
+
+  useEffect(() => {
+    const restored = parseExamAttempt(
+      window.localStorage.getItem(storageKey),
+      { runner: "written", testId: paper.testId, scopeId: paper.id },
+      isWrittenAttemptPayload,
+    );
+    if (!restored) return;
+    const timer = window.setTimeout(() => setSavedAttempt(restored), 0);
+    return () => window.clearTimeout(timer);
+  }, [paper.id, paper.testId, storageKey]);
 
   const begin = () => {
+    window.localStorage.removeItem(storageKey);
     setWorks(Object.fromEntries(questions.map((question) => [question.id, {}])));
     setCurrentIndex(0);
     setTimeLeft(durationSec);
@@ -134,7 +160,21 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
     setValidationMessage(null);
     submittingRef.current = false;
     startedAt.current = Date.now();
+    deadlineAt.current = startedAt.current + durationSec * 1000;
     setStartedAtMs(startedAt.current);
+    setSavedAttempt(null);
+    setPhase("running");
+  };
+
+  const resume = () => {
+    if (!savedAttempt) return;
+    setWorks(savedAttempt.payload.works);
+    setCurrentIndex(Math.min(savedAttempt.payload.currentIndex, questions.length - 1));
+    setTimeLeft(remainingAttemptSeconds(savedAttempt.deadlineAt));
+    startedAt.current = savedAttempt.startedAt;
+    deadlineAt.current = savedAttempt.deadlineAt;
+    setStartedAtMs(savedAttempt.startedAt);
+    setSavedAttempt(null);
     setPhase("running");
   };
 
@@ -167,6 +207,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
     }
     submittingRef.current = true;
     if (timerRef.current) clearInterval(timerRef.current);
+    window.localStorage.removeItem(storageKey);
     setTimeUsedSec(Math.min(durationSec, Math.max(0, Math.round((Date.now() - startedAt.current) / 1000))));
     setPhase("grading");
     const nextGrades: WrittenGrade[] = [];
@@ -240,18 +281,34 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
 
   useEffect(() => {
     if (phase !== "running") return;
-    timerRef.current = setInterval(() => {
-      setTimeLeft((current) => {
-        if (current <= 1) {
-          if (timerRef.current) clearInterval(timerRef.current);
-          handleAutoSubmit();
-          return 0;
-        }
-        return current - 1;
-      });
-    }, 1000);
+    const tick = () => {
+      const remaining = remainingAttemptSeconds(deadlineAt.current);
+      setTimeLeft(remaining);
+      if (remaining === 0) {
+        if (timerRef.current) clearInterval(timerRef.current);
+        handleAutoSubmit();
+      }
+    };
+    timerRef.current = setInterval(tick, 1000);
+    tick();
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [phase]);
+
+  useEffect(() => {
+    if (phase !== "running" || !startedAt.current || !deadlineAt.current) return;
+    const snapshot: ExamAttemptSnapshot<WrittenAttemptPayload> = {
+      version: 2,
+      attemptId: createAttemptId(paper.testId, paper.id, startedAt.current),
+      runner: "written",
+      testId: paper.testId,
+      scopeId: paper.id,
+      startedAt: startedAt.current,
+      deadlineAt: deadlineAt.current,
+      savedAt: Date.now(),
+      payload: { currentIndex, works },
+    };
+    window.localStorage.setItem(storageKey, JSON.stringify(snapshot));
+  }, [currentIndex, paper.id, paper.testId, phase, storageKey, timeLeft, works]);
 
   if (phase === "briefing") {
     return (
@@ -273,8 +330,18 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
         <ul className="mt-6 space-y-2 text-sm text-[var(--ink-soft)]">
           {instructions.map((instruction) => <li key={instruction}>{instruction}</li>)}
         </ul>
+        {savedAttempt && (
+          <div className="mt-5 border-l-2 border-[var(--indigo)] bg-[var(--info-bg)] px-4 py-3">
+            <p className="text-sm font-semibold">发现未完成的书面卷</p>
+            <p className="mt-1 text-xs text-[var(--ink-soft)]">第 {savedAttempt.payload.currentIndex + 1} 题 · 剩余约 {Math.ceil(remainingAttemptSeconds(savedAttempt.deadlineAt) / 60)} 分钟</p>
+            <div className="mt-3 flex gap-2">
+              <button type="button" onClick={() => { window.localStorage.removeItem(storageKey); setSavedAttempt(null); }} className="rounded border border-[var(--border)] px-3 py-2 text-xs">放弃进度</button>
+              <button type="button" onClick={resume} className="rounded bg-[var(--indigo)] px-3 py-2 text-xs font-semibold text-white">继续作答</button>
+            </div>
+          </div>
+        )}
         <button type="button" onClick={begin} className="mt-8 w-full rounded-md bg-[var(--indigo)] py-3 text-sm font-semibold text-white hover:bg-[var(--indigo-hover)]">
-          {isEssayPaper ? "开始写作任务" : "开始书面考试"}
+          {savedAttempt ? "放弃进度并重新开始" : isEssayPaper ? "开始写作任务" : "开始书面考试"}
         </button>
       </div>
     );
@@ -283,6 +350,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
   if (phase === "grading") {
     return (
       <div className="flex min-h-[70vh] flex-col items-center justify-center px-4 text-center">
+        <ExamReliabilityStatus online={online} />
         <div className="h-9 w-9 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--indigo)]" />
         <h1 className="mt-5 text-xl font-bold">{isEssayPaper ? "正在按写作量表生成反馈" : "正在按证明步骤评分"}</h1>
         <p className="mt-2 text-sm text-[var(--ink-soft)]">已完成 {gradingProgress} / {questions.length} 题</p>
@@ -316,6 +384,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
 
   return (
     <div className="min-h-screen bg-white">
+      <ExamReliabilityStatus online={online} />
       <header className="sticky top-16 z-20 border-b border-[var(--border)] bg-white/95 px-4 py-3 backdrop-blur">
         <div className="mx-auto flex max-w-5xl items-center gap-4">
           <div className="min-w-0 flex-1">

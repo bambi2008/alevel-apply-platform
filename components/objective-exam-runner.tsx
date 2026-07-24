@@ -12,6 +12,8 @@ import { decodeMatrixAnswer, encodeMatrixAnswer, estimateSjtBand, estimateUcatSc
 import { DiagnosisSummary, QuestionDiagnosis } from "@/components/exam-diagnosis";
 import { buildSessionDiagnosis, diagnoseAnswer, optionReview } from "@/lib/tests/diagnosis";
 import { persistExamSession } from "@/lib/tests/persist-session";
+import { useExamReliability } from "@/hooks/use-exam-reliability";
+import { ExamReliabilityStatus } from "@/components/exam-reliability-status";
 
 type ObjectivePaper = Omit<MockPaper, "modules"> & {
   modules: Array<Omit<MockPaper["modules"][number], "questions"> & { questions: MCQQuestion[] }>;
@@ -38,10 +40,12 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
   const [instructionTimeLeft, setInstructionTimeLeft] = useState(instructionDuration(paper, paper.modules[0].id));
   const [calculatorOpen, setCalculatorOpen] = useState(false);
   const startedAtRef = useRef(0);
+  const moduleDeadlineRef = useRef(0);
   const telemetryRef = useRef<QuestionTelemetryTracker>(createQuestionTelemetry());
   const storageKey = useMemo(() => examProgressKey(paper.id), [paper.id]);
   const currentModule = paper.modules[moduleIndex];
   const currentQuestion = currentModule.questions[questionIndex];
+  const { online } = useExamReliability(phase === "running" || phase === "instructions");
 
   useEffect(() => {
     const restored = parseExamProgress(
@@ -74,16 +78,19 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
     setQuestionIndex(0);
     setReviewing(false);
     setTimeLeft(paper.modules[nextModule].durationSec);
-    setInstructionTimeLeft(instructionDuration(paper, paper.modules[nextModule].id));
+    const instructions = instructionDuration(paper, paper.modules[nextModule].id);
+    setInstructionTimeLeft(instructions);
     setCalculatorOpen(false);
-    setPhase(instructionDuration(paper, paper.modules[nextModule].id) > 0 ? "instructions" : "running");
+    if (instructions === 0) moduleDeadlineRef.current = Date.now() + paper.modules[nextModule].durationSec * 1000;
+    setPhase(instructions > 0 ? "instructions" : "running");
     window.scrollTo({ top: 0 });
   }, [finish, moduleIndex, paper]);
 
   const startCurrentModule = useCallback(() => {
     setCalculatorOpen(false);
+    moduleDeadlineRef.current = Date.now() + timeLeft * 1000;
     setPhase("running");
-  }, []);
+  }, [timeLeft]);
 
   useEffect(() => {
     if (phase !== "instructions") return;
@@ -97,16 +104,16 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
 
   useEffect(() => {
     if (phase !== "running") return;
-    const timer = window.setInterval(() => {
-      setTimeLeft((seconds) => {
-        if (seconds <= 1) {
-          window.clearInterval(timer);
-          window.setTimeout(submitModule, 0);
-          return 0;
-        }
-        return seconds - 1;
-      });
-    }, 1000);
+    const tick = () => {
+      const remaining = Math.max(0, Math.ceil((moduleDeadlineRef.current - Date.now()) / 1000));
+      setTimeLeft(remaining);
+      if (remaining === 0) {
+        window.clearInterval(timer);
+        window.setTimeout(submitModule, 0);
+      }
+    };
+    const timer = window.setInterval(tick, 1000);
+    tick();
     return () => window.clearInterval(timer);
   }, [moduleIndex, phase, submitModule]);
 
@@ -174,6 +181,7 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
     setReviewing(false);
     setTimeLeft(paper.modules[0].durationSec);
     startedAtRef.current = Date.now();
+    moduleDeadlineRef.current = startedAtRef.current + paper.modules[0].durationSec * 1000;
     setStartedAt(startedAtRef.current);
     telemetryRef.current = createQuestionTelemetry();
     setSavedSession(null);
@@ -190,6 +198,7 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
     setQuestionIndex(savedSession.questionIndex);
     setTimeLeft(savedSession.timeLeft);
     startedAtRef.current = savedSession.startedAt;
+    moduleDeadlineRef.current = Date.now() + savedSession.timeLeft * 1000;
     setStartedAt(savedSession.startedAt);
     telemetryRef.current = createQuestionTelemetry();
     setReviewing(false);
@@ -238,6 +247,7 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
     const instructionSeconds = String(instructionTimeLeft % 60).padStart(2, "0");
     const calculatorAvailable = ["dm", "qr"].includes(currentModule.id);
     return <main className="mx-auto max-w-3xl px-4 py-10">
+      <ExamReliabilityStatus online={online} />
       <header className="flex items-start justify-between gap-4 border-b border-neutral-200 pb-5">
         <div><p className="text-xs font-semibold text-blue-600">模块 {moduleIndex + 1}/{paper.modules.length}</p><h1 className="mt-1 text-2xl font-bold">{currentModule.title}说明</h1><p className="mt-1 text-sm text-neutral-500">{currentModule.titleEn}</p></div>
         <p className="font-mono text-2xl font-bold tabular-nums">{instructionMinutes}:{instructionSeconds}</p>
@@ -266,6 +276,7 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
 
   if (reviewing) return (
     <main className="mx-auto max-w-3xl px-4 py-8">
+      <ExamReliabilityStatus online={online} />
       <header className="flex flex-wrap items-end justify-between gap-4 border-b border-neutral-200 pb-5"><div><p className="text-xs font-semibold text-blue-600">模块 {moduleIndex + 1}/{paper.modules.length}</p><h1 className="mt-1 text-2xl font-bold">交卷总览</h1><p className="mt-1 text-sm text-neutral-500">{currentModule.title}</p></div><p className={`font-mono text-2xl font-bold tabular-nums ${urgent ? "text-red-600" : "text-neutral-900"}`}>{minutes}:{seconds}</p></header>
       <section className="mt-6 grid grid-cols-3 gap-px overflow-hidden rounded-lg border border-neutral-200 bg-neutral-200"><Metric value={summary.answered} label="已答" /><Metric value={summary.unanswered} label="未答" /><Metric value={summary.marked} label="已标记" /></section>
       <div className="mt-6 grid grid-cols-6 gap-2 sm:grid-cols-10">{currentModule.questions.map((question, index) => <QuestionNumber key={question.id} index={index} active={false} answered={isObjectiveAnswerComplete(question, answers[question.id])} flagged={Boolean(flagged[question.id])} onClick={() => { setQuestionIndex(index); setReviewing(false); }} />)}</div>
@@ -276,6 +287,7 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
 
   return (
     <main className="mx-auto max-w-5xl px-4 py-4 sm:py-6">
+      <ExamReliabilityStatus online={online} />
       <header className="sticky top-16 z-20 -mx-4 flex items-center justify-between border-b border-neutral-200 bg-white/95 px-4 py-3 backdrop-blur">
         <div><p className="text-xs text-neutral-500">模块 {moduleIndex + 1}/{paper.modules.length} · Q{questionIndex + 1}/{currentModule.questions.length}</p><p className="text-sm font-semibold text-neutral-800">{currentModule.title}</p></div>
         <div className="flex items-center gap-2"><span className="hidden items-center gap-1 text-xs text-neutral-400 sm:flex"><Save className="size-3.5" />自动保存</span>{paper.testId === "ucat" && ["dm", "qr"].includes(currentModule.id) && <button type="button" onClick={() => setCalculatorOpen((open) => !open)} title="计算器（Alt+C）" aria-label="计算器" className="flex size-9 items-center justify-center rounded border border-neutral-300 text-neutral-700 hover:bg-neutral-50"><Calculator className="size-4" /></button>}<p className={`font-mono text-xl font-bold tabular-nums ${urgent ? "text-amber-600" : "text-neutral-900"}`}>{minutes}:{seconds}</p><button type="button" onClick={() => setReviewing(true)} title="交卷总览" className="flex size-9 items-center justify-center rounded border border-neutral-300 text-neutral-700 hover:bg-neutral-50"><LayoutGrid className="size-4" /></button></div>

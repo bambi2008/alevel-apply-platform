@@ -10,6 +10,60 @@ export interface ObjectiveExamProgress {
   savedAt: number;
 }
 
+export type ExamAttemptRunner = "objective" | "written" | "mixed";
+
+export interface ExamAttemptSnapshot<TPayload = unknown> {
+  version: 2;
+  attemptId: string;
+  runner: ExamAttemptRunner;
+  testId: string;
+  scopeId: string;
+  startedAt: number;
+  deadlineAt: number;
+  savedAt: number;
+  payload: TPayload;
+}
+
+export function createAttemptId(testId: string, scopeId: string, startedAt = Date.now()) {
+  return `${testId}:${scopeId}:${startedAt}`;
+}
+
+export function examAttemptKey(runner: ExamAttemptRunner, scopeId: string) {
+  return `qiaoshen:exam-attempt:${runner}:${scopeId}:v2`;
+}
+
+export function remainingAttemptSeconds(deadlineAt: number, now = Date.now()) {
+  return Math.max(0, Math.ceil((deadlineAt - now) / 1000));
+}
+
+export function parseExamAttempt<TPayload>(
+  raw: string | null,
+  expected: { runner: ExamAttemptRunner; testId: string; scopeId: string },
+  validatePayload: (payload: unknown) => payload is TPayload,
+  now = Date.now(),
+): ExamAttemptSnapshot<TPayload> | null {
+  if (!raw) return null;
+  try {
+    const value = JSON.parse(raw) as Partial<ExamAttemptSnapshot>;
+    if (
+      value.version !== 2
+      || value.runner !== expected.runner
+      || value.testId !== expected.testId
+      || value.scopeId !== expected.scopeId
+      || typeof value.attemptId !== "string"
+      || typeof value.startedAt !== "number"
+      || typeof value.deadlineAt !== "number"
+      || typeof value.savedAt !== "number"
+    ) return null;
+    if (now - value.savedAt > 7 * 24 * 60 * 60 * 1000) return null;
+    if (remainingAttemptSeconds(value.deadlineAt, now) <= 0) return null;
+    if (!validatePayload(value.payload)) return null;
+    return value as ExamAttemptSnapshot<TPayload>;
+  } catch {
+    return null;
+  }
+}
+
 export function examProgressKey(paperId: string) {
   return `qiaoshen:objective-paper:${paperId}:v1`;
 }

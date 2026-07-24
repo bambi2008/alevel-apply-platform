@@ -20,6 +20,15 @@ import type { GradeRequest, GradeResponse } from "@/app/api/grade-answer/route";
 import { createQuestionTelemetry, type QuestionTelemetrySnapshot, type QuestionTelemetryTracker } from "@/lib/tests/telemetry";
 import { scoreObjectiveAnswer } from "@/lib/tests/objective-scoring";
 import { persistExamSession } from "@/lib/tests/persist-session";
+import {
+  createAttemptId,
+  examAttemptKey,
+  parseExamAttempt,
+  remainingAttemptSeconds,
+  type ExamAttemptSnapshot,
+} from "@/lib/tests/exam-progress";
+import { useExamReliability } from "@/hooks/use-exam-reliability";
+import { ExamReliabilityStatus } from "@/components/exam-reliability-status";
 
 const QUESTION_BANKS: Record<string, Question[]> = {
   mat: MAT_QUESTIONS,
@@ -49,6 +58,25 @@ interface LongAnswer {
 }
 
 type Answer = MCQAnswer | LongAnswer;
+
+interface MixedAttemptPayload {
+  presetId: string;
+  queueIds: string[];
+  currentIdx: number;
+  answers: Answer[];
+}
+
+function isMixedAttemptPayload(payload: unknown): payload is MixedAttemptPayload {
+  if (!payload || typeof payload !== "object") return false;
+  const value = payload as Partial<MixedAttemptPayload>;
+  return (
+    typeof value.presetId === "string" &&
+    Array.isArray(value.queueIds) &&
+    value.queueIds.every((id) => typeof id === "string") &&
+    Number.isInteger(value.currentIdx) &&
+    Array.isArray(value.answers)
+  );
+}
 
 interface GradedResult {
   questionId: string;
@@ -207,6 +235,7 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
   const [gradingProgress, setGradingProgress] = useState(0);
   const [timeLeft, setTimeLeft] = useState(0);
   const startedAtRef = useRef(0);
+  const deadlineAtRef = useRef(0);
   const telemetryRef = useRef<QuestionTelemetryTracker>(createQuestionTelemetry());
   const [startedAtValue, setStartedAtValue] = useState(0);
   const [timeUsedSec, setTimeUsedSec] = useState(0);
@@ -214,6 +243,18 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
   const presets = getMockPresets(testId, test.duration);
   const [presetId, setPresetId] = useState(presets[0].id);
   const selectedPreset = presets.find((preset) => preset.id === presetId) ?? presets[0];
+  const storageKey = examAttemptKey("mixed", testId);
+  const [savedAttempt, setSavedAttempt] = useState<ExamAttemptSnapshot<MixedAttemptPayload> | null>(null);
+  const { online } = useExamReliability(examState === "running" || examState === "grading");
+
+  useEffect(() => {
+    const saved = parseExamAttempt(
+      window.localStorage.getItem(storageKey),
+      { runner: "mixed", testId, scopeId: testId },
+      isMixedAttemptPayload
+    );
+    queueMicrotask(() => setSavedAttempt(saved));
+  }, [storageKey, testId]);
 
   const startExam = () => {
     const mcqs = selectMcqs(
@@ -237,9 +278,42 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
     );
     setTimeLeft(selectedPreset.durationSec);
     startedAtRef.current = Date.now();
+    deadlineAtRef.current = startedAtRef.current + selectedPreset.durationSec * 1000;
     setStartedAtValue(startedAtRef.current);
     telemetryRef.current = createQuestionTelemetry();
+    window.localStorage.removeItem(storageKey);
+    setSavedAttempt(null);
     setExamState("running");
+  };
+
+  const resumeExam = () => {
+    if (!savedAttempt) return;
+    const questionMap = new Map(allQuestions.map((question) => [question.id, question]));
+    const restoredQueue = savedAttempt.payload.queueIds
+      .map((id) => questionMap.get(id))
+      .filter((question): question is Question => Boolean(question));
+    if (restoredQueue.length !== savedAttempt.payload.queueIds.length) {
+      window.localStorage.removeItem(storageKey);
+      setSavedAttempt(null);
+      return;
+    }
+
+    const remaining = remainingAttemptSeconds(savedAttempt.deadlineAt);
+    setPresetId(savedAttempt.payload.presetId);
+    setQueue(restoredQueue);
+    setAnswers(savedAttempt.payload.answers);
+    setCurrentIdx(Math.min(savedAttempt.payload.currentIdx, Math.max(0, restoredQueue.length - 1)));
+    setTimeLeft(remaining);
+    startedAtRef.current = savedAttempt.startedAt;
+    deadlineAtRef.current = savedAttempt.deadlineAt;
+    setStartedAtValue(savedAttempt.startedAt);
+    telemetryRef.current = createQuestionTelemetry();
+    setExamState("running");
+  };
+
+  const discardSavedExam = () => {
+    window.localStorage.removeItem(storageKey);
+    setSavedAttempt(null);
   };
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -272,6 +346,8 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
 
   const handleSubmitAll = async () => {
     if (timerRef.current) clearInterval(timerRef.current);
+    window.localStorage.removeItem(storageKey);
+    setSavedAttempt(null);
     setTimeUsedSec(startedAtRef.current ? Math.max(0, Math.round((Date.now() - startedAtRef.current) / 1000)) : 0);
     setBehavior(telemetryRef.current.snapshot(queue.map((question) => question.id)));
     setExamState("grading");
@@ -362,17 +438,36 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
   useEffect(() => {
     if (examState !== "running") return;
     timerRef.current = setInterval(() => {
-      setTimeLeft((time) => {
-        if (time <= 1) {
-          clearInterval(timerRef.current!);
-          handleAutoSubmit();
-          return 0;
-        }
-        return time - 1;
-      });
+      const remaining = Math.max(0, Math.ceil((deadlineAtRef.current - Date.now()) / 1000));
+      setTimeLeft(remaining);
+      if (remaining === 0) {
+        clearInterval(timerRef.current!);
+        handleAutoSubmit();
+      }
     }, 1000);
     return () => { if (timerRef.current) clearInterval(timerRef.current); };
   }, [examState]);
+
+  useEffect(() => {
+    if (examState !== "running" || queue.length === 0 || deadlineAtRef.current <= Date.now()) return;
+    const snapshot: ExamAttemptSnapshot<MixedAttemptPayload> = {
+      version: 2,
+      attemptId: createAttemptId(testId, testId, startedAtRef.current),
+      runner: "mixed",
+      testId,
+      scopeId: testId,
+      startedAt: startedAtRef.current,
+      deadlineAt: deadlineAtRef.current,
+      savedAt: Date.now(),
+      payload: {
+        presetId,
+        queueIds: queue.map((question) => question.id),
+        currentIdx,
+        answers,
+      },
+    };
+    window.localStorage.setItem(storageKey, JSON.stringify(snapshot));
+  }, [answers, currentIdx, examState, presetId, queue, storageKey, testId, timeLeft]);
 
   if (examState === "briefing") {
     return (
@@ -382,6 +477,9 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
         selectedPreset={selectedPreset}
         onPresetChange={setPresetId}
         onStart={startExam}
+        savedAttempt={savedAttempt}
+        onResume={resumeExam}
+        onDiscardSaved={discardSavedExam}
       />
     );
   }
@@ -389,6 +487,7 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
   if (examState === "grading") {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center gap-6">
+        <ExamReliabilityStatus online={online} />
         <div className="text-4xl animate-spin">⏳</div>
         <h2 className="text-xl font-bold text-[var(--ink)]">AI 正在评分…</h2>
         <p className="text-sm text-[var(--ink-soft)]">
@@ -432,6 +531,7 @@ export default function MockExamPage({ params }: { params: Promise<{ testId: str
 
   return (
     <div className="min-h-screen flex flex-col">
+      <ExamReliabilityStatus online={online} />
       {/* Top bar */}
       <div className={`sticky top-16 z-20 border-b px-4 py-2 flex items-center gap-4 ${isUrgent ? "bg-[var(--danger-bg)] border-[color:var(--danger)]/25" : "bg-white border-[var(--border)]"}`}>
         <span className="font-bold text-sm text-[var(--ink-soft)]">{test.abbr} 模拟考试</span>
@@ -537,12 +637,18 @@ function MockBriefing({
   selectedPreset,
   onPresetChange,
   onStart,
+  savedAttempt,
+  onResume,
+  onDiscardSaved,
 }: {
   test: ReturnType<typeof getTestById>;
   presets: MockPreset[];
   selectedPreset: MockPreset;
   onPresetChange: (id: string) => void;
   onStart: () => void;
+  savedAttempt: ExamAttemptSnapshot<MixedAttemptPayload> | null;
+  onResume: () => void;
+  onDiscardSaved: () => void;
 }) {
   if (!test) return null;
 
@@ -553,6 +659,35 @@ function MockBriefing({
       </Link>
       <h1 className="text-2xl font-bold mt-4 mb-1">{test.abbr} 计时模拟考试</h1>
       <p className="text-[var(--ink-soft)] text-sm mb-8">模拟真实考试环境，完成后 AI 逐题评分</p>
+
+      {savedAttempt && (
+        <div className="mb-6 border border-[var(--border)] bg-[var(--surface)] p-4">
+          <p className="font-medium text-sm text-[var(--ink)]">检测到未完成的模拟考试</p>
+          <p className="mt-1 text-xs text-[var(--ink-soft)]">
+            已保存 {savedAttempt.payload.answers.filter((answer) =>
+              answer.type === "mcq"
+                ? answer.selected !== null
+                : Object.values(answer.works).some((work) => work.trim())
+            ).length} / {savedAttempt.payload.queueIds.length} 题，计时仍按原截止时间计算。
+          </p>
+          <div className="mt-3 flex gap-2">
+            <button
+              type="button"
+              onClick={onResume}
+              className="px-3 py-2 bg-[var(--indigo)] text-white text-xs font-medium"
+            >
+              继续考试
+            </button>
+            <button
+              type="button"
+              onClick={onDiscardSaved}
+              className="px-3 py-2 border border-[var(--border)] text-xs text-[var(--ink-soft)]"
+            >
+              放弃旧进度
+            </button>
+          </div>
+        </div>
+      )}
 
       {presets.length > 1 && (
         <div className="grid grid-cols-2 gap-1 rounded-lg bg-[var(--surface-2)] p-1 mb-5" role="tablist" aria-label="考试模式">

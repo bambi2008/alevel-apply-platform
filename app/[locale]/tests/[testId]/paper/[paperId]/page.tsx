@@ -11,6 +11,9 @@ import { ObjectiveExamRunner } from "@/components/objective-exam-runner";
 import { ChevronLeft, ChevronRight, Flag, Send } from "lucide-react";
 import { createQuestionTelemetry, type QuestionTelemetrySnapshot, type QuestionTelemetryTracker } from "@/lib/tests/telemetry";
 import { persistExamSession } from "@/lib/tests/persist-session";
+import { examProgressKey, parseExamProgress, type ObjectiveExamProgress } from "@/lib/tests/exam-progress";
+import { useExamReliability } from "@/hooks/use-exam-reliability";
+import { ExamReliabilityStatus } from "@/components/exam-reliability-status";
 
 type Phase = "briefing" | "running" | "results";
 type ObjectivePaper = Omit<MockPaper, "modules"> & {
@@ -31,11 +34,11 @@ export default function MockPaperPage({
     ? <WrittenPaperRunner paper={paper} />
     : paper.testId === "lnat"
       ? <LnatPaperRunner paper={paper as ObjectivePaper} />
-    : paper.formatType === "legacy"
-      ? <PaperRunner paper={paper as ObjectivePaper} />
       : <ObjectiveExamRunner paper={paper as ObjectivePaper} />;
 }
 
+// Kept as a compatibility reference while all objective papers use the unified runner.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function PaperRunner({ paper }: { paper: ObjectivePaper }) {
   const [phase, setPhase] = useState<Phase>("briefing");
   const [moduleIndex, setModuleIndex] = useState(0);
@@ -201,29 +204,42 @@ function LnatPaperRunner({ paper }: { paper: ObjectivePaper }) {
   const [reviewing, setReviewing] = useState(false);
   const [timeLeft, setTimeLeft] = useState(paperModule.durationSec);
   const startedAtRef = useRef(0);
+  const deadlineAtRef = useRef(0);
   const telemetryRef = useRef<QuestionTelemetryTracker>(createQuestionTelemetry());
   const [startedAtValue, setStartedAtValue] = useState(0);
   const [timeUsedSec, setTimeUsedSec] = useState(0);
   const [behavior, setBehavior] = useState<Record<string, QuestionTelemetrySnapshot>>({});
+  const storageKey = examProgressKey(paper.id);
+  const [savedSession, setSavedSession] = useState<ObjectiveExamProgress | null>(null);
+  const { online } = useExamReliability(phase === "running");
+
+  useEffect(() => {
+    const restored = parseExamProgress(
+      window.localStorage.getItem(storageKey),
+      paper.id,
+      [paperModule.questions.length],
+    );
+    if (restored) queueMicrotask(() => setSavedSession(restored));
+  }, [paper.id, paperModule.questions.length, storageKey]);
 
   const finish = useCallback(() => {
     setTimeUsedSec(startedAtRef.current ? Math.max(0, Math.round((Date.now() - startedAtRef.current) / 1000)) : 0);
     setBehavior(telemetryRef.current.snapshot(paperModule.questions.map((question) => question.id)));
+    window.localStorage.removeItem(storageKey);
+    setSavedSession(null);
     setReviewing(false);
     setPhase("results");
-  }, [paperModule.questions]);
+  }, [paperModule.questions, storageKey]);
 
   useEffect(() => {
     if (phase !== "running") return;
     const timer = setInterval(() => {
-      setTimeLeft((current) => {
-        if (current <= 1) {
-          clearInterval(timer);
-          setTimeout(finish, 0);
-          return 0;
-        }
-        return current - 1;
-      });
+      const remaining = Math.max(0, Math.ceil((deadlineAtRef.current - Date.now()) / 1000));
+      setTimeLeft(remaining);
+      if (remaining === 0) {
+        clearInterval(timer);
+        setTimeout(finish, 0);
+      }
     }, 1000);
     return () => clearInterval(timer);
   }, [finish, phase]);
@@ -235,15 +251,53 @@ function LnatPaperRunner({ paper }: { paper: ObjectivePaper }) {
     setReviewing(false);
     setTimeLeft(paperModule.durationSec);
     startedAtRef.current = Date.now();
+    deadlineAtRef.current = startedAtRef.current + paperModule.durationSec * 1000;
     setStartedAtValue(startedAtRef.current);
     telemetryRef.current = createQuestionTelemetry();
+    window.localStorage.removeItem(storageKey);
+    setSavedSession(null);
     setPhase("running");
     window.scrollTo({ top: 0 });
+  };
+
+  const resume = () => {
+    if (!savedSession) return;
+    setAnswers(savedSession.answers);
+    setFlagged(savedSession.flagged);
+    setCurrentIndex(savedSession.questionIndex);
+    setTimeLeft(savedSession.timeLeft);
+    startedAtRef.current = savedSession.startedAt;
+    deadlineAtRef.current = Date.now() + savedSession.timeLeft * 1000;
+    setStartedAtValue(savedSession.startedAt);
+    telemetryRef.current = createQuestionTelemetry();
+    setReviewing(false);
+    setPhase("running");
+  };
+
+  const discardSaved = () => {
+    window.localStorage.removeItem(storageKey);
+    setSavedSession(null);
   };
 
   useEffect(() => {
     if (phase === "running" && !reviewing) telemetryRef.current.visit(paperModule.questions[currentIndex].id);
   }, [currentIndex, paperModule.questions, phase, reviewing]);
+
+  useEffect(() => {
+    if (phase !== "running") return;
+    const progress: ObjectiveExamProgress = {
+      version: 1,
+      paperId: paper.id,
+      moduleIndex: 0,
+      questionIndex: currentIndex,
+      answers,
+      flagged,
+      timeLeft,
+      startedAt: startedAtRef.current,
+      savedAt: Date.now(),
+    };
+    window.localStorage.setItem(storageKey, JSON.stringify(progress));
+  }, [answers, currentIndex, flagged, paper.id, phase, storageKey, timeLeft]);
 
   const moveToQuestion = (index: number) => {
     setCurrentIndex(index);
@@ -259,6 +313,16 @@ function LnatPaperRunner({ paper }: { paper: ObjectivePaper }) {
         <p className="mt-1 text-sm text-neutral-500">{paper.titleEn}</p>
         <div className="mt-6 rounded-lg border border-neutral-200 bg-white p-6">
           <p className="text-sm leading-relaxed text-neutral-700">{paper.description}</p>
+          {savedSession && (
+            <div className="mt-4 border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
+              <p className="font-semibold">检测到未完成的 LNAT 试卷</p>
+              <p className="mt-1 text-xs">已保存 {Object.keys(savedSession.answers).length} / {paperModule.questions.length} 题。</p>
+              <div className="mt-3 flex gap-2">
+                <button type="button" onClick={resume} className="bg-blue-600 px-3 py-2 text-xs font-medium text-white">继续考试</button>
+                <button type="button" onClick={discardSaved} className="border border-blue-200 px-3 py-2 text-xs">放弃旧进度</button>
+              </div>
+            </div>
+          )}
           <div className="mt-5 grid grid-cols-3 gap-3 border-y border-neutral-100 py-4 text-center">
             <div><p className="text-xl font-semibold text-neutral-900">12</p><p className="text-xs text-neutral-500">篇文章</p></div>
             <div><p className="text-xl font-semibold text-neutral-900">42</p><p className="text-xs text-neutral-500">道题</p></div>
@@ -287,6 +351,7 @@ function LnatPaperRunner({ paper }: { paper: ObjectivePaper }) {
   if (reviewing) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-8">
+        <ExamReliabilityStatus online={online} />
         <div className="flex items-center justify-between border-b border-neutral-200 pb-4">
           <div>
             <p className="text-xs text-neutral-500">交卷总览</p>
@@ -330,6 +395,7 @@ function LnatPaperRunner({ paper }: { paper: ObjectivePaper }) {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-4 sm:py-6">
+      <ExamReliabilityStatus online={online} />
       <div className="sticky top-16 z-10 -mx-4 flex items-center justify-between border-b border-neutral-200 bg-white/95 px-4 py-3 backdrop-blur">
         <div>
           <p className="text-xs text-neutral-500">Section A · Q{currentIndex + 1}/42</p>

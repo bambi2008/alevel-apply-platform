@@ -31,6 +31,7 @@ const saveSessionSchema = z.object({
   presetId: z.string().min(1).max(120).optional(),
   startedAt: z.string().datetime().optional(),
   clientMeta: z.record(z.unknown()).optional(),
+  attemptId: z.string().min(8).max(240).optional(),
   answers: z.array(answerSchema).max(300),
 });
 
@@ -67,6 +68,20 @@ export async function POST(req: NextRequest) {
     select: { id: true },
   });
 
+  if (body.attemptId && body.startedAt) {
+    const existing = await db.examSession.findFirst({
+      where: {
+        studentId: profile.id,
+        testId: body.testId,
+        startedAt: new Date(body.startedAt),
+        paperId: body.paperId ?? null,
+        presetId: body.presetId ?? null,
+      },
+      select: { id: true },
+    });
+    if (existing) return NextResponse.json({ id: existing.id, reused: true });
+  }
+
   const examSession = await db.examSession.create({
     data: {
       studentId: profile.id,
@@ -78,7 +93,10 @@ export async function POST(req: NextRequest) {
       paperId: body.paperId,
       presetId: body.presetId,
       startedAt: body.startedAt ? new Date(body.startedAt) : undefined,
-      clientMeta: body.clientMeta as Prisma.InputJsonValue | undefined,
+      clientMeta: {
+        ...(body.clientMeta ?? {}),
+        ...(body.attemptId ? { attemptId: body.attemptId } : {}),
+      } as Prisma.InputJsonValue,
       answers: {
         create: body.answers.map((a) => ({
           questionId: a.questionId,

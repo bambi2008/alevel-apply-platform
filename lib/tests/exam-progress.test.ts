@@ -1,5 +1,13 @@
 import { describe, expect, it } from "vitest";
-import { examProgressKey, parseExamProgress, summarizeModule } from "./exam-progress";
+import {
+  createAttemptId,
+  examAttemptKey,
+  examProgressKey,
+  parseExamAttempt,
+  parseExamProgress,
+  remainingAttemptSeconds,
+  summarizeModule,
+} from "./exam-progress";
 
 const saved = {
   version: 1 as const,
@@ -32,5 +40,40 @@ describe("objective exam progress", () => {
       unanswered: 1,
       marked: 1,
     });
+  });
+});
+
+describe("unified exam attempt snapshots", () => {
+  const snapshot = {
+    version: 2 as const,
+    attemptId: "tmua:mock-1:1000",
+    runner: "written" as const,
+    testId: "tmua",
+    scopeId: "mock-1",
+    startedAt: 1_000,
+    deadlineAt: 61_000,
+    savedAt: 10_000,
+    payload: { currentIndex: 2, works: { q1: { "(i)": "work" } } },
+  };
+
+  it("restores valid generic payloads and derives reliable remaining time", () => {
+    const restored = parseExamAttempt(
+      JSON.stringify(snapshot),
+      { runner: "written", testId: "tmua", scopeId: "mock-1" },
+      (payload): payload is typeof snapshot.payload => Boolean(payload && typeof payload === "object" && "works" in payload),
+      11_000,
+    );
+    expect(restored?.attemptId).toBe(snapshot.attemptId);
+    expect(remainingAttemptSeconds(snapshot.deadlineAt, 11_000)).toBe(50);
+    expect(examAttemptKey("written", "mock-1")).toContain("v2");
+    expect(createAttemptId("tmua", "mock-1", 1_000)).toBe(snapshot.attemptId);
+  });
+
+  it("rejects mismatched, expired and invalid snapshots", () => {
+    const expected = { runner: "written" as const, testId: "tmua", scopeId: "mock-1" };
+    const valid = (payload: unknown): payload is typeof snapshot.payload => Boolean(payload && typeof payload === "object" && "works" in payload);
+    expect(parseExamAttempt(JSON.stringify(snapshot), { ...expected, scopeId: "mock-2" }, valid, 11_000)).toBeNull();
+    expect(parseExamAttempt(JSON.stringify(snapshot), expected, valid, 62_000)).toBeNull();
+    expect(parseExamAttempt(JSON.stringify({ ...snapshot, payload: null }), expected, valid, 11_000)).toBeNull();
   });
 });
