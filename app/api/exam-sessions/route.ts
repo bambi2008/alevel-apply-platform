@@ -11,7 +11,7 @@ const answerSchema = z.object({
   type: z.enum(["mcq", "long"]),
   selected: z.string().max(20).optional(),
   work: z.record(z.string()).optional(),
-  earned: z.number().int().min(0).max(1000),
+  earned: z.number().int().min(-1000).max(1000),
   max: z.number().int().min(0).max(1000),
   feedback: z.unknown().optional(),
   timeSpentSec: z.number().int().min(0).max(86400).optional(),

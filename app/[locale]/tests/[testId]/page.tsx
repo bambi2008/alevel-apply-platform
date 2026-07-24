@@ -627,7 +627,7 @@ function HistoryTab({ test }: { test: AdmissionsTest }) {
                 {s.timeUsedSec && <span className="text-xs text-[var(--ink-faint)] ml-2">用时 {fmtTime(s.timeUsedSec)}</span>}
               </div>
             </div>
-            <span className="text-[var(--ink-faint)] shrink-0">›</span>
+            <span className="shrink-0 text-xs font-medium text-[var(--indigo)]">查看报告 ›</span>
           </Link>
         );
       })}

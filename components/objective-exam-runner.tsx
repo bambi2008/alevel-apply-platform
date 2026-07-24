@@ -359,6 +359,7 @@ function Metric({ value, label }: { value: number; label: string }) {
 
 function ObjectiveResults({ paper, answers, behavior, startedAt, timeUsedSec }: { paper: ObjectivePaper; answers: Record<string, string>; behavior: Record<string, QuestionTelemetrySnapshot>; startedAt: number; timeUsedSec: number }) {
   const [open, setOpen] = useState<Record<string, boolean>>({});
+  const [savedSessionId, setSavedSessionId] = useState<string | null>(null);
   const persistedRef = useRef(false);
   const moduleScores = paper.modules.map((module) => ({ module, earned: module.questions.reduce((sum, question) => sum + scoreObjectiveAnswer(question, answers[question.id]).earned, 0), max: module.questions.reduce((sum, question) => sum + scoreObjectiveAnswer(question, answers[question.id]).max, 0) }));
   const totalEarned = moduleScores.reduce((sum, item) => sum + item.earned, 0);
@@ -385,7 +386,7 @@ function ObjectiveResults({ paper, answers, behavior, startedAt, timeUsedSec }: 
       clientMeta: { schemaVersion: 2, runner: "objective-v2", viewport: `${window.innerWidth}x${window.innerHeight}`, locale: navigator.language },
       totalEarned, totalMax,
       answers: questions.map((question) => ({ questionId: question.id, type: "mcq", selected: answers[question.id], ...scoreObjectiveAnswer(question, answers[question.id]), ...behavior[question.id] })),
-    });
+    }).then((id) => setSavedSessionId(id));
     // Result persistence is intentionally best-effort and runs once per completed attempt.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -397,7 +398,11 @@ function ObjectiveResults({ paper, answers, behavior, startedAt, timeUsedSec }: 
     <DiagnosisSummary diagnosis={diagnosis} />
     <h2 className="mt-8 text-base font-bold">逐题回看</h2>
     <div className="mt-3 space-y-5">{paper.modules.map((module) => <section key={module.id}><p className="mb-2 text-xs font-semibold text-neutral-500">{module.title}</p><div className="divide-y divide-neutral-100 border-y border-neutral-200">{module.questions.map((question, index) => { const selected = answers[question.id]; const score = scoreObjectiveAnswer(question, selected); const itemDiagnosis = diagnoseAnswer({ question, selected, earned: score.earned, max: score.max, ...behavior[question.id] }); const selectedOption = question.options.find((option) => option.key === selected); const selectedReview = selectedOption ? optionReview(question, selectedOption.key) : null; return <div key={question.id}><button type="button" onClick={() => setOpen((current) => ({ ...current, [question.id]: !current[question.id] }))} className="flex w-full items-center gap-3 py-3 text-left"><span className={`flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${score.correct ? "bg-green-100 text-green-700" : score.earned > 0 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}`}>{score.correct ? "✓" : score.earned > 0 ? "½" : "×"}</span><span className="text-xs text-neutral-400">Q{index + 1}</span><MathRenderer text={question.question} className="line-clamp-1 flex-1 text-sm" /><span className="text-xs text-neutral-400">{open[question.id] ? "收起" : "查看"}</span></button>{open[question.id] && <div className="pb-4 pl-9"><p className="text-xs text-neutral-500">得分：{score.earned}/{score.max} · 你的答案：{selected || "未答"}{question.responseMode !== "matrix" ? ` · 正确答案：${question.answer}` : ""}</p>{selectedReview && <p className="mt-2 text-xs leading-5 text-neutral-600"><span className="font-semibold">{selectedReview.title}：</span>{selectedReview.detail}</p>}<MathRenderer text={question.solution} className="mt-2 rounded bg-neutral-50 px-3 py-2 text-sm text-neutral-700" block /><QuestionDiagnosis diagnosis={itemDiagnosis} question={question} compact /></div>}</div>; })}</div></section>)}</div>
-    <div className="mt-8 flex gap-3"><Link href={`/tests/${paper.testId}`} className="flex-1 rounded-md border border-neutral-300 py-3 text-center text-sm">返回考试主页</Link><Link href={`/tests/${paper.testId}/paper/${paper.id}`} className="flex-1 rounded-md bg-blue-600 py-3 text-center text-sm font-semibold text-white">重新作答</Link></div>
+    <div className="mt-8 grid gap-3 sm:grid-cols-3">
+      <Link href={`/tests/${paper.testId}`} className="rounded-md border border-neutral-300 py-3 text-center text-sm">返回考试主页</Link>
+      {savedSessionId && <Link href={`/tests/${paper.testId}/history/${savedSessionId}`} className="rounded-md border border-blue-600 py-3 text-center text-sm font-semibold text-blue-700">查看完整报告</Link>}
+      <Link href={`/tests/${paper.testId}/paper/${paper.id}`} className="rounded-md bg-blue-600 py-3 text-center text-sm font-semibold text-white">重新作答</Link>
+    </div>
   </main>;
 }
 

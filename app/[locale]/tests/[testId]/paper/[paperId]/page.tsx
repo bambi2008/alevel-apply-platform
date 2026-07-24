@@ -10,6 +10,7 @@ import { WrittenPaperRunner } from "@/components/written-paper-runner";
 import { ObjectiveExamRunner } from "@/components/objective-exam-runner";
 import { ChevronLeft, ChevronRight, Flag, Send } from "lucide-react";
 import { createQuestionTelemetry, type QuestionTelemetrySnapshot, type QuestionTelemetryTracker } from "@/lib/tests/telemetry";
+import { persistExamSession } from "@/lib/tests/persist-session";
 
 type Phase = "briefing" | "running" | "results";
 type ObjectivePaper = Omit<MockPaper, "modules"> & {
@@ -458,6 +459,7 @@ function McqCard({
 
 function PaperResults({ paper, answers, behavior, startedAt, timeUsedSec }: { paper: ObjectivePaper; answers: Record<string, string>; behavior: Record<string, QuestionTelemetrySnapshot>; startedAt: number; timeUsedSec: number }) {
   const [open, setOpen] = useState<Record<string, boolean>>({});
+  const [savedSessionId, setSavedSessionId] = useState<string | null>(null);
 
   // 分模块计分
   const moduleScores = paper.modules.map((m) => {
@@ -490,11 +492,7 @@ function PaperResults({ paper, answers, behavior, startedAt, timeUsedSec }: { pa
         ...behavior[q.id],
       })),
     };
-    fetch("/api/exam-sessions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    }).catch(() => {});
+    void persistExamSession(payload).then((id) => setSavedSessionId(id));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -567,7 +565,12 @@ function PaperResults({ paper, answers, behavior, startedAt, timeUsedSec }: { pa
         ))}
       </div>
 
-      <div className="flex gap-3 mt-8">
+      <div className="mt-8 flex flex-wrap gap-3">
+        {savedSessionId && (
+          <Link href={`/tests/${paper.testId}/history/${savedSessionId}`} className="flex-1 rounded-xl border border-blue-500 py-3 text-center text-sm font-medium text-blue-700">
+            查看完整报告
+          </Link>
+        )}
         <Link href={`/tests/${paper.testId}`} className="flex-1 text-center py-3 rounded-xl border border-neutral-300 text-sm text-neutral-600 hover:bg-neutral-50">
           返回考试主页
         </Link>

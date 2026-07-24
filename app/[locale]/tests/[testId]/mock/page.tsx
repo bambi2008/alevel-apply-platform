@@ -19,6 +19,7 @@ import { MathRenderer } from "@/components/math-renderer";
 import type { GradeRequest, GradeResponse } from "@/app/api/grade-answer/route";
 import { createQuestionTelemetry, type QuestionTelemetrySnapshot, type QuestionTelemetryTracker } from "@/lib/tests/telemetry";
 import { scoreObjectiveAnswer } from "@/lib/tests/objective-scoring";
+import { persistExamSession } from "@/lib/tests/persist-session";
 
 const QUESTION_BANKS: Record<string, Question[]> = {
   mat: MAT_QUESTIONS,
@@ -730,6 +731,7 @@ function MockResults({
   onRetry: () => void;
 }) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [savedSessionId, setSavedSessionId] = useState<string | null>(null);
 
   const scoreBase = presetId === "smc" ? 25 : 0;
   const totalEarned = scoreBase + results.reduce((s, r) => s + (r.earned ?? 0), 0);
@@ -764,11 +766,7 @@ function MockResults({
         };
       }),
     };
-    fetch("/api/exam-sessions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    }).catch(() => {/* ignore */});
+    void persistExamSession(payload).then((id) => setSavedSessionId(id));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -903,7 +901,15 @@ function MockResults({
         })}
       </div>
 
-      <div className="flex gap-3 mt-8 justify-center">
+      <div className="mt-8 flex flex-wrap justify-center gap-3">
+        {savedSessionId && (
+          <Link
+            href={`/tests/${testId}/history/${savedSessionId}`}
+            className="px-6 py-3 rounded-xl border border-[var(--indigo)] font-medium text-[var(--indigo)] text-center"
+          >
+            查看完整报告
+          </Link>
+        )}
         <button type="button" onClick={onRetry} className="px-6 py-3 rounded-xl bg-[var(--indigo)] text-white font-medium hover:bg-[var(--indigo-hover)]">
           再考一次
         </button>

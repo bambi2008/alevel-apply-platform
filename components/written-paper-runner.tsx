@@ -451,6 +451,7 @@ function WrittenPaperResults({
   onRetry: () => void;
 }) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const [savedSessionId, setSavedSessionId] = useState<string | null>(null);
   const persistedRef = useRef(false);
   const graded = grades.filter((result) => result.grading);
   const scoredGrades = getCountedResults(grades, paper.bestQuestionCount);
@@ -502,7 +503,7 @@ function WrittenPaperResults({
         };
       }),
     };
-    void persistExamSession(payload);
+    void persistExamSession(payload).then((id) => setSavedSessionId(id));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -618,9 +619,10 @@ function WrittenPaperResults({
         </div>
       </section>
 
-      <div className="mt-8 flex gap-3">
-        <Link href={`/tests/${paper.testId}`} className="flex-1 rounded-md border border-[var(--border)] py-3 text-center text-sm">返回 {TEST_LABELS[paper.testId] ?? paper.testId.toUpperCase()}</Link>
-        <button type="button" onClick={onRetry} className="flex-1 rounded-md bg-[var(--indigo)] py-3 text-sm font-semibold text-white">重做本卷</button>
+      <div className="mt-8 grid gap-3 sm:grid-cols-3">
+        <Link href={`/tests/${paper.testId}`} className="rounded-md border border-[var(--border)] py-3 text-center text-sm">返回 {TEST_LABELS[paper.testId] ?? paper.testId.toUpperCase()}</Link>
+        {savedSessionId && <Link href={`/tests/${paper.testId}/history/${savedSessionId}`} className="rounded-md border border-[var(--indigo)] py-3 text-center text-sm font-semibold text-[var(--indigo)]">查看完整报告</Link>}
+        <button type="button" onClick={onRetry} className="rounded-md bg-[var(--indigo)] py-3 text-sm font-semibold text-white">重做本卷</button>
       </div>
     </div>
   );

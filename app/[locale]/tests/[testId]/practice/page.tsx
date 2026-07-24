@@ -773,6 +773,7 @@ function SessionSummary({
   onRestart: () => void;
 }) {
   const persistedRef = useRef(false);
+  const [savedSessionId, setSavedSessionId] = useState<string | null>(null);
   const mcqResults = results.filter((r) => r.type === "mcq");
   const longResults = results.filter((r) => r.type === "long");
 
@@ -822,7 +823,7 @@ function SessionSummary({
           visits: r.visits ?? 1,
           firstSelected: r.firstSelected ?? r.selected,
         })),
-      });
+      }).then((id) => setSavedSessionId(id));
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -872,7 +873,15 @@ function SessionSummary({
         </section>
       )}
 
-      <div className="flex gap-3 justify-center">
+      <div className="flex flex-wrap justify-center gap-3">
+        {savedSessionId && (
+          <Link
+            href={`/tests/${testId}/history/${savedSessionId}`}
+            className="px-6 py-3 rounded-xl border border-[var(--indigo)] font-medium text-[var(--indigo)]"
+          >
+            查看完整报告
+          </Link>
+        )}
         <button
           type="button"
           onClick={onRestart}

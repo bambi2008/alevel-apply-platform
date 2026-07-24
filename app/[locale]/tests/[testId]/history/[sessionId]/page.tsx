@@ -6,8 +6,10 @@ import { getTestById } from "@/lib/tests";
 import { getQuestionById } from "@/lib/tests/lookup";
 import type { MCQQuestion, LongQuestion } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
-import { DiagnosisSummary, QuestionDiagnosis } from "@/components/exam-diagnosis";
-import { buildSessionDiagnosis, diagnoseAnswer, optionReview } from "@/lib/tests/diagnosis";
+import { QuestionDiagnosis } from "@/components/exam-diagnosis";
+import { diagnoseAnswer, optionReview } from "@/lib/tests/diagnosis";
+import { ExamPerformanceReportView } from "@/components/exam-performance-report";
+import type { ExamPerformanceReport } from "@/lib/tests/report";
 
 interface PartFeedback {
   label: string;
@@ -53,17 +55,21 @@ export default function SessionReviewPage({
   const test = getTestById(testId);
 
   const [data, setData] = useState<SessionDetail | null>(null);
+  const [report, setReport] = useState<ExamPerformanceReport | null>(null);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetch(`/api/exam-sessions/${sessionId}`)
+    fetch(`/api/exam-sessions/${sessionId}/report`)
       .then((r) => {
         if (r.status === 401) throw new Error("请先登录后查看");
         if (r.status === 404) throw new Error("记录不存在或无权访问");
         if (!r.ok) throw new Error("加载失败");
-        return r.json() as Promise<SessionDetail>;
+        return r.json() as Promise<{ session: SessionDetail; report: ExamPerformanceReport }>;
       })
-      .then(setData)
+      .then((result) => {
+        setData(result.session);
+        setReport(result.report);
+      })
       .catch((e) => setError(e.message));
   }, [sessionId]);
 
@@ -78,33 +84,16 @@ export default function SessionReviewPage({
     );
   }
 
-  if (!data) {
+  if (!data || !report) {
     return <div className="mx-auto max-w-2xl px-4 py-16 text-center text-neutral-400 text-sm">加载中…</div>;
   }
 
-  const pct = data.totalMax > 0 ? Math.round((data.totalEarned / data.totalMax) * 100) : 0;
   const fmtDate = new Date(data.createdAt).toLocaleString("zh-CN", {
     year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit",
   });
-  const sessionDiagnosis = buildSessionDiagnosis(data.answers.flatMap((answer) => {
-    const question = getQuestionById(answer.questionId);
-    return question ? [{
-      question,
-      selected: answer.selected,
-      earned: answer.earned,
-      max: answer.max,
-      work: answer.work,
-      feedback: answer.feedback,
-      timeSpentSec: answer.timeSpentSec,
-      answerChanges: answer.answerChanges,
-      visits: answer.visits,
-      flagged: answer.flagged,
-      firstSelected: answer.firstSelected,
-    }] : [];
-  }));
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
+    <div className="mx-auto max-w-5xl px-4 py-10">
       <div className="flex items-center justify-between mb-6">
         <Link href={`/tests/${testId}`} className="text-sm text-neutral-500 hover:text-neutral-800">
           ← {test?.abbr ?? testId} 备考详情
@@ -112,30 +101,14 @@ export default function SessionReviewPage({
         <span className="text-sm text-neutral-400">{fmtDate}</span>
       </div>
 
-      {/* 概要 */}
-      <div className="rounded-2xl border border-neutral-200 bg-white p-6 mb-8 flex items-center gap-5">
-        <div className={`w-16 h-16 rounded-full flex items-center justify-center text-lg font-bold shrink-0 ${
-          pct >= 80 ? "bg-green-100 text-green-700" :
-          pct >= 60 ? "bg-amber-100 text-amber-700" :
-          "bg-red-100 text-red-600"
-        }`}>
-          {pct}%
-        </div>
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-600">
-              {data.mode === "mock" ? "模拟考试" : "专项练习"}
-            </span>
-            <span className="text-sm font-medium">{data.totalEarned} / {data.totalMax} 分</span>
-          </div>
-          <p className="text-sm text-neutral-500 mt-1">共 {data.answers.length} 题 · 逐题回看</p>
-        </div>
-      </div>
-
-      <DiagnosisSummary diagnosis={sessionDiagnosis} />
+      <ExamPerformanceReportView report={report} />
 
       {/* 逐题回看 */}
-      <div className="mt-8 space-y-6">
+      <div className="mt-12 border-t border-neutral-200 pt-8">
+        <h2 className="text-lg font-bold">逐题回看</h2>
+        <p className="mt-1 text-sm text-neutral-500">核对答案、评分点和本题错因</p>
+      </div>
+      <div className="mt-5 space-y-6">
         {data.answers.map((a, idx) => (
           <ReviewCard key={`${a.questionId}-${idx}`} index={idx + 1} answer={a} />
         ))}
