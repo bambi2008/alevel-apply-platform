@@ -20,6 +20,10 @@ import type { Question, MCQQuestion, LongQuestion } from "@/lib/tests/questions/
 import { MathRenderer } from "@/components/math-renderer";
 import type { GradeRequest, GradeResponse } from "@/app/api/grade-answer/route";
 import { scoreObjectiveAnswer } from "@/lib/tests/objective-scoring";
+import { getQuestionById } from "@/lib/tests/lookup";
+import { buildSessionDiagnosis } from "@/lib/tests/diagnosis";
+import { DiagnosisSummary, QuestionDiagnosis } from "@/components/exam-diagnosis";
+import { persistExamSession } from "@/lib/tests/persist-session";
 
 const QUESTION_BANKS: Record<string, Question[]> = {
   mat: MAT_QUESTIONS,
@@ -768,6 +772,7 @@ function SessionSummary({
   strategy: PracticeMode;
   onRestart: () => void;
 }) {
+  const persistedRef = useRef(false);
   const mcqResults = results.filter((r) => r.type === "mcq");
   const longResults = results.filter((r) => r.type === "long");
 
@@ -776,13 +781,27 @@ function SessionSummary({
   const longMax = longResults.reduce((s, r) => s + (r.max ?? 0), 0);
   const totalEarned = mcqResults.reduce((s, r) => s + (r.earned ?? 0), 0) + longEarned;
   const totalMax = results.reduce((s, r) => s + (r.max ?? 0), 0);
+  const diagnosis = buildSessionDiagnosis(results.flatMap((result) => {
+    const question = getQuestionById(result.questionId);
+    return question ? [{
+      question,
+      selected: result.selected,
+      earned: result.earned ?? (result.correct ? 1 : 0),
+      max: result.max ?? 1,
+      work: result.work,
+      feedback: Array.isArray(result.feedback) ? result.feedback : undefined,
+      timeSpentSec: result.timeSpentSec,
+      answerChanges: result.answerChanges,
+      visits: result.visits,
+      firstSelected: result.firstSelected ?? result.selected,
+    }] : [];
+  }));
 
   // Save to DB silently (best-effort, non-blocking)
   useEffect(() => {
-    fetch("/api/exam-sessions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
+    if (persistedRef.current) return;
+    persistedRef.current = true;
+    void persistExamSession({
         testId,
         mode: "practice",
         totalEarned,
@@ -803,8 +822,7 @@ function SessionSummary({
           visits: r.visits ?? 1,
           firstSelected: r.firstSelected ?? r.selected,
         })),
-      }),
-    }).catch(() => {/* ignore auth/network errors */});
+      });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -833,6 +851,26 @@ function SessionSummary({
           </div>
         )}
       </div>
+
+      <DiagnosisSummary diagnosis={diagnosis} />
+
+      {diagnosis.issues.length > 0 && (
+        <section className="mt-8 text-left">
+          <h2 className="text-base font-bold">优先复盘</h2>
+          <div className="mt-3 divide-y divide-[var(--border)] border-y border-[var(--border)]">
+            {diagnosis.issues.slice(0, 5).map((item, index) => {
+              const question = getQuestionById(item.questionId);
+              if (!question) return null;
+              return (
+                <div key={item.questionId} className="py-4">
+                  <p className="text-xs font-medium text-[var(--ink-faint)]">第 {index + 1} 项 · {question.topicId}</p>
+                  <QuestionDiagnosis diagnosis={item} question={question} compact />
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       <div className="flex gap-3 justify-center">
         <button

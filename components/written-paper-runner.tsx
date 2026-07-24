@@ -7,6 +7,9 @@ import type { GradeRequest, GradeResponse } from "@/app/api/grade-answer/route";
 import type { MockPaper } from "@/lib/tests/mock-papers";
 import type { LongQuestion } from "@/lib/tests/questions/types";
 import { getCountedResults } from "@/lib/tests/mock-papers/scoring";
+import { DiagnosisSummary, QuestionDiagnosis } from "@/components/exam-diagnosis";
+import { buildSessionDiagnosis, diagnoseAnswer } from "@/lib/tests/diagnosis";
+import { persistExamSession } from "@/lib/tests/persist-session";
 
 type Phase = "briefing" | "running" | "grading" | "results";
 type WrittenWorks = Record<string, Record<string, string>>;
@@ -448,6 +451,7 @@ function WrittenPaperResults({
   onRetry: () => void;
 }) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
+  const persistedRef = useRef(false);
   const graded = grades.filter((result) => result.grading);
   const scoredGrades = getCountedResults(grades, paper.bestQuestionCount);
   const earned = scoredGrades.reduce((sum, result) => sum + (result.grading?.totalEarned ?? 0), 0);
@@ -463,8 +467,20 @@ function WrittenPaperResults({
     };
   });
   const missingSteps = graded.flatMap((result) => result.grading?.perPart.flatMap((part) => part.keyStepsMissing) ?? []).slice(0, 6);
+  const diagnosis = buildSessionDiagnosis(questions.flatMap((question) => {
+    const result = grades.find((item) => item.questionId === question.id);
+    return result?.grading ? [{
+      question,
+      work: works[question.id],
+      earned: result.grading.totalEarned,
+      max: result.grading.totalMax,
+      feedback: result.grading.perPart,
+    }] : [];
+  }));
 
   useEffect(() => {
+    if (persistedRef.current) return;
+    persistedRef.current = true;
     const payload = {
       testId: paper.testId,
       mode: "paper",
@@ -486,11 +502,7 @@ function WrittenPaperResults({
         };
       }),
     };
-    fetch("/api/exam-sessions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    }).catch(() => {});
+    void persistExamSession(payload);
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -511,6 +523,8 @@ function WrittenPaperResults({
           待自评题目未按零分处理，也未计入得分率。
         </p>
       )}
+
+      <DiagnosisSummary diagnosis={diagnosis} />
 
       <section className="mt-9">
         <h2 className="text-base font-bold">主题表现</h2>
@@ -539,6 +553,13 @@ function WrittenPaperResults({
           {questions.map((question, index) => {
             const result = grades.find((item) => item.questionId === question.id);
             const open = expandedId === question.id;
+            const itemDiagnosis = result?.grading ? diagnoseAnswer({
+              question,
+              work: works[question.id],
+              earned: result.grading.totalEarned,
+              max: result.grading.totalMax,
+              feedback: result.grading.perPart,
+            }) : null;
             return (
               <div key={question.id}>
                 <button type="button" onClick={() => setExpandedId(open ? null : question.id)} className="flex w-full items-center gap-3 py-4 text-left">
@@ -570,6 +591,7 @@ function WrittenPaperResults({
                           </div>
                         ))}
                         <p className="text-[var(--ink-soft)]">{result.grading.overallFeedback}</p>
+                        {itemDiagnosis && <QuestionDiagnosis diagnosis={itemDiagnosis} question={question} compact />}
                       </div>
                     ) : (
                       <div>

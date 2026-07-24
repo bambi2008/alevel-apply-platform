@@ -13,6 +13,7 @@ import { TMUA_QUESTIONS } from "@/lib/tests/questions/tmua";
 import { UCAT_QUESTIONS } from "@/lib/tests/questions/ucat";
 import type { Question } from "@/lib/tests/questions/types";
 import { findSemanticRisks } from "./semantic";
+import { findTeachingRisks } from "./teaching";
 
 export type AuditSeverity = "critical" | "warning" | "info";
 
@@ -170,6 +171,12 @@ function auditQuestion(question: Question, expectedTestId: string, validTopics: 
     if (!question.question.trim() || !question.solution.trim() || question.marks <= 0) {
       issues.push({ ...base, code: "INCOMPLETE_MCQ", severity: "critical", message: "选择题题干、解答或分值不完整。" });
     }
+    issues.push(...findTeachingRisks(question).map((risk) => ({
+      ...base,
+      code: risk.code,
+      severity: risk.severity,
+      message: risk.message,
+    })));
   } else {
     const partMarks = question.parts.reduce((sum, part) => sum + part.marks, 0);
     if (question.parts.length === 0 || partMarks !== question.totalMarks || question.totalMarks <= 0) {
@@ -241,6 +248,16 @@ export function buildQuestionBankAudit(): QuestionBankAuditReport {
           topicId: question.topicId,
           questionId: question.id,
         })));
+        if (question.type === "mcq") {
+          issues.push(...findTeachingRisks(question).map((risk) => ({
+            code: risk.code,
+            severity: risk.severity,
+            message: risk.message,
+            testId: test.id,
+            topicId: question.topicId,
+            questionId: question.id,
+          })));
+        }
       }
     }
   }

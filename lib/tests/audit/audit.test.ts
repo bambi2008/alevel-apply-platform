@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { buildQuestionBankAudit } from "./index";
 import { buildDetailedQuestionCalibrations, calibrateQuestionDifficulty } from "./calibration";
 import { findSemanticRisks } from "./semantic";
+import { findTeachingRisks } from "./teaching";
 import type { MCQQuestion } from "@/lib/tests/questions/types";
 
 describe("question bank audit", () => {
@@ -97,5 +98,24 @@ describe("semantic question audit", () => {
   it("flags unfinished self-correction prose", () => {
     expect(findSemanticRisks({ ...base, solution: "Hmm, let me recompute this." }).map((risk) => risk.code))
       .toContain("DRAFT_REASONING");
+  });
+});
+
+describe("teaching quality audit", () => {
+  it("requires complete distractor explanations once authored review is enabled", () => {
+    const risks = findTeachingRisks({
+      id: "teaching-fixture",
+      type: "mcq",
+      testId: "mat",
+      topicId: "mat-poly",
+      difficulty: 1,
+      marks: 1,
+      question: "What is 2 + 2?",
+      options: [{ key: "A", text: "4" }, { key: "B", text: "5" }],
+      answer: "A",
+      solution: "Adding gives 4.",
+      optionExplanations: { A: "Correct because 2+2=4." },
+    });
+    expect(risks.map((risk) => risk.code)).toContain("INCOMPLETE_OPTION_EXPLANATIONS");
   });
 });

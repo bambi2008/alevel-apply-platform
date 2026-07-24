@@ -21,6 +21,7 @@ export interface MCQQuestion {
   options: MCQOption[];
   answer: MCQOptionKey;
   solution: string;   // step-by-step solution in LaTeX
+  optionExplanations?: Partial<Record<MCQOptionKey, string>>;
   hint?: string;
   context?: string;
   responseMode?: "single" | "matrix";

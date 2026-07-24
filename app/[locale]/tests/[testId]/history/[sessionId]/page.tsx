@@ -6,6 +6,8 @@ import { getTestById } from "@/lib/tests";
 import { getQuestionById } from "@/lib/tests/lookup";
 import type { MCQQuestion, LongQuestion } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
+import { DiagnosisSummary, QuestionDiagnosis } from "@/components/exam-diagnosis";
+import { buildSessionDiagnosis, diagnoseAnswer, optionReview } from "@/lib/tests/diagnosis";
 
 interface PartFeedback {
   label: string;
@@ -24,6 +26,11 @@ interface SessionAnswer {
   earned: number;
   max: number;
   feedback: PartFeedback[] | null;
+  timeSpentSec: number | null;
+  answerChanges: number;
+  visits: number;
+  flagged: boolean;
+  firstSelected: string | null;
 }
 
 interface SessionDetail {
@@ -79,6 +86,22 @@ export default function SessionReviewPage({
   const fmtDate = new Date(data.createdAt).toLocaleString("zh-CN", {
     year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit",
   });
+  const sessionDiagnosis = buildSessionDiagnosis(data.answers.flatMap((answer) => {
+    const question = getQuestionById(answer.questionId);
+    return question ? [{
+      question,
+      selected: answer.selected,
+      earned: answer.earned,
+      max: answer.max,
+      work: answer.work,
+      feedback: answer.feedback,
+      timeSpentSec: answer.timeSpentSec,
+      answerChanges: answer.answerChanges,
+      visits: answer.visits,
+      flagged: answer.flagged,
+      firstSelected: answer.firstSelected,
+    }] : [];
+  }));
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
@@ -109,8 +132,10 @@ export default function SessionReviewPage({
         </div>
       </div>
 
+      <DiagnosisSummary diagnosis={sessionDiagnosis} />
+
       {/* 逐题回看 */}
-      <div className="space-y-6">
+      <div className="mt-8 space-y-6">
         {data.answers.map((a, idx) => (
           <ReviewCard key={`${a.questionId}-${idx}`} index={idx + 1} answer={a} />
         ))}
@@ -122,6 +147,19 @@ export default function SessionReviewPage({
 function ReviewCard({ index, answer }: { index: number; answer: SessionAnswer }) {
   const q = getQuestionById(answer.questionId);
   const correctish = answer.max > 0 && answer.earned >= answer.max;
+  const itemDiagnosis = q ? diagnoseAnswer({
+    question: q,
+    selected: answer.selected,
+    earned: answer.earned,
+    max: answer.max,
+    work: answer.work,
+    feedback: answer.feedback,
+    timeSpentSec: answer.timeSpentSec,
+    answerChanges: answer.answerChanges,
+    visits: answer.visits,
+    flagged: answer.flagged,
+    firstSelected: answer.firstSelected,
+  }) : null;
 
   return (
     <div className="rounded-2xl border border-neutral-200 bg-white p-6">
@@ -147,6 +185,7 @@ function ReviewCard({ index, answer }: { index: number; answer: SessionAnswer })
       {q && answer.type === "long" && (
         <LongReview q={q as LongQuestion} work={answer.work} feedback={answer.feedback} />
       )}
+      {q && itemDiagnosis && <QuestionDiagnosis diagnosis={itemDiagnosis} question={q} />}
     </div>
   );
 }
@@ -162,12 +201,20 @@ function MCQReview({ q, selected }: { q: MCQQuestion; selected: string | null })
           let cls = "border-neutral-200 bg-white";
           if (isCorrect) cls = "border-green-500 bg-green-50";
           else if (isChosen) cls = "border-red-400 bg-red-50";
+          const review = optionReview(q, opt.key);
           return (
-            <div key={opt.key} className={`rounded-xl border-2 px-4 py-2.5 flex items-start gap-3 ${cls}`}>
-              <span className="font-bold text-sm shrink-0 w-5">{opt.key}.</span>
-              <MathRenderer text={opt.text} className="flex-1 text-sm" />
-              {isCorrect && <span className="text-green-600 text-sm shrink-0">✓ 正确</span>}
-              {isChosen && !isCorrect && <span className="text-red-500 text-sm shrink-0">你的选择</span>}
+            <div key={opt.key} className={`rounded-xl border-2 px-4 py-2.5 ${cls}`}>
+              <div className="flex items-start gap-3">
+                <span className="font-bold text-sm shrink-0 w-5">{opt.key}.</span>
+                <MathRenderer text={opt.text} className="flex-1 text-sm" />
+                {isCorrect && <span className="text-green-600 text-sm shrink-0">✓ 正确</span>}
+                {isChosen && !isCorrect && <span className="text-red-500 text-sm shrink-0">你的选择</span>}
+              </div>
+              {(isCorrect || isChosen) && (
+                <p className="ml-8 mt-1 text-xs leading-5 text-neutral-500">
+                  <span className="font-medium">{review.title}：</span>{review.detail}
+                </p>
+              )}
             </div>
           );
         })}

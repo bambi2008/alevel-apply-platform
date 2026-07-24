@@ -9,6 +9,9 @@ import type { MCQQuestion } from "@/lib/tests/questions/types";
 import { createQuestionTelemetry, type QuestionTelemetrySnapshot, type QuestionTelemetryTracker } from "@/lib/tests/telemetry";
 import { examProgressKey, parseExamProgress, summarizeModule, type ObjectiveExamProgress } from "@/lib/tests/exam-progress";
 import { decodeMatrixAnswer, encodeMatrixAnswer, estimateSjtBand, estimateUcatScaledScore, isObjectiveAnswerComplete, scoreObjectiveAnswer } from "@/lib/tests/objective-scoring";
+import { DiagnosisSummary, QuestionDiagnosis } from "@/components/exam-diagnosis";
+import { buildSessionDiagnosis, diagnoseAnswer, optionReview } from "@/lib/tests/diagnosis";
+import { persistExamSession } from "@/lib/tests/persist-session";
 
 type ObjectivePaper = Omit<MockPaper, "modules"> & {
   modules: Array<Omit<MockPaper["modules"][number], "questions"> & { questions: MCQQuestion[] }>;
@@ -356,20 +359,33 @@ function Metric({ value, label }: { value: number; label: string }) {
 
 function ObjectiveResults({ paper, answers, behavior, startedAt, timeUsedSec }: { paper: ObjectivePaper; answers: Record<string, string>; behavior: Record<string, QuestionTelemetrySnapshot>; startedAt: number; timeUsedSec: number }) {
   const [open, setOpen] = useState<Record<string, boolean>>({});
+  const persistedRef = useRef(false);
   const moduleScores = paper.modules.map((module) => ({ module, earned: module.questions.reduce((sum, question) => sum + scoreObjectiveAnswer(question, answers[question.id]).earned, 0), max: module.questions.reduce((sum, question) => sum + scoreObjectiveAnswer(question, answers[question.id]).max, 0) }));
   const totalEarned = moduleScores.reduce((sum, item) => sum + item.earned, 0);
   const totalMax = moduleScores.reduce((sum, item) => sum + item.max, 0);
+  const diagnosis = buildSessionDiagnosis(paper.modules.flatMap((module) => module.questions.map((question) => {
+    const score = scoreObjectiveAnswer(question, answers[question.id]);
+    return {
+      question,
+      selected: answers[question.id],
+      earned: score.earned,
+      max: score.max,
+      ...behavior[question.id],
+    };
+  })));
 
   useEffect(() => {
+    if (persistedRef.current) return;
+    persistedRef.current = true;
     const questions = paper.modules.flatMap((module) => module.questions);
-    fetch("/api/exam-sessions", { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({
+    void persistExamSession({
       testId: paper.testId, mode: "paper", paperId: paper.id,
       startedAt: startedAt ? new Date(startedAt).toISOString() : undefined,
       timeUsedSec,
       clientMeta: { schemaVersion: 2, runner: "objective-v2", viewport: `${window.innerWidth}x${window.innerHeight}`, locale: navigator.language },
       totalEarned, totalMax,
       answers: questions.map((question) => ({ questionId: question.id, type: "mcq", selected: answers[question.id], ...scoreObjectiveAnswer(question, answers[question.id]), ...behavior[question.id] })),
-    }) }).catch(() => {});
+    });
     // Result persistence is intentionally best-effort and runs once per completed attempt.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -378,8 +394,9 @@ function ObjectiveResults({ paper, answers, behavior, startedAt, timeUsedSec }: 
     <header className="border-b border-neutral-200 pb-7 text-center"><p className="text-sm text-neutral-500">{paper.title} · 成绩</p><p className="mt-3 text-5xl font-bold text-blue-600">{totalEarned}<span className="text-2xl text-neutral-400">/{totalMax}</span></p><p className="mt-1 text-sm text-neutral-500">正确率 {Math.round((totalEarned / totalMax) * 100)}%</p></header>
     {paper.testId === "ucat" && <UcatScoreSummary moduleScores={moduleScores} />}
     <section className="mt-6 grid gap-px overflow-hidden rounded-lg border border-neutral-200 bg-neutral-200 sm:grid-cols-2">{moduleScores.map(({ module, earned, max }) => <div key={module.id} className="bg-white p-4 text-center"><p className="text-xs text-neutral-500">{module.title}</p><p className="mt-1 text-2xl font-bold">{earned}<span className="text-base text-neutral-400">/{max}</span></p><p className="text-xs text-neutral-400">{Math.round((earned / max) * 100)}%</p></div>)}</section>
+    <DiagnosisSummary diagnosis={diagnosis} />
     <h2 className="mt-8 text-base font-bold">逐题回看</h2>
-    <div className="mt-3 space-y-5">{paper.modules.map((module) => <section key={module.id}><p className="mb-2 text-xs font-semibold text-neutral-500">{module.title}</p><div className="divide-y divide-neutral-100 border-y border-neutral-200">{module.questions.map((question, index) => { const selected = answers[question.id]; const score = scoreObjectiveAnswer(question, selected); return <div key={question.id}><button type="button" onClick={() => setOpen((current) => ({ ...current, [question.id]: !current[question.id] }))} className="flex w-full items-center gap-3 py-3 text-left"><span className={`flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${score.correct ? "bg-green-100 text-green-700" : score.earned > 0 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}`}>{score.correct ? "✓" : score.earned > 0 ? "½" : "×"}</span><span className="text-xs text-neutral-400">Q{index + 1}</span><MathRenderer text={question.question} className="line-clamp-1 flex-1 text-sm" /><span className="text-xs text-neutral-400">{open[question.id] ? "收起" : "查看"}</span></button>{open[question.id] && <div className="pb-4 pl-9"><p className="text-xs text-neutral-500">得分：{score.earned}/{score.max} · 你的答案：{selected || "未答"}{question.responseMode !== "matrix" ? ` · 正确答案：${question.answer}` : ""}</p><MathRenderer text={question.solution} className="mt-2 rounded bg-neutral-50 px-3 py-2 text-sm text-neutral-700" block /></div>}</div>; })}</div></section>)}</div>
+    <div className="mt-3 space-y-5">{paper.modules.map((module) => <section key={module.id}><p className="mb-2 text-xs font-semibold text-neutral-500">{module.title}</p><div className="divide-y divide-neutral-100 border-y border-neutral-200">{module.questions.map((question, index) => { const selected = answers[question.id]; const score = scoreObjectiveAnswer(question, selected); const itemDiagnosis = diagnoseAnswer({ question, selected, earned: score.earned, max: score.max, ...behavior[question.id] }); const selectedOption = question.options.find((option) => option.key === selected); const selectedReview = selectedOption ? optionReview(question, selectedOption.key) : null; return <div key={question.id}><button type="button" onClick={() => setOpen((current) => ({ ...current, [question.id]: !current[question.id] }))} className="flex w-full items-center gap-3 py-3 text-left"><span className={`flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${score.correct ? "bg-green-100 text-green-700" : score.earned > 0 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}`}>{score.correct ? "✓" : score.earned > 0 ? "½" : "×"}</span><span className="text-xs text-neutral-400">Q{index + 1}</span><MathRenderer text={question.question} className="line-clamp-1 flex-1 text-sm" /><span className="text-xs text-neutral-400">{open[question.id] ? "收起" : "查看"}</span></button>{open[question.id] && <div className="pb-4 pl-9"><p className="text-xs text-neutral-500">得分：{score.earned}/{score.max} · 你的答案：{selected || "未答"}{question.responseMode !== "matrix" ? ` · 正确答案：${question.answer}` : ""}</p>{selectedReview && <p className="mt-2 text-xs leading-5 text-neutral-600"><span className="font-semibold">{selectedReview.title}：</span>{selectedReview.detail}</p>}<MathRenderer text={question.solution} className="mt-2 rounded bg-neutral-50 px-3 py-2 text-sm text-neutral-700" block /><QuestionDiagnosis diagnosis={itemDiagnosis} question={question} compact /></div>}</div>; })}</div></section>)}</div>
     <div className="mt-8 flex gap-3"><Link href={`/tests/${paper.testId}`} className="flex-1 rounded-md border border-neutral-300 py-3 text-center text-sm">返回考试主页</Link><Link href={`/tests/${paper.testId}/paper/${paper.id}`} className="flex-1 rounded-md bg-blue-600 py-3 text-center text-sm font-semibold text-white">重新作答</Link></div>
   </main>;
 }
