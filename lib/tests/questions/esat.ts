@@ -652,13 +652,13 @@ export const ESAT_PHYSICS: MCQQuestion[] = [
       "A ball on a string of length $r=1.2\\,\\text{m}$ swings in a vertical circle. What is the minimum speed at the top of the circle for the string to remain taut? ($g=10\\,\\text{m s}^{-2}$)",
     options: [
       { key: "A", text: "$\\sqrt{10}\\,\\text{m s}^{-1}$" },
-      { key: "B", text: "$2\\sqrt{3}\\,\\text{m s}^{-1}$" },
+      { key: "B", text: "$3\\sqrt{2}\\,\\text{m s}^{-1}$" },
       { key: "C", text: "$\\sqrt{6}\\,\\text{m s}^{-1}$" },
       { key: "D", text: "$\\sqrt{12}\\,\\text{m s}^{-1}$" },
     ],
     answer: "D",
     solution:
-      "Minimum condition at top: tension $T=0$, so $mg=\\dfrac{mv^2}{r}\\Rightarrow v=\\sqrt{gr}=\\sqrt{10\\times1.2}=\\sqrt{12}\\,\\text{m s}^{-1}$ (equivalently $2\\sqrt{3}\\approx3.46\\,\\text{m s}^{-1}$). Both B and D are equivalent; the rationalised form is $\\sqrt{12}\\,\\text{m s}^{-1}$.",
+      "At the limiting speed the tension at the top is zero, so gravity alone supplies the centripetal force: $mg=\\frac{mv^2}{r}$. Thus $v=\\sqrt{gr}=\\sqrt{10\\times1.2}=\\sqrt{12}\\,\\text{m s}^{-1}$.",
   },
 
   {
@@ -1523,11 +1523,11 @@ export const ESAT_MATH_2: MCQQuestion[] = [
       { key: "A", text: "$y=\\cos x(\\sin x+1)$" },
       { key: "B", text: "$y=\\sin x\\cos x+\\cos x$" },
       { key: "C", text: "$y=\\cos x\\,\\sin x+1$" },
-      { key: "D", text: "$y=(\\sin x+1)\\cos x$" },
+      { key: "D", text: "$y=(\\sin x+1)\\sec x$" },
     ],
     answer: "A",
     solution:
-      "Integrating factor $\\mu=e^{\\int\\tan x\\,dx}=e^{-\\ln\\cos x}=\\sec x$ (taking $|\\cos x|$ as positive). Multiply through: $\\dfrac{d}{dx}(y\\sec x)=\\cos x$. Integrate: $y\\sec x=\\sin x+C$. So $y=\\cos x(\\sin x+C)$. Use $y(0)=1$: $1=\\cos0(0+C)=C$. Thus $y=\\cos x(\\sin x+1)$. Note options A and D are identical; both correct.",
+      "The integrating factor is $\\mu=e^{\\int\\tan x\\,dx}=\\sec x$. Multiplying through gives $\\frac{d}{dx}(y\\sec x)=\\cos x$. Hence $y\\sec x=\\sin x+C$, so $y=\\cos x(\\sin x+C)$. The condition $y(0)=1$ gives $C=1$.",
   },
 
   {
@@ -2206,16 +2206,16 @@ export const ESAT_PHYSICS_2: MCQQuestion[] = [
     difficulty: 3,
     marks: 1,
     question:
-      "In the circuit below, find the current through the $4\\,\\Omega$ resistor. There is a $12\\,\\text{V}$ source, with $2\\,\\Omega$ and $4\\,\\Omega$ in series with $6\\,\\Omega$ in parallel with the $4\\,\\Omega$ branch.",
+      "A $12\\,\\text{V}$ source is connected to a $2\\,\\Omega$ resistor in series with a parallel combination of $4\\,\\Omega$ and $6\\,\\Omega$. Find the current through the $4\\,\\Omega$ resistor.",
     options: [
-      { key: "A", text: "$1.5\\,\\text{A}$" },
+      { key: "A", text: "$\\dfrac{18}{11}\\,\\text{A}$" },
       { key: "B", text: "$2\\,\\text{A}$" },
       { key: "C", text: "$3\\,\\text{A}$" },
       { key: "D", text: "$1\\,\\text{A}$" },
     ],
     answer: "A",
     solution:
-      "Parallel combination of $4\\,\\Omega$ and $6\\,\\Omega$: $R_p=\\dfrac{4\\times6}{10}=2.4\\,\\Omega$. Total $R=2+2.4=4.4\\,\\Omega$. Total $I=\\dfrac{12}{4.4}\\approx2.73\\,\\text{A}$. Voltage across parallel: $V_p=2.73\\times2.4\\approx6.55\\,\\text{V}$. Current in $4\\,\\Omega$: $I_{4}=\\dfrac{6.55}{4}\\approx1.64\\,\\text{A}$. Closest answer: $1.5\\,\\text{A}$.",
+      "The parallel resistance is $R_p=\\frac{4\\times6}{4+6}=\\frac{12}{5}\\,\\Omega$, so the total resistance is $\\frac{22}{5}\\,\\Omega$ and the source current is $\\frac{30}{11}\\,\\text{A}$. The parallel-section voltage is $\\frac{30}{11}\\times\\frac{12}{5}=\\frac{72}{11}\\,\\text{V}$, giving $I_4=\\frac{72/11}{4}=\\frac{18}{11}\\,\\text{A}$.",
   },
 
   {
@@ -2617,7 +2617,7 @@ export const ESAT_PHYSICS_2: MCQQuestion[] = [
     ],
     answer: "A",
     solution:
-      "$\\Delta E=E_2-E_3=\\left(-\\dfrac{13.6}{4}\\right)-\\left(-\\dfrac{13.6}{9}\\right)=13.6\\left(\\dfrac{1}{9}-\\dfrac{1}{4}\\right)=13.6\\times\\dfrac{-5}{36}$. Wait — energy released = $E_3-E_2$ in magnitude: $|\\Delta E|=13.6\\times\\dfrac{5}{36}\\approx1.889\\,\\text{eV}$. $f=\\dfrac{\\Delta E}{h}=\\dfrac{1.889}{4.14\\times10^{-15}}\\approx4.56\\times10^{14}\\,\\text{Hz}\\approx4.57\\times10^{14}\\,\\text{Hz}$.",
+      "The emitted energy is $E_3-E_2=\\left(-\\dfrac{13.6}{9}\\right)-\\left(-\\dfrac{13.6}{4}\\right)=13.6\\left(\\dfrac{1}{4}-\\dfrac{1}{9}\\right)\\approx1.889\\,\\text{eV}$. Hence $f=\\dfrac{\\Delta E}{h}=\\dfrac{1.889}{4.14\\times10^{-15}}\\approx4.56\\times10^{14}\\,\\text{Hz}$, so the answer is A.",
   },
 ];
 
@@ -2966,13 +2966,13 @@ export const ESAT_MATH2A: MCQQuestion[] = [
     options: [
       { key: "A", text: "$1-\\dfrac{1}{n+1}$" },
       { key: "B", text: "$\\dfrac{1}{n(n+1)}$" },
-      { key: "C", text: "$\\dfrac{n}{n+1}$" },
+      { key: "C", text: "$\\dfrac{n+1}{n+2}$" },
       { key: "D", text: "$1+\\dfrac{1}{n+1}$" },
       { key: "E", text: "$\\dfrac{n+1}{n}$" },
     ],
     answer: "A",
     solution:
-      "$\\dfrac{1}{r(r+1)}=\\dfrac{1}{r}-\\dfrac{1}{r+1}$. Telescoping: $\\sum_{r=1}^n\\!\\left(\\dfrac{1}{r}-\\dfrac{1}{r+1}\\right)=1-\\dfrac{1}{n+1}=\\dfrac{n}{n+1}$. (Both A and C are equivalent; answer key uses $1-\\dfrac{1}{n+1}$.)",
+      "$\\frac{1}{r(r+1)}=\\frac{1}{r}-\\frac{1}{r+1}$. The intermediate terms cancel, leaving $1-\\frac{1}{n+1}=\\frac{n}{n+1}$.",
     hint: "Use partial fractions to write each term as a difference, then telescope.",
   },
 
@@ -3276,7 +3276,7 @@ export const ESAT_MATH2B: MCQQuestion[] = [
     question:
       "Find a particular integral of $y''-y'-2y=6e^{3x}$.",
     options: [
-      { key: "A", text: "$y_p=e^{3x}$" },
+      { key: "A", text: "$y_p=\\frac{3}{2}e^{3x}$" },
       { key: "B", text: "$y_p=2e^{3x}$" },
       { key: "C", text: "$y_p=\\frac{1}{2}e^{3x}$" },
       { key: "D", text: "$y_p=3e^{3x}$" },
@@ -3284,7 +3284,7 @@ export const ESAT_MATH2B: MCQQuestion[] = [
     ],
     answer: "A",
     solution:
-      "Try $y_p=ke^{3x}$. Then $y_p'=3ke^{3x}$, $y_p''=9ke^{3x}$. Substitute: $(9k-3k-2k)e^{3x}=6e^{3x}\\Rightarrow4k=6\\Rightarrow k=\\frac{3}{2}$. Wait — re-check: $9k-3k-2k=4k$; $4k=6\\Rightarrow k=\\frac{3}{2}$. However choosing the answer as $e^{3x}$: let us recompute with RHS $=4e^{3x}$: $4k=4,k=1$. So for RHS $=4e^{3x}$, $y_p=e^{3x}$. (RHS here is $6e^{3x}$ giving $k=\\frac{3}{2}$; the listed correct answer A corresponds to $y_p=\\frac{3}{2}e^{3x}$, shown compactly.) Particular integral: $y_p=\\dfrac{3}{2}e^{3x}$.",
+      "Try $y_p=ke^{3x}$. Then $y_p'=3ke^{3x}$ and $y_p''=9ke^{3x}$. Substitution gives $(9k-3k-2k)e^{3x}=6e^{3x}$, so $4k=6$ and $k=\\frac{3}{2}$. Therefore $y_p=\\frac{3}{2}e^{3x}$.",
     hint: "Try $y_p=ke^{3x}$, substitute and compare coefficients.",
   },
 
@@ -3452,7 +3452,7 @@ export const ESAT_MATH2B: MCQQuestion[] = [
     question:
       "Compute $\\det\\begin{pmatrix}1&2&0\\\\3&-1&4\\\\0&5&-2\\end{pmatrix}$.",
     options: [
-      { key: "A", text: "$42$" },
+      { key: "A", text: "$-6$" },
       { key: "B", text: "$-42$" },
       { key: "C", text: "$18$" },
       { key: "D", text: "$-18$" },
@@ -3460,7 +3460,7 @@ export const ESAT_MATH2B: MCQQuestion[] = [
     ],
     answer: "A",
     solution:
-      "Expand along row 1: $1\\cdot\\det\\begin{pmatrix}-1&4\\\\5&-2\\end{pmatrix}-2\\cdot\\det\\begin{pmatrix}3&4\\\\0&-2\\end{pmatrix}+0=1(2-20)-2(-6-0)=1(-18)-2(-6)=-18+12=-6$. Hmm — recompute: $1[((-1)(-2))-(4)(5)]-2[(3)(-2)-(4)(0)]+0=1(2-20)-2(-6-0)=-18+12=-6$. Correct answer is $-6$; listing the closest option — if the matrix were $\\begin{pmatrix}1&2&0\\\\3&-1&4\\\\0&5&2\\end{pmatrix}$ det$=1((-1)(2)-(4)(5))-2((3)(2)-(4)(0))=1(-2-20)-2(6)=-22-12=-34$. Using the original matrix given: $\\det=-18+12=-6$. The answer key shows A=$42$ due to sign convention difference; the computed value with the given matrix is $\\mathbf{-6}$.",
+      "Expanding along the first row gives $1\\bigl((-1)(-2)-4\\cdot5\\bigr)-2\\bigl(3(-2)-4\\cdot0\\bigr)=(2-20)-2(-6)=-18+12=-6$.",
     hint: "Expand along the first row: $a_{11}M_{11}-a_{12}M_{12}+a_{13}M_{13}$.",
   },
 

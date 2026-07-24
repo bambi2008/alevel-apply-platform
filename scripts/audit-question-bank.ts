@@ -28,4 +28,4 @@ if (asJson) {
   }
 }
 
-if (report.totals.critical > 0) process.exitCode = 1;
+if (report.totals.critical > 0 || report.totals.warning > 0) process.exitCode = 1;

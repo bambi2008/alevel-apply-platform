@@ -210,11 +210,11 @@ export const MAT_PART_A: MCQQuestion[] = [
     options: [
       { key: "A", text: "$m^2 + c^2 = r^2$" },
       { key: "B", text: "$c^2 = r^2(1 + m^2)$" },
-      { key: "C", text: "$|c| = r\\sqrt{1+m^2}$" },
+      { key: "C", text: "$|c| = r(1+m^2)$" },
       { key: "D", text: "$c = r(1+m)$" },
     ],
     answer: "B",
-    solution: "The perpendicular distance from the origin to $y=mx+c$ (i.e. $mx-y+c=0$) equals $r$: $\\dfrac{|c|}{\\sqrt{m^2+1}}=r \\Rightarrow c^2 = r^2(1+m^2)$. Note option C gives $|c|=r\\sqrt{1+m^2}$, which is equivalent! Both B and C are correct — but in MAT conventions, the algebraic form B is preferred. (Accept either in practice.)",
+    solution: "The perpendicular distance from the origin to $y=mx+c$, written as $mx-y+c=0$, must equal the radius: $\\dfrac{|c|}{\\sqrt{m^2+1}}=r$. Squaring gives $c^2=r^2(1+m^2)$.",
     hint: "Distance from origin $(0,0)$ to line $ax+by+c=0$ is $\\frac{|c|}{\\sqrt{a^2+b^2}}$.",
   },
   {
@@ -226,13 +226,13 @@ export const MAT_PART_A: MCQQuestion[] = [
     marks: 4,
     question: "A sequence satisfies $a_{n+1} = \\dfrac{1}{2-a_n}$ with $a_1 = \\dfrac{1}{2}$. What is $a_{2026}$?",
     options: [
-      { key: "A", text: "$\\dfrac{1}{2}$" },
+      { key: "A", text: "$\\dfrac{2026}{2027}$" },
       { key: "B", text: "$\\dfrac{2}{3}$" },
       { key: "C", text: "$1$" },
       { key: "D", text: "$\\dfrac{1}{3}$" },
     ],
     answer: "A",
-    solution: "Compute the first few terms. $a_1=\\tfrac{1}{2}$. $a_2=\\tfrac{1}{2-\\frac{1}{2}}=\\tfrac{1}{\\frac{3}{2}}=\\tfrac{2}{3}$. $a_3=\\tfrac{1}{2-\\frac{2}{3}}=\\tfrac{1}{\\frac{4}{3}}=\\tfrac{3}{4}$. $a_4=\\tfrac{1}{2-\\frac{3}{4}}=\\tfrac{1}{\\frac{5}{4}}=\\tfrac{4}{5}$. The pattern is $a_n=\\dfrac{n}{n+1}$. Check: $a_1=\\tfrac{1}{2}\\checkmark$. So $a_{2026}=\\dfrac{2026}{2027}$. None of A–D matches this — recalculating: if instead $a_1=1$, then $a_n$ would diverge. Re-examine: $a_3=3/4$, $a_4=4/5$... so $a_n=n/(n+1)$ and $a_{2026}=2026/2027$. The correct answer here (if we set $a_1=1/2$) is **none of the listed options** — but in a real MAT, distractor design would avoid this. **For the bank, answer is A with $a_{2026}=2026/2027 \\approx 1$** (closest).",
+    solution: "The first terms are $\\frac12,\\frac23,\\frac34,\\frac45$, suggesting $a_n=\\frac{n}{n+1}$. If $a_n=\\frac{n}{n+1}$, then $a_{n+1}=\\frac{1}{2-n/(n+1)}=\\frac{n+1}{n+2}$, so induction confirms the formula. Hence $a_{2026}=\\frac{2026}{2027}$.",
     hint: "Try computing $a_1, a_2, a_3, a_4$ and spot the pattern.",
   },
   {
@@ -283,8 +283,8 @@ export const MAT_PART_A: MCQQuestion[] = [
       { key: "C", text: "$6$" },
       { key: "D", text: "$7$" },
     ],
-    answer: "C",
-    solution: "$|n^2-4|<5 \\Rightarrow -5<n^2-4<5 \\Rightarrow -1<n^2<9$. Since $n^2\\ge 0$, we need $0\\le n^2<9$, so $|n|<3$, giving $n\\in\\{-2,-1,0,1,2\\}$ — that is 5 values... Wait: $n^2 \\in [0,9)$ means $n \\in \\{-2,-1,0,1,2\\}$, which is 5 integers. But also check $n^2=0,1,4$: all satisfy $0\\le n^2 <9$. Plus $n=\\pm 2$: $n^2=4$, $|4-4|=0<5\\checkmark$. So $n\\in\\{-2,-1,0,1,2\\}$: **5 integers**. Correction: answer is **B**.",
+    answer: "B",
+    solution: "$|n^2-4|<5$ gives $-1<n^2<9$. Since $n$ is an integer, this is equivalent to $|n|<3$, so $n\\in\\{-2,-1,0,1,2\\}$. There are $5$ values.",
   },
   {
     id: "mat-a-017",
@@ -296,12 +296,12 @@ export const MAT_PART_A: MCQQuestion[] = [
     question: "Which of the following is equivalent to $\\sin\\theta + \\sqrt{3}\\cos\\theta$?",
     options: [
       { key: "A", text: "$2\\sin\\!\\left(\\theta+\\dfrac{\\pi}{3}\\right)$" },
-      { key: "B", text: "$2\\cos\\!\\left(\\theta-\\dfrac{\\pi}{6}\\right)$" },
+      { key: "B", text: "$2\\cos\\!\\left(\\theta+\\dfrac{\\pi}{6}\\right)$" },
       { key: "C", text: "$2\\sin\\!\\left(\\theta+\\dfrac{\\pi}{6}\\right)$" },
       { key: "D", text: "$\\sqrt{3}\\sin\\!\\left(\\theta+\\dfrac{\\pi}{6}\\right)$" },
     ],
     answer: "A",
-    solution: "Write $R\\sin(\\theta+\\phi)=R\\sin\\theta\\cos\\phi+R\\cos\\theta\\sin\\phi$. Match: $R\\cos\\phi=1$, $R\\sin\\phi=\\sqrt{3}$. So $R=2$, $\\tan\\phi=\\sqrt{3}$, $\\phi=\\pi/3$. Answer: $2\\sin(\\theta+\\pi/3)$. ✓ Check B: $2\\cos(\\theta-\\pi/6)=2\\cos\\theta\\cos\\frac{\\pi}{6}+2\\sin\\theta\\sin\\frac{\\pi}{6}=\\sqrt{3}\\cos\\theta+\\sin\\theta$. Also equals the original — **both A and B are correct**.",
+    solution: "Write $R\\sin(\\theta+\\phi)=R\\sin\\theta\\cos\\phi+R\\cos\\theta\\sin\\phi$. Matching coefficients gives $R\\cos\\phi=1$ and $R\\sin\\phi=\\sqrt3$, hence $R=2$ and $\\phi=\\pi/3$. Therefore the expression is $2\\sin(\\theta+\\pi/3)$.",
     hint: "Use $R\\sin(\\theta+\\phi) = R(\\sin\\theta\\cos\\phi + \\cos\\theta\\sin\\phi)$ and match coefficients.",
   },
   {
@@ -527,8 +527,8 @@ $$\\sum_{n=1}^{N}v_n=\\frac{N}{2}(v_1+v_N)=\\frac{N}{2}(1+2N-1)=N^2.$$
       {
         label: "(iv)",
         marks: 5,
-        question: "Find the area enclosed between the curve $C$, the tangent at $P$, and the $x$-axis.",
-        solutionOutline: "Area under curve from 0 to 2a = integral from 0+ to 2a of 1/x... this diverges. Instead: area of triangle OAB minus area between curve and x-axis from a to 2a, plus area between curve and tangent from some range. Actually: area enclosed by C (from x=a to x=2a), the x-axis, and tangent is: area of triangle OAB minus area under curve from 0 to... Let me think more carefully. The enclosed region is bounded by the tangent line (from A to B via the tangent), the curve, and the x-axis. Area = area of triangle OAB - area under 1/x from 0 to a (which diverges). This approach is wrong. The region bounded by tangent, x-axis from O to A, and curve from P to... Let me reconsider. Region: tangent line, x-axis (from O to A), and curve C. Area = area of triangle OAP (triangle below tangent above x-axis, left of P) + area between tangent and curve from a to 2a. Actually: Area under tangent from 0 to 2a (= triangle OAB area/2... no). Let me just compute: area between tangent line and curve from x=a to x=2a: integral from a to 2a of ((-x/a²+2/a) - 1/x)dx = [-x²/(2a²)+2x/a-ln x] from a to 2a = (-4a²/2a²+4a/a-ln2a)-(-a²/2a²+2a/a-lna) = (-2+4-ln2a)-(-1/2+2-lna)=(2-ln2a)-(-3/2+2·... = (2-ln2-lna)-(3/2-lna) = 1/2-ln2. Plus area of triangle from O to A and from curve O to a (but curve diverges). Result: the finite region between tangent (from a to 2a), curve, and lines x=a, x=2a is 1/2-ln2.",
+        question: "Find the area enclosed by the curve $C$, the tangent at $P$, and the vertical line $x=2a$.",
+        solutionOutline: "Since $y=1/x$ is convex for $x>0$, the curve lies above its tangent. The area is $\\int_a^{2a}\\left(\\frac1x+\\frac{x}{a^2}-\\frac2a\\right)dx=\\ln2-\\frac12$.",
         hint: "Compute the area between the tangent line and the curve $y=1/x$ between $x=a$ and $x=2a$.",
       },
     ],
@@ -538,9 +538,10 @@ $$\\sum_{n=1}^{N}v_n=\\frac{N}{2}(v_1+v_N)=\\frac{N}{2}(1+2N-1)=N^2.$$
 
 (iii) $O=(0,0)$, $A=(2a,0)$, $B=(0,2/a)$. Area $=\\frac{1}{2}|OA||OB|=\\frac{1}{2}\\cdot 2a\\cdot\\frac{2}{a}=2$. Independent of $a$. ✓
 
-(iv) Area between tangent and curve from $x=a$ to $x=2a$:
-$$\\int_a^{2a}\\left(-\\frac{x}{a^2}+\\frac{2}{a}-\\frac{1}{x}\\right)dx=\\left[-\\frac{x^2}{2a^2}+\\frac{2x}{a}-\\ln x\\right]_a^{2a}$$
-$$=\\left(-2+4-\\ln 2a\\right)-\\left(-\\frac{1}{2}+2-\\ln a\\right)=(2-\\ln 2a)-\\left(\\frac{3}{2}-\\ln a\\right)=\\frac{1}{2}-\\ln 2.$$`,
+(iv) The curve lies above its tangent on $[a,2a]$, so the enclosed area is
+$$\\int_a^{2a}\\left(\\frac{1}{x}-\\left(-\\frac{x}{a^2}+\\frac{2}{a}\\right)\\right)dx
+=\\left[\\ln x+\\frac{x^2}{2a^2}-\\frac{2x}{a}\\right]_a^{2a}
+=\\ln2-\\frac12.$$`,
   },
 
   {
@@ -550,13 +551,13 @@ $$=\\left(-2+4-\\ln 2a\\right)-\\left(-\\frac{1}{2}+2-\\ln a\\right)=(2-\\ln 2a)
     topicId: "mat-poly",
     difficulty: 3,
     totalMarks: 15,
-    context: "A polynomial $p(x)$ has degree 3 with leading coefficient 1. It is given that $p(0)=0$, $p(1)=2$, $p(2)=0$, and $p(3)=6$.",
+    context: "A polynomial $p(x)$ has degree 3 with leading coefficient 1. It is given that $p(0)=-6$ and $p(1)=p(2)=p(3)=0$.",
     parts: [
       {
         label: "(i)",
         marks: 3,
         question: "Write $p(x)=x^3+bx^2+cx+d$ and use the given conditions to find $b$, $c$, $d$.",
-        solutionOutline: "p(0)=d=0. p(2)=8+4b+2c=0 so 4b+2c=-8 so 2b+c=-4. p(1)=1+b+c=2 so b+c=1. From 2b+c=-4 and b+c=1: b=-5, c=6, d=0. Check p(3)=27-45+18+0=0≠6. Hmm, contradiction. Let me recheck. p(3)=27+9b+3c+d=27+9(-5)+3(6)+0=27-45+18=0≠6. So these conditions are inconsistent with a degree-3 leading-1 polynomial... let me re-examine the question. Actually perhaps the conditions are p(0)=0, p(1)=2, p(2)=0, p(3)=6. We have 4 conditions and 4 unknowns (b,c,d and leading coef). If leading coef is not necessarily 1, we can solve. But the problem says leading coef =1. This is a poorly set question. Let me fix it: p(-1)=2 instead of p(1)=2. p(-1)=-1+b-c+d=2. With p(0)=0: d=0. p(2)=8+4b+2c=0: 4b+2c=-8. p(-1)=-1+b-c=-2... no wait p(-1)=b-c-1=2 so b-c=3. p(3)=27+9b+3c=6 so 9b+3c=-21 so 3b+c=-7. From b-c=3 and 3b+c=-7: 4b=-4, b=-1, c=-4, d=0. p(x)=x³-x²-4x. Check p(-1)=-1-1+4=2✓, p(2)=8-4-8=-4≠0. Still not working. I'll just use a different set of conditions for a clean problem. Let me use p(0)=-6, p(1)=0, p(2)=0, p(3)=0. Then roots are 1,2,3. p(x)=(x-1)(x-2)(x-3)=x³-6x²+11x-6. Leading coef=1, p(0)=-6✓.",
+        solutionOutline: "The three roots and leading coefficient give $p(x)=(x-1)(x-2)(x-3)=x^3-6x^2+11x-6$. Hence $b=-6$, $c=11$, and $d=-6$.",
       },
       {
         label: "(ii)",
@@ -568,16 +569,16 @@ $$=\\left(-2+4-\\ln 2a\\right)-\\left(-\\frac{1}{2}+2-\\ln a\\right)=(2-\\ln 2a)
         label: "(iii)",
         marks: 5,
         question: "Find $\\displaystyle\\int_1^3 p(x)\\,dx$ and explain the sign of your answer.",
-        solutionOutline: "Integral = integral of (x³-6x²+11x-6) from 1 to 3 = [x⁴/4-2x³+11x²/2-6x] from 1 to 3 = (81/4-54+99/2-18)-(1/4-2+11/2-6) = (81/4-54+99/2-18)-(1/4-2+11/2-6). Calculate: at x=3: 81/4-54+198/4-72/4=81/4+198/4-72/4-216/4=(81+198-72-216)/4=-9/4. At x=1: 1/4-2+11/2-6=1/4-8+22/4-24/4=(1+22-24)/4-8=-1/4-8=-33/4. Integral=(-9/4)-(-33/4)=24/4=6. Wait let me redo. At x=3: x⁴/4=81/4, 2x³=54, 11x²/2=99/2, 6x=18. Sum=81/4-54+99/2-18=81/4+198/4-216/4-72/4=(81+198-216-72)/4=-9/4. At x=1: 1/4-2+11/2-6=1/4+22/4-8/4-24/4=(1+22-8-24)/4=-9/4. Integral=-9/4-(-9/4)=0. Hmm. That means p(x) is symmetric about x=2, so integral is 0. The signed area is 0 because the positive area (above x-axis) equals the negative area (below x-axis).",
+        solutionOutline: "An antiderivative is $F(x)=x^4/4-2x^3+11x^2/2-6x$. Since $F(1)=F(3)=-9/4$, the integral is $0$. The positive signed area on $[1,2]$ cancels the negative signed area on $[2,3]$.",
       },
       {
         label: "(iv)",
         marks: 4,
         question: "Using your answer to (iii), find the total area enclosed between the curve $y = p(x)$ and the $x$-axis.",
-        solutionOutline: "Since p(x) crosses x-axis at x=1,2,3 and integral from 1 to 3 is 0, the area from 1 to 2 = area from 2 to 3 but opposite signs. By symmetry (substituting x=3-t shows p(3-t)=-p(t)... let me check: p(3-t)=(2-t)(1-t)(-t)=-t(1-t)(2-t)=-p(t+0)... actually p(t)=t³-6t²+11t-6=(t-1)(t-2)(t-3)). p(3-t)=(2-t)(1-t)(-t)=-t(1-t)(2-t). p(1+t)=t(t-1)(t-2). Not obviously equal. Compute ∫₁²p(x)dx=[-9/4+9/4]... let me just compute directly. At x=2: 16/4-2·8+11·4/2-6·2=4-16+22-12=-2. So ∫₁²=(−2)−(−9/4)=−2+9/4=1/4. And ∫₂³=(−9/4)−(−2)=−9/4+2=−1/4. Total area=|1/4|+|-1/4|=1/2.",
+        solutionOutline: "$F(2)=-2$, so $\\int_1^2p(x)dx=1/4$ and $\\int_2^3p(x)dx=-1/4$. The total geometric area is therefore $1/4+1/4=1/2$.",
       },
     ],
-    fullSolution: `Re-stated with corrected conditions: $p(x)=(x-1)(x-2)(x-3)=x^3-6x^2+11x-6$ (roots at 1, 2, 3; leading coefficient 1; $p(0)=-6$).
+    fullSolution: `The conditions give $p(x)=(x-1)(x-2)(x-3)=x^3-6x^2+11x-6$.
 
 (i) $p(x)=x^3-6x^2+11x-6$, so $b=-6$, $c=11$, $d=-6$.
 
@@ -585,7 +586,7 @@ $$=\\left(-2+4-\\ln 2a\\right)-\\left(-\\frac{1}{2}+2-\\ln a\\right)=(2-\\ln 2a)
 
 (iii) $\\int_1^3 p(x)\\,dx = \\left[\\frac{x^4}{4}-2x^3+\\frac{11x^2}{2}-6x\\right]_1^3 = \\left(\\frac{81}{4}-54+\\frac{99}{2}-18\\right)-\\left(\\frac{1}{4}-2+\\frac{11}{2}-6\\right)=-\\frac{9}{4}-(-\\frac{9}{4})=0$. The signed area is zero because the region above the $x$-axis ($[1,2]$) and below ($[2,3]$) are equal.
 
-(iv) $\\int_1^2 p(x)\\,dx = -\\frac{9}{4}-(-2) = \\frac{-9+8}{4}$... computing carefully: $[-\\frac{9}{4}] - [-\\frac{9}{4}]$... $\\int_1^2 = \\frac{1}{4}$ and $\\int_2^3 = -\\frac{1}{4}$. Total area $= \\frac{1}{4}+\\frac{1}{4}=\\frac{1}{2}$.`,
+(iv) Since $F(2)=-2$, $\\int_1^2p(x)\\,dx=F(2)-F(1)=\\frac14$ and $\\int_2^3p(x)\\,dx=F(3)-F(2)=-\\frac14$. Total area $=\\frac14+\\frac14=\\frac12$.`,
   },
 
   {
@@ -719,7 +720,7 @@ export const MAT_PART_A_EXTRA: MCQQuestion[] = [
       { key: "D", text: "$3$" },
     ],
     answer: "B",
-    solution: "Domain requires $x>1$ (for both logs to be defined and $4x>0$). Equation: $(x+2)(x-1)=4x \\Rightarrow x^2+x-2=4x \\Rightarrow x^2-3x-2... wait: x^2-3x-2=0$. Actually $(x+2)(x-1)=x^2+x-2$, so $x^2+x-2=4x \\Rightarrow x^2-3x-2=0 \\Rightarrow x=\\frac{3\\pm\\sqrt{17}}{2}$. Only $x=\\frac{3+\\sqrt{17}}{2}\\approx 3.56>1$ is valid. **1** solution.",
+    solution: "The domain is $x>1$. Combining logarithms gives $(x+2)(x-1)=4x$, so $x^2-3x-2=0$ and $x=\\frac{3\\pm\\sqrt{17}}{2}$. Only $\\frac{3+\\sqrt{17}}{2}>1$ lies in the domain, so there is exactly one real solution.",
   },
   {
     id: "mat-a-026",
@@ -972,15 +973,15 @@ export const MAT_PART_A_EXTRA: MCQQuestion[] = [
     topicId: "mat-calc",
     difficulty: 2,
     marks: 4,
-    question: "Water drains from a sphere of radius $5$ cm at the rate $\\dfrac{dV}{dt}=-2\\text{ cm}^3/\\text{s}$. When the water depth is $h=4$ cm, the radius of the water surface is $r=4$ cm. How fast is $h$ decreasing at that instant? (Use $V=\\pi h^2(15-h)/3$.)",
+    question: "Water drains from a sphere of radius $5$ cm at the rate $\\dfrac{dV}{dt}=-2\\text{ cm}^3/\\text{s}$. How fast is the water depth $h$ decreasing when $h=4$ cm? (Use $V=\\pi h^2(15-h)/3$.)",
     options: [
-      { key: "A", text: "$\\dfrac{-1}{8\\pi}$ cm/s" },
+      { key: "A", text: "$\\dfrac{-1}{12\\pi}$ cm/s" },
       { key: "B", text: "$\\dfrac{-1}{16\\pi}$ cm/s" },
       { key: "C", text: "$\\dfrac{-1}{4\\pi}$ cm/s" },
       { key: "D", text: "$\\dfrac{-2}{25\\pi}$ cm/s" },
     ],
     answer: "A",
-    solution: "$\\dfrac{dV}{dh}=\\pi h(10-h)$... actually differentiating $V=\\dfrac{\\pi h^2(15-h)}{3}=\\dfrac{\\pi(15h^2-h^3)}{3}$: $\\dfrac{dV}{dh}=\\dfrac{\\pi(30h-3h^2)}{3}=\\pi h(10-h)$. At $h=4$: $\\dfrac{dV}{dh}=\\pi\\cdot 4\\cdot 6=24\\pi$. Wait — actually $\\dfrac{dV}{dh}=\\pi(10h-h^2)$. Actually the formula gives $\\pi r^2$ where $r^2=h(10-h)$. At $h=4$: $r^2=4\\cdot 6=24$. Hmm, but the problem states $r=4$ so $r^2=16$. Let me use $\\dfrac{dV}{dt}=\\pi r^2\\dfrac{dh}{dt}$: $-2=16\\pi\\dfrac{dh}{dt}\\Rightarrow\\dfrac{dh}{dt}=\\dfrac{-2}{16\\pi}=\\dfrac{-1}{8\\pi}$.",
+    solution: "Differentiate $V=\\frac{\\pi}{3}(15h^2-h^3)$ to obtain $\\frac{dV}{dh}=\\pi h(10-h)$. At $h=4$, this is $24\\pi$. Therefore $-2=24\\pi\\frac{dh}{dt}$, so $\\frac{dh}{dt}=-\\frac{1}{12\\pi}\\text{ cm/s}$.",
   },
   {
     id: "mat-a-041",
@@ -1361,9 +1362,9 @@ $\\displaystyle\\int_{-1}^{1}(x^3-3x)\\,dx=0$ because $f(x)=x^3-3x$ satisfies $f
         label: "(iv)",
         marks: 4,
         question:
-          "For the specific case $a=1$ and $r=\\dfrac{\\sqrt{3}}{2}$, verify that the conditions of part (iii) are satisfied, find all four intersection points, and compute the area of the quadrilateral they form.",
+          "For the specific case $a=\\dfrac{3}{2}$ and $r=\\sqrt{2}$, verify that the conditions of part (iii) are satisfied, find all four intersection points, and compute the area of the quadrilateral they form.",
         solutionOutline:
-          "a=1, r²=3/4. Check: a>1/2 ✓; r²=3/4<a²=1 ✓; r²=3/4>a-1/4=3/4? No: 3/4>3/4 is false — it's equal, so discriminant=0, giving a repeated root: not four distinct points. Correction: use r²=7/8. Then u²-u+(1-7/8)=u²-u+1/8=0; discriminant=1-1/2=1/2>0; roots u=(1±1/√2)/2, both positive. Then x=±√u for each, giving 4 points. Area = 2(x₁-x₂)·|y₁-y₂|/2... compute numerically if needed.",
+          "Here $a>1/2$ and $a-1/4=5/4<r^2=2<a^2=9/4$. Setting $u=x^2$ gives $u^2-2u+1/4=0$, so $u=1\\pm\\sqrt{3}/2$. The four points are $(\\pm\\sqrt{u_1},u_1)$ and $(\\pm\\sqrt{u_2},u_2)$. Their quadrilateral is a trapezium of area $(\\sqrt{u_1}+\\sqrt{u_2})(u_1-u_2)=\\sqrt{3}\\cdot\\sqrt{3}=3$.",
       },
     ],
     fullSolution: `(i) Substituting $y=x^2$: $x^2+(x^2-a)^2=r^2\\Rightarrow x^2+x^4-2ax^2+a^2=r^2\\Rightarrow x^4+(1-2a)x^2+(a^2-r^2)=0$. ✓
@@ -1372,7 +1373,7 @@ $\\displaystyle\\int_{-1}^{1}(x^3-3x)\\,dx=0$ because $f(x)=x^3-3x$ satisfies $f
 
 (iii) Setting $u=x^2$: $u^2+(1-2a)u+(a^2-r^2)=0$. Four distinct real $x$-values require two distinct positive roots. Discriminant: $\\Delta=(1-2a)^2-4(a^2-r^2)=1-4a+4r^2>0\\Rightarrow r^2>a-\\frac{1}{4}$. Sum of roots: $2a-1>0\\Rightarrow a>\\frac{1}{2}$. Product of roots: $a^2-r^2>0\\Rightarrow r<a$. Combined conditions: $a>\\frac{1}{2}$ and $a-\\frac{1}{4}<r^2<a^2$.
 
-(iv) Take $a=1$, $r^2=\\frac{3}{4}$: check $r^2=\\frac{3}{4}>a-\\frac{1}{4}=\\frac{3}{4}$ — this is equality (boundary), giving a repeated factor and only three distinct $x$-values. For a clean example take $a=1$, $r^2=\\frac{1}{2}$: then $u^2-u+\\frac{1}{2}=0$, discriminant $1-2<0$ — no real roots. The conditions in (iii) guide valid choices: e.g. $a=\\frac{3}{2}$, $r^2=1$ gives $u^2-2u+\\frac{1}{4}=0$, roots $u=1\\pm\\frac{\\sqrt{3}}{2}$, both positive since $1-\\frac{\\sqrt{3}}{2}\\approx 0.134>0$. The four points are $(\\pm\\sqrt{u_1},u_1)$ and $(\\pm\\sqrt{u_2},u_2)$; the quadrilateral is a trapezium with parallel sides along $y=u_1$ and $y=u_2$, with area $\\frac{1}{2}(2\\sqrt{u_1}+2\\sqrt{u_2})(u_1-u_2)=(\\sqrt{u_1}+\\sqrt{u_2})(u_1-u_2)$.`,
+(iv) For $a=\\frac{3}{2}$ and $r^2=2$, the conditions hold because $\\frac{5}{4}<2<\\frac{9}{4}$. The equation in $u=x^2$ is $u^2-2u+\\frac{1}{4}=0$, with roots $u_1=1+\\frac{\\sqrt{3}}{2}$ and $u_2=1-\\frac{\\sqrt{3}}{2}$. Thus the four points are $(\\pm\\sqrt{u_1},u_1)$ and $(\\pm\\sqrt{u_2},u_2)$. They form a trapezium with area $(\\sqrt{u_1}+\\sqrt{u_2})(u_1-u_2)$. Since $u_1+u_2=2$ and $u_1u_2=\\frac14$, $\\sqrt{u_1}+\\sqrt{u_2}=\\sqrt3$, while $u_1-u_2=\\sqrt3$. Hence the area is $3$.`,
   },
 
   {
@@ -1415,7 +1416,7 @@ $\\displaystyle\\int_{-1}^{1}(x^3-3x)\\,dx=0$ because $f(x)=x^3-3x$ satisfies $f
         question:
           "The sequence $(v_n)$ is defined by $v_n = u_n \\cdot r^{n-1}$ where $r$ is a constant with $|r|<1$. Find $\\displaystyle\\sum_{n=1}^{\\infty} v_n$ in terms of $r$.",
         solutionOutline:
-          "Σv_n=Σ(n²-n+1)rⁿ⁻¹. Split: Σn²rⁿ⁻¹ - Σnrⁿ⁻¹ + Σrⁿ⁻¹. Use standard sums: Σrⁿ⁻¹=1/(1-r); Σnrⁿ⁻¹=1/(1-r)²; Σn²rⁿ⁻¹=(1+r)/(1-r)³. Result: (1+r)/(1-r)³ - 1/(1-r)² + 1/(1-r) = [(1+r)-（1-r)+(1-r)²]/(1-r)³ = [1+r-1+r+1-2r+r²]/(1-r)³=(1+r²... let me compute numerator: (1+r)-(1-r)+(1-r)²=1+r-1+r+1-2r+r²=1+r²... actually: 1+r-1+r+1-2r+r²=1+r². So the sum is (1+r²-... wait recalculate: $(1+r)-(1-r)+(1-2r+r^2)=2r+1-2r+r^2=1+r^2$. So $\\sum v_n = \\dfrac{1+r^2}{(1-r)^3}$.",
+          "Using $u_n=n^2-n+1$ and the standard differentiated geometric-series sums, $\\sum v_n=\\frac{1+r}{(1-r)^3}-\\frac{1}{(1-r)^2}+\\frac{1}{1-r}=\\frac{1+r^2}{(1-r)^3}$.",
       },
     ],
     fullSolution: `(i) $u_2=3,\\; u_3=7,\\; u_4=13,\\; u_5=21$. Conjecture: $u_n=n^2-n+1$.

@@ -219,7 +219,7 @@ $= \\dfrac{e^{\\pi/2}-1}{2}+\\dfrac{e^{3\\pi/2}+e^{\\pi/2}}{2}+\\dfrac{e^{2\\pi}
         label: "(iv)",
         marks: 5,
         question: "Hence evaluate $I_6$ and $I_7$.",
-        solutionOutline: "I_6=(5!!/6!!)·π/2=(5·3·1)/(6·4·2)·π/2=15/48·π/2=5π/32. I_7=(6!!/7!!)=wait: I_{2m+1}=((2m)!!/((2m+1)!!))·1. For n=7 (odd): I_7=(6/7)·I_5=(6/7)·(4/5)·I_3=(6/7)·(4/5)·(2/3)·I_1=48/(105)·1=16/35.",
+        solutionOutline: "$I_6=\\frac{5\\cdot3\\cdot1}{6\\cdot4\\cdot2}\\cdot\\frac{\\pi}{2}=\\frac{5\\pi}{32}$. Repeatedly applying the reduction formula gives $I_7=\\frac67\\cdot\\frac45\\cdot\\frac23 I_1=\\frac{16}{35}$.",
       },
     ],
     fullSolution: `(i) $I_0=\\int_0^{\\pi/2}dx=\\frac{\\pi}{2}$; $I_1=[-\\cos x]_0^{\\pi/2}=1$.
@@ -392,7 +392,7 @@ $I_7=\\frac{6}{7}\\cdot\\frac{4}{5}\\cdot\\frac{2}{3}\\cdot I_1=\\frac{48}{105}=
         label: "(iv)",
         marks: 6,
         question: "Using your series, find the sum $1 + \\dfrac{1}{3\\cdot 3} + \\dfrac{1}{5\\cdot 3^2} + \\dfrac{1}{7\\cdot 3^3} + \\cdots$",
-        solutionOutline: "This is ∑_{n=0}^∞ 1/((2n+1)·3^n)=∑1/(2n+1)·(1/√3)^{2n}·(1/√3)... Actually ∑x^{2n+1}/(2n+1) at x=1/√3 gives (1/√3)∑(1/3)^n/(2n+1)... Hmm. The series is ∑_{n=0}^∞ 1/((2n+1)·3^n). At x=1/√3: f(1/√3)=2∑(1/√3)^{2n+1}/(2n+1)=(2/√3)∑(1/3)^n/(2n+1). So ∑(1/3)^n/(2n+1)=(√3/2)f(1/√3)=(√3/2)ln((1+1/√3)/(1-1/√3))=(√3/2)ln((√3+1)/(√3-1))=(√3/2)ln(2+√3).",
+        solutionOutline: "At $x=1/\\sqrt3$, $f(x)=2\\sum_{n=0}^{\\infty}\\frac{x^{2n+1}}{2n+1}=\\frac{2}{\\sqrt3}\\sum_{n=0}^{\\infty}\\frac{1}{(2n+1)3^n}$. Therefore the required sum is $\\frac{\\sqrt3}{2}f(1/\\sqrt3)=\\frac{\\sqrt3}{2}\\ln(2+\\sqrt3)$.",
       },
     ],
     fullSolution: `(i) $f(x)=\\ln(1+x)-\\ln(1-x)=2\\cdot\\frac{1}{2}\\ln\\frac{1+x}{1-x}=2\\operatorname{artanh}x$. $f'(x)=\\frac{1}{1+x}+\\frac{1}{1-x}=\\frac{2}{1-x^2}$.
@@ -521,7 +521,7 @@ $I_7=\\frac{6}{7}\\cdot\\frac{4}{5}\\cdot\\frac{2}{3}\\cdot I_1=\\frac{48}{105}=
         label: "(iv)",
         marks: 5,
         question: "Find all positive integers $n$ such that $n^4 + 4^n$ is prime.",
-        solutionOutline: "If n is odd: 4^n=(2^2)^n=2^{2n}=(2^n)². n⁴+4^n=n⁴+(2^n)². Use Sophie Germain identity: a⁴+4b⁴=(a²+2b²+2ab)(a²+2b²-2ab). With a=n, b=2^{(n-1)/2}... Hmm this only works when n is odd and 4^n=4·(4^{(n-1)/2})²... Actually Sophie Germain: a⁴+4b⁴=(a²+2b²)²-(2ab)²=(a²+2b²+2ab)(a²+2b²-2ab). Set b=1: n⁴+4=(n²+2)²-4n²=(n²+2+2n)(n²+2-2n)=(n+1)²+1)((n-1)²+1). For n>1 both factors >1, so composite. For n=1: 1+4=5 prime. For even n: 4^n is divisible by 4 and n⁴ is divisible by 16, so n⁴+4^n is divisible by 4 (for n>2 even)... actually for n=2: 16+16=32 not prime. n=4: 256+256=512 not prime. Only n=1 gives a prime.",
+        solutionOutline: "For $n=1$, the value is $5$, which is prime. If $n>1$ is even, both terms are even, so the sum is an even integer greater than $2$. If $n>1$ is odd, set $b=2^{(n-1)/2}$. Then $4^n=4b^4$, and Sophie Germain's identity factors $n^4+4b^4=(n^2+2b^2+2nb)(n^2+2b^2-2nb)$ into two integers greater than $1$. Hence only $n=1$ works.",
       },
     ],
     fullSolution: `(i) $n^5-n=n(n-1)(n+1)(n^2+1)$. The product $(n-1)n(n+1)$ of three consecutive integers is divisible by $6$. By Fermat (or direct check): $5\\mid n^5-n$ for all $n$ (see part ii). Since $\\gcd(5,6)=1$, $30\\mid n^5-n$.
@@ -592,14 +592,14 @@ $I_7=\\frac{6}{7}\\cdot\\frac{4}{5}\\cdot\\frac{2}{3}\\cdot I_1=\\frac{48}{105}=
     difficulty: 3,
     totalMarks: 20,
     context:
-      "For $n \\ge 0$ define $I_n = \\displaystyle\\int_0^{\\pi/2} x^n \\sin x \\, dx$.",
+      "For $n \\ge 0$ define $I_n = \\displaystyle\\int_0^{\\pi/2} x^n \\cos x \\, dx$.",
     parts: [
       {
         label: "(i)",
         marks: 4,
         question: "Show that $I_0 = 1$ and $I_1 = \\dfrac{\\pi}{2} - 1$.",
         solutionOutline:
-          "I_0=∫₀^{π/2} sin x dx=[-cos x]₀^{π/2}=0-(-1)=1. I_1=∫₀^{π/2} x sin x dx. IBP: u=x, dv=sin x dx. [−x cos x]₀^{π/2}+∫₀^{π/2}cos x dx=0+[sin x]₀^{π/2}=1. Wait: I_1=[-x cos x]₀^{π/2}+∫₀^{π/2}cos x dx=0+1=1. Hmm: at π/2, cos(π/2)=0. So I_1=0+[sin x]₀^{π/2}=1. Actually I_1=π/2·0+[sin x]₀^{π/2}=1? Let me redo: IBP u=x dv=sin x dx → v=-cos x. I_1=[-x cos x]₀^{π/2}+∫₀^{π/2} cos x dx=(-(π/2)·0+0·1)+[sin x]₀^{π/2}=0+1=1. So I_1=1. Wait the question says I_1=π/2-1. Let me reconsider the definition: perhaps I_n=∫₀^{π/2} x^n cos x dx? Or I_n=∫₀^1 x^n sin(πx/2)dx? Re-examining: with I_n=∫₀^{π/2} x^n sin x dx, I_1=1. The question states π/2-1, which corresponds to I_n=∫₀^{π/2} x^n cos x dx: I_0=[sin x]₀^{π/2}=1, I_1=[x sin x]₀^{π/2}-∫sin x dx=(π/2)·1+[cos x]₀^{π/2}=π/2+0-1=π/2-1. Use that definition.",
+          "With $I_n=\\int_0^{\\pi/2}x^n\\cos x\\,dx$, $I_0=[\\sin x]_0^{\\pi/2}=1$. Integration by parts gives $I_1=[x\\sin x]_0^{\\pi/2}-\\int_0^{\\pi/2}\\sin x\\,dx=\\frac{\\pi}{2}-1$.",
         hint: "Use integration by parts with $u = x^n$ and $dv = \\cos x\\,dx$.",
       },
       {
@@ -763,7 +763,7 @@ $$\\int_1^\\infty\\frac{\\ln x}{x^s}dx=\\left[\\frac{x^{1-s}\\ln x}{1-s}\\right]
         question:
           "Show that $ab + bc + ca \\le \\dfrac{1}{3}$, and deduce that $a^3 + b^3 + c^3 \\ge \\dfrac{1}{9}$.",
         solutionOutline:
-          "(a+b+c)²=a²+b²+c²+2(ab+bc+ca)=1. So ab+bc+ca=(1-a²-b²-c²)/2≤(1-1/3)/2=1/3. For a³+b³+c³: use identity a³+b³+c³-3abc=(a+b+c)(a²+b²+c²-ab-bc-ca). So a³+b³+c³=3abc+(a²+b²+c²-ab-bc-ca)≥a²+b²+c²-ab-bc-ca (since abc≥0)≥1/3-1/3=0... Better: a³+b³+c³≥(a+b+c)(a²+b²+c²)/3... or use power mean: (a³+b³+c³)/3≥((a+b+c)/3)³? No, that's not right. By AM: a³+b³+c³≥a²b... use Chebyshev or Schur. Actually by power mean M₃≥M₁: (a³+b³+c³)/3≥((a+b+c)/3)³... No: power mean says M_r≥M_s for r≥s when comparing to each other... We have (a³+b³+c³)/3≥((a²+b²+c²)/3)^{3/2} by power mean? No. Simpler: a³+b³+c³≥(a²+b²+c²)·(a+b+c)/3... Hmm. By Cauchy-Schwarz: (a²+b²+c²)²≤(a³+b³+c³)(a+b+c). So a³+b³+c³≥(a²+b²+c²)²≥(1/3)²=1/9.",
+          "Since $(a+b+c)^2=1$, $ab+bc+ca=\\frac{1-(a^2+b^2+c^2)}2\\le\\frac13$. Also Cauchy-Schwarz gives $(a^2+b^2+c^2)^2\\le(a^3+b^3+c^3)(a+b+c)$, so $a^3+b^3+c^3\\ge(a^2+b^2+c^2)^2\\ge\\frac19$.",
       },
       {
         label: "(iii)",
@@ -777,9 +777,9 @@ $$\\int_1^\\infty\\frac{\\ln x}{x^s}dx=\\left[\\frac{x^{1-s}\\ln x}{1-s}\\right]
         label: "(iv)",
         marks: 6,
         question:
-          "Show that $a(1-a)^2 + b(1-b)^2 + c(1-c)^2 \\le \\dfrac{4}{27}$ with equality iff $a = b = c = \\dfrac{1}{3}$. [You may use the fact that $f(t)=t(1-t)^2$ is concave on $[0,1]$.]",
+          "Show that $a(1-a)^2 + b(1-b)^2 + c(1-c)^2 \\le \\dfrac{4}{9}$ with equality iff $a = b = c = \\dfrac{1}{3}$. [You may use the fact that $f(t)=t(1-t)^2$ is concave on $[0,1]$.]",
         solutionOutline:
-          "By Jensen's inequality (since f is concave): f(a)+f(b)+f(c)≤3f((a+b+c)/3)=3f(1/3)=3·(1/3)·(2/3)²=3·(1/3)·(4/9)=4/9... wait: 3·(1/3)·(4/9)=4/9≠4/27. Recheck: f(1/3)=(1/3)(1-1/3)²=(1/3)(2/3)²=(1/3)(4/9)=4/27. Jensen: (f(a)+f(b)+f(c))/3≤f((a+b+c)/3)=f(1/3)=4/27. So f(a)+f(b)+f(c)≤3·4/27=4/9? That gives 4/9 not 4/27. The bound ∑f≤4/9 with equality at a=b=c=1/3 where ∑f=3·4/27=4/9. So the bound should be 4/9, not 4/27. Perhaps the question meant f(t)=t(1-t)² and shows ∑≤4/9. Let me keep as stated in question but correct bound to 4/9.",
+          "For the given concave function $f(t)=t(1-t)^2$, Jensen gives $\\frac{f(a)+f(b)+f(c)}3\\le f(1/3)=4/27$. Therefore $f(a)+f(b)+f(c)\\le4/9$, with equality exactly when $a=b=c=1/3$.",
         hint: "Jensen's inequality states that for a concave function $f$ and weights $\\lambda_i$ summing to 1: $\\sum \\lambda_i f(x_i) \\le f\\!\\left(\\sum \\lambda_i x_i\\right)$.",
       },
     ],
@@ -866,7 +866,7 @@ $(2,1)\\to(3,4,5)$; $(3,2)\\to(5,12,13)$; $(4,1)\\to(15,8,17)$; $(4,3)\\to(7,24,
         question:
           "Let $p = x + y + z$, $q = xy + yz + zx$, $r = xyz$. Show that $p^2 \\ge 3q$ and $q^2 \\ge 3pr$.",
         solutionOutline:
-          "p²-3q=(x+y+z)²-3(xy+yz+zx)=x²+y²+z²-xy-yz-zx=½[(x-y)²+(y-z)²+(z-x)²]≥0. For q²≥3pr: q²-3pr=(xy+yz+zx)²-3xyz(x+y+z). Expand: x²y²+y²z²+z²x²+2xy²z+2xyz²+2x²yz-3x²yz-3xy²z-3xyz²=x²y²+y²z²+z²x²-xy²z-xyz²-x²yz=x²y²+y²z²+z²x²-xyz(x+y+z)... factor or apply part (i) with substitution X=√(xy), etc. Actually: by AM-GM on cyclic terms, or substitute a=xy, b=yz, c=zx in (i): a²+b²+c²≥ab+bc+ca=(x²y²+y²z²+z²x²: need (xy)²+(yz)²+(zx)²≥(xy)(yz)+(yz)(zx)+(zx)(xy)=xyz(y+z+x)=pr·? hmm: (xy)(yz)+(yz)(zx)+(zx)(xy)=xy²z+xyz²+x²yz=xyz(x+y+z)=pr. So q²=(xy+yz+zx)²=(a+b+c)²≥... actually (a+b+c)²≥3(ab+bc+ca)=3xyz(x+y+z)=3pr from p²≥3q applied to a,b,c.",
+          "$p^2-3q=\\frac12[(x-y)^2+(y-z)^2+(z-x)^2]\\ge0$. For the second inequality, apply the same result to $xy,yz,zx$: $q^2=(xy+yz+zx)^2\\ge3[(xy)(yz)+(yz)(zx)+(zx)(xy)]=3xyz(x+y+z)=3pr$.",
       },
       {
         label: "(iii)",
@@ -882,7 +882,7 @@ $(2,1)\\to(3,4,5)$; $(3,2)\\to(5,12,13)$; $(4,1)\\to(15,8,17)$; $(4,3)\\to(7,24,
         question:
           "Show that for positive reals $a, b, c$, $\\dfrac{a^3}{b^2} + \\dfrac{b^3}{c^2} + \\dfrac{c^3}{a^2} \\ge a + b + c$.",
         solutionOutline:
-          "By AM-GM applied to each term: a³/b²+b²/2+b²/2≥3·(a³/b²·b²/2·b²/2)^{1/3}... better: by Cauchy-Schwarz (Titu/Engel): a³/b²=a⁴/(ab²)... or use AM-GM directly: by AM-GM, a³/b²+b²≥2a^{3/2}/b·b... try: a³/b²≥a by AM-GM applied to a³/b² ≥ a iff a²≥b², not true in general. Use weighted AM-GM: a³/b² = a·(a/b)² and since (a/b)² ≥ 2(a/b)-1... or Schur's/SOS. Simplest: by AM-GM on 3 copies: (a³/b²)+(a³/b²)+(b³/c²)≥... use Chebyshev or power mean. Actually: ∑a³/b²≥∑a by Cauchy-Schwarz: (∑a³/b²)(∑ab²)≥(∑a²)². And ∑ab²≤... this approach needs more work. Alternatively, by AM-GM applied twice: a³/b²≥a when a≥b. For the general case: by Cauchy-Schwarz (Sedrakyan): ∑a³/b²≥(a+b+c)²/(a+b+c)·... Let me use: ∑(a³/b²)≥∑a by SOS. Or note by AM-GM: a³/b²+b/2+b/2≥3·a (cube root of a³/b²·b/2·b/2=a³/4·... no). Use: for each term, a³/b²≥3a/b²·... Use Cauchy-Schwarz in Engel form: ∑a³/b²=∑a⁴/(ab²)≥(a²+b²+c²)²/((ab²+bc²+ca²))... complex. Cleaner: by AM-GM a³/b² ≥ a when a ≥ b, and handle via SOS/Schur inequality. Note the inequality is homogeneous of degree 1, so WLOG a+b+c=3 and need ∑a³/b²≥3. At a=b=c=1: equality. By Schur or direct SOS argument the inequality holds.",
+          "Apply Cauchy-Schwarz twice: $\\sum\\frac{a^3}{b^2}=\\sum\\frac{(a^2/b)^2}{a}\\ge\\frac{(\\sum a^2/b)^2}{a+b+c}$, while $\\sum a^2/b\\ge\\frac{(a+b+c)^2}{a+b+c}=a+b+c$. Combining the two inequalities gives $\\sum a^3/b^2\\ge a+b+c$.",
       },
     ],
     fullSolution: `(i) $\\text{LHS}-\\text{RHS}=(x^2+y^2+z^2)^2-3(x^2y^2+y^2z^2+z^2x^2)=x^4+y^4+z^4-x^2y^2-y^2z^2-z^2x^2=\\tfrac{1}{2}[(x^2-y^2)^2+(y^2-z^2)^2+(z^2-x^2)^2]\\ge 0$. ✓
@@ -891,9 +891,13 @@ $(2,1)\\to(3,4,5)$; $(3,2)\\to(5,12,13)$; $(4,1)\\to(15,8,17)$; $(4,3)\\to(7,24,
 
 (iii) $(x+y+z)\\cdot\\frac{xy+yz+zx}{xyz}=p\\cdot q$ (using $xyz=1$). By Cauchy-Schwarz: $(x+y+z)(\\frac{1}{x}+\\frac{1}{y}+\\frac{1}{z})\\ge(1+1+1)^2=9$. Equality iff $x=y=z=1$. ✓
 
-(iv) By the Cauchy-Schwarz (Engel/Titu) inequality:
-$$\\frac{a^3}{b^2}+\\frac{b^3}{c^2}+\\frac{c^3}{a^2}=\\frac{a^4}{ab^2}+\\frac{b^4}{bc^2}+\\frac{c^4}{ca^2}\\ge\\frac{(a^2+b^2+c^2)^2}{ab^2+bc^2+ca^2}.$$
-It suffices to show $(a^2+b^2+c^2)^2\\ge(a+b+c)(ab^2+bc^2+ca^2)$. By AM-GM applied cyclically and SOS methods (or Schur's inequality), this holds with equality iff $a=b=c$.`,
+(iv) Applying the Cauchy-Schwarz inequality in Engel form twice,
+$$\\sum_{cyc}\\frac{a^3}{b^2}
+=\\sum_{cyc}\\frac{(a^2/b)^2}{a}
+\\ge\\frac{\\left(\\sum_{cyc}a^2/b\\right)^2}{a+b+c},$$
+and
+$$\\sum_{cyc}\\frac{a^2}{b}\\ge\\frac{(a+b+c)^2}{a+b+c}=a+b+c.$$
+Therefore $\\sum_{cyc}a^3/b^2\\ge a+b+c$, with equality when $a=b=c$.`,
   },
   {
     id: "step-020",
@@ -911,7 +915,7 @@ It suffices to show $(a^2+b^2+c^2)^2\\ge(a+b+c)(ab^2+bc^2+ca^2)$. By AM-GM appli
         question:
           "Show that the tangent to $H$ at $P$ has equation $\\dfrac{x\\sec\\theta}{a} - \\dfrac{y\\tan\\theta}{b} = 1$.",
         solutionOutline:
-          "Differentiate x²/a²-y²/b²=1 implicitly: 2x/a²-2y/b²·dy/dx=0 → dy/dx=(b²x)/(a²y). At P: dy/dx=(b²·a sec θ)/(a²·b tan θ)=(b sec θ)/(a tan θ)=b cos θ/(a sin θ·cos θ... wait: sec θ/a · b/tan θ=b/(a·sin θ). Tangent: y-b tan θ=(b sec θ)/(a tan θ)·(x-a sec θ). Multiply through by a tan θ/(b): (a tan θ/b)(y-b tan θ)=sec θ(x-a sec θ). a y tan θ/b - tan²θ = x sec θ - sec²θ. Rearranging: x sec θ/a - y tan θ/b = sec²θ-tan²θ=1. ✓",
+          "Implicit differentiation gives $dy/dx=b^2x/(a^2y)$, so the slope at $P$ is $b\\sec\\theta/(a\\tan\\theta)$. Substituting $P$ into the point-slope equation and rearranging gives $x\\sec\\theta/a-y\\tan\\theta/b=\\sec^2\\theta-\\tan^2\\theta=1$.",
       },
       {
         label: "(ii)",
@@ -925,9 +929,9 @@ It suffices to show $(a^2+b^2+c^2)^2\\ge(a+b+c)(ab^2+bc^2+ca^2)$. By AM-GM appli
         label: "(iii)",
         marks: 5,
         question:
-          "Show that $|OQ| \\cdot |OR| = |OP|^2$, where $O$ is the origin.",
+          "Show that $\\overrightarrow{OQ}\\cdot\\overrightarrow{OR}=a^2-b^2$, where $O$ is the origin.",
         solutionOutline:
-          "|OQ|²=(a/(secθ-tanθ))²+(b/(secθ-tanθ))²=(a²+b²)/(secθ-tanθ)². |OR|²=(a²+b²)/(secθ+tanθ)². |OQ||OR|=(a²+b²)/|(sec²θ-tan²θ)|=a²+b². |OP|²=a²sec²θ+b²tan²θ. These are not generally equal... The identity OQ·OR=OP² means (a²+b²)/[(secθ-tanθ)(secθ+tanθ)]·... Actually |OQ|·|OR|=√[(a²+b²)/(secθ-tanθ)²·(a²+b²)/(secθ+tanθ)²]=(a²+b²)/|sec²θ-tan²θ|=a²+b². And |OP|²=a²sec²θ+b²tan²θ. These are equal only if a²sec²θ+b²tan²θ=a²+b², i.e. a²(sec²θ-1)+b²(tan²θ-1)... no, not generally. Perhaps the question states |OQ|·|OR| as scalars with OQ, OR as the vector product? Or perhaps it's about areas? Re-reading: maybe |OQ·OR| means dot product = |OP|²: OQ·OR=(a²+b²)/[(secθ-tanθ)(secθ+tanθ)]=a²+b² but |OP|²=a²sec²θ+b²tan²θ≠a²+b² in general. The STEP property is usually: OQ·OR = a² (from the asymptote property). Let me state the correct result: since OQ=(a/(s-t), b/(s-t)) and OR=(a/(s+t), -b/(s+t)) where s=secθ, t=tanθ: OQ·OR=a²/(s²-t²)+b²·(-1)/(s²-t²)=(a²-b²)/(1)=a²-b² (if a>b) or in terms of the original: a²-b². Not a²+b². The product |OQ||OR|=(a²+b²)^{1/2}... I'll correct the question to state OQ⃗·OR⃗=a²-b² or reframe.",
+          "Write $s=\\sec\\theta$ and $t=\\tan\\theta$. From part (ii), $\\overrightarrow{OQ}=(a,b)/(s-t)$ and $\\overrightarrow{OR}=(a,-b)/(s+t)$. Their dot product is $\\frac{a^2-b^2}{(s-t)(s+t)}=a^2-b^2$ because $s^2-t^2=1$.",
       },
       {
         label: "(iv)",
@@ -984,9 +988,9 @@ It suffices to show $(a^2+b^2+c^2)^2\\ge(a+b+c)(ab^2+bc^2+ca^2)$. By AM-GM appli
         label: "(iv)",
         marks: 6,
         question:
-          "Find the polar equation of the tangent to $C$ at the point where $\\theta = \\pi/3$, and find where this tangent crosses the initial line $\\theta = 0$.",
+          "Find the Cartesian equation of the tangent to $C$ at the point where $\\theta = \\pi/2$, and find where this tangent crosses the initial line $\\theta = 0$.",
         solutionOutline:
-          "At θ=π/3: r=a(1+1/2)=3a/2. Cartesian: x=r cos θ=3a/2·1/2=3a/4, y=r sin θ=3a/2·√3/2=3a√3/4. Slope dy/dx: y=r sin θ=a(1+cos θ)sin θ, x=a(1+cos θ)cos θ. dx/dθ=a(-sin θ cos θ+(1+cos θ)(-sin θ))=-a sin θ(1+2cos θ)... let me compute: dx/dθ=a(-sin θ cos θ-sin θ(1+cos θ))... Actually x=a(cos θ+cos²θ), dx/dθ=a(-sin θ-2sin θ cos θ)=-a sin θ(1+2cos θ). y=a(sin θ+sin θ cos θ), dy/dθ=a(cos θ+cos²θ-sin²θ)=a(cos θ+cos 2θ). At θ=π/3: dx/dθ=-a·(√3/2)·(1+1)=-√3a. dy/dθ=a(1/2+cos(2π/3))=a(1/2-1/2)=0. So dy/dx=0/(−√3a)=0. Tangent is horizontal: y=3a√3/4. This tangent y=3a√3/4 meets θ=0 (the positive x-axis) only if it's horizontal and crosses x-axis... it never crosses the x-axis (y=3a√3/4≠0). So the tangent is horizontal and parallel to the initial line; it doesn't cross θ=0 in the usual sense (unless extended to negative x). Actually the initial line θ=0 is the positive x-axis, which has y=0. A horizontal line y=c≠0 doesn't cross y=0. So tangent at θ=π/3 is horizontal and does not cross the initial line θ=0 (or crosses it at infinity). Question may intend a different θ value; let's take θ=π/2 instead: r=a, point=(0,a). dy/dθ=a(0+cos π)=-a. dx/dθ=-a·1·(1+0)=-a. dy/dx=(-a)/(-a)=1. Tangent: y-a=1·(x-0), y=x+a. Crosses θ=0 (y=0): x=-a, point (-a,0).",
+          "At $\\theta=\\pi/2$, $r=a$ and $P=(0,a)$. Using $x=a(\\cos\\theta+\\cos^2\\theta)$ and $y=a(\\sin\\theta+\\sin\\theta\\cos\\theta)$ gives $dy/dx=1$ there. Hence the tangent is $y=x+a$; setting $y=0$ gives the intersection $(-a,0)$.",
       },
     ],
     fullSolution: `(i) $A=\\tfrac{a^2}{2}\\int_0^{2\\pi}(1+2\\cos\\theta+\\cos^2\\theta)\\,d\\theta=\\tfrac{a^2}{2}(2\\pi+0+\\pi)=\\dfrac{3\\pi a^2}{2}$.
@@ -1013,7 +1017,7 @@ It suffices to show $(a^2+b^2+c^2)^2\\ge(a+b+c)(ab^2+bc^2+ca^2)$. By AM-GM appli
         question:
           "Show that $\\displaystyle\\sum_{k=0}^{n-1} \\omega_k^j = \\begin{cases} n & \\text{if } n \\mid j \\\\ 0 & \\text{otherwise} \\end{cases}$ for any integer $j$.",
         solutionOutline:
-          "If n|j: each term ω_k^j=(e^{2πij/n})^k... wait: ω_k=e^{2πik/n}, so ω_k^j=e^{2πijk/n}. Sum=∑_{k=0}^{n-1}e^{2πijk/n}. If n|j: e^{2πijk/n}=e^{2πi·(j/n)·k}=1 for all k (since j/n∈Z). Sum=n. If n∤j: this is a geometric series with ratio e^{2πij/n}≠1. Sum=(e^{2πij}-1)/(e^{2πij/n}-1)=0/(e^{2πij/n}-1)=0.",
+          "Since $\\omega_k^j=e^{2\\pi ijk/n}$, the sum is geometric with ratio $q=e^{2\\pi ij/n}$. If $n\\mid j$, then $q=1$ and every term is $1$, so the sum is $n$. Otherwise $q\\ne1$ and the sum is $(q^n-1)/(q-1)=0$.",
       },
       {
         label: "(ii)",
@@ -1035,9 +1039,9 @@ It suffices to show $(a^2+b^2+c^2)^2\\ge(a+b+c)(ab^2+bc^2+ca^2)$. By AM-GM appli
         label: "(iv)",
         marks: 5,
         question:
-          "Using $\\cos\\dfrac{2\\pi}{5}$, find the exact value of $\\sin\\dfrac{\\pi}{5}$ and verify that a regular pentagon inscribed in a unit circle has side length $\\dfrac{1}{2}\\sqrt{\\dfrac{5-\\sqrt{5}}{2}}\\cdot 2 = \\sqrt{\\dfrac{5-\\sqrt{5}}{2}}$.",
+          "Using $\\cos\\dfrac{2\\pi}{5}$, find the exact value of $\\sin\\dfrac{\\pi}{5}$ and verify that a regular pentagon inscribed in a unit circle has side length $\\sqrt{\\dfrac{5-\\sqrt{5}}{2}}$.",
         solutionOutline:
-          "sin²(π/5)=1-cos²(2π/10)... Note π/5=36°, 2π/5=72°. cos(2π/5)=(√5-1)/4. sin(π/5)=sin 36°=√(1-cos²72°)... We use cos 36°=(√5+1)/4: this is the value of 2cos(2π/5)... wait: cos(2π/5)=cos 72°=(√5-1)/4. And cos(π/5)=cos 36°=(√5+1)/4. sin(π/5)=√(1-((√5+1)/4)²)=√((16-(6+2√5))/16)=√((10-2√5)/16)=√(10-2√5)/4. Side of regular pentagon in unit circle=2sin(π/5)=√(10-2√5)/2=√((10-2√5)/4)·2... side=2sin(π/5)=√(10-2√5)/2.",
+          "Since $\\cos(\\pi/5)=(\\sqrt5+1)/4$, $\\sin(\\pi/5)=\\sqrt{1-\\cos^2(\\pi/5)}=\\sqrt{10-2\\sqrt5}/4$. The pentagon side subtends an angle $2\\pi/5$, so its length is $2\\sin(\\pi/5)=\\sqrt{10-2\\sqrt5}/2=\\sqrt{(5-\\sqrt5)/2}$.",
       },
     ],
     fullSolution: `(i) If $n\\mid j$: $e^{2\\pi ijk/n}=1$ for all $k$, sum $=n$. If $n\\nmid j$: geometric series with ratio $r=e^{2\\pi ij/n}\\ne 1$; sum $=\\frac{r^n-1}{r-1}=\\frac{e^{2\\pi ij}-1}{r-1}=0$.
@@ -1072,13 +1076,13 @@ It suffices to show $(a^2+b^2+c^2)^2\\ge(a+b+c)(ab^2+bc^2+ca^2)$. By AM-GM appli
         question:
           "Hence solve the equation $16t^5 - 20t^3 + 5t = 0$ and deduce the exact values of $\\cos\\dfrac{\\pi}{5}$ and $\\cos\\dfrac{2\\pi}{5}$.",
         solutionOutline:
-          "16t⁵-20t³+5t=t(16t⁴-20t²+5)=0. So t=0 or 16t⁴-20t²+5=0 → t²=(20±√(400-320))/32=(20±√80)/32=(20±4√5)/32=(5±√5)/8. t=±√((5±√5)/8). The 5 solutions of cos5θ=0 with 5θ=π/2,3π/2,5π/2,7π/2,9π/2, so θ=π/10,3π/10,π/2,7π/10,9π/10. So the nonzero cosines are cos(π/10),cos(3π/10),cos(7π/10),cos(9π/10). Since cos(2π/5)=cos(4π/10) wait: θ values giving cos5θ=0 are 5θ=π/2+kπ, so θ=π/10+kπ/5. k=0: θ=π/10; k=1: 3π/10; k=2: π/2 (cosθ=0); k=3: 7π/10; k=4: 9π/10. So cos(π/10),cos(3π/10) are positive roots; cos(7π/10)=-cos(3π/10),cos(9π/10)=-cos(π/10). t²=(5+√5)/8: t=cos(π/10) or cos(9π/10)... The two positive roots are cos(π/10)=√((5+√5)/8) and cos(3π/10)=√((5-√5)/8)... Note cos(π/5)=cos(2π/10): 5θ not used directly. Hmm, from the original equation cos5θ=0 so 5θ=π/2+kπ: to get cos(π/5) we need 5θ=π so cos5θ=-1, not from this equation. Better equation: use 16c⁵-20c³+5c=-1 for cos5θ=-1: 5θ=π, θ=π/5. Or solve cos5θ=1/2 for 5θ=π/3 → θ=π/15 which is cos(π/15), not cos(π/5). Actually cos(2π/5) comes from step-022. Here we can derive: from the factored quadratic t²=(5±√5)/8, positive roots are √((5+√5)/8)=cos(π/10) and √((5-√5)/8)=cos(3π/10). Note cos(π/5)=2cos²(π/10)-1=2(5+√5)/8-1=(5+√5)/4-1=(1+√5)/4. And cos(2π/5)=2cos²(π/5)-1=... or from step-022 (√5-1)/4. ✓",
+          "Factoring gives $t(16t^4-20t^2+5)=0$, so $t=0$ or $t^2=(5\\pm\\sqrt5)/8$. The positive nonzero roots are $\\cos(\\pi/10)=\\sqrt{(5+\\sqrt5)/8}$ and $\\cos(3\\pi/10)=\\sqrt{(5-\\sqrt5)/8}$. Hence $\\cos(\\pi/5)=2\\cos^2(\\pi/10)-1=(1+\\sqrt5)/4$, and $\\cos(2\\pi/5)=2\\cos^2(\\pi/5)-1=(\\sqrt5-1)/4$.",
       },
       {
         label: "(iii)",
         marks: 5,
         question:
-          "Similarly use De Moivre's theorem to express $\\sin 5\\theta$ in terms of $\\sin\\theta$, and hence show that $16s^4 - 20s^2 + 5 = 0$ has roots $\\sin\\dfrac{\\pi}{10}$, $\\cos\\dfrac{\\pi}{10}$ (and their negatives).",
+          "Similarly use De Moivre's theorem to express $\\sin 5\\theta$ in terms of $\\sin\\theta$, and hence show that $16s^4 - 20s^2 + 5 = 0$ has roots $\\sin\\dfrac{\\pi}{5}$, $\\cos\\dfrac{\\pi}{10}$ (and their negatives).",
         solutionOutline:
           "Im part of (cosθ+isinθ)⁵: k=1: 5cos⁴θ·isinθ → 5cos⁴θsinθ; k=3: C(5,3)cos²θ·i³sin³θ=-10cos²θsin³θ; k=5: i⁵sin⁵θ=isin⁵θ. So sin5θ=5cos⁴θsinθ-10cos²θsin³θ+sin⁵θ=sinθ(5cos⁴θ-10cos²θsin²θ+sin⁴θ)=sinθ(5(1-s²)²-10(1-s²)s²+s⁴) where s=sinθ. =sinθ(5-10s²+5s⁴-10s²+10s⁴+s⁴)=sinθ(5-20s²+16s⁴). For sin5θ=0 (other than sinθ=0): 16s⁴-20s²+5=0, giving s²=(5±√5)/8. Roots: sin(π/10), sin(3π/10)=cos(2π/10)... sin(π/10)=√((5-√5)/8) and sin(3π/10)=cos(π/5)... comparing: cos(π/10)=√((5+√5)/8)=sin(2π/5)... The roots of 16s⁴-20s²+5=0 are ±sin(π/5), ±sin(2π/5), which equal ±sin(π/5), ±cos(π/10)... the positive roots are sin(π/5) and sin(2π/5)=cos(π/10).",
       },

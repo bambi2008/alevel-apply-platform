@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import { buildQuestionBankAudit } from "./index";
 import { buildDetailedQuestionCalibrations, calibrateQuestionDifficulty } from "./calibration";
+import { findSemanticRisks } from "./semantic";
+import type { MCQQuestion } from "@/lib/tests/questions/types";
 
 describe("question bank audit", () => {
   it("inventories every supported test without structural blockers", () => {
@@ -66,5 +68,34 @@ describe("difficulty calibration", () => {
     expect(row.changeRate).toBeCloseTo(1 / 3);
     expect(row.flagRate).toBeCloseTo(0.2);
     expect(row.scoreInterval[0]).toBeGreaterThan(0.8);
+  });
+});
+
+describe("semantic question audit", () => {
+  const base: Omit<MCQQuestion, "solution"> = {
+    id: "semantic-fixture",
+    type: "mcq" as const,
+    testId: "mat",
+    topicId: "mat-poly",
+    difficulty: 2 as const,
+    marks: 1,
+    question: "What is 2 + 2?",
+    options: [
+      { key: "A", text: "4" },
+      { key: "B", text: "5" },
+    ],
+    answer: "A",
+  };
+
+  it("rejects ambiguous or conflicting answer commentary", () => {
+    expect(findSemanticRisks({ ...base, solution: "Both A and B are correct." }).map((risk) => risk.code))
+      .toContain("AMBIGUOUS_CORRECT_OPTION");
+    expect(findSemanticRisks({ ...base, solution: "The computed value is 4. Closest answer: 5." }).map((risk) => risk.code))
+      .toContain("ANSWER_SOLUTION_CONFLICT");
+  });
+
+  it("flags unfinished self-correction prose", () => {
+    expect(findSemanticRisks({ ...base, solution: "Hmm, let me recompute this." }).map((risk) => risk.code))
+      .toContain("DRAFT_REASONING");
   });
 });

@@ -12,6 +12,7 @@ import { TARA_QUESTIONS } from "@/lib/tests/questions/tara";
 import { TMUA_QUESTIONS } from "@/lib/tests/questions/tmua";
 import { UCAT_QUESTIONS } from "@/lib/tests/questions/ucat";
 import type { Question } from "@/lib/tests/questions/types";
+import { findSemanticRisks } from "./semantic";
 
 export type AuditSeverity = "critical" | "warning" | "info";
 
@@ -184,6 +185,12 @@ function auditQuestion(question: Question, expectedTestId: string, validTopics: 
       }
     }
   }
+  issues.push(...findSemanticRisks(question).map((risk) => ({
+    ...base,
+    code: risk.code,
+    severity: risk.severity,
+    message: risk.message,
+  })));
   return issues;
 }
 
@@ -221,6 +228,19 @@ export function buildQuestionBankAudit(): QuestionBankAuditReport {
         } else {
           seenPrompts.set(`${test.id}:${prompt}`, { testId: test.id, questionId: question.id });
         }
+      }
+    }
+
+    for (const paper of getMockPapersForTest(test.id)) {
+      for (const question of paper.modules.flatMap((module) => module.questions)) {
+        issues.push(...findSemanticRisks(question).map((risk) => ({
+          code: risk.code,
+          severity: risk.severity,
+          message: risk.message,
+          testId: test.id,
+          topicId: question.topicId,
+          questionId: question.id,
+        })));
       }
     }
   }
