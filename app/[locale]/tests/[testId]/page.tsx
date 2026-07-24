@@ -10,6 +10,7 @@ import { ExamTimer, getTimerPresets } from "@/components/exam-timer";
 import { getMockPapersForTest } from "@/lib/tests/mock-papers";
 import { ArrowRight, FileText } from "lucide-react";
 import { AdaptiveLearningPanel } from "@/components/adaptive-learning-panel";
+import { ExamReadinessPanel } from "@/components/exam-readiness-panel";
 
 export default function TestDetailPage({
   params,
@@ -23,7 +24,7 @@ export default function TestDetailPage({
   return <TestDetailContent test={test} />;
 }
 
-type TabId = "overview" | "topics" | "plan" | "practice" | "history" | "analysis";
+type TabId = "overview" | "topics" | "plan" | "practice" | "history" | "analysis" | "readiness";
 
 function TestDetailContent({ test }: { test: AdmissionsTest }) {
   const searchParams = useSearchParams();
@@ -36,6 +37,7 @@ function TestDetailContent({ test }: { test: AdmissionsTest }) {
     { id: "practice", label: "练习 / 模拟", labelEn: "Practice" },
     ...(test.hasQuestionBank ? [{ id: "history" as TabId, label: "历史记录", labelEn: "History" }] : []),
     ...(test.hasQuestionBank ? [{ id: "analysis" as TabId, label: "学情分析", labelEn: "Analysis" }] : []),
+    ...(test.hasQuestionBank ? [{ id: "readiness" as TabId, label: "考前冲刺", labelEn: "Readiness" }] : []),
   ];
   const tab = tabs.some((item) => item.id === requestedTab) ? requestedTab as TabId : "overview";
 
@@ -135,6 +137,7 @@ function TestDetailContent({ test }: { test: AdmissionsTest }) {
       {tab === "practice" && <PracticeTab test={test} />}
       {tab === "history" && <HistoryTab test={test} />}
       {tab === "analysis" && <AnalysisTab test={test} />}
+      {tab === "readiness" && <ExamReadinessPanel testId={test.id} />}
     </div>
   );
 }

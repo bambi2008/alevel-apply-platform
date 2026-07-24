@@ -191,14 +191,16 @@ export function TopNav({
               )}
             </div>
           ) : (
-            <Link href="/login" className="hidden sm:inline-flex text-sm font-semibold text-[var(--ink)] hover:text-[var(--indigo)] px-2 py-2">
+            <Link href="/login" className="hidden md:inline-flex text-sm font-semibold text-[var(--ink)] hover:text-[var(--indigo)] px-2 py-2">
               {ta("login")}
             </Link>
           )}
 
-          <Link href="/match" className="hidden sm:inline-flex btn btn-primary text-sm">
-            <NavIcon name="sparkle" width={15} height={15} /> {t("freeMatch")}
-          </Link>
+          <div className="hidden md:block">
+            <Link href="/match" className="btn btn-primary text-sm">
+              <NavIcon name="sparkle" width={15} height={15} /> {t("freeMatch")}
+            </Link>
+          </div>
 
           {/* 移动端汉堡 */}
           <button
