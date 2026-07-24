@@ -29,6 +29,7 @@ import {
 } from "@/lib/tests/exam-progress";
 import { useExamReliability } from "@/hooks/use-exam-reliability";
 import { ExamReliabilityStatus } from "@/components/exam-reliability-status";
+import { GradingTrustPanel } from "@/components/grading-trust-panel";
 
 const QUESTION_BANKS: Record<string, Question[]> = {
   mat: MAT_QUESTIONS,
@@ -872,6 +873,9 @@ function MockResults({
   const totalEarned = scoreBase + results.reduce((s, r) => s + (r.earned ?? 0), 0);
   const totalMax = scoreBase + results.reduce((s, r) => s + (r.max ?? 0), 0);
   const pendingLongCount = results.filter((r) => r.type === "long" && r.gradingError).length;
+  const reviewRecommendedLongCount = results.filter(
+    (result) => result.grading?.assessment.reviewStatus === "review-recommended"
+  ).length;
   const mcqCorrect = results.filter((r) => r.type === "mcq" && r.correct).length;
   const mcqTotal = results.filter((r) => r.type === "mcq").length;
   const pct = totalMax > 0 ? Math.round((totalEarned / totalMax) * 100) : 0;
@@ -896,7 +900,10 @@ function MockResults({
           work: ans?.type === "long" ? ans.works : undefined,
           earned: r.earned ?? 0,
           max: r.max ?? 0,
-          feedback: r.grading?.perPart ?? undefined,
+          feedback: r.grading?.perPart.map((part) => ({
+            ...part,
+            assessment: r.grading?.assessment,
+          })) ?? undefined,
           ...behavior[r.questionId],
         };
       }),
@@ -920,6 +927,11 @@ function MockResults({
         {pendingLongCount > 0 && (
           <div className="mt-2 text-sm text-[var(--warning)]">
             {pendingLongCount} 道书面题待自评，暂未计入总分
+          </div>
+        )}
+        {reviewRecommendedLongCount > 0 && (
+          <div className="mt-2 text-sm text-[var(--warning)]">
+            {reviewRecommendedLongCount} 道书面题已自动裁决，仍建议对照评分标准复核
           </div>
         )}
       </div>
@@ -982,6 +994,7 @@ function MockResults({
 
                   {longQ && result?.grading && (
                     <div className="space-y-3">
+                      <GradingTrustPanel assessment={result.grading.assessment} compact />
                       {result.grading.perPart.map((p) => (
                         <div key={p.label} className="bg-white rounded-lg border border-[var(--border)] p-3">
                           <div className="flex justify-between text-xs font-semibold mb-1">
@@ -991,6 +1004,16 @@ function MockResults({
                             </span>
                           </div>
                           <p className="text-xs text-[var(--ink-soft)]">{p.feedback}</p>
+                          {p.evidence.length > 0 && (
+                            <ul className="mt-2 space-y-1">
+                              {p.evidence.map((item, evidenceIndex) => (
+                                <li key={`${item.criterion}-${evidenceIndex}`} className="text-xs text-[var(--ink-soft)]">
+                                  <span className="font-semibold">{item.marksAwarded} 分 · {item.criterion}</span>
+                                  {item.quote && <span>：“{item.quote}”</span>}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
                         </div>
                       ))}
                       <div className="bg-white rounded-lg border border-[var(--border)] p-3">

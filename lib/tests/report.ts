@@ -1,5 +1,6 @@
 import { buildSessionDiagnosis, expectedAnswerTimeSec, type DiagnosisObservation } from "@/lib/tests/diagnosis";
 import type { Question } from "@/lib/tests/questions/types";
+import type { GradeAssessment, GradeEvidence } from "@/lib/tests/grading";
 
 export interface ReportAnswer {
   questionId: string;
@@ -15,6 +16,8 @@ export interface ReportAnswer {
     feedback?: string;
     keyStepsFound?: string[];
     keyStepsMissing?: string[];
+    evidence?: GradeEvidence[];
+    assessment?: GradeAssessment;
   }> | null;
   timeSpentSec: number | null;
   answerChanges: number;

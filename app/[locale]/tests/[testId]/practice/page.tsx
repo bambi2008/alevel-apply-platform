@@ -24,6 +24,7 @@ import { getQuestionById } from "@/lib/tests/lookup";
 import { buildSessionDiagnosis } from "@/lib/tests/diagnosis";
 import { DiagnosisSummary, QuestionDiagnosis } from "@/components/exam-diagnosis";
 import { persistExamSession } from "@/lib/tests/persist-session";
+import { GradingTrustPanel } from "@/components/grading-trust-panel";
 
 const QUESTION_BANKS: Record<string, Question[]> = {
   mat: MAT_QUESTIONS,
@@ -528,7 +529,7 @@ function LongAnswerCard({
   const canSubmit = Object.values(works).some((w) => w.trim().length > 0)
     && (!isEssay || (!!selectedPrompt && wordCount <= (q.maxWords ?? Infinity)));
 
-  const handleGrade = async () => {
+  const handleGrade = async (reviewMode: GradeRequest["reviewMode"] = "standard") => {
     setGrading(true);
     setError(null);
     try {
@@ -548,6 +549,7 @@ function LongAnswerCard({
         fullSolution: q.fullSolution,
         responseKind: q.responseKind,
         rubricDimensions: q.rubricDimensions,
+        reviewMode,
       };
 
       const res = await fetch("/api/grade-answer", {
@@ -641,7 +643,7 @@ function LongAnswerCard({
           <div className="mt-5 flex gap-3">
             <button
               type="button"
-              onClick={handleGrade}
+              onClick={() => void handleGrade()}
               disabled={!canSubmit || grading}
               className="px-5 py-2.5 rounded-lg bg-[var(--indigo)] text-white text-sm font-medium hover:bg-[var(--indigo-hover)] disabled:opacity-50 transition"
             >
@@ -674,6 +676,18 @@ function LongAnswerCard({
             </span>
           </div>
 
+          <GradingTrustPanel assessment={result.assessment} />
+          {result.assessment.reviewStatus === "review-recommended" && (
+            <button
+              type="button"
+              onClick={() => void handleGrade("adjudicate")}
+              disabled={grading}
+              className="rounded-md border border-[var(--warning)] px-3 py-2 text-xs font-semibold text-[var(--warning)] disabled:opacity-50"
+            >
+              {grading ? "正在重新裁决…" : "重新评分并强制裁决"}
+            </button>
+          )}
+
           {result.dimensions && result.dimensions.length > 0 && (
             <div className="divide-y divide-[var(--border)] border-y border-[var(--border)] bg-white px-4">
               {result.dimensions.map((dimension) => (
@@ -695,6 +709,19 @@ function LongAnswerCard({
                   </span>
                 </div>
                 <p className="text-sm text-[var(--ink)] leading-relaxed">{p.feedback}</p>
+                {p.evidence.length > 0 && (
+                  <div className="mt-3 border-t border-[var(--border)] pt-2">
+                    <p className="text-xs font-medium text-[var(--ink-soft)]">评分证据</p>
+                    <ul className="mt-1 space-y-1">
+                      {p.evidence.map((item, evidenceIndex) => (
+                        <li key={`${item.criterion}-${evidenceIndex}`} className="text-xs text-[var(--ink-soft)]">
+                          <span className="font-semibold">{item.marksAwarded} 分 · {item.criterion}</span>
+                          {item.quote && <span>：“{item.quote}”</span>}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
                 {p.keyStepsFound.length > 0 && (
                   <div className="mt-2">
                     <p className="text-xs text-[var(--success)] font-medium">已完成步骤：</p>
@@ -739,7 +766,12 @@ function LongAnswerCard({
           <div className="mt-4 flex gap-3">
             <button
               type="button"
-              onClick={() => onSubmit(result.totalEarned, result.totalMax, works, result.perPart)}
+              onClick={() => onSubmit(
+                result.totalEarned,
+                result.totalMax,
+                works,
+                result.perPart.map((part) => ({ ...part, assessment: result.assessment })),
+              )}
               className="px-5 py-2.5 rounded-lg bg-[var(--indigo)] text-white text-sm font-medium hover:bg-[var(--indigo-hover)]"
             >
               下一题 →

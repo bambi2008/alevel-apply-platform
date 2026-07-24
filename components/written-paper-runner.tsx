@@ -13,6 +13,7 @@ import { persistExamSession } from "@/lib/tests/persist-session";
 import { createAttemptId, examAttemptKey, parseExamAttempt, remainingAttemptSeconds, type ExamAttemptSnapshot } from "@/lib/tests/exam-progress";
 import { useExamReliability } from "@/hooks/use-exam-reliability";
 import { ExamReliabilityStatus } from "@/components/exam-reliability-status";
+import { GradingTrustPanel } from "@/components/grading-trust-panel";
 
 type Phase = "briefing" | "running" | "grading" | "results";
 type WrittenWorks = Record<string, Record<string, string>>;
@@ -228,9 +229,19 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
               feedback: "本小题未作答。",
               keyStepsFound: [],
               keyStepsMissing: [],
+              evidence: [],
             })),
             overallFeedback: "本题未作答，计 0 分。",
             modelSolution: question.fullSolution,
+            assessment: {
+              method: "deterministic-empty",
+              confidence: "high",
+              reviewStatus: "accepted",
+              scoreDelta: 0,
+              passScores: [0],
+              agreementRate: 100,
+              rationale: "空白答案由确定性规则处理，未调用 AI。",
+            },
           },
         });
         setGradingProgress(nextGrades.length);
@@ -527,6 +538,9 @@ function WrittenPaperResults({
   const earned = scoredGrades.reduce((sum, result) => sum + (result.grading?.totalEarned ?? 0), 0);
   const max = scoredGrades.reduce((sum, result) => sum + (result.grading?.totalMax ?? 0), 0);
   const pending = grades.length - graded.length;
+  const reviewRecommended = graded.filter(
+    (result) => result.grading?.assessment.reviewStatus === "review-recommended"
+  ).length;
   const topicRows = [...new Set(questions.map((question) => question.topicId))].map((topicId) => {
     const topicQuestions = questions.filter((question) => question.topicId === topicId);
     const topicGrades = scoredGrades.filter((result) => topicQuestions.some((question) => question.id === result.questionId));
@@ -568,7 +582,10 @@ function WrittenPaperResults({
           work: works[question.id] ?? {},
           earned: result?.grading?.totalEarned ?? 0,
           max: result?.grading?.totalMax ?? 0,
-          feedback: result?.grading?.perPart,
+          feedback: result?.grading?.perPart.map((part) => ({
+            ...part,
+            assessment: result.grading?.assessment,
+          })),
         };
       }),
     };
@@ -585,12 +602,17 @@ function WrittenPaperResults({
         <div className="bg-white p-4"><strong className="block text-2xl">{earned}/{max || "-"}</strong><span className="text-xs text-[var(--ink-faint)]">{questions.some((question) => question.responseKind === "essay") ? "训练量表得分" : paper.bestQuestionCount ? `最高 ${paper.bestQuestionCount} 题得分` : "已评分得分"}</span></div>
         <div className="bg-white p-4"><strong className="block text-2xl">{max ? Math.round(earned / max * 100) : 0}%</strong><span className="text-xs text-[var(--ink-faint)]">已评分得分率</span></div>
         <div className="bg-white p-4"><strong className="block text-2xl">{Math.round(timeUsedSec / 60)}</strong><span className="text-xs text-[var(--ink-faint)]">用时（分钟）</span></div>
-        <div className="bg-white p-4"><strong className="block text-2xl">{pending}</strong><span className="text-xs text-[var(--ink-faint)]">待自评题目</span></div>
+        <div className="bg-white p-4"><strong className="block text-2xl">{pending + reviewRecommended}</strong><span className="text-xs text-[var(--ink-faint)]">待自评 / 复核</span></div>
       </div>
 
       {pending > 0 && (
         <p className="mt-4 border-l-2 border-[var(--warning)] pl-3 text-sm text-[var(--warning)]">
           待自评题目未按零分处理，也未计入得分率。
+        </p>
+      )}
+      {reviewRecommended > 0 && (
+        <p className="mt-4 border-l-2 border-[var(--warning)] pl-3 text-sm text-[var(--warning)]">
+          {reviewRecommended} 道题的独立阅卷分歧超过阈值，已完成自动裁决，但仍建议对照评分标准复核。
         </p>
       )}
 
@@ -644,6 +666,7 @@ function WrittenPaperResults({
                   <div className="pb-5 text-sm">
                     {result?.grading ? (
                       <div className="space-y-4">
+                        <GradingTrustPanel assessment={result.grading.assessment} />
                         {result.grading.dimensions && result.grading.dimensions.length > 0 && (
                           <div className="divide-y divide-[var(--border)] border-y border-[var(--border)]">
                             {result.grading.dimensions.map((dimension) => (
@@ -658,6 +681,16 @@ function WrittenPaperResults({
                           <div key={part.label} className="border-l-2 border-[var(--border)] pl-3">
                             <div className="flex justify-between font-semibold"><span>{part.label}</span><span>{part.earned}/{part.max}</span></div>
                             <p className="mt-1 text-[var(--ink-soft)]">{part.feedback}</p>
+                            {part.evidence.length > 0 && (
+                              <ul className="mt-2 space-y-1 text-xs text-[var(--ink-soft)]">
+                                {part.evidence.map((item, evidenceIndex) => (
+                                  <li key={`${item.criterion}-${evidenceIndex}`}>
+                                    <span className="font-semibold">{item.marksAwarded} 分 · {item.criterion}</span>
+                                    {item.quote && <span>：“{item.quote}”</span>}
+                                  </li>
+                                ))}
+                              </ul>
+                            )}
                           </div>
                         ))}
                         <p className="text-[var(--ink-soft)]">{result.grading.overallFeedback}</p>

@@ -9,6 +9,7 @@ import {
   type ReportModuleDefinition,
   type ReportSession,
 } from "@/lib/tests/report";
+import type { GradeAssessment, GradeEvidence } from "@/lib/tests/grading";
 
 function stringRecord(value: unknown): Record<string, string> | null {
   if (!value || typeof value !== "object" || Array.isArray(value)) return null;
@@ -20,6 +21,26 @@ function feedbackRows(value: unknown): ReportAnswer["feedback"] {
   return value.flatMap((item) => {
     if (!item || typeof item !== "object") return [];
     const row = item as Record<string, unknown>;
+    const assessment = row.assessment && typeof row.assessment === "object"
+      ? row.assessment as GradeAssessment
+      : undefined;
+    const evidence = Array.isArray(row.evidence)
+      ? row.evidence.flatMap((entry): GradeEvidence[] => {
+          if (!entry || typeof entry !== "object") return [];
+          const item = entry as Record<string, unknown>;
+          if (
+            typeof item.criterion !== "string"
+            || !["met", "partial", "missing"].includes(String(item.status))
+            || typeof item.marksAwarded !== "number"
+          ) return [];
+          return [{
+            criterion: item.criterion,
+            status: item.status as GradeEvidence["status"],
+            quote: typeof item.quote === "string" ? item.quote : undefined,
+            marksAwarded: item.marksAwarded,
+          }];
+        })
+      : undefined;
     return [{
       label: typeof row.label === "string" ? row.label : undefined,
       earned: typeof row.earned === "number" ? row.earned : undefined,
@@ -31,6 +52,8 @@ function feedbackRows(value: unknown): ReportAnswer["feedback"] {
       keyStepsMissing: Array.isArray(row.keyStepsMissing)
         ? row.keyStepsMissing.filter((step): step is string => typeof step === "string")
         : undefined,
+      evidence,
+      assessment,
     }];
   });
 }

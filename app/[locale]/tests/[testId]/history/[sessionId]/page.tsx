@@ -10,6 +10,8 @@ import { QuestionDiagnosis } from "@/components/exam-diagnosis";
 import { diagnoseAnswer, optionReview } from "@/lib/tests/diagnosis";
 import { ExamPerformanceReportView } from "@/components/exam-performance-report";
 import type { ExamPerformanceReport } from "@/lib/tests/report";
+import type { GradeAssessment, GradeEvidence } from "@/lib/tests/grading";
+import { GradingTrustPanel } from "@/components/grading-trust-panel";
 
 interface PartFeedback {
   label: string;
@@ -18,6 +20,8 @@ interface PartFeedback {
   feedback: string;
   keyStepsFound?: string[];
   keyStepsMissing?: string[];
+  evidence?: GradeEvidence[];
+  assessment?: GradeAssessment;
 }
 
 interface SessionAnswer {
@@ -211,9 +215,11 @@ function LongReview({
 }) {
   const [showSolution, setShowSolution] = useState(false);
   const fbByLabel = new Map((feedback ?? []).map((f) => [f.label, f] as const));
+  const assessment = feedback?.find((item) => item.assessment)?.assessment;
 
   return (
     <div className="space-y-5">
+      {assessment && <GradingTrustPanel assessment={assessment} />}
       {q.context && (
         <div className="p-3 bg-neutral-50 rounded-lg border border-neutral-200">
           <MathRenderer text={q.context} className="text-sm text-neutral-700" block />
@@ -247,6 +253,16 @@ function LongReview({
                   </span>
                 </div>
                 <p className="text-sm text-neutral-700 leading-relaxed">{fb.feedback}</p>
+                {fb.evidence && fb.evidence.length > 0 && (
+                  <ul className="mt-2 space-y-1 text-xs text-neutral-600">
+                    {fb.evidence.map((item, evidenceIndex) => (
+                      <li key={`${item.criterion}-${evidenceIndex}`}>
+                        <span className="font-semibold">{item.marksAwarded} 分 · {item.criterion}</span>
+                        {item.quote && <span>：“{item.quote}”</span>}
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 {fb.keyStepsMissing && fb.keyStepsMissing.length > 0 && (
                   <p className="mt-1 text-xs text-red-500">缺少：{fb.keyStepsMissing.join("、")}</p>
                 )}
