@@ -1,5 +1,4 @@
 import { redirect } from "next/navigation";
-import Link from "next/link";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { AiConsentForm, ChangePasswordForm, DeleteAccountForm } from "@/components/account-security-forms";
@@ -41,7 +40,7 @@ export default async function AccountPage() {
       <section className="border-b border-[var(--border)] py-6">
         <h2 className="text-lg font-bold">个人数据</h2>
         <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)]">导出文件包含账号资料、申请与备考记录、同意记录和文件元数据，不包含密码或已上传文件的原始内容。</p>
-        <Link href="/api/account/export" prefetch={false} className="btn btn-secondary mt-4">下载我的数据（JSON）</Link>
+        <a href="/api/account/export" download className="btn btn-secondary mt-4">下载我的数据（JSON）</a>
       </section>
 
       <section className="border-b border-[var(--border)] py-6">

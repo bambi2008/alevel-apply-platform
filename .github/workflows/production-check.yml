@@ -45,3 +45,45 @@ jobs:
       - run: pnpm audit --registry=https://registry.npmjs.org --prod --audit-level high
       - run: pnpm build
       - run: docker build --target production .
+
+  e2e:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: qiaoshen
+          POSTGRES_PASSWORD: e2e-password
+          POSTGRES_DB: qiaoshen_e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U qiaoshen -d qiaoshen_e2e"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://qiaoshen:e2e-password@127.0.0.1:5432/qiaoshen_e2e
+      AUTH_SECRET: ci-e2e-secret-with-more-than-thirty-two-characters
+      APP_ORIGIN: http://127.0.0.1:3130
+      STORAGE_DRIVER: local
+      LOCAL_STORAGE_PATH: /tmp/qiaoshen-e2e-storage
+      NEXT_PUBLIC_PHONE_AUTH_ENABLED: "false"
+      AI_REQUIRES_CROSS_BORDER_CONSENT: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.9.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec prisma generate
+      - run: pnpm exec prisma migrate deploy
+      - run: pnpm db:seed
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e
