@@ -28,6 +28,10 @@ export interface MCQQuestion {
   statements?: Array<{ id: string; text: string }>;
   matrixAnswer?: Array<"yes" | "no">;
   scoringMode?: "exact" | "adjacent";
+  /** Original practice audio rendered by the browser; the script is hidden during the exam. */
+  audioSectionId?: string;
+  audioTitle?: string;
+  audioScript?: string;
 }
 
 /** 大题（MAT Part B, STEP 等）—— 需 AI 分步评分 */

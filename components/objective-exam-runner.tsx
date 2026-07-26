@@ -1,14 +1,14 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { Calculator, ChevronLeft, ChevronRight, Delete, Flag, LayoutGrid, RotateCcw, Save, Send, X } from "lucide-react";
+import { Calculator, ChevronLeft, ChevronRight, Delete, Flag, LayoutGrid, RotateCcw, Save, Send, Volume2, X } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { MathRenderer } from "@/components/math-renderer";
 import type { MockPaper } from "@/lib/tests/mock-papers";
 import type { MCQQuestion } from "@/lib/tests/questions/types";
 import { createQuestionTelemetry, type QuestionTelemetrySnapshot, type QuestionTelemetryTracker } from "@/lib/tests/telemetry";
 import { examProgressKey, parseExamProgress, summarizeModule, type ObjectiveExamProgress } from "@/lib/tests/exam-progress";
-import { decodeMatrixAnswer, encodeMatrixAnswer, estimateSjtBand, estimateUcatScaledScore, isObjectiveAnswerComplete, scoreObjectiveAnswer } from "@/lib/tests/objective-scoring";
+import { decodeMatrixAnswer, encodeMatrixAnswer, estimateIeltsBand, estimateSjtBand, estimateUcatScaledScore, isObjectiveAnswerComplete, scoreObjectiveAnswer } from "@/lib/tests/objective-scoring";
 import { DiagnosisSummary, QuestionDiagnosis } from "@/components/exam-diagnosis";
 import { buildSessionDiagnosis, diagnoseAnswer, optionReview } from "@/lib/tests/diagnosis";
 import { persistExamSession } from "@/lib/tests/persist-session";
@@ -39,6 +39,8 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
   const [startedAt, setStartedAt] = useState(0);
   const [instructionTimeLeft, setInstructionTimeLeft] = useState(instructionDuration(paper, paper.modules[0].id));
   const [calculatorOpen, setCalculatorOpen] = useState(false);
+  const [playedAudioSections, setPlayedAudioSections] = useState<Record<string, boolean>>({});
+  const [speakingSection, setSpeakingSection] = useState<string | null>(null);
   const startedAtRef = useRef(0);
   const moduleDeadlineRef = useRef(0);
   const telemetryRef = useRef<QuestionTelemetryTracker>(createQuestionTelemetry());
@@ -46,6 +48,26 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
   const currentModule = paper.modules[moduleIndex];
   const currentQuestion = currentModule.questions[questionIndex];
   const { online } = useExamReliability(phase === "running" || phase === "instructions");
+
+  useEffect(() => () => window.speechSynthesis?.cancel(), []);
+
+  const playListeningSection = useCallback((question: MCQQuestion) => {
+    if (!question.audioSectionId || !question.audioScript || playedAudioSections[question.audioSectionId]) return;
+    if (!("speechSynthesis" in window)) return;
+    const utterance = new SpeechSynthesisUtterance(question.audioScript);
+    const voices = window.speechSynthesis.getVoices();
+    utterance.voice = voices.find((voice) => voice.lang.toLowerCase() === "en-gb")
+      ?? voices.find((voice) => voice.lang.toLowerCase().startsWith("en"))
+      ?? null;
+    utterance.lang = "en-GB";
+    utterance.rate = 0.92;
+    utterance.onend = () => setSpeakingSection(null);
+    utterance.onerror = () => setSpeakingSection(null);
+    window.speechSynthesis.cancel();
+    setPlayedAudioSections((current) => ({ ...current, [question.audioSectionId!]: true }));
+    setSpeakingSection(question.audioSectionId);
+    window.speechSynthesis.speak(utterance);
+  }, [playedAudioSections]);
 
   useEffect(() => {
     const restored = parseExamProgress(
@@ -81,6 +103,8 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
     const instructions = instructionDuration(paper, paper.modules[nextModule].id);
     setInstructionTimeLeft(instructions);
     setCalculatorOpen(false);
+    setPlayedAudioSections({});
+    setSpeakingSection(null);
     if (instructions === 0) moduleDeadlineRef.current = Date.now() + paper.modules[nextModule].durationSec * 1000;
     setPhase(instructions > 0 ? "instructions" : "running");
     window.scrollTo({ top: 0 });
@@ -296,7 +320,26 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
       <div className="mt-5 grid items-start gap-5 lg:grid-cols-[minmax(0,1fr)_15rem]">
         <section className="min-w-0 rounded-lg border border-neutral-200 bg-white p-5 sm:p-7">
           <div className="flex items-start justify-between gap-3"><span className="text-xs font-semibold text-neutral-400">QUESTION {questionIndex + 1}</span><button type="button" onClick={toggleFlag} className={`inline-flex h-8 items-center gap-1.5 rounded border px-2.5 text-xs font-medium ${flagged[currentQuestion.id] ? "border-amber-400 bg-amber-50 text-amber-800" : "border-neutral-300 text-neutral-600"}`}><Flag className="size-3.5" fill={flagged[currentQuestion.id] ? "currentColor" : "none"} />{flagged[currentQuestion.id] ? "已标记" : "标记"}</button></div>
-          {currentQuestion.context && <MathRenderer text={currentQuestion.context} className="mt-4 border-l-2 border-neutral-300 bg-neutral-50 px-4 py-3 text-sm leading-6 text-neutral-700" block />}
+          {currentQuestion.audioScript && currentQuestion.audioSectionId && (
+            <div className="mt-4 border-l-2 border-blue-600 bg-blue-50 px-4 py-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-semibold text-blue-900">{currentQuestion.audioTitle ?? "Listening recording"}</p>
+                  <p className="mt-1 text-xs text-blue-700">训练录音只可启动一次；播放期间可继续翻题作答。</p>
+                </div>
+                <button
+                  type="button"
+                  disabled={Boolean(playedAudioSections[currentQuestion.audioSectionId])}
+                  onClick={() => playListeningSection(currentQuestion)}
+                  className="inline-flex items-center gap-2 rounded bg-blue-600 px-3 py-2 text-xs font-semibold text-white disabled:bg-blue-200 disabled:text-blue-700"
+                >
+                  <Volume2 className="size-4" />
+                  {speakingSection === currentQuestion.audioSectionId ? "正在播放" : playedAudioSections[currentQuestion.audioSectionId] ? "本节已播放" : "播放本节录音"}
+                </button>
+              </div>
+            </div>
+          )}
+          {currentQuestion.context && !currentQuestion.audioScript && <MathRenderer text={currentQuestion.context} className="mt-4 border-l-2 border-neutral-300 bg-neutral-50 px-4 py-3 text-sm leading-6 text-neutral-700" block />}
           <MathRenderer text={currentQuestion.question} className="mt-4 text-base leading-7 text-neutral-900" block />
           {currentQuestion.responseMode === "matrix" ? <div className="mt-6 divide-y divide-neutral-100 border-y border-neutral-200">{currentQuestion.statements?.map((statement, index) => { const selected = decodeMatrixAnswer(answers[currentQuestion.id], currentQuestion.statements?.length ?? 0)[index]; return <div key={statement.id} className="grid gap-3 py-4 sm:grid-cols-[minmax(0,1fr)_11rem] sm:items-center"><MathRenderer text={statement.text} className="text-sm leading-6" /><div className="grid grid-cols-2 gap-1"><button type="button" onClick={() => chooseMatrix(index, "yes")} className={`rounded border px-3 py-2 text-xs font-semibold ${selected === "yes" ? "border-blue-600 bg-blue-600 text-white" : "border-neutral-300"}`}>Yes</button><button type="button" onClick={() => chooseMatrix(index, "no")} className={`rounded border px-3 py-2 text-xs font-semibold ${selected === "no" ? "border-blue-600 bg-blue-600 text-white" : "border-neutral-300"}`}>No</button></div></div>; })}</div> : <div className="mt-6 space-y-2">{currentQuestion.options.map((option) => <button key={option.key} type="button" onClick={() => choose(option.key)} className={`flex w-full items-start gap-3 rounded-lg border px-3 py-3 text-left transition ${answers[currentQuestion.id] === option.key ? "border-blue-500 bg-blue-50" : "border-neutral-200 hover:bg-neutral-50"}`}><span className={`flex size-6 shrink-0 items-center justify-center rounded-full border text-xs font-bold ${answers[currentQuestion.id] === option.key ? "border-blue-600 bg-blue-600 text-white" : "border-neutral-300 text-neutral-500"}`}>{option.key}</span><MathRenderer text={option.text} className="flex-1 text-sm leading-6" /></button>)}</div>}
           <div className="mt-6 flex items-center justify-between border-t border-neutral-100 pt-4"><button type="button" disabled={questionIndex === 0} onClick={() => setQuestionIndex((index) => index - 1)} className="inline-flex h-10 items-center gap-1 rounded border border-neutral-300 px-3 text-sm disabled:opacity-40"><ChevronLeft className="size-4" />上一题</button><button type="button" onClick={() => questionIndex + 1 < currentModule.questions.length ? setQuestionIndex((index) => index + 1) : setReviewing(true)} className="inline-flex h-10 items-center gap-1 rounded bg-blue-600 px-3 text-sm font-semibold text-white">{questionIndex + 1 < currentModule.questions.length ? "下一题" : "查看总览"}<ChevronRight className="size-4" /></button></div>
@@ -386,6 +429,13 @@ function ObjectiveResults({ paper, answers, behavior, startedAt, timeUsedSec }: 
       ...behavior[question.id],
     };
   })));
+  const ieltsBands = paper.testId === "ielts"
+    ? moduleScores.flatMap(({ module, earned }) =>
+        module.id === "listening" || module.id === "reading"
+          ? [{ id: module.id, label: module.id === "listening" ? "Listening" : "Academic Reading", raw: earned, band: estimateIeltsBand(earned, module.id) }]
+          : []
+      )
+    : [];
 
   useEffect(() => {
     if (persistedRef.current) return;
@@ -406,6 +456,20 @@ function ObjectiveResults({ paper, answers, behavior, startedAt, timeUsedSec }: 
   return <main className="mx-auto max-w-3xl px-4 py-10">
     <header className="border-b border-neutral-200 pb-7 text-center"><p className="text-sm text-neutral-500">{paper.title} · 成绩</p><p className="mt-3 text-5xl font-bold text-blue-600">{totalEarned}<span className="text-2xl text-neutral-400">/{totalMax}</span></p><p className="mt-1 text-sm text-neutral-500">正确率 {Math.round((totalEarned / totalMax) * 100)}%</p></header>
     {paper.testId === "ucat" && <UcatScoreSummary moduleScores={moduleScores} />}
+    {ieltsBands.length > 0 && (
+      <section className="mt-6 border-y border-neutral-200 py-5">
+        <p className="text-xs font-semibold uppercase tracking-wide text-neutral-500">IELTS training estimate</p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          {ieltsBands.map((item) => (
+            <div key={item.id} className="flex items-center justify-between bg-neutral-50 px-4 py-3">
+              <div><p className="text-sm font-semibold">{item.label}</p><p className="text-xs text-neutral-500">原始分 {item.raw}/40</p></div>
+              <strong className="text-2xl text-blue-600">Band {item.band.toFixed(1)}</strong>
+            </div>
+          ))}
+        </div>
+        <p className="mt-3 text-xs text-neutral-500">按常见原始分区间生成的训练估算，不是 IELTS 官方等值成绩。</p>
+      </section>
+    )}
     <section className="mt-6 grid gap-px overflow-hidden rounded-lg border border-neutral-200 bg-neutral-200 sm:grid-cols-2">{moduleScores.map(({ module, earned, max }) => <div key={module.id} className="bg-white p-4 text-center"><p className="text-xs text-neutral-500">{module.title}</p><p className="mt-1 text-2xl font-bold">{earned}<span className="text-base text-neutral-400">/{max}</span></p><p className="text-xs text-neutral-400">{Math.round((earned / max) * 100)}%</p></div>)}</section>
     <DiagnosisSummary diagnosis={diagnosis} />
     <h2 className="mt-8 text-base font-bold">逐题回看</h2>

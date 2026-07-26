@@ -42,3 +42,11 @@ export function estimateSjtBand(earned: number, max: number): 1 | 2 | 3 | 4 {
   if (ratio >= 0.5) return 3;
   return 4;
 }
+
+export function estimateIeltsBand(rawScore: number, section: "listening" | "reading"): number {
+  const score = Math.max(0, Math.min(40, Math.round(rawScore)));
+  const thresholds = section === "listening"
+    ? [[39, 9], [37, 8.5], [35, 8], [32, 7.5], [30, 7], [26, 6.5], [23, 6], [18, 5.5], [16, 5], [13, 4.5], [10, 4]]
+    : [[39, 9], [37, 8.5], [35, 8], [33, 7.5], [30, 7], [27, 6.5], [23, 6], [19, 5.5], [15, 5], [13, 4.5], [10, 4]];
+  return thresholds.find(([minimum]) => score >= minimum)?.[1] ?? 3.5;
+}

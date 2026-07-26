@@ -10,10 +10,6 @@ function paperCopies(prefix: string, questions: Question[]): Question[] {
   }));
 }
 
-const ieltsReading = paperCopies(
-  "ielts-written-diagnostic-reading",
-  IELTS_QUESTIONS.filter((question) => question.topicId === "ielts-reading")
-);
 const ieltsWriting = paperCopies(
   "ielts-written-diagnostic-writing",
   IELTS_QUESTIONS.filter((question) => question.topicId === "ielts-writing")
@@ -22,15 +18,13 @@ const ieltsWriting = paperCopies(
 export const IELTS_WRITTEN_DIAGNOSTIC: MockPaper = {
   id: "ielts-written-diagnostic-1",
   testId: "ielts",
-  title: "IELTS Academic 阅读与写作诊断卷",
-  titleEn: "IELTS Academic Reading and Writing Diagnostic",
-  description: "平台原创的短版诊断，不冒充 2 小时 45 分钟官方全真卷。用于检查证据定位、Task 1 概括和 Task 2 论证；听力应使用官方带音频样题，口语应进入面试中心。",
+  title: "IELTS Academic Writing 短诊断",
+  titleEn: "IELTS Academic Writing Diagnostic",
+  description: "平台原创短版写作诊断，用于检查 Task 1 概括和 Task 2 论证。完整 60 分钟固定卷请使用 IELTS Academic Writing 固定卷 1。",
   modules: [
-    { id: "reading", title: "Academic Reading 短诊断", titleEn: "Academic Reading diagnostic", durationSec: 20 * 60, questions: ieltsReading },
     { id: "writing", title: "Academic Writing Task 1 + Task 2", titleEn: "Academic Writing Tasks 1 and 2", durationSec: 60 * 60, questions: ieltsWriting },
   ],
   instructions: [
-    "阅读答案只能依据给定文本，不使用外部常识补全。",
     "Writing Task 1 建议约 20 分钟，Task 2 建议约 40 分钟。",
     "本卷不给官方 IELTS Band，只提供按四维量表生成的形成性反馈。",
   ],

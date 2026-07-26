@@ -63,6 +63,7 @@ const TOPIC_LABELS: Record<string, string> = {
   "step-stats": "统计与概率",
   "lnat-essay": "LNAT 议论文写作",
   "tara-writing": "TARA 写作任务",
+  "ielts-writing": "IELTS Academic Writing",
 };
 
 const TEST_LABELS: Record<string, string> = {
@@ -73,6 +74,7 @@ const TEST_LABELS: Record<string, string> = {
   bpho: "BPhO",
   lnat: "LNAT",
   tara: "TARA",
+  ielts: "IELTS",
 };
 
 const ESSAY_PROMPT_KEY = "__selectedPrompt";

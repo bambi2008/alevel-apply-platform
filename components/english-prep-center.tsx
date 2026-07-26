@@ -101,7 +101,7 @@ export function EnglishPrepCenter() {
             <h2 className="text-xl font-bold text-[var(--ink)]">四项训练路径</h2>
             <p className="mt-1 text-sm text-[var(--ink-soft)]">先补最弱单项，再用短诊断检查迁移；不要只刷最擅长的一项。</p>
           </div>
-          <Link href="/tests/ielts/mock" className="btn btn-primary">开始阅读与写作诊断</Link>
+          <Link href="/tests/ielts/paper/ielts-reading-full-1" className="btn btn-primary">开始全长 Reading</Link>
         </div>
         <div className="divide-y divide-[var(--border)] border-y border-[var(--border)]">
           {SKILLS.map((skill) => (
@@ -127,6 +127,25 @@ export function EnglishPrepCenter() {
               )}
             </div>
           ))}
+        </div>
+      </section>
+
+      <section>
+        <h2 className="text-xl font-bold text-[var(--ink)]">全长固定机考卷</h2>
+        <p className="mt-1 text-sm text-[var(--ink-soft)]">三个模块分别计时与存档，便于单项重考和定位分差；Speaking 在口语模拟中心完成。</p>
+        <div className="mt-4 grid gap-px bg-[var(--border)] sm:grid-cols-3">
+          <Link href="/tests/ielts/paper/ielts-listening-full-1" className="bg-white p-4 hover:bg-[var(--surface)]">
+            <strong className="block text-[var(--ink)]">Listening</strong>
+            <span className="mt-1 block text-xs text-[var(--ink-soft)]">4 节 · 40 题 · 30 分钟 · 一次性录音</span>
+          </Link>
+          <Link href="/tests/ielts/paper/ielts-reading-full-1" className="bg-white p-4 hover:bg-[var(--surface)]">
+            <strong className="block text-[var(--ink)]">Academic Reading</strong>
+            <span className="mt-1 block text-xs text-[var(--ink-soft)]">4 篇 · 40 题 · 60 分钟</span>
+          </Link>
+          <Link href="/tests/ielts/paper/ielts-written-full-1" className="bg-white p-4 hover:bg-[var(--surface)]">
+            <strong className="block text-[var(--ink)]">Academic Writing</strong>
+            <span className="mt-1 block text-xs text-[var(--ink-soft)]">Task 1 + Task 2 · 60 分钟 · AI 量表反馈</span>
+          </Link>
         </div>
       </section>
 

@@ -10,7 +10,7 @@ describe("question bank audit", () => {
     const report = buildQuestionBankAudit();
     expect(report.totals.tests).toBe(12);
     expect(report.totals.questions).toBe(2560);
-    expect(report.totals.mockPapers).toBe(109);
+    expect(report.totals.mockPapers).toBe(112);
     expect(report.totals.topicsCovered).toBe(77);
     expect(report.totals.topicsTotal).toBe(77);
     expect(report.totals.critical).toBe(0);

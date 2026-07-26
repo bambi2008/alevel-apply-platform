@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import type { MCQQuestion } from "./questions/types";
-import { decodeMatrixAnswer, encodeMatrixAnswer, estimateSjtBand, estimateUcatScaledScore, isObjectiveAnswerComplete, scoreObjectiveAnswer } from "./objective-scoring";
+import { decodeMatrixAnswer, encodeMatrixAnswer, estimateIeltsBand, estimateSjtBand, estimateUcatScaledScore, isObjectiveAnswerComplete, scoreObjectiveAnswer } from "./objective-scoring";
 
 const base: MCQQuestion = {
   id: "q", type: "mcq", testId: "ucat", topicId: "ucat-dm", difficulty: 2, marks: 1,
@@ -30,5 +30,12 @@ describe("UCAT objective scoring", () => {
     expect(estimateUcatScaledScore(44, 44)).toBe(900);
     expect(estimateSjtBand(80, 100)).toBe(1);
     expect(estimateSjtBand(49, 100)).toBe(4);
+  });
+
+  it("maps IELTS Listening and Academic Reading raw scores to training bands", () => {
+    expect(estimateIeltsBand(40, "listening")).toBe(9);
+    expect(estimateIeltsBand(30, "listening")).toBe(7);
+    expect(estimateIeltsBand(30, "reading")).toBe(7);
+    expect(estimateIeltsBand(23, "reading")).toBe(6);
   });
 });
