@@ -19,12 +19,13 @@ services:
       - backend
 
   app:
+    image: ${APP_IMAGE:-qiaoshen-app:local}
     build:
       context: .
       target: production
     restart: unless-stopped
     env_file:
-      - .env.production
+      - ${APP_ENV_FILE:-.env.production}
     depends_on:
       postgres:
         condition: service_healthy
@@ -54,12 +55,13 @@ services:
       - backend
 
   backup:
+    image: ${APP_IMAGE:-qiaoshen-app:local}
     build:
       context: .
       target: production
     restart: unless-stopped
     env_file:
-      - .env.production
+      - ${APP_ENV_FILE:-.env.production}
     depends_on:
       postgres:
         condition: service_healthy

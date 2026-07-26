@@ -24,6 +24,9 @@ if (!verifyOnly && !confirm) throw new Error("Restore is destructive; pass --con
 if (!path.isAbsolute(storagePath)) throw new Error("LOCAL_STORAGE_PATH must be absolute");
 
 const manifest = JSON.parse(await readFile(path.join(backupPath, "manifest.json"), "utf8"));
+if (manifest.schemaVersion !== 1 || manifest.encryption !== "AES-256-GCM") {
+  throw new Error("Unsupported backup manifest format");
+}
 for (const item of [manifest.database, manifest.storage]) {
   if (
     !item
@@ -37,6 +40,14 @@ for (const item of [manifest.database, manifest.storage]) {
   const file = path.join(backupPath, item.file);
   if (await sha256(file) !== item.sha256) throw new Error(`Backup checksum failed: ${item.file}`);
 }
+const storageRootName = manifest.storage.rootName ?? path.basename(storagePath);
+if (
+  typeof storageRootName !== "string"
+  || path.basename(storageRootName) !== storageRootName
+  || !storageRootName
+) {
+  throw new Error("Backup manifest contains an invalid storage root");
+}
 
 const temporary = path.join(path.dirname(storagePath), `.restore-${Date.now()}-${process.pid}`);
 await mkdir(temporary, { recursive: false });
@@ -45,10 +56,12 @@ try {
   const storageArchive = path.join(temporary, "storage.tgz");
   await decryptFile(path.join(backupPath, manifest.database.file), databaseDump, key);
   await decryptFile(path.join(backupPath, manifest.storage.file), storageArchive, key);
+  await run("pg_restore", ["--list", databaseDump]);
+  await run("tar", ["-tzf", storageArchive]);
   if (verifyOnly) {
     console.log(`[restore] verification passed for ${backupPath}`);
   } else {
-    await run("pg_restore", ["--clean", "--if-exists", "--no-owner", "--dbname", databaseUrl, databaseDump]);
+    await run("pg_restore", ["--clean", "--if-exists", "--no-owner", "--exit-on-error", "--dbname", databaseUrl, databaseDump]);
     const previousStorage = `${storagePath}.pre-restore-${Date.now()}`;
     let movedExisting = false;
     try {
@@ -58,7 +71,10 @@ try {
       if (error?.code !== "ENOENT") throw error;
     }
     try {
-      await run("tar", ["-xzf", storageArchive, "-C", path.dirname(storagePath)]);
+      const extractionPath = path.join(temporary, "storage-extracted");
+      await mkdir(extractionPath, { recursive: false });
+      await run("tar", ["-xzf", storageArchive, "-C", extractionPath]);
+      await rename(path.join(extractionPath, storageRootName), storagePath);
       if (movedExisting) await rm(previousStorage, { recursive: true, force: true });
     } catch (error) {
       await rm(storagePath, { recursive: true, force: true });

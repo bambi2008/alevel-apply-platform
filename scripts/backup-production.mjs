@@ -60,7 +60,12 @@ try {
     createdAt: new Date().toISOString(),
     encryption: "AES-256-GCM",
     database: { file: path.basename(encryptedDatabase), sha256: await sha256(encryptedDatabase), size: (await stat(encryptedDatabase)).size },
-    storage: { file: path.basename(encryptedStorage), sha256: await sha256(encryptedStorage), size: (await stat(encryptedStorage)).size },
+    storage: {
+      file: path.basename(encryptedStorage),
+      rootName: storageName,
+      sha256: await sha256(encryptedStorage),
+      size: (await stat(encryptedStorage)).size,
+    },
   };
   await writeFile(path.join(staging, "manifest.json"), JSON.stringify(manifest, null, 2), { flag: "wx" });
   await rename(staging, destination);

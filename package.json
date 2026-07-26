@@ -27,7 +27,10 @@
     "preflight:production": "node scripts/check-production-env.mjs",
     "start:production": "node scripts/start-production.mjs",
     "backup:production": "node scripts/backup-production.mjs",
-    "restore:production": "node scripts/restore-production.mjs"
+    "restore:production": "node scripts/restore-production.mjs",
+    "deploy:production": "node scripts/deploy-release.mjs",
+    "rollback:production": "node scripts/rollback-release.mjs",
+    "drill:preproduction": "node scripts/preproduction-drill.mjs"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

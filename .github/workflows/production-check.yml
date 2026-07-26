@@ -1,6 +1,7 @@
 name: Production check
 
 on:
+  workflow_dispatch:
   pull_request:
   push:
     branches: [main]
@@ -11,7 +12,7 @@ permissions:
 jobs:
   verify:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 40
     env:
       DATABASE_URL: postgresql://build:build-password@postgres:5432/build
       AUTH_SECRET: ci-only-secret-with-more-than-thirty-two-characters
@@ -41,10 +42,52 @@ jobs:
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test
+      - run: docker compose --env-file .env.preproduction.example -f compose.production.yml -f compose.preproduction.yml config --quiet
+        env:
+          APP_ENV_FILE: .env.preproduction.example
       - run: pnpm audit:questions
       - run: pnpm audit --registry=https://registry.npmjs.org --prod --audit-level high
       - run: pnpm build
-      - run: docker build --target production .
+      - name: Build immutable release image
+        run: docker build --target production -t "qiaoshen-app:ci-${GITHUB_SHA}" .
+      - name: Prepare isolated recovery drill
+        run: |
+          cp .env.preproduction.example .env.preproduction
+          sed -i 's/replace-with-at-least-32-random-characters/ci-preproduction-auth-secret-1234567890/g' .env.preproduction
+          sed -i 's/replace-with-a-long-random-password/ci-preproduction-db-password/g' .env.preproduction
+          sed -i 's#replace-with-output-of-openssl-rand-base64-32#AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=#g' .env.preproduction
+          mkdir -p backups-preproduction
+          sudo chown 1001:1001 backups-preproduction
+          docker tag "qiaoshen-app:ci-${GITHUB_SHA}" "qiaoshen-app:baseline-${GITHUB_SHA}"
+      - name: Establish rollback baseline
+        run: >-
+          pnpm deploy:production --
+          --release "baseline-${GITHUB_SHA}"
+          --image "qiaoshen-app:baseline-${GITHUB_SHA}"
+          --env-file .env.preproduction
+          --state-dir .deploy/preproduction
+          --compose-file compose.production.yml
+          --compose-file compose.preproduction.yml
+          --no-build
+          --skip-backup
+          --confirm
+      - name: Prove backup can be restored
+        run: pnpm drill:preproduction -- --release "ci-${GITHUB_SHA}" --no-build --skip-e2e --skip-backup
+      - name: Prove one-command rollback
+        run: >-
+          pnpm rollback:production --
+          --env-file .env.preproduction
+          --state-dir .deploy/preproduction
+          --compose-file compose.production.yml
+          --compose-file compose.preproduction.yml
+          --skip-backup
+          --confirm
+      - name: Clean recovery drill containers
+        if: always()
+        run: docker compose --env-file .env.preproduction -f compose.production.yml -f compose.preproduction.yml down -v --remove-orphans
+        env:
+          APP_ENV_FILE: .env.preproduction
+          APP_IMAGE: qiaoshen-app:ci-${{ github.sha }}
 
   e2e:
     needs: verify

@@ -37,10 +37,13 @@ yarn-error.log*
 .env*
 !.env.example
 !.env.production.example
+!.env.preproduction.example
 
 # local file storage (dev storage adapter)
 /.storage
 /backups
+/backups-preproduction
+/.deploy
 
 # vercel
 .vercel
