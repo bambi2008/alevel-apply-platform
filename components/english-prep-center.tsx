@@ -227,8 +227,8 @@ export function EnglishPrepCenter() {
 
       <section>
         <h2 className="text-xl font-bold text-[var(--ink)]">全长固定机考卷</h2>
-        <p className="mt-1 text-sm text-[var(--ink-soft)]">三个模块分别计时与存档，便于单项重考和定位分差；Speaking 在口语模拟中心完成。</p>
-        <div className="mt-4 grid gap-px bg-[var(--border)] sm:grid-cols-3">
+        <p className="mt-1 text-sm text-[var(--ink-soft)]">四个模块分别计时与存档，便于单项重考和定位分差；Speaking 采用打字模拟，发音另行复盘。</p>
+        <div className="mt-4 grid gap-px bg-[var(--border)] sm:grid-cols-2 lg:grid-cols-4">
           <Link href="/tests/ielts/paper/ielts-listening-full-1" className="bg-white p-4 hover:bg-[var(--surface)]">
             <strong className="block text-[var(--ink)]">Listening</strong>
             <span className="mt-1 block text-xs text-[var(--ink-soft)]">4 节 · 40 题 · 30 分钟 · 一次性录音</span>
@@ -240,6 +240,10 @@ export function EnglishPrepCenter() {
           <Link href="/tests/ielts/paper/ielts-written-full-1" className="bg-white p-4 hover:bg-[var(--surface)]">
             <strong className="block text-[var(--ink)]">Academic Writing</strong>
             <span className="mt-1 block text-xs text-[var(--ink-soft)]">Task 1 + Task 2 · 60 分钟 · AI 量表反馈</span>
+          </Link>
+          <Link href="/interview/ielts-speaking" className="bg-white p-4 hover:bg-[var(--surface)]">
+            <strong className="block text-[var(--ink)]">Speaking</strong>
+            <span className="mt-1 block text-xs text-[var(--ink-soft)]">3 套 · Part 1–3 · 计时与整场复盘</span>
           </Link>
         </div>
       </section>

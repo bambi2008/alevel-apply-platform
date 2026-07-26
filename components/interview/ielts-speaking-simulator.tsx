@@ -2,16 +2,13 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, CheckCircle2, Clock3, RotateCcw } from "lucide-react";
+import {
+  IELTS_SPEAKING_PAPERS,
+  type SpeakingPart,
+  type SpeakingPrompt,
+} from "@/lib/english/speaking-papers";
 
-type SpeakingPart = 1 | 2 | 3;
 type Phase = "intro" | "answer" | "prep" | "result";
-
-interface SpeakingPrompt {
-  id: string;
-  part: SpeakingPart;
-  prompt: string;
-  seconds: number;
-}
 
 interface SpeakingAnswer extends SpeakingPrompt {
   answer: string;
@@ -20,27 +17,12 @@ interface SpeakingAnswer extends SpeakingPrompt {
 interface SpeakingAttempt {
   id: string;
   completedAt: string;
+  paperId?: string;
+  paperTitle?: string;
   answers: SpeakingAnswer[];
 }
 
 const STORAGE_KEY = "alevel:ielts-speaking-attempts:v1";
-
-const PROMPTS: SpeakingPrompt[] = [
-  { id: "p1-1", part: 1, seconds: 45, prompt: "Do you work or are you a student?" },
-  { id: "p1-2", part: 1, seconds: 45, prompt: "What part of your studies do you find most interesting?" },
-  { id: "p1-3", part: 1, seconds: 45, prompt: "Do you prefer studying alone or with other people?" },
-  { id: "p1-4", part: 1, seconds: 45, prompt: "Has the way you study changed in recent years?" },
-  {
-    id: "p2-1",
-    part: 2,
-    seconds: 120,
-    prompt: "Describe a useful skill you learned outside school. You should say what the skill is, how you learned it, why you wanted to learn it, and explain how it has been useful to you.",
-  },
-  { id: "p3-1", part: 3, seconds: 75, prompt: "Why do some practical skills receive less attention in schools?" },
-  { id: "p3-2", part: 3, seconds: 75, prompt: "Who should decide which skills young people need for the future?" },
-  { id: "p3-3", part: 3, seconds: 75, prompt: "How has technology changed the way adults learn new skills?" },
-  { id: "p3-4", part: 3, seconds: 75, prompt: "Do qualifications always show that someone can use a skill well?" },
-];
 
 const PART_META = {
   1: { title: "Part 1 · Introduction and interview", note: "4–5 分钟。自然、直接地回答并补充一个具体细节。" },
@@ -62,6 +44,7 @@ function wordCount(text: string): number {
 }
 
 export function IeltsSpeakingSimulator() {
+  const [paperId, setPaperId] = useState(IELTS_SPEAKING_PAPERS[0].id);
   const [phase, setPhase] = useState<Phase>("intro");
   const [index, setIndex] = useState(0);
   const [secondsLeft, setSecondsLeft] = useState(0);
@@ -71,12 +54,14 @@ export function IeltsSpeakingSimulator() {
   const [feedback, setFeedback] = useState("");
   const [feedbackLoading, setFeedbackLoading] = useState(false);
 
-  const current = PROMPTS[index];
+  const paper = IELTS_SPEAKING_PAPERS.find((item) => item.id === paperId) ?? IELTS_SPEAKING_PAPERS[0];
+  const prompts = paper.prompts;
+  const current = prompts[index];
   const part = current?.part ?? 1;
   const partQuestionNumber = current
-    ? PROMPTS.filter((prompt, promptIndex) => prompt.part === part && promptIndex <= index).length
+    ? prompts.filter((prompt, promptIndex) => prompt.part === part && promptIndex <= index).length
     : 0;
-  const partQuestionCount = PROMPTS.filter((prompt) => prompt.part === part).length;
+  const partQuestionCount = prompts.filter((prompt) => prompt.part === part).length;
   const totalWords = useMemo(
     () => answers.reduce((sum, answer) => sum + wordCount(answer.answer), 0),
     [answers],
@@ -93,9 +78,9 @@ export function IeltsSpeakingSimulator() {
   useEffect(() => {
     if (phase === "prep" && secondsLeft === 0) {
       setPhase("answer");
-      setSecondsLeft(PROMPTS[index].seconds);
+      setSecondsLeft(prompts[index].seconds);
     }
-  }, [index, phase, secondsLeft]);
+  }, [index, phase, prompts, secondsLeft]);
 
   function begin() {
     setAnswers([]);
@@ -103,7 +88,7 @@ export function IeltsSpeakingSimulator() {
     setIndex(0);
     setFeedback("");
     setPhase("answer");
-    setSecondsLeft(PROMPTS[0].seconds);
+    setSecondsLeft(prompts[0].seconds);
   }
 
   function moveNext() {
@@ -112,10 +97,12 @@ export function IeltsSpeakingSimulator() {
     setAnswers(nextAnswers);
     setInput("");
 
-    if (index === PROMPTS.length - 1) {
+    if (index === prompts.length - 1) {
       const attempt: SpeakingAttempt = {
         id: `ielts-speaking-${Date.now()}`,
         completedAt: new Date().toISOString(),
+        paperId: paper.id,
+        paperTitle: paper.title,
         answers: nextAnswers,
       };
       const nextAttempts = [attempt, ...attempts].slice(0, 5);
@@ -128,12 +115,12 @@ export function IeltsSpeakingSimulator() {
 
     const nextIndex = index + 1;
     setIndex(nextIndex);
-    if (PROMPTS[nextIndex].part === 2) {
+    if (prompts[nextIndex].part === 2) {
       setPhase("prep");
       setSecondsLeft(60);
     } else {
       setPhase("answer");
-      setSecondsLeft(PROMPTS[nextIndex].seconds);
+      setSecondsLeft(prompts[nextIndex].seconds);
     }
   }
 
@@ -162,11 +149,37 @@ export function IeltsSpeakingSimulator() {
   if (phase === "intro") {
     return (
       <div className="border border-[var(--border)] bg-white p-5 sm:p-6">
-        <h3 className="text-lg font-bold text-[var(--ink)]">IELTS Speaking 全真流程 1</h3>
+        <h3 className="text-lg font-bold text-[var(--ink)]">IELTS Speaking 固定全真流程</h3>
         <p className="mt-2 text-sm leading-relaxed text-[var(--ink-soft)]">
           按真实 Part 1–3 顺序完成。当前平台要求打字作答，因此只能评价内容展开、连贯、词汇和语法；
           发音必须通过真人教师或录音复盘另行检查。
         </p>
+        <div className="mt-5">
+          <p className="text-xs font-semibold uppercase text-[var(--ink-faint)]">选择题组</p>
+          <div className="mt-2 grid gap-2 sm:grid-cols-3">
+            {IELTS_SPEAKING_PAPERS.map((item) => {
+              const selected = item.id === paperId;
+              const completed = attempts.filter((attempt) => attempt.paperId === item.id).length;
+              return (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => setPaperId(item.id)}
+                  aria-pressed={selected}
+                  className={`min-h-20 border p-3 text-left ${
+                    selected
+                      ? "border-[var(--indigo)] bg-[var(--info-bg)]"
+                      : "border-[var(--border)] bg-white hover:bg-[var(--surface)]"
+                  }`}
+                >
+                  <strong className="block text-sm text-[var(--ink)]">{item.title}</strong>
+                  <span className="mt-1 block text-xs text-[var(--ink-soft)]">{item.focus}</span>
+                  <span className="mt-1 block text-[11px] text-[var(--ink-faint)]">已完成 {completed} 次</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
         <div className="mt-5 grid gap-px bg-[var(--border)] sm:grid-cols-3">
           {[1, 2, 3].map((value) => (
             <div key={value} className="bg-white p-4">
@@ -176,13 +189,23 @@ export function IeltsSpeakingSimulator() {
           ))}
         </div>
         <button type="button" onClick={begin} className="btn btn-primary mt-5">
-          开始全真流程
+          开始{paper.title}
           <ArrowRight className="size-4" />
         </button>
         {attempts.length > 0 && (
-          <p className="mt-3 text-xs text-[var(--ink-faint)]">
-            本机已有 {attempts.length} 次完成记录，最近一次为 {new Date(attempts[0].completedAt).toLocaleDateString("zh-CN")}。
-          </p>
+          <div className="mt-5 border-t border-[var(--border)] pt-4">
+            <p className="text-xs font-semibold uppercase text-[var(--ink-faint)]">最近完成</p>
+            <div className="mt-2 divide-y divide-[var(--border)]">
+              {attempts.slice(0, 3).map((attempt) => (
+                <div key={attempt.id} className="flex items-center justify-between gap-3 py-2 text-xs">
+                  <span className="font-medium text-[var(--ink)]">{attempt.paperTitle ?? "早期训练流程"}</span>
+                  <span className="text-[var(--ink-faint)]">
+                    {new Date(attempt.completedAt).toLocaleDateString("zh-CN")} · {attempt.answers.filter((answer) => answer.answer).length}/9
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
         )}
       </div>
     );
@@ -218,9 +241,9 @@ export function IeltsSpeakingSimulator() {
           )}
         </section>
 
-        <button type="button" onClick={begin} className="btn btn-secondary">
+        <button type="button" onClick={() => setPhase("intro")} className="btn btn-secondary">
           <RotateCcw className="size-4" />
-          再练一套
+          选择下一套
         </button>
       </div>
     );
@@ -267,7 +290,7 @@ export function IeltsSpeakingSimulator() {
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
               <span className="text-xs text-[var(--ink-faint)]">当前 {wordCount(input)} 词</span>
               <button type="button" onClick={moveNext} className="btn btn-primary">
-                {index === PROMPTS.length - 1 ? "完成整场" : "提交并继续"}
+                {index === prompts.length - 1 ? "完成整场" : "提交并继续"}
                 <ArrowRight className="size-4" />
               </button>
             </div>
