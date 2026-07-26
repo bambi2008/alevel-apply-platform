@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from "react";
 import type { InterviewQuestion } from "@/lib/interview/questions";
 import { IeltsSpeakingSimulator } from "./ielts-speaking-simulator";
 import { CambridgeAssessmentSimulator } from "./cambridge-assessment-simulator";
+import { HkInterviewSimulator } from "./hk-interview-simulator";
 
 type Msg = { role: "interviewer" | "student"; content: string };
 
@@ -37,7 +38,7 @@ export function SubjectInterview({
         >
           {subjectId === "ielts-speaking"
             ? "全真模拟"
-            : subjectId.startsWith("cambridge-")
+            : subjectId.startsWith("cambridge-") || subjectId.startsWith("hk-")
               ? "固定 assessment"
               : "AI 模拟面试"}
         </button>
@@ -101,6 +102,8 @@ export function SubjectInterview({
           ? <IeltsSpeakingSimulator />
           : subjectId.startsWith("cambridge-")
             ? <CambridgeAssessmentSimulator subjectId={subjectId} subjectName={subjectName} questions={questions} />
+            : subjectId.startsWith("hk-")
+              ? <HkInterviewSimulator subjectId={subjectId} subjectName={subjectName} questions={questions} />
           : <MockInterview subjectName={subjectName} seedQuestions={questions} />
       )}
     </div>

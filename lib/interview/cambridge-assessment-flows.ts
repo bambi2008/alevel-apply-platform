@@ -1,17 +1,17 @@
-export interface CambridgeAssessmentTask {
+export interface TimedAssessmentTask {
   questionId: string;
   preparationSec: number;
   responseSec: number;
 }
 
-export interface CambridgeAssessmentFlow {
+export interface TimedAssessmentFlow {
   subjectId: string;
   title: string;
   note: string;
-  tasks: CambridgeAssessmentTask[];
+  tasks: TimedAssessmentTask[];
 }
 
-export const CAMBRIDGE_ASSESSMENT_FLOWS: CambridgeAssessmentFlow[] = [
+export const CAMBRIDGE_ASSESSMENT_FLOWS: TimedAssessmentFlow[] = [
   {
     subjectId: "cambridge-source",
     title: "材料分析固定流程",

@@ -3,7 +3,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, CheckCircle2, Clock3, RotateCcw } from "lucide-react";
 import type { InterviewQuestion } from "@/lib/interview/questions";
-import { CAMBRIDGE_ASSESSMENT_FLOWS } from "@/lib/interview/cambridge-assessment-flows";
+import {
+  CAMBRIDGE_ASSESSMENT_FLOWS,
+  type TimedAssessmentFlow,
+} from "@/lib/interview/cambridge-assessment-flows";
 
 type Phase = "intro" | "preparation" | "response" | "result";
 
@@ -32,17 +35,17 @@ function readAttempts(key: string): AssessmentAttempt[] {
   }
 }
 
-export function CambridgeAssessmentSimulator({
-  subjectId,
+export function TimedAssessmentSimulator({
+  flow,
   subjectName,
   questions,
 }: {
-  subjectId: string;
+  flow: TimedAssessmentFlow;
   subjectName: string;
   questions: InterviewQuestion[];
 }) {
-  const flow = CAMBRIDGE_ASSESSMENT_FLOWS.find((item) => item.subjectId === subjectId);
-  const storageKey = `alevel:cambridge-assessment:${subjectId}:v1`;
+  const subjectId = flow.subjectId;
+  const storageKey = `alevel:timed-assessment:${subjectId}:v1`;
   const [phase, setPhase] = useState<Phase>("intro");
   const [taskIndex, setTaskIndex] = useState(0);
   const [secondsLeft, setSecondsLeft] = useState(0);
@@ -81,7 +84,7 @@ export function CambridgeAssessmentSimulator({
     }
   }, [current, phase, secondsLeft]);
 
-  if (!flow || tasks.length === 0) return null;
+  if (tasks.length === 0) return null;
 
   function begin() {
     setTaskIndex(0);
@@ -155,7 +158,7 @@ export function CambridgeAssessmentSimulator({
   if (phase === "intro") {
     return (
       <div className="border border-[var(--border)] bg-white p-5 sm:p-6">
-        <p className="text-xs font-semibold uppercase text-[var(--indigo)]">Fixed college assessment</p>
+        <p className="text-xs font-semibold uppercase text-[var(--indigo)]">Fixed assessment flow</p>
         <h3 className="mt-1 text-lg font-bold text-[var(--ink)]">{flow.title}</h3>
         <p className="mt-2 text-sm leading-relaxed text-[var(--ink-soft)]">{flow.note}</p>
         <div className="mt-5 divide-y divide-[var(--border)] border-y border-[var(--border)]">
@@ -284,4 +287,18 @@ export function CambridgeAssessmentSimulator({
       </div>
     </div>
   );
+}
+
+export function CambridgeAssessmentSimulator({
+  subjectId,
+  subjectName,
+  questions,
+}: {
+  subjectId: string;
+  subjectName: string;
+  questions: InterviewQuestion[];
+}) {
+  const flow = CAMBRIDGE_ASSESSMENT_FLOWS.find((item) => item.subjectId === subjectId);
+  if (!flow) return null;
+  return <TimedAssessmentSimulator flow={flow} subjectName={subjectName} questions={questions} />;
 }
