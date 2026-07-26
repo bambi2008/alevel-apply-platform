@@ -4,6 +4,7 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { Prisma } from "@prisma/client";
 import type { UserProfile, GradeKind } from "./store";
+import type { IeltsSubscores } from "./store";
 import type { Region } from "@/lib/data/types";
 
 async function currentUserId(): Promise<string | null> {
@@ -109,4 +110,49 @@ export async function saveProfileAction(
   }
 
   return { authed: true };
+}
+
+export async function saveIeltsScoresAction(
+  overall: number,
+  subscores: IeltsSubscores,
+): Promise<{ authed: boolean; saved: boolean }> {
+  const userId = await currentUserId();
+  if (!userId) return { authed: false, saved: false };
+
+  const values = [
+    overall,
+    subscores.listening,
+    subscores.reading,
+    subscores.writing,
+    subscores.speaking,
+  ].filter((value): value is number => value != null);
+  if (values.some((value) => !Number.isFinite(value) || value < 0 || value > 9)) {
+    return { authed: true, saved: false };
+  }
+
+  const profile = await db.studentProfile.upsert({
+    where: { userId },
+    create: {
+      userId,
+      targetRegions: ["UK", "HK"],
+      intendedMajors: [],
+    },
+    update: {},
+  });
+
+  await db.$transaction([
+    db.testScore.deleteMany({
+      where: { profileId: profile.id, type: "IELTS" },
+    }),
+    db.testScore.create({
+      data: {
+        profileId: profile.id,
+        type: "IELTS",
+        overall,
+        subscores: subscores as unknown as Prisma.InputJsonValue,
+      },
+    }),
+  ]);
+
+  return { authed: true, saved: true };
 }

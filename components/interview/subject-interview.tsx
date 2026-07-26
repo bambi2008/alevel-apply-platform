@@ -2,13 +2,16 @@
 
 import { useState, useRef, useEffect } from "react";
 import type { InterviewQuestion } from "@/lib/interview/questions";
+import { IeltsSpeakingSimulator } from "./ielts-speaking-simulator";
 
 type Msg = { role: "interviewer" | "student"; content: string };
 
 export function SubjectInterview({
+  subjectId,
   subjectName,
   questions,
 }: {
+  subjectId: string;
   subjectName: string;
   questions: InterviewQuestion[];
 }) {
@@ -89,7 +92,9 @@ export function SubjectInterview({
           })}
         </div>
       ) : (
-        <MockInterview subjectName={subjectName} seedQuestions={questions} />
+        subjectId === "ielts-speaking"
+          ? <IeltsSpeakingSimulator />
+          : <MockInterview subjectName={subjectName} seedQuestions={questions} />
       )}
     </div>
   );

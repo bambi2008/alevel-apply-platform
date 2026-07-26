@@ -1,8 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { ENGLISH_REQUIREMENTS } from "@/lib/english/requirements";
+import {
+  analyseIeltsReadiness,
+  buildIeltsTimeline,
+  type IeltsScores,
+} from "@/lib/english/planner";
+import { loadProfile, saveIeltsScores } from "@/lib/profile/store";
 
 const SKILLS = [
   { id: "listening", label: "听力", topic: "ielts-listening", action: "先用官方音频做完整段落，再用文字稿标出漏听、改口和拼写错误。" },
@@ -11,33 +17,65 @@ const SKILLS = [
   { id: "speaking", label: "口语", topic: "", action: "进行 11–14 分钟连续模拟，复盘流利度、展开、语法准确性和自然修正。" },
 ] as const;
 
-type SkillId = typeof SKILLS[number]["id"];
-
 export function EnglishPrepCenter() {
   const [targetId, setTargetId] = useState("oxford-standard");
-  const [scores, setScores] = useState<Record<SkillId, number>>({
+  const [scores, setScores] = useState<IeltsScores>({
     listening: 6.5,
     reading: 6.5,
     writing: 6,
     speaking: 6.5,
   });
+  const [testDate, setTestDate] = useState("");
+  const [deadline, setDeadline] = useState("");
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const target = ENGLISH_REQUIREMENTS.find((item) => item.id === targetId) ?? ENGLISH_REQUIREMENTS[0];
 
-  const analysis = useMemo(() => {
-    const values = Object.entries(scores) as Array<[SkillId, number]>;
-    const average = values.reduce((sum, [, score]) => sum + score, 0) / values.length;
-    const roundedOverall = Math.round(average * 2) / 2;
-    const weakest = [...values].sort((a, b) => a[1] - b[1])[0];
-    const componentReady = target.component === 0 || values.every(([, score]) => score >= target.component);
-    return {
-      overall: roundedOverall,
-      weakest: SKILLS.find((skill) => skill.id === weakest[0])!,
-      weakestScore: weakest[1],
-      ready: roundedOverall >= target.overall && componentReady,
-      overallGap: Math.max(0, target.overall - roundedOverall),
-      componentGap: target.component ? Math.max(0, target.component - weakest[1]) : 0,
-    };
-  }, [scores, target]);
+  useEffect(() => {
+    void loadProfile().then((profile) => {
+      const saved = profile?.ieltsSubscores;
+      if (!saved) return;
+      setScores((current) => ({
+        listening: saved.listening ?? current.listening,
+        reading: saved.reading ?? current.reading,
+        writing: saved.writing ?? current.writing,
+        speaking: saved.speaking ?? current.speaking,
+      }));
+    });
+    try {
+      const planning = JSON.parse(window.localStorage.getItem("alevel:ielts-plan:v1") ?? "{}") as {
+        targetId?: string;
+        testDate?: string;
+        deadline?: string;
+      };
+      if (planning.targetId) setTargetId(planning.targetId);
+      if (planning.testDate) setTestDate(planning.testDate);
+      if (planning.deadline) setDeadline(planning.deadline);
+    } catch {
+      // Ignore malformed local planning data.
+    }
+  }, []);
+
+  const analysis = useMemo(
+    () => analyseIeltsReadiness(scores, target),
+    [scores, target],
+  );
+  const weakest = SKILLS.find((skill) => skill.id === analysis.weakest)!;
+  const timeline = useMemo(
+    () => buildIeltsTimeline(new Date().toISOString().slice(0, 10), testDate, deadline),
+    [deadline, testDate],
+  );
+
+  async function savePlan() {
+    setSaveState("saving");
+    await saveIeltsScores(analysis.overall, scores);
+    window.localStorage.setItem("alevel:ielts-plan:v1", JSON.stringify({
+      targetId,
+      testDate,
+      deadline,
+    }));
+    setSaveState("saved");
+    window.setTimeout(() => setSaveState("idle"), 1800);
+  }
 
   return (
     <div className="space-y-10">
@@ -86,10 +124,67 @@ export function EnglishPrepCenter() {
             <p className="text-xs font-semibold uppercase text-[var(--indigo)]">当前判断</p>
             <p className="mt-1 text-2xl font-bold text-[var(--ink)]">估算总分 {analysis.overall.toFixed(1)}</p>
             <p className={`mt-2 text-sm font-semibold ${analysis.ready ? "text-[var(--success)]" : "text-[var(--warning)]"}`}>
-              {analysis.ready ? "已达到所选基线" : `尚差：总分 ${analysis.overallGap.toFixed(1)} / 最弱单项 ${analysis.componentGap.toFixed(1)}`}
+              {analysis.ready ? "已达到所选基线" : `尚差：总分 ${analysis.overallGap.toFixed(1)} / 最弱单项 ${analysis.componentGaps[analysis.weakest].toFixed(1)}`}
             </p>
             <p className="mt-2 text-sm text-[var(--ink-soft)]">
-              优先项：{analysis.weakest.label}（{analysis.weakestScore.toFixed(1)}）
+              优先项：{weakest.label}（{scores[analysis.weakest].toFixed(1)}）
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-5 grid gap-3 border-t border-[var(--border)] pt-5 sm:grid-cols-[1fr_1fr_auto] sm:items-end">
+          <label className="text-sm font-medium text-[var(--ink)]">
+            下一次考试日期
+            <input type="date" value={testDate} onChange={(event) => setTestDate(event.target.value)} className="input mt-1 h-10 w-full" />
+          </label>
+          <label className="text-sm font-medium text-[var(--ink)]">
+            Offer / 语言条件截止日
+            <input type="date" value={deadline} onChange={(event) => setDeadline(event.target.value)} className="input mt-1 h-10 w-full" />
+          </label>
+          <button type="button" onClick={savePlan} disabled={saveState === "saving"} className="btn btn-primary h-10">
+            {saveState === "saved" ? "已保存" : saveState === "saving" ? "保存中…" : "保存成绩与计划"}
+          </button>
+        </div>
+      </section>
+
+      <section className="border-y border-[var(--border)] py-6">
+        <h2 className="text-xl font-bold text-[var(--ink)]">语言条件兑现与重考决策</h2>
+        <div className="mt-4 grid gap-px bg-[var(--border)] lg:grid-cols-3">
+          <div className="bg-white p-4">
+            <p className="text-xs font-semibold uppercase text-[var(--ink-faint)]">条件差距</p>
+            <p className="mt-2 font-bold text-[var(--ink)]">
+              {analysis.ready
+                ? "当前四项均达到所选基线"
+                : `未达标：${analysis.belowTarget.map((skill) => SKILLS.find((item) => item.id === skill)?.label).join("、") || "总分"}`}
+            </p>
+            <p className="mt-1 text-xs text-[var(--ink-soft)]">总分差 {analysis.overallGap.toFixed(1)}；以课程页和正式 Offer 原文为准。</p>
+          </div>
+          <div className="bg-white p-4">
+            <p className="text-xs font-semibold uppercase text-[var(--ink-faint)]">重考建议</p>
+            <p className="mt-2 font-bold text-[var(--ink)]">
+              {analysis.recommendation === "ready"
+                ? "暂不需要安排重考"
+                : analysis.recommendation === "verify-one-skill-retake"
+                  ? `先核实 ${weakest.label} One Skill Retake`
+                  : "优先安排完整 IELTS 重考"}
+            </p>
+            <p className="mt-1 text-xs text-[var(--ink-soft)]">
+              One Skill Retake 是否被学校、课程及签证路径接受必须逐项核实，平台不默认认可。
+            </p>
+          </div>
+          <div className="bg-white p-4">
+            <p className="text-xs font-semibold uppercase text-[var(--ink-faint)]">时间窗口</p>
+            <p className="mt-2 font-bold text-[var(--ink)]">
+              {timeline.daysToTest === null ? "录入日期后生成倒计时" : `距考试 ${timeline.daysToTest} 天`}
+            </p>
+            <p className={`mt-1 text-xs ${timeline.warning === "none" ? "text-[var(--ink-soft)]" : "text-[var(--danger)]"}`}>
+              {timeline.warning === "test-date-passed"
+                ? "考试日期已过，请更新下一场安排。"
+                : timeline.warning === "result-window-tight"
+                  ? `考试后距截止日仅 ${timeline.daysFromTestToDeadline} 天，出分或复议窗口偏紧。`
+                  : timeline.daysFromTestToDeadline === null
+                    ? "建议为出分、复议和再次报考预留缓冲。"
+                    : `考试后距截止日 ${timeline.daysFromTestToDeadline} 天。`}
             </p>
           </div>
         </div>

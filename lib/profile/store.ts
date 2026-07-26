@@ -3,7 +3,7 @@
 // 匿名用户：回退到 localStorage（无账号也能体验）。
 // 类型与 emptyProfile / profileHasGrades 保持不变，页面只需把调用改为 await。
 import type { Region } from "@/lib/data/types";
-import { getProfileAction, saveProfileAction } from "./actions";
+import { getProfileAction, saveIeltsScoresAction, saveProfileAction } from "./actions";
 
 export type GradeKind = "PREDICTED" | "ACTUAL" | "AS";
 
@@ -85,6 +85,24 @@ export async function saveProfile(p: UserProfile): Promise<void> {
     // 忽略，回退到本地
   }
   saveLocalProfile(p);
+}
+
+export async function saveIeltsScores(
+  overall: number,
+  subscores: IeltsSubscores,
+): Promise<void> {
+  try {
+    const res = await saveIeltsScoresAction(overall, subscores);
+    if (res.authed && res.saved) return;
+  } catch {
+    // Ignore and preserve an anonymous/local planning path.
+  }
+  const current = loadLocalProfile() ?? emptyProfile;
+  saveLocalProfile({
+    ...current,
+    ielts: overall,
+    ieltsSubscores: subscores,
+  });
 }
 
 export async function clearProfile(): Promise<void> {

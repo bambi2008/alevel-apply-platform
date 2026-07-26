@@ -56,6 +56,24 @@ const FEEDBACK_SYSTEM = `你刚刚作为牛津/剑桥面试官，完成了对一
 **一句话建议**：最重要的那一条。
 **大致水平**：用描述性判断（如"接近录取水准 / 有基础但需打磨 / 需较多练习"），不要打分数。`;
 
+const IELTS_FEEDBACK_SYSTEM = `你是 IELTS Speaking 训练教练。学生刚按 Part 1、Part 2、Part 3 完成了一场打字模拟。
+
+重要限制：
+- 只能依据文字评价 Fluency and Coherence、Lexical Resource、Grammatical Range and Accuracy。
+- 无法从打字稿评价 Pronunciation，必须明确写“发音未评估”。
+- 不给官方 Band，也不要假装这是正式 IELTS 评分。
+- 引用学生的具体表达，指出哪些回答太短、像作文、缺少例子或没有正面回应问题。
+
+请用中文按以下结构输出：
+**任务完成度**：Part 1–3 是否都充分回应。
+**连贯与展开**：结构、持续表达和例子是否自然。
+**词汇**：准确表达、重复与可改进搭配。
+**语法**：句式范围、妨碍理解的错误及一处改写示例。
+**发音**：明确说明未评估，并给出一次录音复盘任务。
+**下次训练**：列出 3 个可执行动作。
+
+反馈应简洁、具体、诚实，不输出官方或估算 Band。`;
+
 export async function POST(req: NextRequest) {
   const access = await requireAiAccess(req, "interview-mock");
   if (!access.ok) return access.response;
@@ -78,7 +96,12 @@ export async function POST(req: NextRequest) {
       const completion = await client.chat.completions.create({
         model: "deepseek-chat",
         messages: [
-          { role: "system", content: `${FEEDBACK_SYSTEM}\n\n本场学科：${subject || "综合"}。` },
+          {
+            role: "system",
+            content: subject === "IELTS Speaking"
+              ? IELTS_FEEDBACK_SYSTEM
+              : `${FEEDBACK_SYSTEM}\n\n本场学科：${subject || "综合"}。`,
+          },
           { role: "user", content: `以下是完整面试记录，请复盘：\n\n${transcript}` },
         ],
         temperature: 0.6,
