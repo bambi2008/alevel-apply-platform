@@ -35,6 +35,7 @@ model User {
   calibrationDecisions   CalibrationDecision[]
   notifications          Notification[]
   notificationPreference NotificationPreference?
+  passwordResetTokens    PasswordResetToken[]
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
 }
@@ -90,6 +91,7 @@ model NotificationPreference {
 
 enum ConsentType {
   PRIVACY_PIPL
+  TERMS
   CROSS_BORDER
   GUARDIAN
   MARKETING
@@ -741,8 +743,21 @@ model BackgroundItem {
 
 model PhoneCode {
   phone      String   @id
-  code       String
+  codeHash   String
+  attempts   Int      @default(0)
   expiresAt  DateTime
   lastSentAt DateTime
   createdAt  DateTime @default(now())
+}
+
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
 }

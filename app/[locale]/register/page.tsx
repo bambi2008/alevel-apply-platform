@@ -36,14 +36,28 @@ export default function RegisterPage() {
         <h2 className="text-2xl font-bold text-[var(--ink)] mb-6">{t("registerTitle")}</h2>
         <form action={formAction} className="space-y-3">
           <input name="email" type="email" required placeholder={t("email")} className="input" />
-          <input name="password" type="password" required minLength={6} placeholder={t("password")} className="input" />
+          <input name="password" type="password" required minLength={10} maxLength={128} placeholder={t("password")} className="input" />
           <label className="flex items-start gap-2 text-sm text-[var(--ink-soft)]">
-            <input name="consent" type="checkbox" required className="mt-1 accent-[var(--indigo)]" />
-            <span>{t("consent")}</span>
+            <input name="privacyConsent" type="checkbox" required className="mt-1 accent-[var(--indigo)]" />
+            <span>
+              我已阅读并同意
+              <Link href="/privacy" className="link-blue">《隐私政策》</Link>
+            </span>
+          </label>
+          <label className="flex items-start gap-2 text-sm text-[var(--ink-soft)]">
+            <input name="termsConsent" type="checkbox" required className="mt-1 accent-[var(--indigo)]" />
+            <span>
+              我已阅读并同意
+              <Link href="/terms" className="link-blue">《服务条款》</Link>
+            </span>
           </label>
           <label className="flex items-start gap-2 text-sm text-[var(--ink-soft)]">
             <input name="guardian" type="checkbox" className="mt-1 accent-[var(--indigo)]" />
             <span>{t("guardian")}</span>
+          </label>
+          <label className="flex items-start gap-2 text-sm text-[var(--ink-soft)]">
+            <input name="crossBorderConsent" type="checkbox" className="mt-1 accent-[var(--indigo)]" />
+            <span>我单独同意：使用 AI 点评时，将我主动提交的作答发送给隐私政策列明的 AI 服务商处理（可稍后撤回）</span>
           </label>
           {state.error && <p className="text-sm text-[var(--danger)]">{t(`errors.${state.error}`)}</p>}
           <button type="submit" disabled={pending} className="w-full btn btn-primary disabled:opacity-50">

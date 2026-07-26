@@ -29,6 +29,23 @@ export async function requireAiAccess(
     };
   }
 
+  if (process.env.AI_REQUIRES_CROSS_BORDER_CONSENT !== "false") {
+    const { db } = await import("@/lib/db");
+    const consent = await db.consent.findFirst({
+      where: { userId, type: "CROSS_BORDER" },
+      select: { id: true },
+    });
+    if (!consent) {
+      return {
+        ok: false,
+        response: NextResponse.json(
+          { error: "AI processing consent required", consentRequired: true },
+          { status: 403 },
+        ),
+      };
+    }
+  }
+
   const rateLimit = consumeRateLimit(
     rateLimitKey(`ai:${namespace}`, userId, clientIp(request.headers)),
     { limit, windowMs: 60 * 60_000 },

@@ -16,7 +16,7 @@ const PHONE_RE = /^1[3-9]\d{9}$/; // 中国大陆手机号
 
 export interface RequestCodeResult {
   ok: boolean;
-  error?: "INVALID_PHONE" | "COOLDOWN";
+  error?: "INVALID_PHONE" | "COOLDOWN" | "UNAVAILABLE";
   cooldown?: number;
   /** 仅开发模式回显，便于本地测试；生产为 undefined。 */
   devCode?: string;
@@ -40,11 +40,15 @@ export async function requestPhoneCodeAction(
     return { ok: false, error: "COOLDOWN", cooldown: await cooldownRemaining(p) };
   }
 
+  let sms;
+  try {
+    sms = getSms();
+  } catch {
+    return { ok: false, error: "UNAVAILABLE" };
+  }
   const code = generateCode();
-  await saveCode(p, code);
-
-  const sms = getSms();
   await sms.sendCode(p, code);
+  await saveCode(p, code);
 
   return { ok: true, devCode: sms.isDev ? code : undefined };
 }

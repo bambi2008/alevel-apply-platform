@@ -16,7 +16,13 @@ function overlaps(first, second) {
 export function validateProductionEnv(env = process.env) {
   const errors = [];
   const warnings = [];
-  const required = ["DATABASE_URL", "AUTH_SECRET", "APP_ORIGIN", "STORAGE_DRIVER"];
+  const required = [
+    "DATABASE_URL",
+    "AUTH_SECRET",
+    "APP_ORIGIN",
+    "STORAGE_DRIVER",
+    "PRIVACY_CONTACT_EMAIL",
+  ];
 
   for (const key of required) {
     if (!env[key]?.trim()) errors.push(`${key} is required`);
@@ -85,6 +91,18 @@ export function validateProductionEnv(env = process.env) {
   }
 
   if (env.AI_ENABLED === "true" && !env.DEEPSEEK_API_KEY) errors.push("DEEPSEEK_API_KEY is required when AI_ENABLED=true");
+  if (env.EMAIL_DRIVER !== "resend") {
+    errors.push("EMAIL_DRIVER must be resend so password recovery works in production");
+  } else {
+    if (!env.RESEND_API_KEY) errors.push("RESEND_API_KEY is required for EMAIL_DRIVER=resend");
+    if (!env.EMAIL_FROM) errors.push("EMAIL_FROM is required for EMAIL_DRIVER=resend");
+  }
+  if (env.NEXT_PUBLIC_PHONE_AUTH_ENABLED === "true") {
+    errors.push("Phone authentication must remain disabled until a production SMS adapter is implemented");
+  }
+  if (env.AI_ENABLED === "true" && env.AI_REQUIRES_CROSS_BORDER_CONSENT === "false") {
+    warnings.push("AI processing consent enforcement is explicitly disabled");
+  }
   if (!env.SENTRY_DSN) warnings.push("SENTRY_DSN is not configured; external error alerting is disabled");
   if (env.REQUIRE_BACKUPS === "false") warnings.push("Backups are explicitly disabled");
 

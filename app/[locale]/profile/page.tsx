@@ -63,7 +63,12 @@ export default function ProfilePage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
-      <PageHeader title={t("title")} subtitle={t("intro")} icon="👤" />
+      <PageHeader
+        title={t("title")}
+        subtitle={t("intro")}
+        icon="👤"
+        actions={<Link href="/account" className="btn btn-secondary">账号与隐私</Link>}
+      />
 
       {/* Basic info */}
       <section className="mt-6 rounded-xl border border-neutral-200 p-5 space-y-4">

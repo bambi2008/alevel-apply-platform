@@ -22,6 +22,11 @@ jobs:
       BACKUP_DIR: /tmp/qiaoshen-backups
       BACKUP_ENCRYPTION_KEY: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
       REQUIRE_BACKUPS: "true"
+      PRIVACY_CONTACT_EMAIL: privacy@ci.example.com
+      EMAIL_DRIVER: resend
+      RESEND_API_KEY: re_ci_placeholder
+      EMAIL_FROM: QiaoShen <account@ci.example.com>
+      NEXT_PUBLIC_PHONE_AUTH_ENABLED: "false"
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4

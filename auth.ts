@@ -54,16 +54,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         if (!(await verifyCode(phone, code))) return null;
 
         // 校验通过：已存在则登录，否则自动建号（含隐私同意记录）
-        let user = await db.user.findUnique({ where: { phone } });
-        if (!user) {
-          user = await db.user.create({
-            data: {
-              phone,
-              role: "STUDENT",
-              consents: { create: [{ type: "PRIVACY_PIPL", version: "1.0" }] },
-            },
-          });
-        }
+        const user = await db.user.findUnique({ where: { phone } });
+        if (!user) return null;
         return { id: user.id, email: user.email ?? undefined, role: user.role };
       },
     }),

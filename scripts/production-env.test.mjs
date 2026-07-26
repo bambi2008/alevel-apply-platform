@@ -11,6 +11,11 @@ const valid = {
   BACKUP_DIR: "/backups",
   BACKUP_ENCRYPTION_KEY: "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
   REQUIRE_BACKUPS: "true",
+  PRIVACY_CONTACT_EMAIL: "privacy@example.com",
+  EMAIL_DRIVER: "resend",
+  RESEND_API_KEY: "re_test_key",
+  EMAIL_FROM: "QiaoShen <account@example.com>",
+  NEXT_PUBLIC_PHONE_AUTH_ENABLED: "false",
 };
 
 describe("production environment validation", () => {
@@ -38,5 +43,17 @@ describe("production environment validation", () => {
       BACKUP_DIR: "/app/.storage/backups",
     });
     expect(result.errors).toContain("BACKUP_DIR and LOCAL_STORAGE_PATH must be separate, non-nested paths");
+  });
+
+  it("requires real recovery email and keeps unfinished phone auth disabled", () => {
+    const result = validateProductionEnv({
+      ...valid,
+      EMAIL_DRIVER: "console",
+      NEXT_PUBLIC_PHONE_AUTH_ENABLED: "true",
+    });
+    expect(result.errors).toEqual(expect.arrayContaining([
+      "EMAIL_DRIVER must be resend so password recovery works in production",
+      "Phone authentication must remain disabled until a production SMS adapter is implemented",
+    ]));
   });
 });

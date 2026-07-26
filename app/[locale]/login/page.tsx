@@ -11,7 +11,8 @@ import { Photo } from "@/components/photo";
 
 export default function LoginPage() {
   const t = useTranslations("auth");
-  const [tab, setTab] = useState<"phone" | "email">("phone");
+  const phoneEnabled = process.env.NEXT_PUBLIC_PHONE_AUTH_ENABLED === "true";
+  const [tab, setTab] = useState<"phone" | "email">(phoneEnabled ? "phone" : "email");
   const [state, formAction, pending] = useActionState<AuthState, FormData>(loginAction, {});
 
   return (
@@ -39,7 +40,7 @@ export default function LoginPage() {
         <h2 className="text-2xl font-bold text-[var(--ink)] mb-6">{t("loginTitle")}</h2>
 
         {/* 登录方式切换 */}
-        <div className="flex mb-5 rounded-lg bg-[var(--surface-2)] p-1 text-sm">
+        {phoneEnabled && <div className="flex mb-5 rounded-lg bg-[var(--surface-2)] p-1 text-sm">
           <button
             onClick={() => setTab("phone")}
             className={`flex-1 py-1.5 rounded-md transition-colors ${tab === "phone" ? "bg-white shadow-sm font-medium text-[var(--ink)]" : "text-[var(--ink-soft)]"}`}
@@ -52,7 +53,7 @@ export default function LoginPage() {
           >
             邮箱密码
           </button>
-        </div>
+        </div>}
 
         {tab === "phone" ? (
           <PhoneAuthForm />
@@ -76,6 +77,7 @@ export default function LoginPage() {
             <button type="submit" disabled={pending} className="w-full btn btn-primary disabled:opacity-50">
               {t("loginBtn")}
             </button>
+            <Link href="/forgot-password" className="link-blue block text-right text-sm">忘记密码？</Link>
           </form>
         )}
 

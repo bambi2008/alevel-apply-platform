@@ -43,9 +43,10 @@
     "login": "Sign in",
     "logout": "Sign out",
     "errors": {
-      "INVALID": "Invalid email or password (min 6 characters)",
+      "INVALID": "Invalid email or password (10–128 characters)",
       "EXISTS": "Email already registered",
-      "BADCREDS": "Wrong email or password"
+      "BADCREDS": "Wrong email or password",
+      "CONSENT_REQUIRED": "Please read and accept the Privacy Policy and Terms"
     }
   },
   "common": {

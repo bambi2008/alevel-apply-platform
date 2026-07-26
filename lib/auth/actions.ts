@@ -7,19 +7,30 @@ import { headers } from "next/headers";
 import { db } from "@/lib/db";
 import { signIn, signOut } from "@/auth";
 import { clientIp, consumeRateLimit, rateLimitKey } from "@/lib/security/rate-limit";
+import {
+  isStrongPassword,
+  LEGAL_VERSION,
+  normalizeEmail,
+} from "@/lib/auth/security";
 
 const schema = z.object({
   email: z.string().email(),
-  password: z.string().min(6),
+  password: z.string().refine(isStrongPassword),
 });
 
-export type AuthState = { error?: "INVALID" | "EXISTS" | "BADCREDS" };
+export type AuthState = {
+  error?: "INVALID" | "EXISTS" | "BADCREDS" | "CONSENT_REQUIRED";
+};
 
 export async function registerAction(_prev: AuthState, formData: FormData): Promise<AuthState> {
-  const email = String(formData.get("email") ?? "").trim().toLowerCase();
+  const email = normalizeEmail(formData.get("email"));
   const password = String(formData.get("password") ?? "");
+  const privacyConsent = formData.get("privacyConsent") === "on";
+  const termsConsent = formData.get("termsConsent") === "on";
+  const crossBorderConsent = formData.get("crossBorderConsent") === "on";
   const guardian = formData.get("guardian") === "on";
 
+  if (!privacyConsent || !termsConsent) return { error: "CONSENT_REQUIRED" };
   const parsed = schema.safeParse({ email, password });
   if (!parsed.success) return { error: "INVALID" };
   const requestHeaders = await headers();
@@ -32,11 +43,13 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
   const existing = await db.user.findUnique({ where: { email } });
   if (existing) return { error: "EXISTS" };
 
-  const passwordHash = await bcrypt.hash(password, 10);
-  const consents: { type: "PRIVACY_PIPL" | "GUARDIAN"; version: string }[] = [
-    { type: "PRIVACY_PIPL", version: "1.0" },
+  const passwordHash = await bcrypt.hash(password, 12);
+  const consents: { type: "PRIVACY_PIPL" | "TERMS" | "GUARDIAN" | "CROSS_BORDER"; version: string }[] = [
+    { type: "PRIVACY_PIPL", version: LEGAL_VERSION },
+    { type: "TERMS", version: LEGAL_VERSION },
   ];
-  if (guardian) consents.push({ type: "GUARDIAN", version: "1.0" });
+  if (guardian) consents.push({ type: "GUARDIAN", version: LEGAL_VERSION });
+  if (crossBorderConsent) consents.push({ type: "CROSS_BORDER", version: LEGAL_VERSION });
 
   await db.user.create({
     data: { email, passwordHash, role: "STUDENT", consents: { create: consents } },

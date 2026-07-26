@@ -43,6 +43,8 @@ export function PhoneAuthForm() {
         if (res.error === "COOLDOWN") {
           setCooldown(res.cooldown ?? 60);
           setReqError(`请 ${res.cooldown ?? 60} 秒后再试`);
+        } else if (res.error === "UNAVAILABLE") {
+          setReqError("手机登录暂未开放，请使用邮箱密码登录");
         } else {
           setReqError("手机号格式不正确");
         }
