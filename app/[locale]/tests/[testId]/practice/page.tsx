@@ -114,6 +114,7 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
         if (topicId !== "all") query.set("topicId", topicId);
         if (format !== "all") query.set("format", format);
         if (searchParams.get("review") === "1") query.set("review", "1");
+        if (searchParams.get("remediation") === "1") query.set("remediation", "1");
         const response = await fetch(`/api/exam-sessions/adaptive?${query}`);
         if (!response.ok) throw new Error("暂时无法生成智能训练，请稍后重试。");
         const data = await response.json() as { authenticated: boolean; recommendedQuestionIds?: string[] };

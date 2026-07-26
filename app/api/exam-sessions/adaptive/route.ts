@@ -4,6 +4,7 @@ import { db } from "@/lib/db";
 import { selectAdaptiveQuestions } from "@/lib/tests/adaptive";
 import { getTestById } from "@/lib/tests";
 import { loadStudentAdaptiveData } from "@/lib/study/adaptive-server";
+import { buildRemediationProfile, selectRemediationQuestions } from "@/lib/tests/remediation";
 
 export async function GET(req: NextRequest) {
   const testId = req.nextUrl.searchParams.get("testId") ?? "";
@@ -26,6 +27,7 @@ export async function GET(req: NextRequest) {
   const count = Number.isFinite(requestedCount) ? Math.max(1, Math.min(30, Math.round(requestedCount))) : 15;
   const topicId = req.nextUrl.searchParams.get("topicId") ?? undefined;
   const reviewOnly = req.nextUrl.searchParams.get("review") === "1";
+  const remediationOnly = req.nextUrl.searchParams.get("remediation") === "1";
   const format = req.nextUrl.searchParams.get("format") ?? "all";
   const questions = practiceQuestions.filter((question) => {
     if (format === "all") return true;
@@ -38,14 +40,20 @@ export async function GET(req: NextRequest) {
     difficulty: question.difficulty,
     type: question.type,
   }));
-  const recommendedQuestionIds = selectAdaptiveQuestions({
-    questions,
-    answers: observations,
-    profile: adaptiveProfile,
-    count,
-    topicId,
-    reviewOnly,
-  });
+  const recommendedQuestionIds = remediationOnly
+    ? selectRemediationQuestions({
+      profile: buildRemediationProfile({ answers: observations }),
+      questions,
+      count,
+    })
+    : selectAdaptiveQuestions({
+      questions,
+      answers: observations,
+      profile: adaptiveProfile,
+      count,
+      topicId,
+      reviewOnly,
+    });
 
   return NextResponse.json({ authenticated: true, ...adaptiveProfile, recommendedQuestionIds });
 }

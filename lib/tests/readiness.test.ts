@@ -77,4 +77,16 @@ describe("buildExamReadiness", () => {
     expect(result.risks.some((risk) => risk.code === "stale")).toBe(true);
     expect(result.status).not.toBe("ready");
   });
+
+  it("keeps relapsed remediation evidence visible in readiness", () => {
+    const attempts = [attempt("1", 84, 6), attempt("2", 86, 1)];
+    const result = buildExamReadiness({
+      testId: "tmua",
+      adaptive: profile(),
+      attempts,
+      remediation: { activeCount: 4, dueCount: 2, relapsedCount: 1, recoveryRate: 60 },
+      now,
+    });
+    expect(result.risks.some((risk) => risk.code === "remediation")).toBe(true);
+  });
 });

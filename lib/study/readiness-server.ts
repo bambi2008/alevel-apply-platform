@@ -1,6 +1,7 @@
 import { db } from "@/lib/db";
 import { getMockPaper } from "@/lib/tests/mock-papers";
 import { buildExamReadiness, type ReadinessAttempt } from "@/lib/tests/readiness";
+import { buildRemediationProfile } from "@/lib/tests/remediation";
 import { loadStudentAdaptiveData } from "@/lib/study/adaptive-server";
 
 function hasLongResponse(work: unknown) {
@@ -50,13 +51,23 @@ export async function loadStudentReadiness(studentId: string, testId: string) {
     };
   });
 
+  const remediation = buildRemediationProfile({ answers: adaptive.observations });
   const readiness = buildExamReadiness({
     testId,
     adaptive: adaptive.profile,
     attempts,
+    remediation,
   });
   return {
     ...readiness,
+    remediation: {
+      activeCount: remediation.activeCount,
+      dueCount: remediation.dueCount,
+      recoveredCount: remediation.recoveredCount,
+      verifiedCount: remediation.verifiedCount,
+      relapsedCount: remediation.relapsedCount,
+      recoveryRate: remediation.recoveryRate,
+    },
     goal: goal?.active ? {
       targetDate: goal.targetDate.toISOString().slice(0, 10),
       targetLevel: goal.targetLevel,

@@ -122,7 +122,7 @@ export function AdaptiveLearningPanel({ testId, variant }: { testId: string; var
 
       <div className="flex justify-end">
         <Link href={`/tests/${testId}/review`} className="inline-flex items-center gap-1.5 text-xs font-medium text-[var(--indigo)] hover:underline">
-          <RotateCcw className="size-3.5" aria-hidden="true" /> 查看复习队列
+          <RotateCcw className="size-3.5" aria-hidden="true" /> 错题复测与清零
         </Link>
       </div>
 

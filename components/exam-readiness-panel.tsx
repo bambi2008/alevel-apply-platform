@@ -6,6 +6,14 @@ import { Link } from "@/i18n/navigation";
 import type { ExamReadiness } from "@/lib/tests/readiness";
 
 type ReadinessResponse = ExamReadiness & {
+  remediation: {
+    activeCount: number;
+    dueCount: number;
+    recoveredCount: number;
+    verifiedCount: number;
+    relapsedCount: number;
+    recoveryRate: number;
+  };
   goal: {
     targetDate: string;
     targetLevel: string | null;
@@ -97,6 +105,7 @@ export function ExamReadinessPanel({ testId }: { testId: string }) {
             <Evidence label="完整整卷" value={`${data.evidence.fullMocks} 次`} />
             <Evidence label="不同固定卷" value={`${data.evidence.distinctPapers} 套`} />
             <Evidence label="独立题目" value={`${data.evidence.uniqueQuestions} 道`} />
+            <Evidence label="待清零" value={`${data.remediation.activeCount} 道`} />
             {data.goal && <Evidence label="距目标日" value={`${data.goal.daysRemaining} 天`} />}
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
@@ -105,6 +114,9 @@ export function ExamReadinessPanel({ testId }: { testId: string }) {
             </Link>
             <Link href={`/study?test=${testId}`} className="inline-flex items-center gap-2 rounded-md border border-[var(--border)] px-4 py-2.5 text-sm font-medium">
               <CalendarDays className="size-4" /> {data.goal ? "调整考试目标" : "设置考试日期"}
+            </Link>
+            <Link href={`/tests/${testId}/review`} className="inline-flex items-center gap-2 rounded-md border border-[var(--border)] px-4 py-2.5 text-sm font-medium">
+              <ClipboardCheck className="size-4" /> 错题复测
             </Link>
           </div>
         </div>

@@ -20,7 +20,8 @@ export type ReadinessRiskCode =
   | "consistency"
   | "completion"
   | "pacing"
-  | "stale";
+  | "stale"
+  | "remediation";
 
 export interface ReadinessRisk {
   code: ReadinessRiskCode;
@@ -131,6 +132,7 @@ export function buildExamReadiness(args: {
   testId: string;
   adaptive: AdaptiveProfile;
   attempts: ReadinessAttempt[];
+  remediation?: { activeCount: number; dueCount: number; relapsedCount: number; recoveryRate: number };
   now?: Date;
 }): ExamReadiness {
   const now = args.now ?? new Date();
@@ -213,6 +215,12 @@ export function buildExamReadiness(args: {
     severity: ageDays > 30 ? "critical" : "warning",
     title: "最近证据已过期",
     detail: `距上次有效训练已 ${Math.floor(ageDays)} 天，需要一次近期复测。`,
+  });
+  if (args.remediation && (args.remediation.relapsedCount > 0 || args.remediation.dueCount >= 5)) risks.push({
+    code: "remediation",
+    severity: args.remediation.relapsedCount >= 3 ? "critical" : "warning",
+    title: args.remediation.relapsedCount ? "存在复发错题" : "待复测问题较多",
+    detail: `${args.remediation.activeCount} 道问题尚未稳定，${args.remediation.relapsedCount} 道在恢复后再次失分；当前修复率 ${args.remediation.recoveryRate}%。`,
   });
 
   if (fullMocks.length < 2) score = Math.min(score, 64);
