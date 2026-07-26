@@ -106,6 +106,66 @@ const seeds: Seed[] = [
     ],
     fullSolution: "The idealised recurrence I_(r+1)<=3I_r gives I_r<=3^r, capped by population. A robust simulation separates the current informed set from next-round additions.",
   },
+  {
+    id: "csat-11", topicId: "csat-algorithms", difficulty: 2,
+    context: "A warehouse robot must visit every marked square in a rectangular grid. It may move one square north, south, east or west, and some squares are blocked.",
+    parts: [
+      { label: "(i)", marks: 6, question: "Describe how breadth-first search can find a shortest route from the start to one marked square.", solutionOutline: "Treat open squares as vertices and legal moves as edges; BFS first reaches a square at minimum distance." },
+      { label: "(ii)", marks: 8, question: "Explain why repeatedly visiting the nearest remaining mark need not minimise the complete route.", solutionOutline: "Give a configuration where a locally nearest mark leaves two distant regions to be crossed inefficiently." },
+      { label: "(iii)", marks: 6, question: "State one exact approach for a small number k of marked squares and discuss its cost.", solutionOutline: "Compute pairwise shortest paths, then use subset dynamic programming over visited marks in O(2^k k^2)." },
+    ],
+    fullSolution: "BFS solves each unweighted shortest-path subproblem. The full visit-all problem needs global state; subset dynamic programming is exact for small k but exponential in the number of marks.",
+  },
+  {
+    id: "csat-12", topicId: "csat-logic", difficulty: 3,
+    context: "A system grants access when (P and Q) or (not P and R) is true.",
+    parts: [
+      { label: "(i)", marks: 6, question: "Construct a complete truth table for the access rule.", solutionOutline: "List all eight assignments and evaluate both conjunctions before the disjunction." },
+      { label: "(ii)", marks: 7, question: "Show that Q or R being true is necessary but not sufficient for access.", solutionOutline: "Prove necessity from the two branches, then give a counterexample for sufficiency." },
+      { label: "(iii)", marks: 7, question: "Design an equivalent decision tree that asks P first and justify the equivalence.", solutionOutline: "If P is true, test Q; otherwise test R. Match both branches to the Boolean expression." },
+    ],
+    fullSolution: "Conditioning on P reduces the rule to Q when P is true and R when P is false. The truth table and decision tree must agree on all eight inputs.",
+  },
+  {
+    id: "csat-13", topicId: "csat-combinatorics", difficulty: 2,
+    context: "A code consists of four distinct digits chosen from 0 to 9. The first digit cannot be 0.",
+    parts: [
+      { label: "(i)", marks: 6, question: "Count all valid codes.", solutionOutline: "Choose the first digit in 9 ways, then 9, 8 and 7 remaining choices." },
+      { label: "(ii)", marks: 7, question: "Count valid codes containing exactly one even digit.", solutionOutline: "Separate whether the single even digit is zero and whether it occupies the first position." },
+      { label: "(iii)", marks: 7, question: "Explain how inclusion-exclusion could count codes containing at least one of the digits 1, 2 and 3.", solutionOutline: "Define events for containing each specified digit and subtract pair intersections before adding the triple intersection." },
+    ],
+    fullSolution: "The unrestricted count is 9x9x8x7. Parts (ii) and (iii) require careful treatment of the leading-zero restriction rather than treating all positions symmetrically.",
+  },
+  {
+    id: "csat-14", topicId: "csat-graphs", difficulty: 3,
+    context: "Courses are vertices of a graph. Two courses are joined when at least one student takes both, so joined courses cannot have exams at the same time.",
+    parts: [
+      { label: "(i)", marks: 6, question: "Explain why a valid timetable corresponds to a proper vertex colouring.", solutionOutline: "Time slots are colours and adjacent courses require different colours." },
+      { label: "(ii)", marks: 7, question: "Show that a graph containing an odd cycle cannot be scheduled in two slots.", solutionOutline: "Alternating two colours around an odd cycle forces the final edge to join equal colours." },
+      { label: "(iii)", marks: 7, question: "Describe a greedy scheduling algorithm and explain why its result need not use the fewest slots.", solutionOutline: "Process vertices in an order and assign the first available colour; a poor order can introduce avoidable colours." },
+    ],
+    fullSolution: "Graph colouring models the conflict constraint exactly. Odd cycles obstruct two-colourability, while greedy colouring is valid but its colour count depends on vertex order.",
+  },
+  {
+    id: "csat-15", topicId: "csat-modelling", difficulty: 2,
+    context: "A video platform chooses which files to keep in a limited cache. A request served from the cache costs 1 unit of time; any other request costs 12 units and loads that file into the cache.",
+    parts: [
+      { label: "(i)", marks: 6, question: "Compare least-recently-used and first-in-first-out on the request sequence A,B,C,A,D,A with cache size 3.", solutionOutline: "Track the cache after each request and total the hits and misses for both policies." },
+      { label: "(ii)", marks: 7, question: "Give a request pattern on which one policy clearly outperforms the other.", solutionOutline: "Construct and simulate a sequence that revisits a recently used old file after FIFO evicts it." },
+      { label: "(iii)", marks: 7, question: "Identify two assumptions that make this model unrealistic and propose one improved objective.", solutionOutline: "Files may differ in size or load cost; requests may have priorities. Minimise weighted delay or total bandwidth rather than misses alone." },
+    ],
+    fullSolution: "A correct answer records cache state, not only the final miss count. The modelling discussion should connect changed assumptions to a revised policy or objective.",
+  },
+  {
+    id: "csat-16", topicId: "csat-algorithms", difficulty: 3,
+    context: "An array contains n integers. A contiguous segment is called balanced when its sum is zero.",
+    parts: [
+      { label: "(i)", marks: 5, question: "Give a direct O(n^2) method to find a longest balanced segment.", solutionOutline: "Try every start and extend the end while maintaining a running sum." },
+      { label: "(ii)", marks: 9, question: "Design an O(n) expected-time method using prefix sums and a dictionary.", solutionOutline: "Equal prefix sums at positions i and j imply the intervening segment sums to zero; store the earliest index for each sum." },
+      { label: "(iii)", marks: 6, question: "Prove that keeping only the earliest occurrence of each prefix sum is sufficient.", solutionOutline: "For any later matching endpoint, the earliest equal prefix gives the longest segment ending there." },
+    ],
+    fullSolution: "Let S_j be the sum before position j. Segment i through j-1 is balanced exactly when S_i=S_j. Recording the earliest index for each prefix sum maximises every candidate length.",
+  },
 ];
 
 export const CSAT_QUESTIONS: LongQuestion[] = seeds.map((seed) => ({

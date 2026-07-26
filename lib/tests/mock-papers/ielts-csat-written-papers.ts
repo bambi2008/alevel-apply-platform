@@ -15,6 +15,23 @@ const ieltsWriting = paperCopies(
   IELTS_QUESTIONS.filter((question) => question.topicId === "ielts-writing")
 );
 
+function csatQuestions(ids: string[]): Question[] {
+  return ids.map((id) => {
+    const question = CSAT_QUESTIONS.find((item) => item.id === id);
+    if (!question) throw new Error(`Missing CSAT question: ${id}`);
+    return question;
+  });
+}
+
+const CSAT_PAPER_1 = csatQuestions([
+  "csat-01", "csat-03", "csat-05", "csat-07",
+  "csat-09", "csat-02", "csat-06", "csat-10",
+]);
+const CSAT_PAPER_2 = csatQuestions([
+  "csat-11", "csat-12", "csat-13", "csat-14",
+  "csat-15", "csat-16", "csat-04", "csat-08",
+]);
+
 export const IELTS_WRITTEN_DIAGNOSTIC: MockPaper = {
   id: "ielts-written-diagnostic-1",
   testId: "ielts",
@@ -43,7 +60,7 @@ export const CSAT_WRITTEN_PAPERS: MockPaper[] = [
       title: "8 题选 6 题计分",
       titleEn: "Answer any 6 of 8",
       durationSec: 180 * 60,
-      questions: paperCopies("csat-written-1", CSAT_QUESTIONS.slice(0, 8)),
+      questions: paperCopies("csat-written-1", CSAT_PAPER_1),
     }],
     instructions: [
       "先浏览全卷，再选择最有把握的 6 题；系统按最高 6 题计分。",
@@ -64,7 +81,7 @@ export const CSAT_WRITTEN_PAPERS: MockPaper[] = [
       title: "8 题选 6 题计分",
       titleEn: "Answer any 6 of 8",
       durationSec: 180 * 60,
-      questions: paperCopies("csat-written-2", [...CSAT_QUESTIONS.slice(2), ...CSAT_QUESTIONS.slice(0, 2)].slice(0, 8)),
+      questions: paperCopies("csat-written-2", CSAT_PAPER_2),
     }],
     instructions: [
       "选题本身是考试策略的一部分；不要按题号顺序机械作答。",

@@ -3,6 +3,7 @@
 import { useState, useRef, useEffect } from "react";
 import type { InterviewQuestion } from "@/lib/interview/questions";
 import { IeltsSpeakingSimulator } from "./ielts-speaking-simulator";
+import { CambridgeAssessmentSimulator } from "./cambridge-assessment-simulator";
 
 type Msg = { role: "interviewer" | "student"; content: string };
 
@@ -34,7 +35,11 @@ export function SubjectInterview({
           onClick={() => setTab("mock")}
           className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === "mock" ? "bg-white shadow-[var(--shadow-sm)] text-[var(--ink)]" : "text-[var(--ink-soft)]"}`}
         >
-          🎙️ AI 模拟面试
+          {subjectId === "ielts-speaking"
+            ? "全真模拟"
+            : subjectId.startsWith("cambridge-")
+              ? "固定 assessment"
+              : "AI 模拟面试"}
         </button>
       </div>
 
@@ -94,6 +99,8 @@ export function SubjectInterview({
       ) : (
         subjectId === "ielts-speaking"
           ? <IeltsSpeakingSimulator />
+          : subjectId.startsWith("cambridge-")
+            ? <CambridgeAssessmentSimulator subjectId={subjectId} subjectName={subjectName} questions={questions} />
           : <MockInterview subjectName={subjectName} seedQuestions={questions} />
       )}
     </div>
