@@ -3,7 +3,7 @@
 // 牛剑不公开真题（招生官跨年复用、且面试考的是现场思维而非背答案），故本库不照搬任何真题，
 // 只教学生「如何现场拆解陌生问题」。题库持续增补。
 
-export type InterviewCategory = "STEM" | "SOCIAL" | "HUMANITIES";
+export type InterviewCategory = "STEM" | "SOCIAL" | "HUMANITIES" | "CAMBRIDGE_ASSESSMENT" | "HK_INTERVIEW" | "ENGLISH";
 
 export interface InterviewSubject {
   id: string;
@@ -19,6 +19,9 @@ export interface InterviewQuestion {
   prompt: string; // 面试问题（原创）
   approach: string; // 思路提示：怎么拆解、导师想看什么（不是标准答案）
   followUps?: string[]; // 典型追问（面试会顺着你的回答继续追问）
+  format?: string;
+  timebox?: string;
+  assessedSkills?: string[];
 }
 
 export const INTERVIEW_CATEGORIES: { id: InterviewCategory; label: string; labelEn: string }[] = [

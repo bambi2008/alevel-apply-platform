@@ -16,6 +16,8 @@ import { TARA_QUESTIONS } from "@/lib/tests/questions/tara";
 import { BPHO_QUESTIONS } from "@/lib/tests/questions/bpho";
 import { BMO_QUESTIONS } from "@/lib/tests/questions/bmo";
 import { UCAT_QUESTIONS } from "@/lib/tests/questions/ucat";
+import { IELTS_QUESTIONS } from "@/lib/tests/questions/ielts";
+import { CSAT_QUESTIONS } from "@/lib/tests/questions/csat";
 import type { Question, MCQQuestion, LongQuestion } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
 import type { GradeRequest, GradeResponse } from "@/app/api/grade-answer/route";
@@ -37,6 +39,8 @@ const QUESTION_BANKS: Record<string, Question[]> = {
   bpho: BPHO_QUESTIONS,
   bmo: BMO_QUESTIONS,
   ucat: UCAT_QUESTIONS,
+  ielts: IELTS_QUESTIONS,
+  csat: CSAT_QUESTIONS,
 };
 const EMPTY_QUESTIONS: Question[] = [];
 

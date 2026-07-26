@@ -47,6 +47,13 @@ export function SubjectInterview({
                   </span>
                   <div className="min-w-0 flex-1">
                     <p className="font-medium text-[var(--ink)] leading-relaxed">{q.prompt}</p>
+                    {(q.format || q.timebox || q.assessedSkills?.length) && (
+                      <div className="mt-2 flex flex-wrap gap-1.5 text-[11px]">
+                        {q.format && <span className="badge badge-neutral">{q.format}</span>}
+                        {q.timebox && <span className="badge badge-neutral">{q.timebox}</span>}
+                        {q.assessedSkills?.map((skill) => <span key={skill} className="badge badge-neutral">{skill}</span>)}
+                      </div>
+                    )}
                     <button
                       type="button"
                       onClick={() => setOpenId(open ? null : q.id)}

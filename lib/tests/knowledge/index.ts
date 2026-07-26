@@ -10,6 +10,7 @@ import { BPHO_KNOWLEDGE } from "./bpho";
 import { BMO_KNOWLEDGE } from "./bmo";
 import { TMUA_SPEC_KNOWLEDGE } from "./tmua-spec";
 import { UCAT_KNOWLEDGE } from "./ucat";
+import { IELTS_CSAT_KNOWLEDGE } from "./ielts-csat";
 
 const ALL_KNOWLEDGE: TopicKnowledge[] = [
   ...ESAT_KNOWLEDGE,
@@ -24,6 +25,7 @@ const ALL_KNOWLEDGE: TopicKnowledge[] = [
   ...BMO_KNOWLEDGE,
   ...TMUA_SPEC_KNOWLEDGE,
   ...UCAT_KNOWLEDGE,
+  ...IELTS_CSAT_KNOWLEDGE,
 ];
 
 export function getKnowledgeByTopicId(topicId: string): TopicKnowledge | undefined {

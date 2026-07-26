@@ -15,8 +15,8 @@ export default function InterviewPage() {
       <div className="grid lg:grid-cols-[1fr_auto] gap-8 items-center mb-8">
         <div className="[&>div]:mb-0">
           <PageHeader
-            title="面试准备"
-            subtitle="牛剑及顶尖英国大学的学科面试，考的是你面对陌生问题如何思考。这里有分学科的原创练习题、思路提示，以及 AI 模拟面试——重在训练现场推理，而不是背答案。"
+            title="学院评估与英港面试"
+            subtitle="覆盖牛剑学科面试、剑桥学院附加 assessment、香港院校综合/医学/商科/理工面试，以及 IELTS Speaking。训练现场推理、证据回应和追问适应，不背模板答案。"
             icon="🎙️"
           />
         </div>
@@ -63,7 +63,7 @@ export default function InterviewPage() {
       {/* 通用面试指导 */}
       <section className="mt-4">
         <h2 className="text-sm font-semibold uppercase tracking-[0.14em] text-[var(--indigo)] mb-4">
-          面试通用指导
+          学术与面试通用指导
         </h2>
         <div className="grid sm:grid-cols-2 gap-4">
           {INTERVIEW_GUIDE.map((g) => (
@@ -76,8 +76,8 @@ export default function InterviewPage() {
       </section>
 
       <p className="mt-8 text-xs text-[var(--ink-faint)] leading-relaxed">
-        说明：牛津、剑桥不公开面试真题（真题会跨年重复使用，考的是现场思维）。本模块所有题目与讲解均为
-        桥申原创，仅参照公开的学科分类与面试风格，不复制任何机构的题库内容。题库持续增补。
+        说明：本模块题目与讲解均为桥申原创，不复制学院或培训机构题库。剑桥学院 assessment 与香港院校面试会因
+        课程、学院和年份变化；收到邀请后应以院校邮件为准。
       </p>
     </div>
   );

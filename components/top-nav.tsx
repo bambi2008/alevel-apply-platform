@@ -56,6 +56,7 @@ export function TopNav({
       title: t("groupPrep"),
       items: [
         { href: "/tests", label: t("tests"), icon: "compass", desc: "ESAT 等笔试练习与模考" },
+        { href: "/english", label: "英语要求", icon: "language", desc: "IELTS 目标、分差与四项训练" },
         { href: "/background", label: t("background"), icon: "star", desc: "竞赛/科研/夏校规划" },
         { href: "/statements", label: t("statements"), icon: "pen", desc: "UCAS 三题 + 港校 essay" },
         { href: "/interview", label: "面试准备", icon: "mic", desc: "题库 + AI 模拟面试" },

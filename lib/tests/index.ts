@@ -1,6 +1,8 @@
-// 英国大学入学笔试数据层 — 10 种考试
+// 英国大学申请考试与能力训练数据层
+import { ADDITIONAL_TESTS } from "./additional-tests";
 
-export type TestCategory = "mathematics" | "science" | "law" | "thinking" | "competition";
+export type TestCategory = "mathematics" | "science" | "law" | "thinking" | "competition" | "english";
+export type TestPurpose = "admissions" | "college-assessment" | "offer-condition" | "language" | "legacy" | "competition";
 
 export interface TestTopic {
   id: string;
@@ -21,6 +23,7 @@ export interface AdmissionsTest {
   abbr: string;           // 缩写
   nameZh: string;         // 中文名
   category: TestCategory;
+  purpose?: TestPurpose;
   icon: string;
   universities: string[]; // 使用该考试的院校
   programs: string[];     // 适用专业（中文）
@@ -41,7 +44,7 @@ export interface AdmissionsTest {
   pastPaperLinks?: Array<{ label: string; url: string; note?: string }>; // 历年真题链接
 }
 
-export const ADMISSIONS_TESTS: AdmissionsTest[] = [
+const CORE_TESTS: AdmissionsTest[] = [
   {
     id: "mat",
     name: "Mathematics Admissions Test",
@@ -486,6 +489,16 @@ export const ADMISSIONS_TESTS: AdmissionsTest[] = [
   },
 ];
 
+export const ADMISSIONS_TESTS: AdmissionsTest[] = [...CORE_TESTS, ...ADDITIONAL_TESTS];
+
+export function getTestPurpose(test: AdmissionsTest): TestPurpose {
+  if (test.purpose) return test.purpose;
+  if (test.id === "mat" || test.id === "pat") return "legacy";
+  if (test.id === "bmo" || test.id === "bpho") return "competition";
+  if (test.id === "step") return "offer-condition";
+  return "admissions";
+}
+
 export function getTestById(id: string): AdmissionsTest | undefined {
   return ADMISSIONS_TESTS.find((t) => t.id === id);
 }
@@ -496,4 +509,5 @@ export const TEST_CATEGORIES: Record<TestCategory, { label: string; labelEn: str
   science: { label: "理科类", labelEn: "Science" },
   law: { label: "法学类", labelEn: "Law" },
   thinking: { label: "思维类", labelEn: "Thinking Skills" },
+  english: { label: "英语", labelEn: "English" },
 };

@@ -8,6 +8,8 @@ import { PAT_QUESTIONS } from "@/lib/tests/questions/pat";
 import { LNAT_QUESTIONS } from "@/lib/tests/questions/lnat";
 import { TARA_QUESTIONS } from "@/lib/tests/questions/tara";
 import { UCAT_QUESTIONS } from "@/lib/tests/questions/ucat";
+import { IELTS_QUESTIONS } from "@/lib/tests/questions/ielts";
+import { CSAT_QUESTIONS } from "@/lib/tests/questions/csat";
 import { TMUA_REASONING_ROUND_2 } from "@/lib/tests/questions/tmua-reasoning-round-2";
 import { TMUA_SPEC_COVERAGE } from "@/lib/tests/questions/tmua-spec-coverage";
 import { TMUA_ADVANCED_ROUND_3 } from "@/lib/tests/questions/tmua-advanced-round-3";
@@ -27,6 +29,8 @@ const banks: Record<string, Question[]> = {
   tmua: TMUA_QUESTIONS,
   bpho: BPHO_QUESTIONS,
   ucat: UCAT_QUESTIONS,
+  ielts: IELTS_QUESTIONS,
+  csat: CSAT_QUESTIONS,
 };
 
 const allQuestions: Question[] = [
@@ -36,6 +40,8 @@ const allQuestions: Question[] = [
   ...TMUA_QUESTIONS,
   ...BPHO_QUESTIONS,
   ...UCAT_QUESTIONS,
+  ...IELTS_QUESTIONS,
+  ...CSAT_QUESTIONS,
   ...getAllMockQuestions(),
 ];
 

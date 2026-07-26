@@ -11,6 +11,8 @@ import { STEP_QUESTIONS } from "@/lib/tests/questions/step";
 import { TARA_QUESTIONS } from "@/lib/tests/questions/tara";
 import { TMUA_QUESTIONS } from "@/lib/tests/questions/tmua";
 import { UCAT_QUESTIONS } from "@/lib/tests/questions/ucat";
+import { IELTS_QUESTIONS } from "@/lib/tests/questions/ielts";
+import { CSAT_QUESTIONS } from "@/lib/tests/questions/csat";
 import type { Question } from "@/lib/tests/questions/types";
 import { findSemanticRisks } from "./semantic";
 import { findTeachingRisks } from "./teaching";
@@ -89,6 +91,8 @@ const QUESTION_BANKS: Record<string, Question[]> = {
   bmo: BMO_QUESTIONS,
   bpho: BPHO_QUESTIONS,
   ucat: UCAT_QUESTIONS,
+  ielts: IELTS_QUESTIONS,
+  csat: CSAT_QUESTIONS,
 };
 
 const FORMAT_RULES: Record<string, { needsWrittenPractice: boolean; needsFixedWrittenPaper: boolean }> = {
@@ -103,6 +107,8 @@ const FORMAT_RULES: Record<string, { needsWrittenPractice: boolean; needsFixedWr
   bmo: { needsWrittenPractice: true, needsFixedWrittenPaper: true },
   bpho: { needsWrittenPractice: true, needsFixedWrittenPaper: true },
   ucat: { needsWrittenPractice: false, needsFixedWrittenPaper: false },
+  ielts: { needsWrittenPractice: true, needsFixedWrittenPaper: true },
+  csat: { needsWrittenPractice: true, needsFixedWrittenPaper: true },
 };
 
 function difficultyCounts(questions: Question[]): DifficultyCounts {
