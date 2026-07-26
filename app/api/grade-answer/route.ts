@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import { requireAiAccess } from "@/lib/security/ai-route";
 import {
   buildEmptyGradeResponse,
   buildGradeResponse,
@@ -119,6 +120,8 @@ export async function POST(req: NextRequest) {
   if (isBlankSubmission(request)) {
     return NextResponse.json(buildEmptyGradeResponse(request));
   }
+  const access = await requireAiAccess(req, "grading", 30);
+  if (!access.ok) return access.response;
   if (!process.env.DEEPSEEK_API_KEY) {
     return NextResponse.json({ error: "DEEPSEEK_API_KEY not configured" }, { status: 503 });
   }

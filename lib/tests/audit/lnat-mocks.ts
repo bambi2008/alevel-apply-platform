@@ -93,12 +93,12 @@ export function buildLnatMockAudit(): LnatAuditReport {
     if (paper.modules.length !== 1) {
       issues.push({ paperId: paper.id, code: "MODULE_COUNT", severity: "critical", message: "Each LNAT Section A paper must contain one objective module." });
     }
-    const module = paper.modules[0];
-    const questions = (module?.questions ?? []).filter(isMcq);
-    if (questions.length !== 42 || questions.length !== (module?.questions.length ?? 0)) {
+    const paperModule = paper.modules[0];
+    const questions = (paperModule?.questions ?? []).filter(isMcq);
+    if (questions.length !== 42 || questions.length !== (paperModule?.questions.length ?? 0)) {
       issues.push({ paperId: paper.id, code: "QUESTION_COUNT", severity: "critical", message: `Section A requires 42 MCQs; found ${questions.length}.` });
     }
-    if (module?.durationSec !== 95 * 60) {
+    if (paperModule?.durationSec !== 95 * 60) {
       issues.push({ paperId: paper.id, code: "DURATION", severity: "critical", message: "Section A must last 95 minutes." });
     }
 
@@ -222,9 +222,9 @@ export function buildLnatMockAudit(): LnatAuditReport {
   }
 
   for (const paper of written) {
-    const module = paper.modules[0];
-    const question = module?.questions[0];
-    if (paper.modules.length !== 1 || module?.durationSec !== 40 * 60 || module.questions.length !== 1 || question?.type !== "long") {
+    const paperModule = paper.modules[0];
+    const question = paperModule?.questions[0];
+    if (paper.modules.length !== 1 || paperModule?.durationSec !== 40 * 60 || paperModule.questions.length !== 1 || question?.type !== "long") {
       issues.push({ paperId: paper.id, code: "WRITING_STRUCTURE", severity: "critical", message: "Each Section B paper must contain one 40-minute essay task." });
       continue;
     }

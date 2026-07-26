@@ -30,10 +30,12 @@ export async function GET(
       status: 200,
       headers: {
         "Content-Type": doc.mime || "application/octet-stream",
-        "Content-Disposition": `inline; filename*=UTF-8''${encodeURIComponent(
+        "Content-Disposition": `attachment; filename*=UTF-8''${encodeURIComponent(
           doc.fileName
         )}`,
         "Cache-Control": "private, max-age=0, must-revalidate",
+        "X-Content-Type-Options": "nosniff",
+        "Content-Security-Policy": "default-src 'none'; sandbox",
       },
     });
   } catch {

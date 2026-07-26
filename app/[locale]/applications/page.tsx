@@ -6,7 +6,7 @@ import { SceneCompass } from "@/components/illustrations";
 import { Photo } from "@/components/photo";
 
 import { useEffect, useState } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { ArrowRight, ClipboardCheck } from "lucide-react";
 import type { ProgramWithUniversity } from "@/lib/data/types";
@@ -29,9 +29,6 @@ export default function ApplicationsPage() {
   const t = useTranslations("applications");
   const tc = useTranslations("common");
   const tnav = useTranslations("nav");
-  const locale = useLocale();
-  const isEn = locale === "en";
-
   const [items, setItems] = useState<ApplicationItem[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [programs, setPrograms] = useState<ProgramWithUniversity[]>([]);

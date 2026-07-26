@@ -19,7 +19,7 @@ import {
   type BgCategory,
   type CatalogItem,
 } from "@/lib/background/catalog";
-import { recommend, classifyMajors } from "@/lib/background/recommend";
+import { recommend } from "@/lib/background/recommend";
 import {
   listBackground,
   addBackground,
@@ -27,7 +27,6 @@ import {
   deleteBackground,
   subscribeBackground,
   plannedCatalogIds,
-  statusLabel,
   BG_STATUS_LABELS,
   type BackgroundPlanItem,
   type BgStatus,
@@ -60,11 +59,6 @@ export default function BackgroundPage() {
   }, []);
 
   const scored = useMemo(() => recommend(profile), [profile]);
-  const autoFields = useMemo(() => {
-    const f = classifyMajors(profile.intendedMajors);
-    return f.length ? f : (BG_FIELDS.map((x) => x.value) as BgField[]);
-  }, [profile]);
-
   const planned = plannedCatalogIds(items);
   const reminders = useMemo(() => computeReminders(items), [items]);
 

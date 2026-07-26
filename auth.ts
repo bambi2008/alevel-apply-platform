@@ -3,6 +3,11 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { db } from "@/lib/db";
 import { verifyCode } from "@/lib/auth/phone-codes";
+import {
+  clientIp,
+  consumeRateLimit,
+  rateLimitKey,
+} from "@/lib/security/rate-limit";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   session: { strategy: "jwt" },
@@ -14,10 +19,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      authorize: async (creds) => {
+      authorize: async (creds, request) => {
         const email = String(creds?.email ?? "").trim().toLowerCase();
         const password = String(creds?.password ?? "");
         if (!email || !password) return null;
+        const limit = consumeRateLimit(
+          rateLimitKey("password-login", clientIp(request.headers), email),
+          { limit: 10, windowMs: 15 * 60_000 },
+        );
+        if (!limit.allowed) return null;
         const user = await db.user.findUnique({ where: { email } });
         if (!user?.passwordHash) return null;
         const ok = await bcrypt.compare(password, user.passwordHash);
@@ -32,10 +42,15 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         phone: { label: "Phone", type: "text" },
         code: { label: "Code", type: "text" },
       },
-      authorize: async (creds) => {
+      authorize: async (creds, request) => {
         const phone = String(creds?.phone ?? "").trim();
         const code = String(creds?.code ?? "").trim();
         if (!/^1[3-9]\d{9}$/.test(phone) || !/^\d{6}$/.test(code)) return null;
+        const limit = consumeRateLimit(
+          rateLimitKey("phone-login", clientIp(request.headers), phone),
+          { limit: 10, windowMs: 15 * 60_000 },
+        );
+        if (!limit.allowed) return null;
         if (!(await verifyCode(phone, code))) return null;
 
         // 校验通过：已存在则登录，否则自动建号（含隐私同意记录）

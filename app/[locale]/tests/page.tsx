@@ -8,7 +8,6 @@ import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 import {
   ADMISSIONS_TESTS,
-  TEST_CATEGORIES,
   type TestCategory,
   type AdmissionsTest,
 } from "@/lib/tests";
@@ -36,8 +35,8 @@ export default function TestsPage() {
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
       {/* Header */}
-      <div className="grid lg:grid-cols-[1fr_auto] gap-8 items-center mb-8">
-        <div className="[&>div]:mb-0">
+      <div className="grid gap-8 items-center mb-8 lg:grid-cols-[minmax(0,1fr)_300px]">
+        <div className="min-w-0 [&>div]:mb-0">
           <PageHeader
             title="笔试与竞赛备考中心"
             subtitle="入学笔试 + 学术竞赛 · 结构说明 · 备考计划 · 知识点练习 · 计时模考"
@@ -45,10 +44,9 @@ export default function TestsPage() {
           />
         </div>
         <Photo
-          src="/images/tests-study.jpg"
+          src="/images/hero.jpg"
           alt="入学笔试备考"
-          className="hidden lg:block w-[300px]"
-          imgClassName="h-auto w-full rounded-2xl object-cover aspect-[4/3]"
+          className="hidden h-[200px] w-full rounded-lg object-cover lg:block"
           fallback={<SceneGrowth className="w-full h-auto rounded-2xl doodle-idle" />}
         />
       </div>
@@ -116,7 +114,6 @@ export default function TestsPage() {
 }
 
 function TestCard({ test }: { test: AdmissionsTest }) {
-  const cat = TEST_CATEGORIES[test.category];
   return (
     <Link
       href={`/tests/${test.id}`}

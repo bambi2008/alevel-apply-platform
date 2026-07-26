@@ -1,12 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import { notFound } from "next/navigation";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
 
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
@@ -64,7 +57,7 @@ export default async function LocaleLayout({
   const isLoggedIn = !!session?.user;
 
   return (
-    <html lang={locale} className={`h-full antialiased ${inter.variable}`}>
+    <html lang={locale} className="h-full antialiased">
       <body className="min-h-full flex flex-col bg-white text-neutral-900">
         <NextIntlClientProvider messages={messages}>
           <TopNav

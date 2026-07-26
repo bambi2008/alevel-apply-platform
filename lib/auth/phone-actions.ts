@@ -1,8 +1,10 @@
 "use server";
 
 import { AuthError } from "next-auth";
+import { headers } from "next/headers";
 import { signIn } from "@/auth";
 import { getSms } from "@/lib/sms";
+import { clientIp, consumeRateLimit, rateLimitKey } from "@/lib/security/rate-limit";
 import {
   generateCode,
   saveCode,
@@ -25,6 +27,14 @@ export async function requestPhoneCodeAction(
 ): Promise<RequestCodeResult> {
   const p = String(phone || "").trim();
   if (!PHONE_RE.test(p)) return { ok: false, error: "INVALID_PHONE" };
+  const requestHeaders = await headers();
+  const limit = consumeRateLimit(
+    rateLimitKey("sms-code", clientIp(requestHeaders), p),
+    { limit: 5, windowMs: 60 * 60_000 },
+  );
+  if (!limit.allowed) {
+    return { ok: false, error: "COOLDOWN", cooldown: limit.retryAfterSeconds };
+  }
 
   if (!(await canSend(p))) {
     return { ok: false, error: "COOLDOWN", cooldown: await cooldownRemaining(p) };

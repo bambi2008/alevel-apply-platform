@@ -3,8 +3,10 @@
 import bcrypt from "bcryptjs";
 import { AuthError } from "next-auth";
 import { z } from "zod";
+import { headers } from "next/headers";
 import { db } from "@/lib/db";
 import { signIn, signOut } from "@/auth";
+import { clientIp, consumeRateLimit, rateLimitKey } from "@/lib/security/rate-limit";
 
 const schema = z.object({
   email: z.string().email(),
@@ -20,6 +22,12 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
 
   const parsed = schema.safeParse({ email, password });
   if (!parsed.success) return { error: "INVALID" };
+  const requestHeaders = await headers();
+  const limit = consumeRateLimit(
+    rateLimitKey("registration", clientIp(requestHeaders), email),
+    { limit: 5, windowMs: 60 * 60_000 },
+  );
+  if (!limit.allowed) return { error: "INVALID" };
 
   const existing = await db.user.findUnique({ where: { email } });
   if (existing) return { error: "EXISTS" };

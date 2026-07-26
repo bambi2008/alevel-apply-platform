@@ -7,7 +7,7 @@ import { Link } from "@/i18n/navigation";
 import { SUBJECTS, GRADES, FIELDS, fieldLabel } from "@/lib/constants";
 import { loadProfile, profileHasGrades } from "@/lib/profile/store";
 import {
-  DIRECTIONS, getDirection, scanFeasibility, gradeTier, GRADE_TIER_NOTE,
+  getDirection, scanFeasibility, gradeTier, GRADE_TIER_NOTE,
   BUDGET_BANDS, getBudgetNote,
 } from "@/lib/advisor/logic";
 

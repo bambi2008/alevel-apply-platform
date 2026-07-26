@@ -1,0 +1,42 @@
+name: Production check
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      DATABASE_URL: postgresql://build:build-password@postgres:5432/build
+      AUTH_SECRET: ci-only-secret-with-more-than-thirty-two-characters
+      APP_ORIGIN: https://ci.example.com
+      STORAGE_DRIVER: local
+      LOCAL_STORAGE_PATH: /tmp/qiaoshen-storage
+      ALLOW_LOCAL_STORAGE_IN_PRODUCTION: "true"
+      BACKUP_DIR: /tmp/qiaoshen-backups
+      BACKUP_ENCRYPTION_KEY: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+      REQUIRE_BACKUPS: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.9.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm preflight:production
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test
+      - run: pnpm audit:questions
+      - run: pnpm audit --registry=https://registry.npmjs.org --prod --audit-level high
+      - run: pnpm build
+      - run: docker build --target production .

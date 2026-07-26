@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { captureError } from "@/lib/monitoring";
+import { requireAiAccess } from "@/lib/security/ai-route";
 
 export const runtime = "nodejs";
 
@@ -56,6 +57,8 @@ const FEEDBACK_SYSTEM = `你刚刚作为牛津/剑桥面试官，完成了对一
 **大致水平**：用描述性判断（如"接近录取水准 / 有基础但需打磨 / 需较多练习"），不要打分数。`;
 
 export async function POST(req: NextRequest) {
+  const access = await requireAiAccess(req, "interview-mock");
+  if (!access.ok) return access.response;
   if (!process.env.DEEPSEEK_API_KEY) {
     return NextResponse.json({ error: "AI 暂未配置" }, { status: 503 });
   }

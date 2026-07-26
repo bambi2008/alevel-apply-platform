@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { captureError } from "@/lib/monitoring";
+import { requireAiAccess } from "@/lib/security/ai-route";
 
 export const runtime = "nodejs";
 
@@ -150,6 +151,8 @@ ${r.text || "（学生尚未填写）"}
 注意：若作答空白或太短，strengths 可指出内容太少，把重点放在 suggestions 与 questions。绝不提供可照抄的成句。`;
 
 export async function POST(req: NextRequest) {
+  const access = await requireAiAccess(req, "ps-coach", 30);
+  if (!access.ok) return access.response;
   if (!process.env.DEEPSEEK_API_KEY) {
     return NextResponse.json({ error: "AI 暂未配置（缺少 DEEPSEEK_API_KEY）" }, { status: 503 });
   }

@@ -1,51 +1,55 @@
-// 本地开发用嵌入式 Postgres。单独终端运行：pnpm db:start
-// 数据持久化在 ./.pgdata（已 gitignore）。连接串：
-//   postgresql://postgres:postgres@localhost:5433/alevel
-import EmbeddedPostgres from "embedded-postgres";
+import { execFileSync, spawn } from "node:child_process";
 import { existsSync } from "node:fs";
 import path from "node:path";
 
-const databaseDir = path.join(process.cwd(), ".pgdata");
-const DB_NAME = "alevel";
+const cwd = process.cwd();
+const needsAsciiDrive = process.platform === "win32" && /[^\x00-\x7f]/.test(cwd);
 
-const pg = new EmbeddedPostgres({
-  databaseDir,
-  user: "postgres",
-  password: "postgres",
-  port: 5433,
-  persistent: true,
-});
+if (!needsAsciiDrive) {
+  await import("./pg-server.mjs");
+} else {
+  const mappings = execFileSync("subst", [], { encoding: "utf8" });
+  const existing = mappings
+    .split(/\r?\n/)
+    .map((line) => line.match(/^([A-Z]):\\: => (.+)$/i))
+    .find((match) => match && path.resolve(match[2]) === path.resolve(cwd));
 
-const firstRun = !existsSync(databaseDir);
-
-async function main() {
-  if (firstRun) {
-    console.log("[pg] 初始化数据目录（首次，运行 initdb）…");
-    await pg.initialise();
-  }
-  await pg.start();
-  console.log("[pg] Postgres 已启动：localhost:5433");
-
-  try {
-    await pg.createDatabase(DB_NAME);
-    console.log(`[pg] 已创建数据库 ${DB_NAME}`);
-  } catch (e) {
-    console.log(`[pg] 数据库 ${DB_NAME} 已存在（跳过）`);
+  let drive = existing?.[1]?.toUpperCase();
+  let createdMapping = false;
+  if (!drive) {
+    drive = "ZYXWVUTSRQP".split("").find((letter) => !existsSync(`${letter}:\\`));
+    if (!drive) throw new Error("No free drive letter is available for the local PostgreSQL launcher");
+    execFileSync("subst", [`${drive}:`, cwd], { stdio: "inherit" });
+    createdMapping = true;
   }
 
-  console.log("[pg] DATABASE_URL=postgresql://postgres:postgres@localhost:5433/alevel");
-  console.log("[pg] 保持运行中… 按 Ctrl+C 停止");
+  const child = spawn(process.execPath, ["scripts/pg-server.mjs"], {
+    cwd: `${drive}:\\`,
+    stdio: "inherit",
+    windowsHide: true,
+  });
+  let cleaned = false;
+  const cleanup = () => {
+    if (cleaned || !createdMapping) return;
+    cleaned = true;
+    try {
+      execFileSync("subst", [`${drive}:`, "/D"], { stdio: "ignore" });
+    } catch {
+      // A later launch can safely reuse or replace the mapping.
+    }
+  };
+  const stop = (signal) => {
+    if (!child.killed) child.kill(signal);
+  };
+  process.on("SIGINT", () => stop("SIGINT"));
+  process.on("SIGTERM", () => stop("SIGTERM"));
+  child.once("error", (error) => {
+    cleanup();
+    console.error("[pg] failed to launch through an ASCII drive", error);
+    process.exit(1);
+  });
+  child.once("exit", (code) => {
+    cleanup();
+    process.exit(code ?? 1);
+  });
 }
-
-async function shutdown() {
-  console.log("\n[pg] 正在停止…");
-  try { await pg.stop(); } catch {}
-  process.exit(0);
-}
-process.on("SIGINT", shutdown);
-process.on("SIGTERM", shutdown);
-
-main().catch((e) => {
-  console.error("[pg] 启动失败：", e);
-  process.exit(1);
-});
