@@ -1,4 +1,5 @@
-import { mkdir, readFile, rename, rm } from "node:fs/promises";
+import { mkdir, readFile, readdir, rename, rm } from "node:fs/promises";
+import { tmpdir } from "node:os";
 import path from "node:path";
 import { spawn } from "node:child_process";
 import { decryptFile, sha256 } from "./backup-crypto.mjs";
@@ -49,7 +50,7 @@ if (
   throw new Error("Backup manifest contains an invalid storage root");
 }
 
-const temporary = path.join(path.dirname(storagePath), `.restore-${Date.now()}-${process.pid}`);
+const temporary = path.join(tmpdir(), `qiaoshen-restore-${Date.now()}-${process.pid}`);
 await mkdir(temporary, { recursive: false });
 try {
   const databaseDump = path.join(temporary, "database.dump");
@@ -62,23 +63,39 @@ try {
     console.log(`[restore] verification passed for ${backupPath}`);
   } else {
     await run("pg_restore", ["--clean", "--if-exists", "--no-owner", "--exit-on-error", "--dbname", databaseUrl, databaseDump]);
-    const previousStorage = `${storagePath}.pre-restore-${Date.now()}`;
-    let movedExisting = false;
+    await mkdir(storagePath, { recursive: true });
+    const transactionName = `.restore-${Date.now()}-${process.pid}`;
+    const transactionPath = path.join(storagePath, transactionName);
+    const previousStorage = path.join(transactionPath, "previous");
+    const extractionPath = path.join(transactionPath, "extracted");
+    const restoredEntries = [];
+    await mkdir(previousStorage, { recursive: true });
+    await mkdir(extractionPath, { recursive: false });
     try {
-      await rename(storagePath, previousStorage);
-      movedExisting = true;
-    } catch (error) {
-      if (error?.code !== "ENOENT") throw error;
-    }
-    try {
-      const extractionPath = path.join(temporary, "storage-extracted");
-      await mkdir(extractionPath, { recursive: false });
       await run("tar", ["-xzf", storageArchive, "-C", extractionPath]);
-      await rename(path.join(extractionPath, storageRootName), storagePath);
-      if (movedExisting) await rm(previousStorage, { recursive: true, force: true });
+      const currentEntries = (await readdir(storagePath, { withFileTypes: true }))
+        .filter((entry) => entry.name !== transactionName);
+      for (const entry of currentEntries) {
+        await rename(path.join(storagePath, entry.name), path.join(previousStorage, entry.name));
+      }
+      const extractedStorage = path.join(extractionPath, storageRootName);
+      for (const entry of await readdir(extractedStorage, { withFileTypes: true })) {
+        await rename(path.join(extractedStorage, entry.name), path.join(storagePath, entry.name));
+        restoredEntries.push(entry.name);
+      }
+      await rm(transactionPath, { recursive: true, force: true });
     } catch (error) {
-      await rm(storagePath, { recursive: true, force: true });
-      if (movedExisting) await rename(previousStorage, storagePath);
+      for (const entry of restoredEntries) {
+        await rm(path.join(storagePath, entry), { recursive: true, force: true });
+      }
+      try {
+        for (const entry of await readdir(previousStorage, { withFileTypes: true })) {
+          await rename(path.join(previousStorage, entry.name), path.join(storagePath, entry.name));
+        }
+      } catch (rollbackError) {
+        if (rollbackError?.code !== "ENOENT") throw new AggregateError([error, rollbackError], "Storage restore and rollback both failed");
+      }
+      await rm(transactionPath, { recursive: true, force: true });
       throw error;
     }
     console.log(`[restore] completed from ${backupPath}`);

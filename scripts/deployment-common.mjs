@@ -17,6 +17,7 @@ export function parseArgs(argv) {
   ]);
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
+    if (token === "--") continue;
     if (!token.startsWith("--")) throw new Error(`Unexpected argument: ${token}`);
     const key = token.slice(2);
     if (["confirm", "skip-backup", "no-build", "skip-e2e"].includes(key)) {

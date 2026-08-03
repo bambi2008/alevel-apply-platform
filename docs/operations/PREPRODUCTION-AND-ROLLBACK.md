@@ -3,7 +3,7 @@
 ## 前置条件
 
 - Docker Engine 或 Docker Desktop，且包含 Compose v2。
-- Node.js 20、pnpm 11.9。
+- Node.js 22.13+、pnpm 11.9。
 - 至少预留约 8 GB 磁盘空间用于镜像、隔离数据库和备份。
 
 ## 安全边界
@@ -101,7 +101,7 @@ docker compose --env-file .env.production -f compose.production.yml \
 ```bash
 docker compose --env-file .env.production -f compose.production.yml stop app backup
 docker compose --env-file .env.production -f compose.production.yml \
-  run --rm backup node scripts/restore-production.mjs /backups/BACKUP_ID --confirm
+  run --rm app node scripts/restore-production.mjs /backups/BACKUP_ID --confirm
 docker compose --env-file .env.production -f compose.production.yml up -d
 ```
 

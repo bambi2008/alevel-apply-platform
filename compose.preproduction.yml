@@ -4,6 +4,9 @@ services:
   postgres:
     ports:
       - "127.0.0.1:${PREPRODUCTION_DB_PORT:-5434}:5432"
+    networks:
+      - backend
+      - diagnostics
 
   app:
     ports:
@@ -47,3 +50,6 @@ volumes:
     name: qiaoshen_preproduction_postgres
   app_storage:
     name: qiaoshen_preproduction_storage
+
+networks:
+  diagnostics:

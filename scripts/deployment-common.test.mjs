@@ -16,6 +16,7 @@ import {
 describe("deployment argument parsing", () => {
   it("supports repeated compose files and explicit safety flags", () => {
     expect(parseArgs([
+      "--",
       "--release",
       "abc123",
       "--compose-file",
