@@ -15,5 +15,5 @@ export function HkInterviewSimulator({
 }) {
   const flow = HK_INTERVIEW_FLOWS.find((item) => item.subjectId === subjectId);
   if (!flow) return null;
-  return <TimedAssessmentSimulator flow={flow} subjectName={subjectName} questions={questions} />;
+  return <TimedAssessmentSimulator flow={flow} subjectName={subjectName} questions={questions} showThinkingChecklist={subjectId === "hk-stem"} />;
 }

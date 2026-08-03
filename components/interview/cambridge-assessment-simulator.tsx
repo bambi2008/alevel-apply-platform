@@ -7,6 +7,7 @@ import {
   CAMBRIDGE_ASSESSMENT_FLOWS,
   type TimedAssessmentFlow,
 } from "@/lib/interview/cambridge-assessment-flows";
+import { InterviewThinkingChecklist } from "./interview-thinking-checklist";
 
 type Phase = "intro" | "preparation" | "response" | "result";
 
@@ -39,10 +40,12 @@ export function TimedAssessmentSimulator({
   flow,
   subjectName,
   questions,
+  showThinkingChecklist = false,
 }: {
   flow: TimedAssessmentFlow;
   subjectName: string;
   questions: InterviewQuestion[];
+  showThinkingChecklist?: boolean;
 }) {
   const subjectId = flow.subjectId;
   const storageKey = `alevel:timed-assessment:${subjectId}:v1`;
@@ -251,6 +254,7 @@ export function TimedAssessmentSimulator({
         </div>
       </header>
       <div className="p-4 sm:p-6">
+        {showThinkingChecklist && <InterviewThinkingChecklist emphasis={["model", "method", "calculation", "check", "adapt"]} />}
         <p className="text-lg font-semibold leading-relaxed text-[var(--ink)]">{current.question.prompt}</p>
         <div className="mt-3 flex flex-wrap gap-2">
           {current.question.assessedSkills?.map((skill) => <span key={skill} className="badge badge-neutral">{skill}</span>)}
@@ -300,5 +304,5 @@ export function CambridgeAssessmentSimulator({
 }) {
   const flow = CAMBRIDGE_ASSESSMENT_FLOWS.find((item) => item.subjectId === subjectId);
   if (!flow) return null;
-  return <TimedAssessmentSimulator flow={flow} subjectName={subjectName} questions={questions} />;
+  return <TimedAssessmentSimulator flow={flow} subjectName={subjectName} questions={questions} showThinkingChecklist={subjectId === "cambridge-source"} />;
 }

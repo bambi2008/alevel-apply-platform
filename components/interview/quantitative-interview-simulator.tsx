@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, Check, ChevronRight, Clock3, RotateCcw, Sparkles } from "lucide-react";
 import type { QuantitativeInterviewDrill } from "@/lib/interview/quantitative-interview";
 import { scoreQuantitativeResponse } from "@/lib/interview/quantitative-interview";
+import { InterviewThinkingChecklist } from "./interview-thinking-checklist";
 
 type Phase = "intro" | "main" | "follow-up" | "result";
 type Attempt = { id: string; drillId: string; completedAt: string; score: number; max: number };
@@ -212,6 +213,7 @@ export function QuantitativeInterviewSimulator({
       </header>
       <div className="h-1 bg-[var(--surface)]"><div className="h-full bg-[var(--indigo)] transition-all" style={{ width: `${Math.max(0, (secondsLeft / (isMain ? drill.timeLimitSec : drill.followUpSec)) * 100)}%` }} /></div>
       <div className="space-y-5 p-4 sm:p-6">
+        <InterviewThinkingChecklist emphasis={isMain ? ["model", "method", "calculation", "check"] : ["adapt"]} />
         <div><p className="text-xs font-semibold text-[var(--ink-faint)]">{drill.title}</p><p className="mt-2 text-sm leading-relaxed text-[var(--ink-soft)]">{drill.setup}</p><p className="mt-3 text-lg font-semibold leading-relaxed text-[var(--ink)]">{isMain ? drill.prompt : drill.followUp}</p></div>
         <div className="grid gap-2 sm:grid-cols-4">{["先建模", "计算链", "单位与量纲", "量级复核"].map((label, index) => <div key={label} className={`border-l-2 pl-2 text-xs ${index === 0 && isMain ? "border-[var(--indigo)] text-[var(--ink)]" : "border-[var(--border)] text-[var(--ink-faint)]"}`}>{label}</div>)}</div>
         <label className="block"><span className="mb-2 block text-sm font-medium text-[var(--ink)]">{isMain ? "把你的思路打出来" : "回答追问，并说明哪一个假设被改变"}</span><textarea autoFocus value={isMain ? response : followUpResponse} onChange={(event) => isMain ? setResponse(event.target.value) : setFollowUpResponse(event.target.value)} className="input min-h-56 w-full resize-y" placeholder="写出假设、关系式、单位、估算和检查。面试训练看过程，不只看最后一个数字。" /></label>

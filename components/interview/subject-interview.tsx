@@ -6,7 +6,10 @@ import { IeltsSpeakingSimulator } from "./ielts-speaking-simulator";
 import { CambridgeAssessmentSimulator } from "./cambridge-assessment-simulator";
 import { HkInterviewSimulator } from "./hk-interview-simulator";
 import { QuantitativeInterviewSimulator } from "./quantitative-interview-simulator";
+import { QuantitativeInterviewPaperSimulator } from "./quantitative-interview-paper-simulator";
+import { InterviewThinkingChecklist } from "./interview-thinking-checklist";
 import { getQuantitativeDrills, isQuantitativeInterviewSubject } from "@/lib/interview/quantitative-interview";
+import { getQuantitativeInterviewPapers } from "@/lib/interview/quantitative-interview-papers";
 
 type Msg = { role: "interviewer" | "student"; content: string };
 
@@ -19,9 +22,10 @@ export function SubjectInterview({
   subjectName: string;
   questions: InterviewQuestion[];
 }) {
-  const [tab, setTab] = useState<"bank" | "mock" | "quantitative">("bank");
+  const [tab, setTab] = useState<"bank" | "mock" | "quantitative" | "paper">("bank");
   const [openId, setOpenId] = useState<string | null>(null);
   const quantitativeDrills = getQuantitativeDrills(subjectId);
+  const quantitativePapers = getQuantitativeInterviewPapers(subjectId);
 
   return (
     <div>
@@ -54,9 +58,20 @@ export function SubjectInterview({
             高压计算面试
           </button>
         )}
+        {quantitativePapers.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setTab("paper")}
+            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === "paper" ? "bg-white shadow-[var(--shadow-sm)] text-[var(--ink)]" : "text-[var(--ink-soft)]"}`}
+          >
+            固定套卷
+          </button>
+        )}
       </div>
 
-      {tab === "quantitative" ? (
+      {tab === "paper" ? (
+        <QuantitativeInterviewPaperSimulator subjectName={subjectName} papers={quantitativePapers} />
+      ) : tab === "quantitative" ? (
         <QuantitativeInterviewSimulator subjectName={subjectName} drills={quantitativeDrills} />
       ) : tab === "bank" ? (
         <div className="space-y-4">
@@ -69,7 +84,8 @@ export function SubjectInterview({
                     {i + 1}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="font-medium text-[var(--ink)] leading-relaxed">{q.prompt}</p>
+                    {isQuantitativeInterviewSubject(subjectId) && <InterviewThinkingChecklist emphasis={["model", "method", "calculation", "check", "adapt"]} />}
+                    <p className="mt-4 font-medium text-[var(--ink)] leading-relaxed">{q.prompt}</p>
                     {(q.format || q.timebox || q.assessedSkills?.length) && (
                       <div className="mt-2 flex flex-wrap gap-1.5 text-[11px]">
                         {q.format && <span className="badge badge-neutral">{q.format}</span>}
@@ -118,7 +134,7 @@ export function SubjectInterview({
             ? <CambridgeAssessmentSimulator subjectId={subjectId} subjectName={subjectName} questions={questions} />
             : subjectId.startsWith("hk-")
               ? <HkInterviewSimulator subjectId={subjectId} subjectName={subjectName} questions={questions} />
-          : <MockInterview subjectName={subjectName} seedQuestions={questions} />
+          : <MockInterview subjectName={subjectName} seedQuestions={questions} showThinkingChecklist={isQuantitativeInterviewSubject(subjectId)} />
       )}
     </div>
   );
@@ -127,9 +143,11 @@ export function SubjectInterview({
 function MockInterview({
   subjectName,
   seedQuestions,
+  showThinkingChecklist,
 }: {
   subjectName: string;
   seedQuestions: InterviewQuestion[];
+  showThinkingChecklist: boolean;
 }) {
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
@@ -235,6 +253,7 @@ function MockInterview({
           AI 会像牛剑面试官一样，抛给你一个陌生问题，并顺着你的回答不断追问。
           目标是练习「把思路说出来 + 被追问时如何推进」。想不出来也没关系，试着出声地想。
         </p>
+        {showThinkingChecklist && <div className="mx-auto mb-5 max-w-3xl text-left"><InterviewThinkingChecklist emphasis={["model", "method", "calculation", "check", "adapt"]} /></div>}
         <div className="flex items-center justify-center gap-3 flex-wrap">
           <button type="button" onClick={() => start(true)} className="btn btn-primary">
             从题库出题开始
@@ -261,6 +280,7 @@ function MockInterview({
           <span className="ml-2 text-xs text-[var(--ink-faint)]">核心问题 {currentQ} / 3（真实一场约 25-30 分钟）</span>
         </div>
       </div>
+      {showThinkingChecklist && <div className="mb-4"><InterviewThinkingChecklist compact emphasis={["model", "method", "calculation", "check", "adapt"]} /></div>}
       <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-1">
         {msgs.map((m, i) => (
           <div key={i} className={`flex ${m.role === "student" ? "justify-end" : "justify-start"}`}>
