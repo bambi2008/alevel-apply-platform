@@ -36,6 +36,7 @@ await withDeploymentLock(stateDir, async () => {
     ...fileEnvironment,
     APP_IMAGE: state.current.image,
     APP_ENV_FILE: envFile,
+    APP_RELEASE: state.current.release,
   };
   const targetImageId = await run(
     "docker",
@@ -56,7 +57,7 @@ await withDeploymentLock(stateDir, async () => {
     );
   }
 
-  const targetEnv = { ...currentEnv, APP_IMAGE: target.image };
+  const targetEnv = { ...currentEnv, APP_IMAGE: target.image, APP_RELEASE: target.release };
   console.log(`[rollback] switching application from ${state.current.image} to ${target.image}`);
   await run("docker", [...composeArgs, "up", "-d", "--no-build"], { env: targetEnv });
   await waitForServiceHealth(composeArgs, targetEnv, healthTimeout);

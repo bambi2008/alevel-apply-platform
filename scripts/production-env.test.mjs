@@ -16,6 +16,7 @@ const valid = {
   RESEND_API_KEY: "re_test_key",
   EMAIL_FROM: "QiaoShen <account@example.com>",
   NEXT_PUBLIC_PHONE_AUTH_ENABLED: "false",
+  OPERATIONS_ALERT_WEBHOOK_URL: "https://alerts.example.com/qiaoshen",
 };
 
 describe("production environment validation", () => {
@@ -55,5 +56,13 @@ describe("production environment validation", () => {
       "EMAIL_DRIVER must be resend so password recovery works in production",
       "Phone authentication must remain disabled until a production SMS adapter is implemented",
     ]));
+  });
+
+  it("rejects an insecure operations webhook", () => {
+    const result = validateProductionEnv({
+      ...valid,
+      OPERATIONS_ALERT_WEBHOOK_URL: "http://alerts.example.com/qiaoshen",
+    });
+    expect(result.errors).toContain("OPERATIONS_ALERT_WEBHOOK_URL must use https");
   });
 });

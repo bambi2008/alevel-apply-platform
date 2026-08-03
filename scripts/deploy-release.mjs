@@ -38,6 +38,7 @@ await withDeploymentLock(stateDir, async () => {
     ...fileEnvironment,
     APP_IMAGE: image,
     APP_ENV_FILE: envFile,
+    APP_RELEASE: release,
   };
 
   console.log(`[deploy] validating compose configuration for ${release}`);
@@ -100,7 +101,7 @@ await withDeploymentLock(stateDir, async () => {
   } catch (error) {
     if (!previousImage) throw error;
     console.error(`[deploy] release unhealthy; automatically returning to ${previousImage}`);
-    const rollbackEnv = { ...releaseEnv, APP_IMAGE: previousImage };
+    const rollbackEnv = { ...releaseEnv, APP_IMAGE: previousImage, APP_RELEASE: state.current?.release ?? "rollback" };
     await run("docker", [...composeArgs, "up", "-d", "--no-build"], { env: rollbackEnv });
     await waitForServiceHealth(composeArgs, rollbackEnv, healthTimeout);
     throw new AggregateError([error], `Release ${release} failed and application image was rolled back`);

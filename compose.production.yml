@@ -26,6 +26,8 @@ services:
     restart: unless-stopped
     env_file:
       - ${APP_ENV_FILE:-.env.production}
+    environment:
+      APP_RELEASE: ${APP_RELEASE:-unknown}
     depends_on:
       postgres:
         condition: service_healthy

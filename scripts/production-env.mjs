@@ -103,7 +103,19 @@ export function validateProductionEnv(env = process.env) {
   if (env.AI_ENABLED === "true" && env.AI_REQUIRES_CROSS_BORDER_CONSENT === "false") {
     warnings.push("AI processing consent enforcement is explicitly disabled");
   }
-  if (!env.SENTRY_DSN) warnings.push("SENTRY_DSN is not configured; external error alerting is disabled");
+  if (env.OPERATIONS_ALERT_WEBHOOK_URL) {
+    try {
+      const webhook = new URL(env.OPERATIONS_ALERT_WEBHOOK_URL);
+      if (webhook.protocol !== "https:" && env.ALLOW_HTTP_PRODUCTION !== "true") {
+        errors.push("OPERATIONS_ALERT_WEBHOOK_URL must use https");
+      }
+    } catch {
+      errors.push("OPERATIONS_ALERT_WEBHOOK_URL must be a valid absolute URL");
+    }
+  }
+  if (!env.SENTRY_DSN && !env.OPERATIONS_ALERT_WEBHOOK_URL) {
+    warnings.push("Neither SENTRY_DSN nor OPERATIONS_ALERT_WEBHOOK_URL is configured; external error alerting is disabled");
+  }
   if (env.REQUIRE_BACKUPS === "false") warnings.push("Backups are explicitly disabled");
 
   return { errors, warnings };

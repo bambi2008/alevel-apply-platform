@@ -33,7 +33,8 @@
     "restore:production": "node scripts/restore-production.mjs",
     "deploy:production": "node scripts/deploy-release.mjs",
     "rollback:production": "node scripts/rollback-release.mjs",
-    "drill:preproduction": "node scripts/preproduction-drill.mjs"
+    "drill:preproduction": "node scripts/preproduction-drill.mjs",
+    "monitor:production": "node scripts/monitor-production.mjs"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
