@@ -5,6 +5,8 @@ import type { InterviewQuestion } from "@/lib/interview/questions";
 import { IeltsSpeakingSimulator } from "./ielts-speaking-simulator";
 import { CambridgeAssessmentSimulator } from "./cambridge-assessment-simulator";
 import { HkInterviewSimulator } from "./hk-interview-simulator";
+import { QuantitativeInterviewSimulator } from "./quantitative-interview-simulator";
+import { getQuantitativeDrills, isQuantitativeInterviewSubject } from "@/lib/interview/quantitative-interview";
 
 type Msg = { role: "interviewer" | "student"; content: string };
 
@@ -17,8 +19,9 @@ export function SubjectInterview({
   subjectName: string;
   questions: InterviewQuestion[];
 }) {
-  const [tab, setTab] = useState<"bank" | "mock">("bank");
+  const [tab, setTab] = useState<"bank" | "mock" | "quantitative">("bank");
   const [openId, setOpenId] = useState<string | null>(null);
+  const quantitativeDrills = getQuantitativeDrills(subjectId);
 
   return (
     <div>
@@ -42,9 +45,20 @@ export function SubjectInterview({
               ? "固定 assessment"
               : "AI 模拟面试"}
         </button>
+        {isQuantitativeInterviewSubject(subjectId) && quantitativeDrills.length > 0 && (
+          <button
+            type="button"
+            onClick={() => setTab("quantitative")}
+            className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === "quantitative" ? "bg-white shadow-[var(--shadow-sm)] text-[var(--ink)]" : "text-[var(--ink-soft)]"}`}
+          >
+            高压计算面试
+          </button>
+        )}
       </div>
 
-      {tab === "bank" ? (
+      {tab === "quantitative" ? (
+        <QuantitativeInterviewSimulator subjectName={subjectName} drills={quantitativeDrills} />
+      ) : tab === "bank" ? (
         <div className="space-y-4">
           {questions.map((q, i) => {
             const open = openId === q.id;
