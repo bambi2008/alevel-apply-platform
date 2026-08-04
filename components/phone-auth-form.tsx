@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useEffect, useState } from "react";
+import { Link } from "@/i18n/navigation";
 import {
   requestPhoneCodeAction,
   phoneLoginAction,
@@ -107,6 +108,15 @@ export function PhoneAuthForm() {
       {state.error && (
         <p className="text-sm text-red-600">验证码错误或已过期，请重新获取</p>
       )}
+
+      <label className="flex items-start gap-2 text-xs leading-5 text-neutral-600">
+        <input name="privacyConsent" type="checkbox" required className="mt-1 accent-blue-600" />
+        <span>我已阅读并同意 <Link href="/privacy" className="text-blue-700 hover:underline">隐私政策</Link></span>
+      </label>
+      <label className="flex items-start gap-2 text-xs leading-5 text-neutral-600">
+        <input name="termsConsent" type="checkbox" required className="mt-1 accent-blue-600" />
+        <span>我已阅读并同意 <Link href="/terms" className="text-blue-700 hover:underline">用户条款</Link></span>
+      </label>
 
       <button
         type="submit"

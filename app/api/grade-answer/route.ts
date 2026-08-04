@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import { createHash } from "node:crypto";
 import { requireAiAccess } from "@/lib/security/ai-route";
+import { db } from "@/lib/db";
 import {
   buildEmptyGradeResponse,
   buildGradeResponse,
@@ -90,7 +92,27 @@ function validRequest(value: unknown): value is GradeRequest {
   );
 }
 
-async function runExaminer(client: OpenAI, system: string, prompt: string) {
+type ExaminerRun = {
+  raw: RawGradePass;
+  outputChars: number;
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+};
+
+function gradingTimeoutMs() {
+  const configured = Number(process.env.AI_GRADING_TIMEOUT_MS ?? 25_000);
+  return Math.min(60_000, Math.max(5_000, Number.isFinite(configured) ? configured : 25_000));
+}
+
+function estimatedCostMicros(promptTokens: number, completionTokens: number) {
+  const inputRate = Number(process.env.DEEPSEEK_INPUT_USD_PER_M_TOKENS);
+  const outputRate = Number(process.env.DEEPSEEK_OUTPUT_USD_PER_M_TOKENS);
+  if (!Number.isFinite(inputRate) || !Number.isFinite(outputRate)) return null;
+  return Math.round(promptTokens * inputRate + completionTokens * outputRate);
+}
+
+async function runExaminer(client: OpenAI, system: string, prompt: string): Promise<ExaminerRun> {
   const completion = await client.chat.completions.create({
     model: "deepseek-chat",
     max_tokens: 2600,
@@ -100,10 +122,16 @@ async function runExaminer(client: OpenAI, system: string, prompt: string) {
       { role: "system", content: system },
       { role: "user", content: prompt },
     ],
-  });
+  }, { signal: AbortSignal.timeout(gradingTimeoutMs()) });
   const raw = completion.choices[0]?.message?.content?.trim() ?? "";
   const json = raw.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
-  return JSON.parse(json) as RawGradePass;
+  return {
+    raw: JSON.parse(json) as RawGradePass,
+    outputChars: raw.length,
+    promptTokens: completion.usage?.prompt_tokens ?? 0,
+    completionTokens: completion.usage?.completion_tokens ?? 0,
+    totalTokens: completion.usage?.total_tokens ?? 0,
+  };
 }
 
 export async function POST(req: NextRequest) {
@@ -130,20 +158,46 @@ export async function POST(req: NextRequest) {
     apiKey: process.env.DEEPSEEK_API_KEY,
     baseURL: "https://api.deepseek.com",
   });
+  const requestJson = JSON.stringify(request);
+  const evaluation = await db.aiEvaluation.create({
+    data: {
+      userId: access.userId,
+      route: "/api/grade-answer",
+      purpose: request.responseKind === "essay" ? "essay-grading" : "written-grading",
+      provider: "deepseek",
+      model: "deepseek-chat",
+      requestHash: createHash("sha256").update(requestJson).digest("hex"),
+      inputChars: requestJson.length,
+    },
+    select: { id: true, createdAt: true },
+  });
   const system = request.responseKind === "essay" ? ESSAY_SYSTEM : STRUCTURED_SYSTEM;
   const attempts = await Promise.allSettled([
     runExaminer(client, system, gradingPrompt(request, "Act as independent examiner A. Apply the scheme directly.")),
     runExaminer(client, system, gradingPrompt(request, "Act as independent examiner B. Be especially alert to unsupported jumps and valid alternative methods.")),
   ]);
-  const passes: GradePass[] = attempts.flatMap((attempt) =>
-    attempt.status === "fulfilled" ? [normalizeGradePass(request, attempt.value)] : []
+  const successfulRuns = attempts.flatMap((attempt) => attempt.status === "fulfilled" ? [attempt.value] : []);
+  const passes: GradePass[] = successfulRuns.map((run) =>
+    normalizeGradePass(request, run.raw)
   );
   if (passes.length === 0) {
     console.error("Both grading passes failed", attempts);
+    const timedOut = attempts.some((attempt) => attempt.status === "rejected" && (
+      attempt.reason?.name === "TimeoutError" || attempt.reason?.name === "AbortError"
+    ));
+    await db.aiEvaluation.update({
+      where: { id: evaluation.id },
+      data: {
+        status: timedOut ? "TIMED_OUT" : "FAILED",
+        latencyMs: Date.now() - evaluation.createdAt.getTime(),
+        errorCode: timedOut ? "GRADING_TIMEOUT" : "ALL_PASSES_FAILED",
+      },
+    });
     return NextResponse.json({ error: "Grading failed. Please use the mark scheme for self-assessment." }, { status: 503 });
   }
 
   let adjudicated: GradePass | undefined;
+  let adjudicatorRun: ExaminerRun | undefined;
   if (passes.length > 1 && (request.reviewMode === "adjudicate" || needsAdjudication(request, passes))) {
     try {
       const priorReports = JSON.stringify(passes.map((pass) => ({
@@ -151,17 +205,35 @@ export async function POST(req: NextRequest) {
         perPart: pass.perPart,
         dimensions: pass.dimensions,
       })));
-      const raw = await runExaminer(
+      adjudicatorRun = await runExaminer(
         client,
         ADJUDICATOR_SYSTEM,
         `${gradingPrompt(request, "Act as the senior adjudicator.")}\n\nPrior independent reports:\n${priorReports}`,
       );
-      adjudicated = normalizeGradePass(request, raw);
+      adjudicated = normalizeGradePass(request, adjudicatorRun.raw);
     } catch (error) {
       console.error("Grading adjudication failed", error);
     }
   }
 
   const response: GradeResponse = buildGradeResponse(request, passes, adjudicated);
+  const runs = adjudicatorRun ? [...successfulRuns, adjudicatorRun] : successfulRuns;
+  const promptTokens = runs.reduce((sum, run) => sum + run.promptTokens, 0);
+  const completionTokens = runs.reduce((sum, run) => sum + run.completionTokens, 0);
+  await db.aiEvaluation.update({
+    where: { id: evaluation.id },
+    data: {
+      status: "SUCCEEDED",
+      outputChars: runs.reduce((sum, run) => sum + run.outputChars, 0),
+      promptTokens,
+      completionTokens,
+      totalTokens: runs.reduce((sum, run) => sum + run.totalTokens, 0),
+      estimatedCostMicros: estimatedCostMicros(promptTokens, completionTokens),
+      latencyMs: Date.now() - evaluation.createdAt.getTime(),
+      confidence: response.assessment.confidence,
+      agreementRate: response.assessment.agreementRate,
+      scoreDelta: response.assessment.scoreDelta,
+    },
+  });
   return NextResponse.json(response);
 }

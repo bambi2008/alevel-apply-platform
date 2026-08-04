@@ -1,10 +1,9 @@
 "use server";
 
-import { AuthError } from "next-auth";
 import { headers } from "next/headers";
-import { signIn } from "@/auth";
+import { AuthError, signIn } from "@/auth";
 import { getSms } from "@/lib/sms";
-import { clientIp, consumeRateLimit, rateLimitKey } from "@/lib/security/rate-limit";
+import { clientIp, consumePersistentRateLimit, rateLimitKey } from "@/lib/security/rate-limit";
 import {
   generateCode,
   saveCode,
@@ -28,7 +27,7 @@ export async function requestPhoneCodeAction(
   const p = String(phone || "").trim();
   if (!PHONE_RE.test(p)) return { ok: false, error: "INVALID_PHONE" };
   const requestHeaders = await headers();
-  const limit = consumeRateLimit(
+  const limit = await consumePersistentRateLimit(
     rateLimitKey("sms-code", clientIp(requestHeaders), p),
     { limit: 5, windowMs: 60 * 60_000 },
   );
@@ -64,8 +63,10 @@ export async function phoneLoginAction(
 ): Promise<PhoneAuthState> {
   const phone = String(formData.get("phone") ?? "").trim();
   const code = String(formData.get("code") ?? "").trim();
+  const privacyConsent = formData.get("privacyConsent") === "on";
+  const termsConsent = formData.get("termsConsent") === "on";
   try {
-    await signIn("phone", { phone, code, redirectTo: "/profile" });
+    await signIn("phone", { phone, code, privacyConsent, termsConsent, redirectTo: "/profile" });
     return {};
   } catch (e) {
     if (e instanceof AuthError) return { error: "BADCODE" };

@@ -14,6 +14,7 @@ import { buildSessionDiagnosis, diagnoseAnswer, optionReview } from "@/lib/tests
 import { persistExamSession } from "@/lib/tests/persist-session";
 import { useExamReliability } from "@/hooks/use-exam-reliability";
 import { ExamReliabilityStatus } from "@/components/exam-reliability-status";
+import { clearRemoteProgress, loadRemoteProgress, saveRemoteProgress } from "@/lib/learning/client";
 
 type ObjectivePaper = Omit<MockPaper, "modules"> & {
   modules: Array<Omit<MockPaper["modules"][number], "questions"> & { questions: MCQQuestion[] }>;
@@ -44,6 +45,7 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
   const startedAtRef = useRef(0);
   const moduleDeadlineRef = useRef(0);
   const telemetryRef = useRef<QuestionTelemetryTracker>(createQuestionTelemetry());
+  const lastRemoteSaveRef = useRef(0);
   const storageKey = useMemo(() => examProgressKey(paper.id), [paper.id]);
   const currentModule = paper.modules[moduleIndex];
   const currentQuestion = currentModule.questions[questionIndex];
@@ -70,14 +72,23 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
   }, [playedAudioSections]);
 
   useEffect(() => {
-    const restored = parseExamProgress(
+    let cancelled = false;
+    const local = parseExamProgress(
       window.localStorage.getItem(storageKey),
       paper.id,
       paper.modules.map((module) => module.questions.length),
     );
-    if (!restored) return;
-    const timer = window.setTimeout(() => setSavedSession(restored), 0);
-    return () => window.clearTimeout(timer);
+    void loadRemoteProgress<ObjectiveExamProgress>("OBJECTIVE_EXAM", paper.id).then((remoteRaw) => {
+      if (cancelled) return;
+      const remote = parseExamProgress(
+        remoteRaw ? JSON.stringify(remoteRaw) : null,
+        paper.id,
+        paper.modules.map((module) => module.questions.length),
+      );
+      const restored = !local ? remote : !remote ? local : remote.savedAt > local.savedAt ? remote : local;
+      if (restored) setSavedSession(restored);
+    });
+    return () => { cancelled = true; };
   }, [paper.id, paper.modules, storageKey]);
 
   const finish = useCallback(() => {
@@ -85,10 +96,11 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
     setBehavior(telemetryRef.current.snapshot(ids));
     setTimeUsedSec(startedAtRef.current ? Math.max(0, Math.round((Date.now() - startedAtRef.current) / 1000)) : 0);
     window.localStorage.removeItem(storageKey);
+    void clearRemoteProgress("OBJECTIVE_EXAM", paper.id);
     setSavedSession(null);
     setReviewing(false);
     setPhase("results");
-  }, [paper.modules, storageKey]);
+  }, [paper.id, paper.modules, storageKey]);
 
   const submitModule = useCallback(() => {
     if (moduleIndex + 1 >= paper.modules.length) {
@@ -155,7 +167,18 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
       savedAt: Date.now(),
     };
     window.localStorage.setItem(storageKey, JSON.stringify(progress));
-  }, [answers, flagged, moduleIndex, paper.id, phase, questionIndex, storageKey, timeLeft]);
+    if (Date.now() - lastRemoteSaveRef.current >= 10_000) {
+      lastRemoteSaveRef.current = Date.now();
+      void saveRemoteProgress({
+        kind: "OBJECTIVE_EXAM",
+        resourceId: paper.id,
+        payload: progress,
+        startedAt: new Date(progress.startedAt).toISOString(),
+        testId: paper.testId,
+        mode: paper.id.toLowerCase().includes("diagnostic") ? "diagnostic" : "paper",
+      });
+    }
+  }, [answers, flagged, moduleIndex, paper.id, paper.testId, phase, questionIndex, storageKey, timeLeft]);
 
   useEffect(() => {
     if (phase === "running" && !reviewing) telemetryRef.current.visit(currentQuestion.id);
@@ -198,6 +221,7 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
 
   const begin = () => {
     window.localStorage.removeItem(storageKey);
+    void clearRemoteProgress("OBJECTIVE_EXAM", paper.id);
     setAnswers({});
     setFlagged({});
     setModuleIndex(0);
@@ -231,6 +255,7 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
 
   const discardSaved = () => {
     window.localStorage.removeItem(storageKey);
+    void clearRemoteProgress("OBJECTIVE_EXAM", paper.id);
     setSavedSession(null);
   };
 

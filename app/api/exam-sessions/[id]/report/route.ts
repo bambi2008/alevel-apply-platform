@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { getQuestionById, getTopicMeta } from "@/lib/tests/lookup";
+import { getPublishedQuestionsByIds } from "@/lib/tests/published-server";
 import { getMockPaper } from "@/lib/tests/mock-papers";
 import {
   buildExamPerformanceReport,
@@ -115,10 +116,15 @@ export async function GET(
     completedAt: current.completedAt,
     answers,
   };
-  const questions = answers.flatMap((answer) => {
+  const staticQuestions = answers.flatMap((answer) => {
     const question = getQuestionById(answer.questionId);
     return question ? [question] : [];
   });
+  const staticIds = new Set(staticQuestions.map((question) => question.id));
+  const publishedQuestions = await getPublishedQuestionsByIds(
+    answers.filter((answer) => !staticIds.has(answer.questionId)).map((answer) => answer.questionId),
+  );
+  const questions = [...staticQuestions, ...publishedQuestions];
   const paper = current.paperId ? getMockPaper(current.paperId) : undefined;
   const modules: ReportModuleDefinition[] | undefined = paper?.modules.map((module) => ({
     id: module.id,
@@ -149,6 +155,7 @@ export async function GET(
       createdAt: current.createdAt,
       answers,
     },
+    questions,
     report,
   });
 }

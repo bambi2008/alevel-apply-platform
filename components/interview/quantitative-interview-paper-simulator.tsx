@@ -6,6 +6,7 @@ import { scoreQuantitativeResponse } from "@/lib/interview/quantitative-intervie
 import { INTERVIEW_PROCESS_SKILLS } from "@/lib/interview/quantitative-interview-review";
 import type { QuantitativeInterviewPaper } from "@/lib/interview/quantitative-interview-papers";
 import { InterviewThinkingChecklist } from "./interview-thinking-checklist";
+import { clearRemoteProgress, loadLearningRecords, saveLearningRecord, saveRemoteProgress } from "@/lib/learning/client";
 
 type Phase = "intro" | "main" | "follow-up" | "result";
 type Answer = { response: string; followUpResponse: string };
@@ -61,7 +62,30 @@ export function QuantitativeInterviewPaperSimulator({
     return { taskResults, skillTotals, total, max, weakest, weakestTaskIndex: weakestTaskIndex < 0 ? 0 : weakestTaskIndex };
   }, [answers, paper]);
 
-  useEffect(() => setAttempts(readAttempts(storageKey)), [storageKey]);
+  useEffect(() => {
+    const local = readAttempts(storageKey);
+    setAttempts(local);
+    void loadLearningRecords<{
+      resourceId: string;
+      score: number | null;
+      maxScore: number | null;
+      weakestSkillId?: Attempt["weakestSkillId"] | null;
+      attemptKey: string;
+      completedAt: string;
+    }>("INTERVIEW_PAPER", subjectName).then((records) => {
+      const remote = records.map((record): Attempt => ({
+        id: record.attemptKey,
+        paperId: record.resourceId,
+        completedAt: record.completedAt,
+        total: record.score ?? 0,
+        max: record.maxScore ?? 0,
+        weakestSkillId: record.weakestSkillId ?? undefined,
+      }));
+      const merged = [...remote, ...local].filter((attempt, index, all) => all.findIndex((item) => item.id === attempt.id) === index).slice(0, 9);
+      setAttempts(merged);
+      window.localStorage.setItem(storageKey, JSON.stringify(merged));
+    });
+  }, [storageKey, subjectName]);
 
   useEffect(() => {
     if ((phase !== "main" && phase !== "follow-up") || secondsLeft <= 0) return;
@@ -90,6 +114,13 @@ export function QuantitativeInterviewPaperSimulator({
     setFollowUpResponse("");
     setPhase("main");
     setSecondsLeft(papers[index].tasks[initialTaskIndex].timeLimitSec);
+    void saveRemoteProgress({
+      kind: "INTERVIEW_PAPER",
+      resourceId: papers[index].id,
+      payload: { subjectName, phase: "main", taskIndex: initialTaskIndex },
+      startedAt: new Date().toISOString(),
+      mode: "interview",
+    });
   }
 
   function submitMain() {
@@ -118,9 +149,23 @@ export function QuantitativeInterviewPaperSimulator({
     const total = completedResults.reduce((sum, item) => sum + item.total, 0);
     const max = completedResults.reduce((sum, item) => sum + item.max, 0);
     const completedReview = completedResults.reduce((weakest, current, index) => current.review.weakest.passed ? weakest : weakest ?? { skillId: current.review.weakest.id, taskIndex: index }, null as { skillId: (typeof INTERVIEW_PROCESS_SKILLS)[number]["id"]; taskIndex: number } | null);
-    const nextAttempts = [{ id: `${paper.id}-${Date.now()}`, paperId: paper.id, completedAt: new Date().toISOString(), total, max, weakestSkillId: completedReview?.skillId }, ...attempts].slice(0, 9);
+    const completedAt = new Date().toISOString();
+    const attemptId = `${paper.id}-${Date.now()}`;
+    const nextAttempts = [{ id: attemptId, paperId: paper.id, completedAt, total, max, weakestSkillId: completedReview?.skillId }, ...attempts].slice(0, 9);
     setAttempts(nextAttempts);
     window.localStorage.setItem(storageKey, JSON.stringify(nextAttempts));
+    void clearRemoteProgress("INTERVIEW_PAPER", paper.id);
+    void saveLearningRecord({
+      kind: "INTERVIEW_PAPER",
+      resourceId: paper.id,
+      subject: subjectName,
+      score: total,
+      maxScore: max,
+      weakestSkillId: completedReview?.skillId,
+      attemptKey: attemptId,
+      completedAt,
+      payload: { answers: nextAnswers },
+    });
     setPhase("result");
     setSecondsLeft(0);
   }

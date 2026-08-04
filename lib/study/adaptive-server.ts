@@ -2,23 +2,27 @@ import { db } from "@/lib/db";
 import { buildAdaptiveProfile, type AdaptiveAnswerObservation } from "@/lib/tests/adaptive";
 import { getTestById } from "@/lib/tests";
 import { getPracticeQuestionsForTest, getQuestionById } from "@/lib/tests/lookup";
+import { getPublishedQuestionsForTest } from "@/lib/tests/published-server";
 
 export async function loadStudentAdaptiveData(studentId: string, testId: string) {
   const test = getTestById(testId);
   if (!test?.hasQuestionBank) return null;
 
-  const sessions = await db.examSession.findMany({
+  const [sessions, publishedQuestions] = await Promise.all([db.examSession.findMany({
     where: { studentId, testId },
     orderBy: { completedAt: "asc" },
     select: {
       completedAt: true,
       answers: { select: { questionId: true, earned: true, max: true, timeSpentSec: true } },
     },
-  });
+  }), getPublishedQuestionsForTest(testId)]);
+  const allQuestions = new Map(
+    [...getPracticeQuestionsForTest(testId), ...publishedQuestions].map((question) => [question.id, question]),
+  );
   const observations: AdaptiveAnswerObservation[] = [];
   for (const session of sessions) {
     for (const answer of session.answers) {
-      const question = getQuestionById(answer.questionId);
+      const question = allQuestions.get(answer.questionId) ?? getQuestionById(answer.questionId);
       if (!question || question.testId !== testId) continue;
       observations.push({
         questionId: answer.questionId,
@@ -32,7 +36,7 @@ export async function loadStudentAdaptiveData(studentId: string, testId: string)
     }
   }
 
-  const practiceQuestions = getPracticeQuestionsForTest(testId);
+  const practiceQuestions = [...allQuestions.values()];
   const practiceQuestionIds = new Set(practiceQuestions.map((question) => question.id));
   const profile = buildAdaptiveProfile({ testId, topics: test.topics, answers: observations });
   profile.reviewSchedule = profile.reviewSchedule.filter((review) => practiceQuestionIds.has(review.questionId));

@@ -1,12 +1,11 @@
 "use server";
 
 import bcrypt from "bcryptjs";
-import { AuthError } from "next-auth";
 import { z } from "zod";
 import { headers } from "next/headers";
 import { db } from "@/lib/db";
-import { signIn, signOut } from "@/auth";
-import { clientIp, consumeRateLimit, rateLimitKey } from "@/lib/security/rate-limit";
+import { AuthError, signIn, signOut } from "@/auth";
+import { clientIp, consumePersistentRateLimit, rateLimitKey } from "@/lib/security/rate-limit";
 import {
   isStrongPassword,
   LEGAL_VERSION,
@@ -34,7 +33,7 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
   const parsed = schema.safeParse({ email, password });
   if (!parsed.success) return { error: "INVALID" };
   const requestHeaders = await headers();
-  const limit = consumeRateLimit(
+  const limit = await consumePersistentRateLimit(
     rateLimitKey("registration", clientIp(requestHeaders), email),
     { limit: 5, windowMs: 60 * 60_000 },
   );
@@ -51,8 +50,26 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
   if (guardian) consents.push({ type: "GUARDIAN", version: LEGAL_VERSION });
   if (crossBorderConsent) consents.push({ type: "CROSS_BORDER", version: LEGAL_VERSION });
 
-  await db.user.create({
-    data: { email, passwordHash, role: "STUDENT", consents: { create: consents } },
+  await db.$transaction(async (tx) => {
+    const user = await tx.user.create({
+      data: {
+        email,
+        passwordHash,
+        role: "STUDENT",
+        consents: { create: consents },
+        profile: { create: {} },
+      },
+      select: { id: true, profile: { select: { id: true } } },
+    });
+    if (!user.profile) throw new Error("Student profile was not created");
+    await tx.betaParticipant.create({ data: { studentId: user.profile.id } });
+    await tx.learningEvent.create({
+      data: {
+        studentId: user.profile.id,
+        type: "REGISTERED",
+        eventKey: `registered:${user.id}`,
+      },
+    });
   });
 
   // 注册后自动登录（成功会抛出重定向）

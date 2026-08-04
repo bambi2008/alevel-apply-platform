@@ -6,6 +6,7 @@ import { Prisma } from "@prisma/client";
 import type { UserProfile, GradeKind } from "./store";
 import type { IeltsSubscores } from "./store";
 import type { Region } from "@/lib/data/types";
+import { activeDayEventKey, recordLearningEvent } from "@/lib/beta/events";
 
 async function currentUserId(): Promise<string | null> {
   const session = await auth();
@@ -106,6 +107,32 @@ export async function saveProfileAction(
           ? (p.ieltsSubscores as unknown as Prisma.InputJsonValue)
           : undefined,
       },
+    });
+  }
+
+  const profileComplete = Boolean(
+    p.fullName?.trim()
+    && p.school?.trim()
+    && p.intakeYear
+    && p.targetRegions.length
+    && p.intendedMajors.length
+    && subjects.length,
+  );
+  await db.betaParticipant.upsert({
+    where: { studentId: sp.id },
+    update: profileComplete ? { onboardingCompletedAt: new Date(), lastActiveAt: new Date() } : { lastActiveAt: new Date() },
+    create: { studentId: sp.id, onboardingCompletedAt: profileComplete ? new Date() : null },
+  });
+  await recordLearningEvent({
+    studentId: sp.id,
+    type: "ACTIVE_DAY",
+    eventKey: activeDayEventKey(sp.id),
+  });
+  if (profileComplete) {
+    await recordLearningEvent({
+      studentId: sp.id,
+      type: "PROFILE_COMPLETED",
+      eventKey: `profile-completed:${sp.id}`,
     });
   }
 

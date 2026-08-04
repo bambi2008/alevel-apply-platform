@@ -36,8 +36,38 @@ model User {
   notifications          Notification[]
   notificationPreference NotificationPreference?
   passwordResetTokens    PasswordResetToken[]
+  authSessions           AuthSession[]
+  aiEvaluations          AiEvaluation[]
+  authoredQuestions      QuestionDraftRecord[]   @relation("QuestionDraftAuthor")
+  subjectReviews         QuestionDraftRecord[]   @relation("QuestionDraftSubjectReviewer")
+  teachingReviews        QuestionDraftRecord[]   @relation("QuestionDraftTeachingReviewer")
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
+}
+
+model AuthSession {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash     String    @unique
+  expiresAt     DateTime
+  lastSeenAt    DateTime  @default(now())
+  revokedAt     DateTime?
+  userAgentHash String?
+  ipHash        String?
+  createdAt     DateTime  @default(now())
+
+  @@index([userId, revokedAt, expiresAt])
+  @@index([expiresAt])
+}
+
+model RateLimitBucket {
+  key       String   @id
+  count     Int
+  resetAt   DateTime
+  updatedAt DateTime @updatedAt
+
+  @@index([resetAt])
 }
 
 enum NotificationCategory {
@@ -136,8 +166,124 @@ model StudentProfile {
   shortlistItems  ShortlistItem[]
   examSessions    ExamSession[]
   backgroundItems BackgroundItem[]
+  betaParticipant BetaParticipant?
+  progress        ProgressSnapshot[]
+  learningEvents  LearningEvent[]
+  learningRecords LearningRecord[]
   createdAt       DateTime            @default(now())
   updatedAt       DateTime            @updatedAt
+}
+
+enum BetaParticipantStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  WITHDRAWN
+}
+
+model BetaParticipant {
+  id                    String                @id @default(cuid())
+  studentId             String                @unique
+  student               StudentProfile        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  cohort                String                @default("beta-2026-1")
+  status                BetaParticipantStatus @default(ACTIVE)
+  source                String?
+  onboardingCompletedAt DateTime?
+  lastActiveAt          DateTime              @default(now())
+  notes                 String?
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+
+  @@index([cohort, status])
+  @@index([lastActiveAt])
+}
+
+enum ProgressKind {
+  OBJECTIVE_EXAM
+  WRITTEN_EXAM
+  INTERVIEW_DRILL
+  INTERVIEW_PAPER
+  CAMBRIDGE_ASSESSMENT
+  IELTS_SPEAKING
+}
+
+model ProgressSnapshot {
+  id         String         @id @default(cuid())
+  studentId  String
+  student    StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  kind       ProgressKind
+  resourceId String
+  payload    Json
+  startedAt  DateTime?
+  expiresAt  DateTime
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  @@unique([studentId, kind, resourceId])
+  @@index([studentId, updatedAt])
+  @@index([expiresAt])
+}
+
+enum LearningEventType {
+  REGISTERED
+  PROFILE_COMPLETED
+  DIAGNOSTIC_STARTED
+  DIAGNOSTIC_COMPLETED
+  PRACTICE_STARTED
+  PRACTICE_COMPLETED
+  MOCK_STARTED
+  MOCK_COMPLETED
+  REMEDIATION_STARTED
+  REMEDIATION_COMPLETED
+  INTERVIEW_STARTED
+  INTERVIEW_COMPLETED
+  ACTIVE_DAY
+}
+
+model LearningEvent {
+  id         String            @id @default(cuid())
+  studentId  String
+  student    StudentProfile    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  type       LearningEventType
+  eventKey   String            @unique
+  testId     String?
+  resourceId String?
+  sessionId  String?
+  score      Float?
+  maxScore   Float?
+  metadata   Json?
+  occurredAt DateTime          @default(now())
+  createdAt  DateTime          @default(now())
+
+  @@index([studentId, occurredAt])
+  @@index([type, occurredAt])
+  @@index([testId, type])
+}
+
+enum LearningRecordKind {
+  INTERVIEW_DRILL
+  INTERVIEW_PAPER
+  CAMBRIDGE_ASSESSMENT
+  IELTS_SPEAKING
+}
+
+model LearningRecord {
+  id             String             @id @default(cuid())
+  studentId      String
+  student        StudentProfile     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  kind           LearningRecordKind
+  resourceId     String
+  subject        String?
+  score          Float?
+  maxScore       Float?
+  weakestSkillId String?
+  payload        Json?
+  attemptKey     String             @unique
+  completedAt    DateTime           @default(now())
+  createdAt      DateTime           @default(now())
+
+  @@index([studentId, kind, completedAt])
+  @@index([resourceId, completedAt])
 }
 
 model ShortlistItem {
@@ -716,6 +862,81 @@ model CalibrationDecision {
 
   @@index([questionId, createdAt])
   @@index([testId, status])
+}
+
+enum AiEvaluationStatus {
+  RUNNING
+  SUCCEEDED
+  FAILED
+  TIMED_OUT
+}
+
+model AiEvaluation {
+  id                  String             @id @default(cuid())
+  userId              String
+  user                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  route               String
+  purpose             String
+  provider            String
+  model               String
+  status              AiEvaluationStatus @default(RUNNING)
+  requestHash         String
+  inputChars          Int
+  outputChars         Int                @default(0)
+  promptTokens        Int?
+  completionTokens    Int?
+  totalTokens         Int?
+  estimatedCostMicros Int?
+  latencyMs           Int?
+  confidence          String?
+  agreementRate       Int?
+  scoreDelta          Int?
+  errorCode           String?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([route, status, createdAt])
+  @@index([requestHash, createdAt])
+}
+
+enum QuestionWorkflowStage {
+  DRAFT
+  SUBJECT_REVIEW
+  TEACHING_REVIEW
+  APPROVED
+  RETIRED
+}
+
+model QuestionDraftRecord {
+  id                 String                @id
+  questionId         String
+  testId             String
+  topicId            String
+  version            Int
+  stage              QuestionWorkflowStage @default(DRAFT)
+  contentHash        String
+  payload            Json
+  sourceType         String
+  sourceTitle        String
+  sourceUrl          String?
+  rightsStatus       String
+  authorId           String
+  author             User                  @relation("QuestionDraftAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  subjectReviewerId  String?
+  subjectReviewer    User?                 @relation("QuestionDraftSubjectReviewer", fields: [subjectReviewerId], references: [id], onDelete: SetNull)
+  subjectReviewedAt  DateTime?
+  teachingReviewerId String?
+  teachingReviewer   User?                 @relation("QuestionDraftTeachingReviewer", fields: [teachingReviewerId], references: [id], onDelete: SetNull)
+  teachingReviewedAt DateTime?
+  publishedAt        DateTime?
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+
+  @@unique([questionId, version])
+  @@index([testId, stage])
+  @@index([rightsStatus, stage])
+  @@index([updatedAt])
 }
 
 // ---------- Phase 2 预留（暂不建表）----------

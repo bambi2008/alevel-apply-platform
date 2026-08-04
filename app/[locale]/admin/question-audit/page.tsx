@@ -1,4 +1,4 @@
-import { AlertTriangle, BarChart3, BookOpenCheck, Database, FileStack, Users } from "lucide-react";
+import { AlertTriangle, BarChart3, BookOpenCheck, Database, FileStack, ShieldCheck, Users } from "lucide-react";
 import { getQuestionAuditDashboardData } from "@/lib/tests/audit/server";
 import { CalibrationWorkbench } from "@/components/admin/calibration-workbench";
 
@@ -8,7 +8,7 @@ function percent(value: number) {
 
 export default async function QuestionAuditPage() {
   const data = await getQuestionAuditDashboardData();
-  const { report, dataHealth } = data;
+  const { report, dataHealth, governance } = data;
   const coverage = report.totals.topicsTotal ? report.totals.topicsCovered / report.totals.topicsTotal : 0;
   const telemetryCoverage = dataHealth.answers ? dataHealth.telemetryAnswers / dataHealth.answers : 0;
   const metrics = [
@@ -33,6 +33,21 @@ export default async function QuestionAuditPage() {
             <p className="mt-1 text-xs text-neutral-500">{detail}</p>
           </div>
         ))}
+      </section>
+
+      <section className="border-y border-neutral-200 py-4" aria-label="人工审核覆盖">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="flex items-center gap-2 text-sm font-semibold text-neutral-950"><ShieldCheck className="size-4" />人工质量签字</h2>
+            <p className="mt-1 text-xs text-neutral-500">只有来源与版权清晰、且由两名不同管理员完成学科与教学审核的题目才计为已认证。</p>
+          </div>
+          <strong className="text-lg tabular-nums text-neutral-950">{governance.certified} / {governance.staticQuestions}</strong>
+        </div>
+        <div className="mt-3 grid grid-cols-3 gap-3 text-xs text-neutral-600">
+          <span>来源记录 <strong className="block text-base text-neutral-950">{governance.sourceRecorded}</strong></span>
+          <span>版权许可 <strong className="block text-base text-neutral-950">{governance.rightsCleared}</strong></span>
+          <span>双人签字 <strong className="block text-base text-neutral-950">{governance.dualReviewed}</strong></span>
+        </div>
       </section>
 
       <section>

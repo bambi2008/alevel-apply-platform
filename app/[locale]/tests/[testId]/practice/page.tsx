@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback, useRef, use } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef, use } from "react";
 import { useTier } from "@/hooks/use-tier";
 import { applyFreeLimit } from "@/lib/entitlements";
 import { notFound, useSearchParams } from "next/navigation";
@@ -22,7 +22,6 @@ import type { Question, MCQQuestion, LongQuestion } from "@/lib/tests/questions/
 import { MathRenderer } from "@/components/math-renderer";
 import type { GradeRequest, GradeResponse } from "@/app/api/grade-answer/route";
 import { scoreObjectiveAnswer } from "@/lib/tests/objective-scoring";
-import { getQuestionById } from "@/lib/tests/lookup";
 import { buildSessionDiagnosis } from "@/lib/tests/diagnosis";
 import { DiagnosisSummary, QuestionDiagnosis } from "@/components/exam-diagnosis";
 import { persistExamSession } from "@/lib/tests/persist-session";
@@ -47,6 +46,7 @@ const EMPTY_QUESTIONS: Question[] = [];
 type PracticeMode = "topic" | "mixed" | "adaptive";
 type PracticeFormat = "all" | "mcq" | "short-proof" | "long";
 type SessionState = "select" | "practicing" | "complete";
+type SessionPurpose = "diagnostic" | "practice";
 
 function matchesFormat(question: Question, format: PracticeFormat): boolean {
   if (format === "all") return true;
@@ -77,7 +77,23 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
   const test = getTestById(testId);
   if (!test || !test.hasQuestionBank) notFound();
 
-  const allQuestions = QUESTION_BANKS[testId] ?? EMPTY_QUESTIONS;
+  const staticQuestions = QUESTION_BANKS[testId] ?? EMPTY_QUESTIONS;
+  const [publishedQuestions, setPublishedQuestions] = useState<Question[]>([]);
+  useEffect(() => {
+    const controller = new AbortController();
+    fetch(`/api/question-bank?testId=${encodeURIComponent(testId)}`, { signal: controller.signal })
+      .then(async (response) => response.ok ? response.json() as Promise<{ questions?: Question[] }> : { questions: [] })
+      .then((body) => setPublishedQuestions(Array.isArray(body.questions) ? body.questions : []))
+      .catch((error) => {
+        if (!(error instanceof DOMException && error.name === "AbortError")) setPublishedQuestions([]);
+      });
+    return () => controller.abort();
+  }, [testId]);
+  const allQuestions = useMemo(() => {
+    const merged = new Map(staticQuestions.map((question) => [question.id, question]));
+    for (const question of publishedQuestions) merged.set(question.id, question);
+    return [...merged.values()];
+  }, [publishedQuestions, staticQuestions]);
 
   const initialTopic = searchParams.get("topic") ?? "all";
   const initialCount = Number(searchParams.get("count") ?? 10);
@@ -94,6 +110,7 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
   const [currentIdx, setCurrentIdx] = useState(0);
   const [results, setResults] = useState<SessionResult[]>([]);
   const [sessionStartedAt, setSessionStartedAt] = useState(0);
+  const [sessionPurpose, setSessionPurpose] = useState<SessionPurpose>("practice");
   const questionStartedAt = useRef(0);
   const tier = useTier();
   const availableQuestionCount = allQuestions.filter((question) =>
@@ -121,8 +138,13 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
         if (searchParams.get("remediation") === "1") query.set("remediation", "1");
         const response = await fetch(`/api/exam-sessions/adaptive?${query}`);
         if (!response.ok) throw new Error("暂时无法生成智能训练，请稍后重试。");
-        const data = await response.json() as { authenticated: boolean; recommendedQuestionIds?: string[] };
+        const data = await response.json() as { authenticated: boolean; stage?: string; recommendedQuestionIds?: string[] };
         if (!data.authenticated) throw new Error("智能训练需要登录，登录后系统才能保存并分析你的进步。");
+        const diagnostic = data.stage === "diagnostic"
+          && topicId === "all"
+          && searchParams.get("review") !== "1"
+          && searchParams.get("remediation") !== "1";
+        setSessionPurpose(diagnostic ? "diagnostic" : "practice");
         const byId = new Map(pool.map((question) => [question.id, question]));
         shuffled = (data.recommendedQuestionIds ?? []).map((id) => byId.get(id)).filter((question): question is Question => !!question);
         if (shuffled.length === 0) throw new Error("当前没有到期复习题，可以切换为智能训练继续刷新题。");
@@ -132,6 +154,7 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
         return;
       }
     } else {
+      setSessionPurpose("practice");
       // Weighted selection: difficulty 3 → 3×, difficulty 2 → 2×, difficulty 1 → 1×
       const diffWeight = (d: number) => (d === 3 ? 3 : d === 2 ? 2 : 1);
       shuffled = [...pool]
@@ -194,6 +217,8 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
         results={results}
         startedAt={sessionStartedAt}
         strategy={mode}
+        purpose={sessionPurpose}
+        questionBank={allQuestions}
         onRestart={() => setSessionState("select")}
       />
     );
@@ -801,12 +826,16 @@ function SessionSummary({
   results,
   startedAt,
   strategy,
+  purpose,
+  questionBank,
   onRestart,
 }: {
   testId: string;
   results: SessionResult[];
   startedAt: number;
   strategy: PracticeMode;
+  purpose: SessionPurpose;
+  questionBank: Question[];
   onRestart: () => void;
 }) {
   const persistedRef = useRef(false);
@@ -819,8 +848,9 @@ function SessionSummary({
   const longMax = longResults.reduce((s, r) => s + (r.max ?? 0), 0);
   const totalEarned = mcqResults.reduce((s, r) => s + (r.earned ?? 0), 0) + longEarned;
   const totalMax = results.reduce((s, r) => s + (r.max ?? 0), 0);
+  const questionById = new Map(questionBank.map((question) => [question.id, question]));
   const diagnosis = buildSessionDiagnosis(results.flatMap((result) => {
-    const question = getQuestionById(result.questionId);
+    const question = questionById.get(result.questionId);
     return question ? [{
       question,
       selected: result.selected,
@@ -842,11 +872,12 @@ function SessionSummary({
     void persistExamSession({
         testId,
         mode: "practice",
+        presetId: purpose === "diagnostic" ? "adaptive-diagnostic" : undefined,
         totalEarned,
         totalMax,
         startedAt: startedAt ? new Date(startedAt).toISOString() : undefined,
         timeUsedSec: startedAt ? Math.max(0, Math.round((Date.now() - startedAt) / 1000)) : undefined,
-        clientMeta: { schemaVersion: 1, viewport: `${window.innerWidth}x${window.innerHeight}`, locale: navigator.language, practiceStrategy: strategy },
+        clientMeta: { schemaVersion: 1, viewport: `${window.innerWidth}x${window.innerHeight}`, locale: navigator.language, practiceStrategy: strategy, purpose },
         answers: results.map((r) => ({
           questionId: r.questionId,
           type: r.type,
@@ -897,7 +928,7 @@ function SessionSummary({
           <h2 className="text-base font-bold">优先复盘</h2>
           <div className="mt-3 divide-y divide-[var(--border)] border-y border-[var(--border)]">
             {diagnosis.issues.slice(0, 5).map((item, index) => {
-              const question = getQuestionById(item.questionId);
+              const question = questionById.get(item.questionId);
               if (!question) return null;
               return (
                 <div key={item.questionId} className="py-4">

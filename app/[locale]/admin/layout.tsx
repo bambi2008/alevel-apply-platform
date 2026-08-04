@@ -31,6 +31,12 @@ export default async function AdminLayout({
             用户管理
           </Link>
           <Link
+            href="/admin/beta"
+            className="px-3 py-1.5 rounded-md text-neutral-600 hover:bg-neutral-100"
+          >
+            Beta 数据
+          </Link>
+          <Link
             href="/admin/content"
             className="px-3 py-1.5 rounded-md text-neutral-600 hover:bg-neutral-100"
           >

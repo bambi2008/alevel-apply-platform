@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { getStorage } from "@/lib/storage";
 import { validateDocumentUpload } from "@/lib/security/uploads";
-import { clientIp, consumeRateLimit, rateLimitKey } from "@/lib/security/rate-limit";
+import { clientIp, consumePersistentRateLimit, rateLimitKey } from "@/lib/security/rate-limit";
 
 const MAX_SIZE = 10 * 1024 * 1024;
 function hashToken(token: string) { return createHash("sha256").update(token).digest("hex"); }
@@ -32,7 +32,7 @@ export async function GET(_request: NextRequest, { params }: { params: Promise<{
 
 export async function POST(request: NextRequest, { params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
-  const limit = consumeRateLimit(
+  const limit = await consumePersistentRateLimit(
     rateLimitKey("recommendation-upload", clientIp(request.headers), token),
     { limit: 10, windowMs: 60 * 60_000 },
   );

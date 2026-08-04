@@ -4,6 +4,7 @@ import type { Prisma } from "@prisma/client";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { addUtcDays, shanghaiDateKey, utcDateFromKey } from "@/lib/study/dates";
+import { activeDayEventKey, recordLearningEvent } from "@/lib/beta/events";
 
 // 严格校验写入体，避免脏数据导致 500 或写入垃圾。
 const answerSchema = z.object({
@@ -122,9 +123,49 @@ export async function POST(req: NextRequest) {
   const matchingTask = await db.studyTask.findFirst({
     where: { studentId: profile.id, testId: body.testId, status: "PLANNED", scheduledFor: { gte: today, lt: tomorrow } },
     orderBy: { scheduledFor: "asc" },
-    select: { id: true },
+    select: { id: true, kind: true },
   });
   if (matchingTask) await db.studyTask.update({ where: { id: matchingTask.id }, data: { status: "DONE", completedAt: new Date() } });
+
+  const isDiagnostic = [body.paperId, body.presetId].some((value) => value?.toLowerCase().includes("diagnostic"));
+  const completionType = isDiagnostic
+    ? "DIAGNOSTIC_COMPLETED" as const
+    : body.mode === "practice"
+      ? "PRACTICE_COMPLETED" as const
+      : "MOCK_COMPLETED" as const;
+  const completedAt = new Date();
+  const events = [
+    recordLearningEvent({
+      studentId: profile.id,
+      type: completionType,
+      eventKey: `exam-completed:${profile.id}:${examSession.id}`,
+      testId: body.testId,
+      resourceId: body.paperId ?? body.presetId ?? body.mode,
+      sessionId: examSession.id,
+      score: body.totalEarned,
+      maxScore: body.totalMax,
+      occurredAt: completedAt,
+      metadata: { mode: body.mode, timeUsedSec: body.timeUsedSec ?? null },
+    }),
+    recordLearningEvent({
+      studentId: profile.id,
+      type: "ACTIVE_DAY",
+      eventKey: activeDayEventKey(profile.id, completedAt),
+      occurredAt: completedAt,
+    }),
+  ];
+  if (matchingTask && ["FOCUS", "REVIEW"].includes(matchingTask.kind)) {
+    events.push(recordLearningEvent({
+      studentId: profile.id,
+      type: "REMEDIATION_COMPLETED",
+      eventKey: `remediation-completed:${profile.id}:${matchingTask.id}`,
+      testId: body.testId,
+      resourceId: matchingTask.id,
+      sessionId: examSession.id,
+      occurredAt: completedAt,
+    }));
+  }
+  await Promise.all(events);
 
   return NextResponse.json({ id: examSession.id }, { status: 201 });
 }

@@ -1,6 +1,7 @@
 import "server-only";
 
 import { db } from "@/lib/db";
+import { getAllQuestionIds } from "@/lib/tests/lookup";
 import { buildQuestionBankAudit } from "./index";
 import { buildDetailedQuestionCalibrations } from "./calibration";
 import type { AttemptObservation, DetailedQuestionCalibration } from "./calibration";
@@ -30,14 +31,29 @@ export interface QuestionAuditDashboardData {
     coveredTests: number;
     lastAttemptAt: string | null;
   };
+  governance: {
+    staticQuestions: number;
+    certified: number;
+    sourceRecorded: number;
+    rightsCleared: number;
+    dualReviewed: number;
+  };
 }
 
 export async function getQuestionAuditDashboardData(): Promise<QuestionAuditDashboardData> {
   const report = buildQuestionBankAudit();
   const emptyHealth = { sessions: 0, answers: 0, telemetryAnswers: 0, uniqueStudents: 0, coveredTests: 0, lastAttemptAt: null };
+  const staticQuestionIds = new Set(getAllQuestionIds());
+  const emptyGovernance = {
+    staticQuestions: staticQuestionIds.size,
+    certified: 0,
+    sourceRecorded: 0,
+    rightsCleared: 0,
+    dualReviewed: 0,
+  };
 
   try {
-    const [rows, decisions] = await Promise.all([
+    const [rows, decisions, certificates] = await Promise.all([
       db.examAnswer.findMany({
         take: 100_000,
         orderBy: { session: { createdAt: "desc" } },
@@ -63,6 +79,16 @@ export async function getQuestionAuditDashboardData(): Promise<QuestionAuditDash
         },
       }),
       db.calibrationDecision.findMany({ orderBy: { createdAt: "desc" }, take: 500 }),
+      db.questionDraftRecord.findMany({
+        where: { stage: "APPROVED" },
+        select: {
+          questionId: true,
+          sourceTitle: true,
+          rightsStatus: true,
+          subjectReviewerId: true,
+          teachingReviewerId: true,
+        },
+      }),
     ]);
 
     // A student's latest response to an item is the calibration sample. This prevents
@@ -91,6 +117,13 @@ export async function getQuestionAuditDashboardData(): Promise<QuestionAuditDash
     const tests = new Set(rows.map((row) => row.session.testId));
     const lastAttemptAt = rows[0]?.session.createdAt.toISOString() ?? null;
     const calibrationAvailable = calibration.some((item) => item.status !== "insufficient");
+    const currentCertificates = [...certificates
+      .filter((record) => staticQuestionIds.has(record.questionId))
+      .reduce((latest, record) => {
+        if (!latest.has(record.questionId)) latest.set(record.questionId, record);
+        return latest;
+      }, new Map<string, (typeof certificates)[number]>())
+      .values()];
 
     return {
       report,
@@ -117,6 +150,17 @@ export async function getQuestionAuditDashboardData(): Promise<QuestionAuditDash
         coveredTests: tests.size,
         lastAttemptAt,
       },
+      governance: {
+        staticQuestions: staticQuestionIds.size,
+        certified: new Set(currentCertificates.map((record) => record.questionId)).size,
+        sourceRecorded: currentCertificates.filter((record) => record.sourceTitle.trim().length > 0).length,
+        rightsCleared: currentCertificates.filter((record) => ["OWNED", "LICENSED"].includes(record.rightsStatus)).length,
+        dualReviewed: currentCertificates.filter((record) => Boolean(
+          record.subjectReviewerId
+          && record.teachingReviewerId
+          && record.subjectReviewerId !== record.teachingReviewerId
+        )).length,
+      },
     };
   } catch {
     return {
@@ -126,6 +170,7 @@ export async function getQuestionAuditDashboardData(): Promise<QuestionAuditDash
       calibrationAvailable: false,
       calibrationMessage: "The analytics database is unavailable or still needs the telemetry migration. Static question-bank audit remains active.",
       dataHealth: emptyHealth,
+      governance: emptyGovernance,
     };
   }
 }

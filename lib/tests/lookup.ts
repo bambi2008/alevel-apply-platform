@@ -46,6 +46,10 @@ export function getQuestionById(id: string): Question | undefined {
   return BY_ID.get(id);
 }
 
+export function getAllQuestionIds(): string[] {
+  return [...BY_ID.keys()];
+}
+
 /** 只返回专项练习题库，不混入固定模拟卷。 */
 export function getPracticeQuestionsForTest(testId: string): Question[] {
   return PRACTICE_QUESTIONS.filter((question) => question.testId === testId);

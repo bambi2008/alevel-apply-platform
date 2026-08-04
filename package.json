@@ -34,7 +34,9 @@
     "deploy:production": "node scripts/deploy-release.mjs",
     "rollback:production": "node scripts/rollback-release.mjs",
     "drill:preproduction": "node scripts/preproduction-drill.mjs",
-    "monitor:production": "node scripts/monitor-production.mjs"
+    "monitor:production": "node scripts/monitor-production.mjs",
+    "check:beta-capacity": "node scripts/beta-capacity-check.mjs",
+    "check:beta-data-capacity": "node scripts/beta-data-capacity-check.mjs"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -52,7 +54,6 @@
     "katex": "^0.17.0",
     "lucide-react": "^0.460.0",
     "next": "16.2.11",
-    "next-auth": "5.0.0-beta.32",
     "next-intl": "^4.13.0",
     "openai": "^6.45.0",
     "postcss": "8.5.18",

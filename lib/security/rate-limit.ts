@@ -1,4 +1,6 @@
 import { createHash } from "node:crypto";
+import { Prisma } from "@prisma/client";
+import { db } from "@/lib/db";
 
 type Bucket = {
   count: number;
@@ -68,6 +70,50 @@ export function consumeRateLimit(
     remaining: Math.max(0, options.limit - bucket.count),
     retryAfterSeconds: Math.max(1, Math.ceil((bucket.resetAt - now) / 1000)),
   };
+}
+
+/**
+ * Shared PostgreSQL limiter for authentication and AI routes. The in-memory
+ * implementation remains available for deterministic unit tests and as a
+ * development fallback before a local migration has been applied.
+ */
+export async function consumePersistentRateLimit(
+  key: string,
+  options: { limit: number; windowMs: number },
+  now = new Date(),
+): Promise<RateLimitResult> {
+  if (process.env.NODE_ENV === "test") {
+    return consumeRateLimit(key, options, now.getTime());
+  }
+
+  const resetAt = new Date(now.getTime() + options.windowMs);
+  try {
+    const rows = await db.$queryRaw<Array<{ count: number; resetAt: Date }>>(Prisma.sql`
+      INSERT INTO "RateLimitBucket" ("key", "count", "resetAt", "updatedAt")
+      VALUES (${key}, 1, ${resetAt}, ${now})
+      ON CONFLICT ("key") DO UPDATE SET
+        "count" = CASE
+          WHEN "RateLimitBucket"."resetAt" <= ${now} THEN 1
+          ELSE "RateLimitBucket"."count" + 1
+        END,
+        "resetAt" = CASE
+          WHEN "RateLimitBucket"."resetAt" <= ${now} THEN ${resetAt}
+          ELSE "RateLimitBucket"."resetAt"
+        END,
+        "updatedAt" = ${now}
+      RETURNING "count", "resetAt"
+    `);
+    const bucket = rows[0];
+    if (!bucket) throw new Error("Rate limit bucket was not returned");
+    return {
+      allowed: bucket.count <= options.limit,
+      remaining: Math.max(0, options.limit - bucket.count),
+      retryAfterSeconds: Math.max(1, Math.ceil((bucket.resetAt.getTime() - now.getTime()) / 1000)),
+    };
+  } catch (error) {
+    if (process.env.NODE_ENV === "production") throw error;
+    return consumeRateLimit(key, options, now.getTime());
+  }
 }
 
 export function resetRateLimitsForTests() {

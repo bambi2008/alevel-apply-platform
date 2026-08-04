@@ -8,6 +8,7 @@ import {
   type TimedAssessmentFlow,
 } from "@/lib/interview/cambridge-assessment-flows";
 import { InterviewThinkingChecklist } from "./interview-thinking-checklist";
+import { clearRemoteProgress, loadLearningRecords, saveLearningRecord, saveRemoteProgress } from "@/lib/learning/client";
 
 type Phase = "intro" | "preparation" | "response" | "result";
 
@@ -72,7 +73,24 @@ export function TimedAssessmentSimulator({
   );
   const totalWords = responses.reduce((sum, response) => sum + countWords(response.answer), 0);
 
-  useEffect(() => setAttempts(readAttempts(storageKey)), [storageKey]);
+  useEffect(() => {
+    const local = readAttempts(storageKey);
+    setAttempts(local);
+    void loadLearningRecords<{
+      attemptKey: string;
+      completedAt: string;
+      payload?: { responses?: TaskResponse[] } | null;
+    }>("CAMBRIDGE_ASSESSMENT", subjectName).then((records) => {
+      const remote = records.map((record): AssessmentAttempt => ({
+        id: record.attemptKey,
+        completedAt: record.completedAt,
+        responses: record.payload?.responses ?? [],
+      }));
+      const merged = [...remote, ...local].filter((attempt, index, all) => all.findIndex((item) => item.id === attempt.id) === index).slice(0, 5);
+      setAttempts(merged);
+      window.localStorage.setItem(storageKey, JSON.stringify(merged));
+    });
+  }, [storageKey, subjectName]);
 
   useEffect(() => {
     if ((phase !== "preparation" && phase !== "response") || secondsLeft <= 0) return;
@@ -97,6 +115,13 @@ export function TimedAssessmentSimulator({
     setFeedback("");
     setPhase("preparation");
     setSecondsLeft(tasks[0].preparationSec);
+    void saveRemoteProgress({
+      kind: "CAMBRIDGE_ASSESSMENT",
+      resourceId: subjectId,
+      payload: { subjectName, phase: "preparation", taskIndex: 0 },
+      startedAt: new Date().toISOString(),
+      mode: "interview",
+    });
   }
 
   function beginResponse() {
@@ -122,6 +147,15 @@ export function TimedAssessmentSimulator({
       const nextAttempts = [attempt, ...attempts].slice(0, 5);
       setAttempts(nextAttempts);
       window.localStorage.setItem(storageKey, JSON.stringify(nextAttempts));
+      void clearRemoteProgress("CAMBRIDGE_ASSESSMENT", subjectId);
+      void saveLearningRecord({
+        kind: "CAMBRIDGE_ASSESSMENT",
+        resourceId: subjectId,
+        subject: subjectName,
+        attemptKey: attempt.id,
+        completedAt: attempt.completedAt,
+        payload: { responses: nextResponses },
+      });
       setPhase("result");
       setSecondsLeft(0);
       return;

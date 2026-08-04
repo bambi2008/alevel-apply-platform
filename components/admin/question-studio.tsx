@@ -116,15 +116,46 @@ export function QuestionStudio({ tests }: Props) {
     } catch {
       restored = firstTest ? [createBlankDraft(firstTest.id, firstTest.topics[0]?.id || "general")] : [];
     }
-    queueMicrotask(() => {
-      setDrafts(restored);
-      setActiveId(restored[0]?.draftId ?? "");
-      setHydrated(true);
-    });
+    void fetch("/api/admin/question-drafts", { cache: "no-store" })
+      .then(async (response) => response.ok ? response.json() as Promise<{ drafts?: QuestionDraft[] }> : { drafts: [] })
+      .then((body) => {
+        const serverDrafts = Array.isArray(body.drafts) ? body.drafts : [];
+        const next = serverDrafts.length ? serverDrafts : restored;
+        setDrafts(next);
+        setActiveId(next[0]?.draftId ?? "");
+        setHydrated(true);
+      })
+      .catch(() => {
+        setDrafts(restored);
+        setActiveId(restored[0]?.draftId ?? "");
+        setHydrated(true);
+      });
   }, [firstTest]);
 
   useEffect(() => {
-    if (hydrated) localStorage.setItem(STORAGE_KEY, JSON.stringify(drafts));
+    if (!hydrated) return;
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(drafts));
+    const timer = window.setTimeout(() => {
+      void fetch("/api/admin/question-drafts", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ drafts }),
+      }).then(async (response) => {
+        if (response.ok) return;
+        const body = await response.json().catch(() => ({ error: "题库工作区保存失败" })) as { error?: string };
+        setNotice(body.error ?? "题库工作区保存失败");
+        const canonical = await fetch("/api/admin/question-drafts", { cache: "no-store" }).then(
+          async (result) => result.ok ? result.json() as Promise<{ drafts?: QuestionDraft[] }> : { drafts: [] },
+        );
+        if (Array.isArray(canonical.drafts) && canonical.drafts.length) {
+          setDrafts(canonical.drafts);
+          setActiveId((current) => canonical.drafts?.some((draft) => draft.draftId === current)
+            ? current
+            : canonical.drafts?.[0]?.draftId ?? "");
+        }
+      }).catch(() => setNotice("题库工作区暂时无法同步到服务器"));
+    }, 800);
+    return () => window.clearTimeout(timer);
   }, [drafts, hydrated]);
 
   const active = drafts.find((draft) => draft.draftId === activeId) ?? drafts[0];
@@ -137,9 +168,24 @@ export function QuestionStudio({ tests }: Props) {
 
   function touchQuestion(question: AuthoredQuestion) {
     if (!active) return;
+    const revision = active.review.stage !== "DRAFT";
     replaceActive({
       ...active,
+      version: revision ? active.version + 1 : active.version,
+      previousQuestion: revision ? structuredClone(active.question) : active.previousQuestion,
       question,
+      review: { stage: "DRAFT", updatedAt: new Date().toISOString() },
+    });
+  }
+
+  function touchSource(source: QuestionDraft["source"]) {
+    if (!active) return;
+    const revision = active.review.stage !== "DRAFT";
+    replaceActive({
+      ...active,
+      version: revision ? active.version + 1 : active.version,
+      previousQuestion: revision ? structuredClone(active.question) : active.previousQuestion,
+      source,
       review: { stage: "DRAFT", updatedAt: new Date().toISOString() },
     });
   }
@@ -152,8 +198,14 @@ export function QuestionStudio({ tests }: Props) {
     setTab("edit");
   }
 
-  function removeDraft() {
+  async function removeDraft() {
     if (!active || !window.confirm(`删除草稿 ${active.question.id}？`)) return;
+    const response = await fetch(`/api/admin/question-drafts?id=${encodeURIComponent(active.draftId)}`, { method: "DELETE" });
+    if (!response.ok) {
+      const body = await response.json().catch(() => ({ error: "草稿删除失败" })) as { error?: string };
+      setNotice(body.error ?? "草稿删除失败");
+      return;
+    }
     setDrafts((current) => {
       const next = current.filter((draft) => draft.draftId !== active.draftId);
       setActiveId(next[0]?.draftId ?? "");
@@ -300,16 +352,16 @@ export function QuestionStudio({ tests }: Props) {
               <h2 className="mb-3 text-sm font-semibold text-neutral-900">来源与权利</h2>
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className={labelClass}>来源类型
-                  <select value={active.source.type} onChange={(event) => replaceActive({ ...active, source: { ...active.source, type: event.target.value as QuestionDraft["source"]["type"] }, review: { stage: "DRAFT", updatedAt: new Date().toISOString() } })} className={fieldClass}><option value="ORIGINAL">原创</option><option value="OFFICIAL">官方真题</option><option value="ADAPTED">改编</option></select>
+                  <select value={active.source.type} onChange={(event) => touchSource({ ...active.source, type: event.target.value as QuestionDraft["source"]["type"] })} className={fieldClass}><option value="ORIGINAL">原创</option><option value="OFFICIAL">官方真题</option><option value="ADAPTED">改编</option></select>
                 </label>
                 <label className={labelClass}>权利状态
-                  <select value={active.source.rights} onChange={(event) => replaceActive({ ...active, source: { ...active.source, rights: event.target.value as QuestionDraft["source"]["rights"] }, review: { stage: "DRAFT", updatedAt: new Date().toISOString() } })} className={fieldClass}><option value="OWNED">自有</option><option value="LICENSED">已获许可</option><option value="LINK_ONLY">仅可链接</option><option value="RESTRICTED">受限制</option><option value="UNKNOWN">待确认</option></select>
+                  <select value={active.source.rights} onChange={(event) => touchSource({ ...active.source, rights: event.target.value as QuestionDraft["source"]["rights"] })} className={fieldClass}><option value="OWNED">自有</option><option value="LICENSED">已获许可</option><option value="LINK_ONLY">仅可链接</option><option value="RESTRICTED">受限制</option><option value="UNKNOWN">待确认</option></select>
                 </label>
                 <label className={labelClass}>来源标题
-                  <input value={active.source.title} onChange={(event) => replaceActive({ ...active, source: { ...active.source, title: event.target.value }, review: { stage: "DRAFT", updatedAt: new Date().toISOString() } })} className={fieldClass} />
+                  <input value={active.source.title} onChange={(event) => touchSource({ ...active.source, title: event.target.value })} className={fieldClass} />
                 </label>
                 <label className={labelClass}>来源链接
-                  <input type="url" value={active.source.url || ""} onChange={(event) => replaceActive({ ...active, source: { ...active.source, url: event.target.value }, review: { stage: "DRAFT", updatedAt: new Date().toISOString() } })} className={fieldClass} placeholder="https://…" />
+                  <input type="url" value={active.source.url || ""} onChange={(event) => touchSource({ ...active.source, url: event.target.value })} className={fieldClass} placeholder="https://…" />
                 </label>
               </div>
             </section>

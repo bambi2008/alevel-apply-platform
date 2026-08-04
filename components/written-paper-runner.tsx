@@ -14,6 +14,7 @@ import { createAttemptId, examAttemptKey, parseExamAttempt, remainingAttemptSeco
 import { useExamReliability } from "@/hooks/use-exam-reliability";
 import { ExamReliabilityStatus } from "@/components/exam-reliability-status";
 import { GradingTrustPanel } from "@/components/grading-trust-panel";
+import { clearRemoteProgress, loadRemoteProgress, saveRemoteProgress } from "@/lib/learning/client";
 
 type Phase = "briefing" | "running" | "grading" | "results";
 type WrittenWorks = Record<string, Record<string, string>>;
@@ -138,22 +139,33 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
   const deadlineAt = useRef(0);
   const submittingRef = useRef(false);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const lastRemoteSaveRef = useRef(0);
   const storageKey = examAttemptKey("written", paper.id);
   const { online } = useExamReliability(phase === "running" || phase === "grading");
 
   useEffect(() => {
-    const restored = parseExamAttempt(
+    let cancelled = false;
+    const local = parseExamAttempt(
       window.localStorage.getItem(storageKey),
       { runner: "written", testId: paper.testId, scopeId: paper.id },
       isWrittenAttemptPayload,
     );
-    if (!restored) return;
-    const timer = window.setTimeout(() => setSavedAttempt(restored), 0);
-    return () => window.clearTimeout(timer);
+    void loadRemoteProgress<ExamAttemptSnapshot<WrittenAttemptPayload>>("WRITTEN_EXAM", paper.id).then((remoteRaw) => {
+      if (cancelled) return;
+      const remote = parseExamAttempt(
+        remoteRaw ? JSON.stringify(remoteRaw) : null,
+        { runner: "written", testId: paper.testId, scopeId: paper.id },
+        isWrittenAttemptPayload,
+      );
+      const restored = !local ? remote : !remote ? local : remote.savedAt > local.savedAt ? remote : local;
+      if (restored) setSavedAttempt(restored);
+    });
+    return () => { cancelled = true; };
   }, [paper.id, paper.testId, storageKey]);
 
   const begin = () => {
     window.localStorage.removeItem(storageKey);
+    void clearRemoteProgress("WRITTEN_EXAM", paper.id);
     setWorks(Object.fromEntries(questions.map((question) => [question.id, {}])));
     setCurrentIndex(0);
     setTimeLeft(durationSec);
@@ -211,6 +223,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
     submittingRef.current = true;
     if (timerRef.current) clearInterval(timerRef.current);
     window.localStorage.removeItem(storageKey);
+    void clearRemoteProgress("WRITTEN_EXAM", paper.id);
     setTimeUsedSec(Math.min(durationSec, Math.max(0, Math.round((Date.now() - startedAt.current) / 1000))));
     setPhase("grading");
     const nextGrades: WrittenGrade[] = [];
@@ -321,6 +334,17 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
       payload: { currentIndex, works },
     };
     window.localStorage.setItem(storageKey, JSON.stringify(snapshot));
+    if (Date.now() - lastRemoteSaveRef.current >= 10_000) {
+      lastRemoteSaveRef.current = Date.now();
+      void saveRemoteProgress({
+        kind: "WRITTEN_EXAM",
+        resourceId: paper.id,
+        payload: snapshot,
+        startedAt: new Date(snapshot.startedAt).toISOString(),
+        testId: paper.testId,
+        mode: paper.id.toLowerCase().includes("diagnostic") ? "diagnostic" : "paper",
+      });
+    }
   }, [currentIndex, paper.id, paper.testId, phase, storageKey, timeLeft, works]);
 
   if (phase === "briefing") {
@@ -348,7 +372,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
             <p className="text-sm font-semibold">发现未完成的书面卷</p>
             <p className="mt-1 text-xs text-[var(--ink-soft)]">第 {savedAttempt.payload.currentIndex + 1} 题 · 剩余约 {Math.ceil(remainingAttemptSeconds(savedAttempt.deadlineAt) / 60)} 分钟</p>
             <div className="mt-3 flex gap-2">
-              <button type="button" onClick={() => { window.localStorage.removeItem(storageKey); setSavedAttempt(null); }} className="rounded border border-[var(--border)] px-3 py-2 text-xs">放弃进度</button>
+              <button type="button" onClick={() => { window.localStorage.removeItem(storageKey); void clearRemoteProgress("WRITTEN_EXAM", paper.id); setSavedAttempt(null); }} className="rounded border border-[var(--border)] px-3 py-2 text-xs">放弃进度</button>
               <button type="button" onClick={resume} className="rounded bg-[var(--indigo)] px-3 py-2 text-xs font-semibold text-white">继续作答</button>
             </div>
           </div>

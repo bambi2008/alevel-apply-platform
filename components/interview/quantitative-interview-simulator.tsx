@@ -6,6 +6,7 @@ import type { QuantitativeInterviewDrill } from "@/lib/interview/quantitative-in
 import { scoreQuantitativeResponse } from "@/lib/interview/quantitative-interview";
 import type { InterviewProcessSkillId } from "@/lib/interview/quantitative-interview-review";
 import { InterviewThinkingChecklist } from "./interview-thinking-checklist";
+import { clearRemoteProgress, loadLearningRecords, saveLearningRecord, saveRemoteProgress } from "@/lib/learning/client";
 
 type Phase = "intro" | "main" | "follow-up" | "result";
 type Attempt = { id: string; drillId: string; completedAt: string; score: number; max: number; weakestSkillId?: InterviewProcessSkillId };
@@ -47,7 +48,30 @@ export function QuantitativeInterviewSimulator({
     [drill, response, followUpResponse],
   );
 
-  useEffect(() => setAttempts(readAttempts(storageKey)), [storageKey]);
+  useEffect(() => {
+    const local = readAttempts(storageKey);
+    setAttempts(local);
+    void loadLearningRecords<{
+      resourceId: string;
+      score: number | null;
+      maxScore: number | null;
+      weakestSkillId?: InterviewProcessSkillId | null;
+      attemptKey: string;
+      completedAt: string;
+    }>("INTERVIEW_DRILL", subjectName).then((records) => {
+      const remote = records.map((record): Attempt => ({
+        id: record.attemptKey,
+        drillId: record.resourceId,
+        completedAt: record.completedAt,
+        score: record.score ?? 0,
+        max: record.maxScore ?? 0,
+        weakestSkillId: record.weakestSkillId ?? undefined,
+      }));
+      const merged = [...remote, ...local].filter((attempt, index, all) => all.findIndex((item) => item.id === attempt.id) === index).slice(0, 8);
+      setAttempts(merged);
+      window.localStorage.setItem(storageKey, JSON.stringify(merged));
+    });
+  }, [storageKey, subjectName]);
 
   useEffect(() => {
     if (phase === "result") window.scrollTo({ top: 0, behavior: "auto" });
@@ -77,6 +101,13 @@ export function QuantitativeInterviewSimulator({
     setRetryFocus(focus);
     setPhase("main");
     setSecondsLeft(drills[index].timeLimitSec);
+    void saveRemoteProgress({
+      kind: "INTERVIEW_DRILL",
+      resourceId: drills[index].id,
+      payload: { subjectName, phase: "main", retryFocus: focus },
+      startedAt: new Date().toISOString(),
+      mode: "interview",
+    });
   }
 
   function submitMain() {
@@ -97,6 +128,18 @@ export function QuantitativeInterviewSimulator({
     const nextAttempts = [attempt, ...attempts].slice(0, 8);
     setAttempts(nextAttempts);
     window.localStorage.setItem(storageKey, JSON.stringify(nextAttempts));
+    void clearRemoteProgress("INTERVIEW_DRILL", drill.id);
+    void saveLearningRecord({
+      kind: "INTERVIEW_DRILL",
+      resourceId: drill.id,
+      subject: subjectName,
+      score: result.total,
+      maxScore: result.max,
+      weakestSkillId: result.review.weakest.id,
+      attemptKey: attempt.id,
+      completedAt: attempt.completedAt,
+      payload: { response, followUpResponse, retryFocus },
+    });
     setPhase("result");
     setSecondsLeft(0);
   }

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { clientIp, consumeRateLimit, rateLimitKey } from "./rate-limit";
+import { clientIp, consumePersistentRateLimit, rateLimitKey } from "./rate-limit";
 
 const MAX_AI_REQUEST_BYTES = 128 * 1024;
 
@@ -46,7 +46,7 @@ export async function requireAiAccess(
     }
   }
 
-  const rateLimit = consumeRateLimit(
+  const rateLimit = await consumePersistentRateLimit(
     rateLimitKey(`ai:${namespace}`, userId, clientIp(request.headers)),
     { limit, windowMs: 60 * 60_000 },
   );

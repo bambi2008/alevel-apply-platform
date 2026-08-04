@@ -3,10 +3,11 @@
 import bcrypt from "bcryptjs";
 import { headers } from "next/headers";
 import { z } from "zod";
+import { revokeAllUserSessions } from "@/auth";
 import { db } from "@/lib/db";
 import { getEmail } from "@/lib/email";
 import { captureError } from "@/lib/monitoring";
-import { clientIp, consumeRateLimit, rateLimitKey } from "@/lib/security/rate-limit";
+import { clientIp, consumePersistentRateLimit, rateLimitKey } from "@/lib/security/rate-limit";
 import {
   createOpaqueToken,
   hashOpaqueToken,
@@ -32,7 +33,7 @@ export async function requestPasswordResetAction(
   if (!parsed.success) return { error: "INVALID" };
 
   const requestHeaders = await headers();
-  const limit = consumeRateLimit(
+  const limit = await consumePersistentRateLimit(
     rateLimitKey("password-reset-request", clientIp(requestHeaders), email),
     { limit: 4, windowMs: 60 * 60_000 },
   );
@@ -94,7 +95,7 @@ export async function resetPasswordAction(
 
   const requestHeaders = await headers();
   const tokenHash = hashOpaqueToken(token);
-  const limit = consumeRateLimit(
+  const limit = await consumePersistentRateLimit(
     rateLimitKey("password-reset-submit", clientIp(requestHeaders), tokenHash),
     { limit: 6, windowMs: 30 * 60_000 },
   );
@@ -131,5 +132,7 @@ export async function resetPasswordAction(
     });
     return true;
   });
-  return changed ? { status: "reset" } : { error: "EXPIRED" };
+  if (!changed) return { error: "EXPIRED" };
+  await revokeAllUserSessions(resetToken.userId);
+  return { status: "reset" };
 }

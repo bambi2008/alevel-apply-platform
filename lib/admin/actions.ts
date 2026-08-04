@@ -7,7 +7,7 @@ type Role = "STUDENT" | "ADMIN" | "MENTOR";
 const ROLES: Role[] = ["STUDENT", "ADMIN", "MENTOR"];
 
 /** 校验当前用户为管理员，返回其 id；否则抛错。 */
-async function requireAdmin(): Promise<string> {
+export async function requireAdmin(): Promise<string> {
   const session = await auth();
   const u = session?.user as { id?: string; role?: string } | undefined;
   if (u?.role !== "ADMIN" || !u.id) throw new Error("forbidden");

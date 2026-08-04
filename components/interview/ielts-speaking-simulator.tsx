@@ -7,6 +7,7 @@ import {
   type SpeakingPart,
   type SpeakingPrompt,
 } from "@/lib/english/speaking-papers";
+import { clearRemoteProgress, loadLearningRecords, saveLearningRecord, saveRemoteProgress } from "@/lib/learning/client";
 
 type Phase = "intro" | "answer" | "prep" | "result";
 
@@ -67,7 +68,27 @@ export function IeltsSpeakingSimulator() {
     [answers],
   );
 
-  useEffect(() => setAttempts(loadAttempts()), []);
+  useEffect(() => {
+    const local = loadAttempts();
+    setAttempts(local);
+    void loadLearningRecords<{
+      resourceId: string;
+      attemptKey: string;
+      completedAt: string;
+      payload?: { paperTitle?: string; answers?: SpeakingAnswer[] } | null;
+    }>("IELTS_SPEAKING", "IELTS Speaking").then((records) => {
+      const remote = records.map((record): SpeakingAttempt => ({
+        id: record.attemptKey,
+        completedAt: record.completedAt,
+        paperId: record.resourceId,
+        paperTitle: record.payload?.paperTitle,
+        answers: record.payload?.answers ?? [],
+      }));
+      const merged = [...remote, ...local].filter((attempt, index, all) => all.findIndex((item) => item.id === attempt.id) === index).slice(0, 5);
+      setAttempts(merged);
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+    });
+  }, []);
 
   useEffect(() => {
     if ((phase !== "answer" && phase !== "prep") || secondsLeft <= 0) return;
@@ -89,6 +110,14 @@ export function IeltsSpeakingSimulator() {
     setFeedback("");
     setPhase("answer");
     setSecondsLeft(prompts[0].seconds);
+    void saveRemoteProgress({
+      kind: "IELTS_SPEAKING",
+      resourceId: paper.id,
+      payload: { phase: "answer", index: 0, paperTitle: paper.title },
+      startedAt: new Date().toISOString(),
+      testId: "ielts",
+      mode: "interview",
+    });
   }
 
   function moveNext() {
@@ -108,6 +137,15 @@ export function IeltsSpeakingSimulator() {
       const nextAttempts = [attempt, ...attempts].slice(0, 5);
       setAttempts(nextAttempts);
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextAttempts));
+      void clearRemoteProgress("IELTS_SPEAKING", paper.id);
+      void saveLearningRecord({
+        kind: "IELTS_SPEAKING",
+        resourceId: paper.id,
+        subject: "IELTS Speaking",
+        attemptKey: attempt.id,
+        completedAt: attempt.completedAt,
+        payload: { paperTitle: paper.title, answers: nextAnswers },
+      });
       setPhase("result");
       setSecondsLeft(0);
       return;

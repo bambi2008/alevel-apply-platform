@@ -2,10 +2,10 @@
 
 import bcrypt from "bcryptjs";
 import { headers } from "next/headers";
-import { auth, signOut } from "@/auth";
+import { auth, revokeOtherUserSessions, signOut } from "@/auth";
 import { db } from "@/lib/db";
 import { getStorage } from "@/lib/storage";
-import { clientIp, consumeRateLimit, rateLimitKey } from "@/lib/security/rate-limit";
+import { clientIp, consumePersistentRateLimit, rateLimitKey } from "@/lib/security/rate-limit";
 import { isStrongPassword, LEGAL_VERSION } from "./security";
 
 export type AccountActionState = {
@@ -52,7 +52,7 @@ export async function changePasswordAction(
   if (!userId) return { error: "UNAUTHORIZED" };
 
   const requestHeaders = await headers();
-  const limit = consumeRateLimit(
+  const limit = await consumePersistentRateLimit(
     rateLimitKey("change-password", clientIp(requestHeaders), userId),
     { limit: 5, windowMs: 30 * 60_000 },
   );
@@ -83,6 +83,7 @@ export async function changePasswordAction(
       },
     }),
   ]);
+  await revokeOtherUserSessions(userId);
   return { status: "password-changed" };
 }
 
@@ -94,7 +95,7 @@ export async function deleteAccountAction(
   if (!userId) return { error: "UNAUTHORIZED" };
 
   const requestHeaders = await headers();
-  const limit = consumeRateLimit(
+  const limit = await consumePersistentRateLimit(
     rateLimitKey("delete-account", clientIp(requestHeaders), userId),
     { limit: 3, windowMs: 60 * 60_000 },
   );

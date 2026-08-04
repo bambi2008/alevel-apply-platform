@@ -4,7 +4,7 @@ import { use, useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { getTestById } from "@/lib/tests";
 import { getQuestionById } from "@/lib/tests/lookup";
-import type { MCQQuestion, LongQuestion } from "@/lib/tests/questions/types";
+import type { MCQQuestion, LongQuestion, Question } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
 import { QuestionDiagnosis } from "@/components/exam-diagnosis";
 import { diagnoseAnswer, optionReview } from "@/lib/tests/diagnosis";
@@ -60,6 +60,7 @@ export default function SessionReviewPage({
 
   const [data, setData] = useState<SessionDetail | null>(null);
   const [report, setReport] = useState<ExamPerformanceReport | null>(null);
+  const [questionBank, setQuestionBank] = useState<Question[]>([]);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
@@ -68,10 +69,11 @@ export default function SessionReviewPage({
         if (r.status === 401) throw new Error("请先登录后查看");
         if (r.status === 404) throw new Error("记录不存在或无权访问");
         if (!r.ok) throw new Error("加载失败");
-        return r.json() as Promise<{ session: SessionDetail; report: ExamPerformanceReport }>;
+        return r.json() as Promise<{ session: SessionDetail; questions?: Question[]; report: ExamPerformanceReport }>;
       })
       .then((result) => {
         setData(result.session);
+        setQuestionBank(result.questions ?? []);
         setReport(result.report);
       })
       .catch((e) => setError(e.message));
@@ -114,15 +116,19 @@ export default function SessionReviewPage({
       </div>
       <div className="mt-5 space-y-6">
         {data.answers.map((a, idx) => (
-          <ReviewCard key={`${a.questionId}-${idx}`} index={idx + 1} answer={a} />
+          <ReviewCard
+            key={`${a.questionId}-${idx}`}
+            index={idx + 1}
+            answer={a}
+            question={questionBank.find((question) => question.id === a.questionId) ?? getQuestionById(a.questionId)}
+          />
         ))}
       </div>
     </div>
   );
 }
 
-function ReviewCard({ index, answer }: { index: number; answer: SessionAnswer }) {
-  const q = getQuestionById(answer.questionId);
+function ReviewCard({ index, answer, question: q }: { index: number; answer: SessionAnswer; question?: Question }) {
   const correctish = answer.max > 0 && answer.earned >= answer.max;
   const itemDiagnosis = q ? diagnoseAnswer({
     question: q,
