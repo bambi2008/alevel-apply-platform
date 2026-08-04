@@ -1,0 +1,259 @@
+{
+  "surface": "report",
+  "manifest": {
+    "version": 1,
+    "surface": "report",
+    "title": "桥申商业模式测算",
+    "description": "从 50 人免费 Beta 到可持续考试与面试备考业务的保守测算。",
+    "generatedAt": "2026-08-04T12:00:00+08:00",
+    "cards": [
+      {
+        "id": "market_card",
+        "description": "中国申请英国本科的初始可服务人群代理区间。",
+        "dataset": "market_summary",
+        "sourceId": "model_assumptions",
+        "metrics": [
+          { "label": "中国申请人", "field": "china_applicants", "format": "number" },
+          { "label": "初始可服务下限", "field": "sam_low", "format": "number" },
+          { "label": "初始可服务上限", "field": "sam_high", "format": "number" }
+        ]
+      },
+      {
+        "id": "economics_card",
+        "description": "基准价格下的单个付费学生贡献和盈亏平衡点。",
+        "dataset": "unit_economics",
+        "sourceId": "model_assumptions",
+        "metrics": [
+          { "label": "平均客单价（元）", "field": "arppu", "format": "number" },
+          { "label": "净贡献/人（元）", "field": "net_contribution", "format": "number" },
+          { "label": "全成本盈亏平衡", "field": "full_break_even", "format": "number" }
+        ]
+      }
+    ],
+    "charts": [
+      {
+        "id": "break_even_path_chart",
+        "title": "付费学生规模路径",
+        "subtitle": "从免费 Beta 到现金盈亏平衡、完全成本盈亏平衡和第一年基准目标。",
+        "type": "sparkline",
+        "intent": "status",
+        "dataset": "break_even_path",
+        "sourceId": "model_assumptions",
+        "valueFormat": "number",
+        "encodings": {
+          "x": { "field": "step", "type": "ordinal", "label": "里程碑" },
+          "y": { "field": "payers", "type": "quantitative", "label": "累计付费学生" }
+        },
+        "layout": "half"
+      }
+    ],
+    "tables": [
+      {
+        "id": "pricing_table",
+        "title": "建议产品与价格",
+        "subtitle": "固定备考周期，不做自动续费；创始价格只面向首批 100 名付费学生。",
+        "dataset": "pricing",
+        "sourceId": "model_assumptions",
+        "density": "spacious",
+        "columns": [
+          { "field": "offer", "label": "产品", "type": "text" },
+          { "field": "price", "label": "价格（元）", "format": "number" },
+          { "field": "access", "label": "有效期", "type": "text" },
+          { "field": "role", "label": "作用", "type": "text" }
+        ]
+      },
+      {
+        "id": "scenario_table",
+        "title": "年度情景明细",
+        "subtitle": "现金结果不含创始人劳动价值；完全成本利润包含该项。",
+        "dataset": "scenarios",
+        "sourceId": "model_assumptions",
+        "density": "dense",
+        "columns": [
+          { "field": "scenario", "label": "情景", "type": "text" },
+          { "field": "conversion", "label": "付费转化", "format": "percent" },
+          { "field": "payers", "label": "付费学生", "format": "number" },
+          { "field": "revenue", "label": "收入（元）", "format": "number" },
+          { "field": "cash_profit", "label": "现金结果（元）", "format": "number", "movement": true },
+          { "field": "economic_profit", "label": "完全成本利润（元）", "format": "number", "movement": true }
+        ]
+      },
+      {
+        "id": "benchmarks_table",
+        "title": "公开价格锚点",
+        "subtitle": "价格来自各服务商公开页面；服务范围与桥申并不完全相同。",
+        "dataset": "benchmarks",
+        "sourceId": "model_assumptions",
+        "density": "spacious",
+        "columns": [
+          { "field": "provider", "label": "服务", "type": "text" },
+          { "field": "published_price", "label": "公开价格", "type": "text" },
+          { "field": "model", "label": "模式", "type": "text" }
+        ]
+      },
+      {
+        "id": "beta_funnel_table",
+        "title": "50 人免费 Beta 的阶段门槛",
+        "subtitle": "这些是是否进入付费验证的目标，不是已经发生的结果。",
+        "dataset": "beta_funnel",
+        "sourceId": "model_assumptions",
+        "density": "spacious",
+        "columns": [
+          { "field": "stage", "label": "阶段", "type": "text" },
+          { "field": "students", "label": "目标学生数", "format": "number" }
+        ]
+      }
+    ],
+    "sources": [
+      {
+        "id": "model_assumptions",
+        "label": "桥申商业模式假设与公式",
+        "path": "docs/business/BETA-COMMERCIAL-MODEL-ASSUMPTIONS.md"
+      },
+      {
+        "id": "ucas_2026",
+        "label": "UCAS 2026 applicant figures",
+        "href": "https://www.ucas.com/corporate/news-and-key-documents/news/growing-18-year-old-population-pushes-uk-university-applicant-numbers-higher"
+      }
+    ],
+    "blocks": [
+      {
+        "id": "executive_summary",
+        "type": "markdown",
+        "body": "## Executive Summary\n\n- **桥申适合做季卡，而不是月度自动续费。** 学生需求围绕申请季集中爆发，按单项考试、专业路径和面试冲刺收费更容易理解，也更符合家长的购买习惯。\n- **建议基准客单价约为 999 元。** 产品可以从 699 元单项考试季卡、1,299 元专业路径包和 999 元面试冲刺包组成；首批 100 名付费学生使用更低的创始价格。\n- **全成本盈亏平衡约为 233 名付费学生。** 这已经计入每年 12 万元的创始人劳动价值；若暂不计创始人工资，现金盈亏平衡约为 69 人。\n- **50 人免费 Beta 的任务不是赚钱，而是验证。** 只有留存、学习增益、内容质量和真实付费意愿同时成立，才值得扩大获客。",
+        "sourceId": "model_assumptions"
+      },
+      {
+        "id": "pricing_heading",
+        "type": "markdown",
+        "body": "## 最适合桥申的产品结构\n\n**卖一条申请路径，而不是卖一大堆题。** 单项考试季卡负责低门槛成交，专业路径包把考试、补弱和面试连成完整结果，面试冲刺包承接高压力阶段。真人一对一暂时不进入基础产品，避免服务成本吞掉平台毛利。"
+      },
+      { "id": "pricing", "type": "table", "tableId": "pricing_table" },
+      { "id": "break_even_path", "type": "chart", "chartId": "break_even_path_chart" },
+      {
+        "id": "benchmarks_intro",
+        "type": "markdown",
+        "body": "### 定价处在自助题库与高价辅导之间\n\n公开市场中，TMUA Academy 的自助年费为 [£59](https://tmua.academy/pricing)，Vantage Admissions 的带辅导 TMUA 项目为 [£1,299](https://www.vantageadmissions.co.uk/course/test-of-mathematics-for-university-admission)，UniAdmissions 的综合项目公开区间为 [£6,500–£35,000](https://www.uniadmissions.co.uk/fees/)。桥申尚未证明真实提分，因此首年价格应靠近自助产品，而不是提前按高端咨询收费。",
+        "sourceId": "model_assumptions"
+      },
+      { "id": "benchmarks", "type": "table", "tableId": "benchmarks_table" },
+      {
+        "id": "market_heading",
+        "type": "markdown",
+        "body": "## 初始市场足够支撑小而健康的业务\n\nUCAS 在 2026 年 1 月节点记录了 **34,380 名中国申请人**。若其中 25%–40% 属于桥申当前覆盖的高选择性考试、学科面试或强化英语场景，则初始可服务人群约为 **8,595–13,752 人/年**。这是代理估计，不是入学考试考生的官方计数。",
+        "sourceId": "ucas_2026"
+      },
+      { "id": "market_metrics", "type": "metric-strip", "cardIds": ["market_card"] },
+      {
+        "id": "scenario_heading",
+        "type": "markdown",
+        "body": "## 250 名付费学生是第一年合理目标\n\n基准情景需要 2,000 条有效线索、12.5% 的付费转化和约 999 元的平均客单价。它产生约 25 万元收入，扣除获客、AI、支持、质量审核、基础设施和 12 万元创始人劳动价值后，年度利润约 1.31 万元。也就是说，第一年重点是证明模型成立，而不是追求高利润。",
+        "sourceId": "model_assumptions"
+      },
+      { "id": "scenario_table_block", "type": "table", "tableId": "scenario_table" },
+      {
+        "id": "unit_heading",
+        "type": "markdown",
+        "body": "## 软件毛利高，真正风险在获客与信任\n\n基准情景下，每位付费学生扣除约 85 元可变服务成本和 180 元获客成本后，剩余贡献约 734 元。服务器和 AI 并不是主要成本；人工审题、家长信任、退款和能否持续获得精准学生才是经营瓶颈。",
+        "sourceId": "model_assumptions"
+      },
+      { "id": "economics_metrics", "type": "metric-strip", "cardIds": ["economics_card"] },
+      {
+        "id": "beta_heading",
+        "type": "markdown",
+        "body": "## 免费 Beta 必须换回四种证据\n\n首批 50 人要换回激活、7 日留存、可比较的前后测和真实付费意愿。人数不足时不要把平均提分当作因果证明；先用它判断哪些考试、模块和学生群体值得继续投入。",
+        "sourceId": "model_assumptions"
+      },
+      { "id": "beta_table_block", "type": "table", "tableId": "beta_funnel_table" },
+      {
+        "id": "next_steps",
+        "type": "markdown",
+        "body": "## 建议的执行顺序\n\n1. **上线 50 人邀请制免费 Beta。** 暂时不展示价格，先把稳定性和数据完整性跑通。\n2. **第 14 天做第一次经营复盘。** 看注册、诊断、首次练习、首次整卷、D7 和内容投诉。\n3. **第 30–45 天测试付费意愿。** 向高活跃学生展示 599 元单项和 999 元路径创始价格，记录愿付而不是泛泛的‘觉得不错’。\n4. **只有至少 5 人真实付款才开启第二批获客。** 第二批目标 200–300 人，并开始计算真实 CAC。\n5. **达到 233 名累计付费学生后再考虑扩大团队。** 在此之前保持单机部署、轻运营和严格内容审核。"
+      },
+      {
+        "id": "questions",
+        "type": "markdown",
+        "body": "## Further Questions\n\n- 首批学生主要来自家长社群、学校、留学机构还是内容平台？不同渠道会让 CAC 相差数倍。\n- 学生最愿意为哪一条路径付费：TMUA/经济数学、ESAT/工程、UCAT/医学、LNAT/法律，还是面试？\n- 创始人每周愿意投入多少小时做客服和人工质检？这决定 12 万元劳动价值假设是否偏高或偏低。\n- 是否接受学校或机构团体授权？B2B 可能降低 CAC，但销售周期更长。"
+      },
+      {
+        "id": "caveats",
+        "type": "markdown",
+        "body": "## Caveats and Assumptions\n\n该模型是上线前决策模型，不是财务预测。25%–40% 可服务比例、6%–15% 转化率、80–220 元 CAC、退款、支持成本和付费意愿都尚未由真实桥申数据验证。UCAS 人数包含大量不需要入学考试的学生，也不覆盖香港本地及其他国家的全部潜在用户。收入按固定期限季卡计算，不应称为 ARR。税费、法律意见、外聘教师和版权许可费用未计入。",
+        "sourceId": "model_assumptions"
+      }
+    ]
+  },
+  "snapshot": {
+    "version": 1,
+    "generatedAt": "2026-08-04T12:00:00+08:00",
+    "status": "ready",
+    "datasets": {
+      "market_summary": [
+        { "china_applicants": 34380, "sam_low": 8595, "sam_high": 13752 }
+      ],
+      "unit_economics": [
+        { "arppu": 999, "variable_cost": 85, "cac": 180, "net_contribution": 734, "cash_break_even": 69, "full_break_even": 233 }
+      ],
+      "pricing": [
+        { "offer": "免费层", "price": 0, "access": "持续", "role": "诊断、有限练习、1 套整卷和基础路径" },
+        { "offer": "单项考试季卡", "price": 699, "access": "6 个月", "role": "完整题库、模拟卷、自适应补弱和分析" },
+        { "offer": "专业路径包", "price": 1299, "access": "12 个月", "role": "最多 2 项相关考试加对应面试训练" },
+        { "offer": "面试冲刺包", "price": 999, "access": "8 周", "role": "高频面试模拟、复盘和量化训练" }
+      ],
+      "break_even_path": [
+        { "step": "免费 Beta 付费验证", "payers": 5 },
+        { "step": "现金盈亏平衡", "payers": 69 },
+        { "step": "完全成本盈亏平衡", "payers": 233 },
+        { "step": "第一年基准目标", "payers": 250 }
+      ],
+      "benchmarks": [
+        { "provider": "TMUA Academy", "published_price": "£59 / 12 个月", "model": "单项考试自助题库和模拟" },
+        { "provider": "Vantage Admissions", "published_price": "£1,299", "model": "课程、工作坊和导师辅导" },
+        { "provider": "UniAdmissions", "published_price": "£6,500–£35,000", "model": "综合申请与一对一高接触服务" }
+      ],
+      "scenarios": [
+        { "scenario": "保守", "leads": 400, "conversion": 0.06, "payers": 24, "arppu": 799, "revenue": 19176, "cash_profit": -1776, "economic_profit": -61776 },
+        { "scenario": "基准", "leads": 2000, "conversion": 0.125, "payers": 250, "arppu": 999, "revenue": 249750, "cash_profit": 133100, "economic_profit": 13100 },
+        { "scenario": "乐观", "leads": 5000, "conversion": 0.15, "payers": 750, "arppu": 1199, "revenue": 899250, "cash_profit": 555750, "economic_profit": 435750 }
+      ],
+      "scenario_long": [
+        { "scenario": "保守", "metric": "收入", "amount": 19176, "payers": 24, "conversion": 0.06 },
+        { "scenario": "保守", "metric": "完全成本利润", "amount": -61776, "payers": 24, "conversion": 0.06 },
+        { "scenario": "基准", "metric": "收入", "amount": 249750, "payers": 250, "conversion": 0.125 },
+        { "scenario": "基准", "metric": "完全成本利润", "amount": 13100, "payers": 250, "conversion": 0.125 },
+        { "scenario": "乐观", "metric": "收入", "amount": 899250, "payers": 750, "conversion": 0.15 },
+        { "scenario": "乐观", "metric": "完全成本利润", "amount": 435750, "payers": 750, "conversion": 0.15 }
+      ],
+      "beta_funnel": [
+        { "stage": "受邀", "students": 50 },
+        { "stage": "注册", "students": 35 },
+        { "stage": "完成诊断", "students": 25 },
+        { "stage": "D7 回访", "students": 15 },
+        { "stage": "愿付创始价", "students": 8 },
+        { "stage": "未来真实付款", "students": 5 }
+      ]
+    }
+  },
+  "sources": [
+    {
+      "id": "model_assumptions",
+      "query": {
+        "engine": "postgresql",
+        "sql": "WITH market AS (SELECT 34380::numeric AS china_applicants, 0.25::numeric AS serviceable_low_share, 0.40::numeric AS serviceable_high_share), unit_economics AS (SELECT 999::numeric AS arppu, 85::numeric AS variable_cost_per_payer, 180::numeric AS cac, 50400::numeric AS fixed_cash_cost, 120000::numeric AS founder_labour), scenario_inputs (scenario, leads, conversion, arppu, cac, variable_cost_per_payer, fixed_cash_cost, founder_labour) AS (VALUES ('Conservative', 400::numeric, 0.06::numeric, 799::numeric, 80::numeric, 68::numeric, 17400::numeric, 60000::numeric), ('Base', 2000::numeric, 0.125::numeric, 999::numeric, 180::numeric, 85::numeric, 50400::numeric, 120000::numeric), ('Optimistic', 5000::numeric, 0.15::numeric, 1199::numeric, 220::numeric, 102::numeric, 102000::numeric, 120000::numeric)), scenarios AS (SELECT scenario, leads, conversion, leads * conversion AS payers, arppu, leads * conversion * arppu AS revenue, leads * conversion * arppu - leads * conversion * cac - leads * conversion * variable_cost_per_payer - fixed_cash_cost AS cash_profit, leads * conversion * arppu - leads * conversion * cac - leads * conversion * variable_cost_per_payer - fixed_cash_cost - founder_labour AS economic_profit FROM scenario_inputs) SELECT s.*, m.china_applicants, m.china_applicants * m.serviceable_low_share AS serviceable_low, m.china_applicants * m.serviceable_high_share AS serviceable_high, u.arppu - u.variable_cost_per_payer - u.cac AS net_contribution_per_payer, CEIL(u.fixed_cash_cost / (u.arppu - u.variable_cost_per_payer - u.cac)) AS cash_break_even_payers, CEIL((u.fixed_cash_cost + u.founder_labour) / (u.arppu - u.variable_cost_per_payer - u.cac)) AS full_break_even_payers FROM scenarios s CROSS JOIN market m CROSS JOIN unit_economics u ORDER BY CASE s.scenario WHEN 'Conservative' THEN 1 WHEN 'Base' THEN 2 ELSE 3 END",
+        "description": "可复算的桥申商业模式 SQL，覆盖市场代理、单客经济、三档情景和盈亏平衡。",
+        "executed_at": "2026-08-04T12:00:00+08:00",
+        "tables_used": ["inline assumptions documented in docs/business/BETA-COMMERCIAL-MODEL-ASSUMPTIONS.md"],
+        "metric_definitions": [
+          "收入 = 有效线索 × 付费转化率 × 平均客单价",
+          "现金结果 = 收入 - 获客成本 - 可变成本 - 固定现金成本",
+          "完全成本利润 = 现金结果 - 创始人劳动价值"
+        ]
+      }
+    },
+    {
+      "id": "ucas_2026",
+      "label": "UCAS 2026 applicant figures",
+      "href": "https://www.ucas.com/corporate/news-and-key-documents/news/growing-18-year-old-population-pushes-uk-university-applicant-numbers-higher"
+    }
+  ]
+}
