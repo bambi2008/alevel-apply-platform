@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { getQuantitativeDrills, QUANTITATIVE_INTERVIEW_DRILLS, scoreQuantitativeResponse } from "./quantitative-interview";
 import { getQuantitativeInterviewPapers } from "./quantitative-interview-papers";
+import { reviewQuantitativeResponse } from "./quantitative-interview-review";
 
 describe("quantitative interview drills", () => {
   it("keeps every drill timed, follow-up based, and linked to a supported subject", () => {
@@ -32,10 +33,20 @@ describe("quantitative interview drills", () => {
     const drill = QUANTITATIVE_INTERVIEW_DRILLS[1];
     const result = scoreQuantitativeResponse(
       drill,
-      "我先设 a_n，近似并忽略小项。展开平方差得到 a_n^2 = 2n，单位和量级检查后结果合理。",
+      "我先设 a_n，近似并忽略小项。因为平方差能消掉倒数项，所以选择展开平方差，得到 a_n^2 = 2n，单位和量级检查后结果合理。",
       "如果改成 c，我会重新代入，增长常数取决于 c，并检查边界。",
     );
     expect(result.total).toBeGreaterThanOrEqual(5);
     expect(result.band).toContain("高压");
+  });
+
+  it("returns evidence, gaps, and a concrete retry action for every process skill", () => {
+    const drill = QUANTITATIVE_INTERVIEW_DRILLS[0];
+    const review = reviewQuantitativeResponse(drill, "我算出一个大概长度。", "如果改成固定沿短边，我会重新估计。");
+    expect(review.skills).toHaveLength(5);
+    expect(review.skills.every((skill) => skill.nextAction.length > 0)).toBe(true);
+    expect(review.skills.find((skill) => skill.id === "model")?.passed).toBe(false);
+    expect(review.weakest.id).toBe("model");
+    expect(review.retryPrompt).toContain("变量");
   });
 });

@@ -3,20 +3,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, ChevronRight, Clock3, RotateCcw } from "lucide-react";
 import { scoreQuantitativeResponse } from "@/lib/interview/quantitative-interview";
+import { INTERVIEW_PROCESS_SKILLS } from "@/lib/interview/quantitative-interview-review";
 import type { QuantitativeInterviewPaper } from "@/lib/interview/quantitative-interview-papers";
 import { InterviewThinkingChecklist } from "./interview-thinking-checklist";
 
 type Phase = "intro" | "main" | "follow-up" | "result";
 type Answer = { response: string; followUpResponse: string };
-type Attempt = { id: string; paperId: string; completedAt: string; total: number; max: number };
-
-const SKILL_LABELS = [
-  { id: "model", label: "建模" },
-  { id: "calculation", label: "计算链" },
-  { id: "units", label: "单位与量纲" },
-  { id: "sanity", label: "量级复核" },
-  { id: "defence", label: "面对追问" },
-] as const;
+type Attempt = { id: string; paperId: string; completedAt: string; total: number; max: number; weakestSkillId?: (typeof INTERVIEW_PROCESS_SKILLS)[number]["id"] };
 
 function formatTime(seconds: number) {
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
@@ -56,15 +49,16 @@ export function QuantitativeInterviewPaperSimulator({
       const answer = answers[index] ?? { response: "", followUpResponse: "" };
       return scoreQuantitativeResponse(item, answer.response, answer.followUpResponse);
     });
-    const skillTotals = SKILL_LABELS.map((skill) => ({
+    const skillTotals = INTERVIEW_PROCESS_SKILLS.map((skill) => ({
       ...skill,
-      passed: taskResults.reduce((sum, item) => sum + (skill.id === "defence" ? Number(item.defence.passed) : Number(item.checks.find((check) => check.id === skill.id)?.passed)), 0),
+      passed: taskResults.reduce((sum, item) => sum + Number(item.review.skills.find((candidate) => candidate.id === skill.id)?.passed), 0),
       total: taskResults.length,
     }));
     const total = taskResults.reduce((sum, item) => sum + item.total, 0);
     const max = taskResults.reduce((sum, item) => sum + item.max, 0);
     const weakest = [...skillTotals].sort((a, b) => a.passed / a.total - b.passed / b.total)[0];
-    return { taskResults, skillTotals, total, max, weakest };
+    const weakestTaskIndex = taskResults.findIndex((item) => item.review.weakest.id === weakest.id);
+    return { taskResults, skillTotals, total, max, weakest, weakestTaskIndex: weakestTaskIndex < 0 ? 0 : weakestTaskIndex };
   }, [answers, paper]);
 
   useEffect(() => setAttempts(readAttempts(storageKey)), [storageKey]);
@@ -88,14 +82,14 @@ export function QuantitativeInterviewPaperSimulator({
 
   if (!paper || !task || !result) return null;
 
-  function start(index: number) {
+  function start(index: number, initialTaskIndex = 0) {
     setPaperIndex(index);
-    setTaskIndex(0);
+    setTaskIndex(initialTaskIndex);
     setAnswers([]);
     setResponse("");
     setFollowUpResponse("");
     setPhase("main");
-    setSecondsLeft(papers[index].tasks[0].timeLimitSec);
+    setSecondsLeft(papers[index].tasks[initialTaskIndex].timeLimitSec);
   }
 
   function submitMain() {
@@ -123,7 +117,8 @@ export function QuantitativeInterviewPaperSimulator({
     });
     const total = completedResults.reduce((sum, item) => sum + item.total, 0);
     const max = completedResults.reduce((sum, item) => sum + item.max, 0);
-    const nextAttempts = [{ id: `${paper.id}-${Date.now()}`, paperId: paper.id, completedAt: new Date().toISOString(), total, max }, ...attempts].slice(0, 9);
+    const completedReview = completedResults.reduce((weakest, current, index) => current.review.weakest.passed ? weakest : weakest ?? { skillId: current.review.weakest.id, taskIndex: index }, null as { skillId: (typeof INTERVIEW_PROCESS_SKILLS)[number]["id"]; taskIndex: number } | null);
+    const nextAttempts = [{ id: `${paper.id}-${Date.now()}`, paperId: paper.id, completedAt: new Date().toISOString(), total, max, weakestSkillId: completedReview?.skillId }, ...attempts].slice(0, 9);
     setAttempts(nextAttempts);
     window.localStorage.setItem(storageKey, JSON.stringify(nextAttempts));
     setPhase("result");
@@ -147,7 +142,7 @@ export function QuantitativeInterviewPaperSimulator({
               </button>
             ))}
           </div>
-          {attempts.length > 0 && <p className="mt-3 text-xs text-[var(--ink-faint)]">本机已记录 {attempts.length} 次套卷训练</p>}
+          {attempts.length > 0 && <div className="mt-3 space-y-1 text-xs text-[var(--ink-faint)]"><p>本机已记录 {attempts.length} 次套卷训练</p><p>最近一次优先复盘：{attempts[0].weakestSkillId ? INTERVIEW_PROCESS_SKILLS.find((skill) => skill.id === attempts[0].weakestSkillId)?.label : "旧记录未保存过程弱项"}</p></div>}
         </section>
       </div>
     );
@@ -159,17 +154,18 @@ export function QuantitativeInterviewPaperSimulator({
         <section className="border-l-4 border-[var(--success)] bg-[var(--success-bg)] p-5">
           <div className="flex flex-wrap items-center justify-between gap-3"><div><p className="text-xs font-semibold uppercase text-[var(--success)]">训练报告，不代表院校评分</p><h3 className="mt-1 text-lg font-bold text-[var(--ink)]">{paper.title} 已完成</h3></div><strong className="text-3xl text-[var(--ink)]">{result.total}<span className="text-base font-normal text-[var(--ink-soft)]">/{result.max}</span></strong></div>
           <p className="mt-2 text-sm text-[var(--ink-soft)]">整场最需要优先修补：<strong className="text-[var(--ink)]">{result.weakest.label}</strong>。这是过程反馈，不是录取概率或学院打分。</p>
+          <p className="mt-2 text-sm leading-relaxed text-[var(--indigo)]">下一轮先执行：{result.weakest.id === "model" ? "重新定义变量、假设和目标量。" : result.weakest.id === "method" ? "说出为什么选择这个公式或方法。" : result.weakest.id === "calculation" ? "把关系式、代入和中间结论逐步说出。" : result.weakest.id === "check" ? "检查单位、数量级、范围和误差来源。" : "指出改变的条件，并重做受影响的模型环节。"}</p>
         </section>
         <section className="border-y border-[var(--border)] py-4">
           <h4 className="font-semibold text-[var(--ink)]">整场过程报告</h4>
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
-            {result.skillTotals.map((skill) => <div key={skill.id} className="border border-[var(--border)] p-3"><div className="flex items-center justify-between gap-3"><span className="text-sm font-semibold text-[var(--ink)]">{skill.label}</span><strong className="text-sm text-[var(--ink)]">{skill.passed}/{skill.total}</strong></div><div className="mt-2 h-1.5 bg-[var(--surface)]"><div className="h-full bg-[var(--indigo)]" style={{ width: `${(skill.passed / skill.total) * 100}%` }} /></div></div>)}
+            {result.skillTotals.map((skill) => <div key={skill.id} className={`border p-3 ${skill.id === result.weakest.id ? "border-[var(--indigo)]/50 bg-[var(--info-bg)]" : "border-[var(--border)]"}`}><div className="flex items-center justify-between gap-3"><span className="text-sm font-semibold text-[var(--ink)]">{skill.label}</span><strong className="text-sm text-[var(--ink)]">{skill.passed}/{skill.total}</strong></div><div className="mt-2 h-1.5 bg-[var(--surface)]"><div className="h-full bg-[var(--indigo)]" style={{ width: `${(skill.passed / skill.total) * 100}%` }} /></div></div>)}
           </div>
         </section>
         <section className="space-y-2">
           {paper.tasks.map((item, index) => <details key={item.id} className="border border-[var(--border)] bg-white p-4"><summary className="cursor-pointer text-sm font-semibold text-[var(--ink)]">第 {index + 1} 题 · {item.title}</summary><div className="mt-3 space-y-2 text-sm leading-relaxed text-[var(--ink-soft)]"><p><strong className="text-[var(--ink)]">目标：</strong>{item.target}</p><p><strong className="text-[var(--ink)]">追问目标：</strong>{item.followUpTarget}</p><p className="flex gap-2 text-[var(--danger)]"><AlertTriangle className="mt-0.5 size-4 shrink-0" />常见失分点：{item.commonTrap}</p></div></details>)}
         </section>
-        <div className="flex flex-wrap gap-2"><button type="button" onClick={() => start((paperIndex + 1) % papers.length)} className="btn btn-primary">下一套固定套卷 <ChevronRight className="size-4" /></button><button type="button" onClick={() => setPhase("intro")} className="btn btn-secondary"><RotateCcw className="size-4" />返回套卷列表</button></div>
+        <div className="flex flex-wrap gap-2"><button type="button" onClick={() => start(paperIndex, result.weakestTaskIndex)} className="btn btn-primary">重练最弱题 <RotateCcw className="size-4" /></button><button type="button" onClick={() => start((paperIndex + 1) % papers.length)} className="btn btn-secondary">下一套固定套卷 <ChevronRight className="size-4" /></button><button type="button" onClick={() => setPhase("intro")} className="btn btn-secondary">返回套卷列表</button></div>
       </div>
     );
   }

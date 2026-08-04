@@ -4,10 +4,11 @@ import { useEffect, useMemo, useState } from "react";
 import { AlertTriangle, Check, ChevronRight, Clock3, RotateCcw, Sparkles } from "lucide-react";
 import type { QuantitativeInterviewDrill } from "@/lib/interview/quantitative-interview";
 import { scoreQuantitativeResponse } from "@/lib/interview/quantitative-interview";
+import type { InterviewProcessSkillId } from "@/lib/interview/quantitative-interview-review";
 import { InterviewThinkingChecklist } from "./interview-thinking-checklist";
 
 type Phase = "intro" | "main" | "follow-up" | "result";
-type Attempt = { id: string; drillId: string; completedAt: string; score: number; max: number };
+type Attempt = { id: string; drillId: string; completedAt: string; score: number; max: number; weakestSkillId?: InterviewProcessSkillId };
 
 function formatTime(seconds: number) {
   return `${Math.floor(seconds / 60)}:${String(seconds % 60).padStart(2, "0")}`;
@@ -38,6 +39,7 @@ export function QuantitativeInterviewSimulator({
   const [attempts, setAttempts] = useState<Attempt[]>([]);
   const [feedback, setFeedback] = useState("");
   const [feedbackLoading, setFeedbackLoading] = useState(false);
+  const [retryFocus, setRetryFocus] = useState<InterviewProcessSkillId | null>(null);
 
   const drill = drills[drillIndex];
   const score = useMemo(
@@ -67,11 +69,12 @@ export function QuantitativeInterviewSimulator({
 
   if (!drill) return null;
 
-  function start(index = drillIndex) {
+  function start(index = drillIndex, focus: InterviewProcessSkillId | null = null) {
     setDrillIndex(index);
     setResponse("");
     setFollowUpResponse("");
     setFeedback("");
+    setRetryFocus(focus);
     setPhase("main");
     setSecondsLeft(drills[index].timeLimitSec);
   }
@@ -89,6 +92,7 @@ export function QuantitativeInterviewSimulator({
       completedAt: new Date().toISOString(),
       score: result.total,
       max: result.max,
+      weakestSkillId: result.review.weakest.id,
     };
     const nextAttempts = [attempt, ...attempts].slice(0, 8);
     setAttempts(nextAttempts);
@@ -173,7 +177,7 @@ export function QuantitativeInterviewSimulator({
             <div className="mt-2 grid gap-2 sm:grid-cols-2">
               {attempts.slice(0, 4).map((attempt) => {
                 const item = drills.find((candidate) => candidate.id === attempt.drillId);
-                return <div key={attempt.id} className="flex items-center justify-between border border-[var(--border)] px-3 py-2 text-xs"><span className="truncate text-[var(--ink-soft)]">{item?.title ?? attempt.drillId}</span><strong className="ml-3 shrink-0 text-[var(--ink)]">{attempt.score}/{attempt.max}</strong></div>;
+                return <div key={attempt.id} className="flex items-center justify-between gap-3 border border-[var(--border)] px-3 py-2 text-xs"><span className="min-w-0 truncate text-[var(--ink-soft)]">{item?.title ?? attempt.drillId}</span><span className="shrink-0 text-[var(--ink-faint)]">{attempt.weakestSkillId ? `优先重练：${score?.review.skills.find((skill) => skill.id === attempt.weakestSkillId)?.shortLabel ?? attempt.weakestSkillId}` : "旧记录"}</span><strong className="shrink-0 text-[var(--ink)]">{attempt.score}/{attempt.max}</strong></div>;
               })}
             </div>
           </section>
@@ -192,14 +196,14 @@ export function QuantitativeInterviewSimulator({
         <section className="border-y border-[var(--border)] py-4">
           <h4 className="font-semibold text-[var(--ink)]">过程检查</h4>
           <div className="mt-3 grid gap-2 sm:grid-cols-2">
-            {[...score.checks, score.defence].map((check) => <div key={check.id} className="flex gap-2 border border-[var(--border)] p-3"><span className={`mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full ${check.passed ? "bg-[var(--success-bg)] text-[var(--success)]" : "bg-[var(--surface)] text-[var(--ink-faint)]"}`}>{check.passed ? <Check className="size-3" /> : <span className="size-1.5 rounded-full bg-current" />}</span><span><strong className="block text-sm text-[var(--ink)]">{check.label}</strong><span className="mt-0.5 block text-xs text-[var(--ink-soft)]">{check.description}</span></span></div>)}
+            {score.review.skills.map((skill) => <div key={skill.id} className={`border p-3 ${skill.id === score.review.weakest.id ? "border-[var(--indigo)]/50 bg-[var(--info-bg)]" : "border-[var(--border)]"}`}><div className="flex items-start gap-2"><span className={`mt-0.5 flex size-4 shrink-0 items-center justify-center rounded-full ${skill.passed ? "bg-[var(--success-bg)] text-[var(--success)]" : "bg-[var(--surface)] text-[var(--ink-faint)]"}`}>{skill.passed ? <Check className="size-3" /> : <span className="size-1.5 rounded-full bg-current" />}</span><span><strong className="block text-sm text-[var(--ink)]">{skill.label}</strong><span className="mt-0.5 block text-xs text-[var(--ink-soft)]">{skill.evidence.length > 0 ? `识别到证据：${skill.evidence[0]}` : skill.missing}</span></span></div>{!skill.passed && <p className="mt-2 border-t border-[var(--border)] pt-2 text-xs leading-relaxed text-[var(--indigo)]">下一次：{skill.nextAction}</p>}</div>)}
           </div>
         </section>
         <section className="space-y-3">
           <details className="border border-[var(--border)] bg-white p-4"><summary className="cursor-pointer text-sm font-semibold text-[var(--ink)]">查看面试官期待的思路</summary><div className="mt-3 space-y-3 text-sm leading-relaxed text-[var(--ink-soft)]"><div><p className="font-semibold text-[var(--ink)]">主问题目标</p><p className="mt-1">{drill.target}</p></div><div><p className="font-semibold text-[var(--ink)]">追问目标</p><p className="mt-1">{drill.followUpTarget}</p></div><div><p className="font-semibold text-[var(--ink)]">推荐思路</p><p className="mt-1">{drill.approach}</p></div></div><p className="mt-3 flex gap-2 text-sm text-[var(--danger)]"><AlertTriangle className="mt-0.5 size-4 shrink-0" />常见失分点：{drill.commonTrap}</p></details>
           {!feedback ? <button type="button" onClick={requestFeedback} disabled={feedbackLoading} className="btn btn-secondary"><Sparkles className="size-4" />{feedbackLoading ? "正在生成 AI 复盘…" : "生成 AI 追问复盘"}</button> : <div className="whitespace-pre-wrap border border-[var(--indigo)]/30 bg-[var(--info-bg)] p-4 text-sm leading-relaxed text-[var(--ink)]">{feedback}</div>}
         </section>
-        <div className="flex flex-wrap gap-2"><button type="button" onClick={() => start((drillIndex + 1) % drills.length)} className="btn btn-primary">下一道压力题 <ChevronRight className="size-4" /></button><button type="button" onClick={() => setPhase("intro")} className="btn btn-secondary"><RotateCcw className="size-4" />返回训练列表</button></div>
+        <div className="flex flex-wrap gap-2"><button type="button" onClick={() => start(drillIndex, score.review.weakest.id)} className="btn btn-primary">重练最弱环节 <RotateCcw className="size-4" /></button><button type="button" onClick={() => start((drillIndex + 1) % drills.length)} className="btn btn-secondary">下一道压力题 <ChevronRight className="size-4" /></button><button type="button" onClick={() => setPhase("intro")} className="btn btn-secondary">返回训练列表</button></div>
       </div>
     );
   }
@@ -214,6 +218,7 @@ export function QuantitativeInterviewSimulator({
       <div className="h-1 bg-[var(--surface)]"><div className="h-full bg-[var(--indigo)] transition-all" style={{ width: `${Math.max(0, (secondsLeft / (isMain ? drill.timeLimitSec : drill.followUpSec)) * 100)}%` }} /></div>
       <div className="space-y-5 p-4 sm:p-6">
         <InterviewThinkingChecklist emphasis={isMain ? ["model", "method", "calculation", "check"] : ["adapt"]} />
+        {retryFocus && <p className="border-l-2 border-[var(--indigo)] bg-[var(--info-bg)] px-3 py-2 text-sm text-[var(--indigo)]">本轮重练重点：{score?.review.skills.find((skill) => skill.id === retryFocus)?.label ?? retryFocus}。先补这一环，再追求答案速度。</p>}
         <div><p className="text-xs font-semibold text-[var(--ink-faint)]">{drill.title}</p><p className="mt-2 text-sm leading-relaxed text-[var(--ink-soft)]">{drill.setup}</p><p className="mt-3 text-lg font-semibold leading-relaxed text-[var(--ink)]">{isMain ? drill.prompt : drill.followUp}</p></div>
         <div className="grid gap-2 sm:grid-cols-4">{["先建模", "计算链", "单位与量纲", "量级复核"].map((label, index) => <div key={label} className={`border-l-2 pl-2 text-xs ${index === 0 && isMain ? "border-[var(--indigo)] text-[var(--ink)]" : "border-[var(--border)] text-[var(--ink-faint)]"}`}>{label}</div>)}</div>
         <label className="block"><span className="mb-2 block text-sm font-medium text-[var(--ink)]">{isMain ? "把你的思路打出来" : "回答追问，并说明哪一个假设被改变"}</span><textarea autoFocus value={isMain ? response : followUpResponse} onChange={(event) => isMain ? setResponse(event.target.value) : setFollowUpResponse(event.target.value)} className="input min-h-56 w-full resize-y" placeholder="写出假设、关系式、单位、估算和检查。面试训练看过程，不只看最后一个数字。" /></label>

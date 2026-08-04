@@ -1,3 +1,5 @@
+import { reviewQuantitativeResponse } from "./quantitative-interview-review";
+
 export type QuantitativeDiscipline = "maths" | "physics" | "engineering" | "chemistry" | "biology" | "economics" | "compsci";
 
 export type QuantitativeCheckpoint = {
@@ -409,6 +411,7 @@ export function isQuantitativeInterviewSubject(subjectId: string) {
 }
 
 export function scoreQuantitativeResponse(drill: QuantitativeInterviewDrill, response: string, followUpResponse: string) {
+  const review = reviewQuantitativeResponse(drill, response, followUpResponse);
   const main = response.toLocaleLowerCase();
   const followUp = followUpResponse.toLocaleLowerCase();
   const checks = drill.checkpoints.map((checkpoint) => ({
@@ -419,14 +422,13 @@ export function scoreQuantitativeResponse(drill: QuantitativeInterviewDrill, res
     ...DEFENCE_CHECKPOINT,
     passed: DEFENCE_CHECKPOINT.signals.some((signal) => followUp.includes(signal.toLocaleLowerCase())),
   };
-  const mainScore = checks.filter((check) => check.passed).length;
-  const defenceScore = defence.passed ? 1 : 0;
-  const total = mainScore + defenceScore;
+  const total = review.total;
   return {
     total,
-    max: checks.length + 1,
+    max: review.max,
     checks,
     defence,
-    band: total >= 5 ? "可承受高压追问" : total >= 3 ? "方法基本成形，需继续练习" : "先练习把计算过程说完整",
+    band: review.band,
+    review,
   };
 }

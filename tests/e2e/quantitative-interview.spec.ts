@@ -18,6 +18,9 @@ test("student can complete a timed quantitative interview drill", async ({ brows
     await page.getByRole("button", { name: "完成本轮并查看过程评分" }).click();
     await expect(page.getByText("训练评分，不代表院校评分")).toBeVisible();
     await expect(page.getByText("过程检查")).toBeVisible();
+    await expect(page.getByText("为什么选择这个方法")).toBeVisible();
+    await expect(page.getByText(/下一次：/).first()).toBeVisible();
+    await expect(page.getByRole("button", { name: "重练最弱环节" })).toBeVisible();
     await page.getByRole("button", { name: "固定套卷" }).click();
     await expect(page.getByRole("heading", { name: "高压定量固定套卷" })).toBeVisible();
     await page.getByRole("button", { name: /模拟卷 1/ }).click();
@@ -28,6 +31,8 @@ test("student can complete a timed quantitative interview drill", async ({ brows
       await page.getByRole("button", { name: index === 2 ? /完成套卷并查看报告/ : /提交追问，进入下一题/ }).click();
     }
     await expect(page.getByText("整场过程报告")).toBeVisible();
+    await expect(page.getByText("下一轮先执行：")).toBeVisible();
+    await expect(page.getByRole("button", { name: "重练最弱题" })).toBeVisible();
     await expect.poll(() => page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
     if (process.env.OPS_SCREENSHOT_DIR) {
       await page.screenshot({ path: path.join(process.env.OPS_SCREENSHOT_DIR, `quantitative-${viewport.name}.png`), fullPage: true });
