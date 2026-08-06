@@ -5,6 +5,7 @@ import { Dashboard } from "@/components/dashboard";
 import { StoryIllustration } from "@/components/story-illustration";
 import { HeroBridge, SceneCompass, SceneDocs, SceneChat, SceneGrowth } from "@/components/illustrations";
 import { Photo } from "@/components/photo";
+import { PAYWALL_ENABLED } from "@/lib/entitlements";
 
 type Feature = { emoji: string; href: string; title: string; desc: string };
 type Plan = {
@@ -129,6 +130,7 @@ function Landing({ t, t2 }: { t: Awaited<ReturnType<typeof getTranslations<"home
       </section>
 
       {/* ── Pricing ────────────────────────────────────────── */}
+      {PAYWALL_ENABLED && (
       <section id="pricing" className="mx-auto max-w-5xl px-6 py-24 scroll-mt-16">
         <SectionHead eyebrow={t("pricingEyebrow")} title={t("pricingHeading")} sub={t("pricingSub")} />
         <div className="mt-14 grid sm:grid-cols-3 gap-5">
@@ -163,6 +165,7 @@ function Landing({ t, t2 }: { t: Awaited<ReturnType<typeof getTranslations<"home
         </div>
         <p className="text-center t-caption mt-8">{t("pricingNote")}</p>
       </section>
+      )}
 
       {/* ── Story ──────────────────────────────────────────── */}
       <section className="border-t border-[var(--border-soft)] bg-[var(--surface)]">

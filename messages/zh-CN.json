@@ -99,10 +99,10 @@
     "titleBefore": "用 ",
     "titleHighlight": "极低成本",
     "titleAfter": " 备考到位",
-    "subtitle": "MAT、TMUA、ESAT、STEP、PAT、LNAT、TARA 等大学入学笔试，以及用于背景提升的学科竞赛——A-Level 申请要练的两大类，一个订阅全覆盖：海量原创题库、全真计时模考、逐题详解与知识卡。",
+    "subtitle": "TMUA、ESAT、STEP、LNAT、TARA 等现行大学入学笔试，MAT、PAT 历史训练，以及用于背景提升的学科竞赛——海量原创题库、全真计时模考、逐题详解与知识卡集中在一个平台。",
     "ctaTry": "免费开始刷题",
     "ctaBrowse": "看看我该考哪些",
-    "priceNote": "订阅制 · 低至约 ¥33/月，解锁全部题库与全真模考。",
+    "priceNote": "Beta 测试期免费开放全部题库与全真模考，不收取费用。",
     "features": [
       {
         "emoji": "📚",
@@ -228,7 +228,7 @@
   },
   "profile": {
     "title": "我的档案",
-    "intro": "填好后，选校匹配会自动带入你的成绩。资料暂存在本地浏览器（接入登录后改为云端同步）。",
+    "intro": "填好后，选校匹配会自动带入你的成绩。登录账号的档案将保存至云端并支持跨设备同步。",
     "basicInfo": "基本信息",
     "fullName": "姓名（选填）",
     "school": "就读学校（选填）",
@@ -245,7 +245,7 @@
   },
   "applications": {
     "title": "申请清单",
-    "intro": "管理你的申请进度与 Offer。资料暂存本地浏览器（接入登录后云端同步）。",
+    "intro": "管理你的申请进度与 Offer。登录账号的数据将保存至云端并支持跨设备同步。",
     "statTotal": "申请总数",
     "statOffers": "已获 Offer",
     "statSubmitted": "已提交",

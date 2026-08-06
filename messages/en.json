@@ -99,10 +99,10 @@
     "titleBefore": "prepared for ",
     "titleHighlight": "next to nothing",
     "titleAfter": "",
-    "subtitle": "University admission tests like MAT, TMUA, ESAT, STEP, PAT, LNAT and TARA, plus academic competitions for profile-building — the two kinds of exam a UK/HK application calls for, in one subscription: original question banks, full timed mocks, step-by-step solutions and knowledge cards.",
+    "subtitle": "Current university admission tests such as TMUA, ESAT, STEP, LNAT and TARA, historical MAT and PAT training, plus academic competitions for profile-building — original question banks, full timed mocks, step-by-step solutions and knowledge cards in one platform.",
     "ctaTry": "Start practising free",
     "ctaBrowse": "Which tests do I need?",
-    "priceNote": "Subscription · from ~¥33/mo for every question bank and full mock.",
+    "priceNote": "Free during the Beta: every question bank and full mock is open at no charge.",
     "features": [
       {
         "emoji": "📚",
@@ -228,7 +228,7 @@
   },
   "profile": {
     "title": "My Profile",
-    "intro": "Once filled in, Course Matching auto-loads your grades. Saved in your browser for now (cloud sync after login).",
+    "intro": "Once filled in, Course Matching auto-loads your grades. Signed-in profiles are saved to the cloud and sync across devices.",
     "basicInfo": "Basic info",
     "fullName": "Name (optional)",
     "school": "School (optional)",
@@ -245,7 +245,7 @@
   },
   "applications": {
     "title": "Applications",
-    "intro": "Track your application progress and offers. Saved in your browser for now (cloud sync after login).",
+    "intro": "Track your application progress and offers. Signed-in data is saved to the cloud and syncs across devices.",
     "statTotal": "Total",
     "statOffers": "Offers",
     "statSubmitted": "Submitted",
