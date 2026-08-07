@@ -1,8 +1,8 @@
 "use client";
 
 import { use, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
-import { getTestById } from "@/lib/tests";
 import { getQuestionById } from "@/lib/tests/lookup";
 import type { MCQQuestion, LongQuestion, Question } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
@@ -12,6 +12,7 @@ import { ExamPerformanceReportView } from "@/components/exam-performance-report"
 import type { ExamPerformanceReport } from "@/lib/tests/report";
 import type { GradeAssessment, GradeEvidence } from "@/lib/tests/grading";
 import { GradingTrustPanel } from "@/components/grading-trust-panel";
+import { forceFullNavigation } from "@/lib/navigation";
 
 interface PartFeedback {
   label: string;
@@ -56,7 +57,11 @@ export default function SessionReviewPage({
   params: Promise<{ testId: string; sessionId: string }>;
 }) {
   const { testId, sessionId } = use(params);
-  const test = getTestById(testId);
+  const searchParams = useSearchParams();
+  const requestedReturnTo = searchParams.get("returnTo");
+  const returnTo = requestedReturnTo && requestedReturnTo.startsWith("/") && !requestedReturnTo.startsWith("//")
+    ? requestedReturnTo
+    : `/tests/${testId}`;
 
   const [data, setData] = useState<SessionDetail | null>(null);
   const [report, setReport] = useState<ExamPerformanceReport | null>(null);
@@ -83,7 +88,7 @@ export default function SessionReviewPage({
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 text-center text-neutral-500">
         <p className="text-lg mb-4">⚠️ {error}</p>
-        <Link href={`/tests/${testId}`} className="text-sm text-blue-600 hover:underline">
+        <Link href={returnTo} onClick={forceFullNavigation} className="text-sm text-blue-600 hover:underline">
           ← 返回备考详情
         </Link>
       </div>
@@ -101,8 +106,8 @@ export default function SessionReviewPage({
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
       <div className="flex items-center justify-between mb-6">
-        <Link href={`/tests/${testId}`} className="text-sm text-neutral-500 hover:text-neutral-800">
-          ← {test?.abbr ?? testId} 备考详情
+        <Link href={returnTo} onClick={forceFullNavigation} className="text-sm text-neutral-500 hover:text-neutral-800">
+          ← 返回本次复盘
         </Link>
         <span className="text-sm text-neutral-400">{fmtDate}</span>
       </div>
@@ -121,6 +126,7 @@ export default function SessionReviewPage({
             index={idx + 1}
             answer={a}
             question={questionBank.find((question) => question.id === a.questionId) ?? getQuestionById(a.questionId)}
+            returnTo={returnTo}
           />
         ))}
       </div>
@@ -128,7 +134,7 @@ export default function SessionReviewPage({
   );
 }
 
-function ReviewCard({ index, answer, question: q }: { index: number; answer: SessionAnswer; question?: Question }) {
+function ReviewCard({ index, answer, question: q, returnTo }: { index: number; answer: SessionAnswer; question?: Question; returnTo?: string }) {
   const correctish = answer.max > 0 && answer.earned >= answer.max;
   const itemDiagnosis = q ? diagnoseAnswer({
     question: q,
@@ -168,7 +174,7 @@ function ReviewCard({ index, answer, question: q }: { index: number; answer: Ses
       {q && answer.type === "long" && (
         <LongReview q={q as LongQuestion} work={answer.work} feedback={answer.feedback} />
       )}
-      {q && itemDiagnosis && <QuestionDiagnosis diagnosis={itemDiagnosis} question={q} />}
+      {q && itemDiagnosis && <QuestionDiagnosis diagnosis={itemDiagnosis} question={q} returnTo={returnTo} />}
     </div>
   );
 }

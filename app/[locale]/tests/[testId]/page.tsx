@@ -3,6 +3,7 @@
 import { useState, useEffect, use } from "react";
 import { notFound, useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
+import { forceFullNavigation } from "@/lib/navigation";
 import { getTestById, type AdmissionsTest } from "@/lib/tests";
 import { getKnowledgeByTopicId } from "@/lib/tests/knowledge";
 import { REGISTRATION_INFO } from "@/lib/tests/registration";
@@ -29,6 +30,10 @@ type TabId = "overview" | "topics" | "plan" | "practice" | "history" | "analysis
 function TestDetailContent({ test }: { test: AdmissionsTest }) {
   const searchParams = useSearchParams();
   const requestedTab = searchParams.get("tab");
+  const requestedReturnTo = searchParams.get("returnTo");
+  const returnTo = requestedReturnTo && requestedReturnTo.startsWith("/") && !requestedReturnTo.startsWith("//")
+    ? requestedReturnTo
+    : null;
 
   const tabs: { id: TabId; label: string; labelEn: string }[] = [
     { id: "overview", label: "考试结构", labelEn: "Structure" },
@@ -44,8 +49,8 @@ function TestDetailContent({ test }: { test: AdmissionsTest }) {
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
       {/* Back */}
-      <Link href="/tests" className="text-sm text-[var(--ink-soft)] hover:text-[var(--ink)] mb-6 inline-flex items-center gap-1">
-        ← 返回考试列表
+      <Link href={returnTo ?? "/tests"} onClick={forceFullNavigation} className="text-sm text-[var(--ink-soft)] hover:text-[var(--ink)] mb-6 inline-flex items-center gap-1">
+        ← {returnTo ? "返回本次复盘" : "返回考试列表"}
       </Link>
 
       {/* Header */}

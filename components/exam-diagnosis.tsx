@@ -1,8 +1,11 @@
+"use client";
+
 import { AlertCircle, BookOpen, CheckCircle2, RotateCcw, SearchCheck } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import type { AnswerDiagnosis, SessionDiagnosis } from "@/lib/tests/diagnosis";
 import type { Question } from "@/lib/tests/questions/types";
 import { lessonHref, remediationHref } from "@/lib/tests/diagnosis";
+import { forceFullNavigation } from "@/lib/navigation";
 
 const TONE = {
   positive: "border-[var(--success)] bg-[var(--success-bg)] text-[var(--success)]",
@@ -68,12 +71,17 @@ export function QuestionDiagnosis({
   diagnosis,
   question,
   compact = false,
+  returnTo,
 }: {
   diagnosis: AnswerDiagnosis;
   question: Question;
   compact?: boolean;
+  returnTo?: string;
 }) {
   const Icon = diagnosis.severity === "positive" ? CheckCircle2 : AlertCircle;
+  const addReturnTo = (href: string) => returnTo
+    ? `${href}${href.includes("?") ? "&" : "?"}returnTo=${encodeURIComponent(returnTo)}`
+    : href;
   return (
     <div className={`${compact ? "mt-3" : "mt-4"} border-l-2 pl-3 ${diagnosis.severity === "positive" ? "border-[var(--success)]" : diagnosis.severity === "priority" ? "border-[var(--danger)]" : "border-[var(--warning)]"}`}>
       <div className="flex items-center gap-2">
@@ -83,10 +91,10 @@ export function QuestionDiagnosis({
       <p className="mt-1 text-xs leading-5 text-[var(--ink-soft)]">{diagnosis.evidence}</p>
       {diagnosis.severity !== "positive" && (
         <div className="mt-2 flex flex-wrap gap-3 text-xs font-medium">
-          <Link href={lessonHref(question)} className="inline-flex items-center gap-1 text-[var(--indigo)] hover:underline">
+          <Link href={addReturnTo(lessonHref(question))} onClick={forceFullNavigation} className="inline-flex items-center gap-1 text-[var(--indigo)] hover:underline">
             <BookOpen className="size-3.5" aria-hidden="true" /> 补知识
           </Link>
-          <Link href={remediationHref(question)} className="inline-flex items-center gap-1 text-[var(--indigo)] hover:underline">
+          <Link href={addReturnTo(remediationHref(question))} onClick={forceFullNavigation} className="inline-flex items-center gap-1 text-[var(--indigo)] hover:underline">
             <RotateCcw className="size-3.5" aria-hidden="true" /> 练同类题
           </Link>
         </div>

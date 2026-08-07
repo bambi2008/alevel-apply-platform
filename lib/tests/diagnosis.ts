@@ -271,7 +271,7 @@ export function optionReview(
 }
 
 export function remediationHref(question: Question) {
-  return `/tests/${question.testId}/practice?topic=${question.topicId}&adaptive=1&count=10`;
+  return `/tests/${question.testId}/practice?topic=${question.topicId}&adaptive=1&remediation=1&count=10`;
 }
 
 export function lessonHref(question: Question) {

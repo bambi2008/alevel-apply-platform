@@ -26,6 +26,7 @@ import { buildSessionDiagnosis } from "@/lib/tests/diagnosis";
 import { DiagnosisSummary, QuestionDiagnosis } from "@/components/exam-diagnosis";
 import { persistExamSession } from "@/lib/tests/persist-session";
 import { GradingTrustPanel } from "@/components/grading-trust-panel";
+import { forceFullNavigation } from "@/lib/navigation";
 
 const QUESTION_BANKS: Record<string, Question[]> = {
   mat: MAT_QUESTIONS,
@@ -47,6 +48,21 @@ type PracticeMode = "topic" | "mixed" | "adaptive";
 type PracticeFormat = "all" | "mcq" | "short-proof" | "long";
 type SessionState = "select" | "practicing" | "complete";
 type SessionPurpose = "diagnostic" | "practice";
+
+interface PracticeSnapshot {
+  version: 1;
+  testId: string;
+  queueIds: string[];
+  results: SessionResult[];
+  sessionStartedAt: number;
+  strategy: PracticeMode;
+  purpose: SessionPurpose;
+  savedAt: number;
+}
+
+function practiceSnapshotKey(testId: string) {
+  return `qiaoshen:practice-session:${testId}`;
+}
 
 function matchesFormat(question: Question, format: PracticeFormat): boolean {
   if (format === "all") return true;
@@ -112,13 +128,47 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
   const [sessionStartedAt, setSessionStartedAt] = useState(0);
   const [sessionPurpose, setSessionPurpose] = useState<SessionPurpose>("practice");
   const questionStartedAt = useRef(0);
+  const restoredRef = useRef(false);
   const tier = useTier();
+  const shouldResume = searchParams.get("resume") === "1";
   const availableQuestionCount = allQuestions.filter((question) =>
     (!["topic", "adaptive"].includes(mode) || topicId === "all" || question.topicId === topicId) && matchesFormat(question, format)
   ).length;
   const effectiveQuestionCount = Math.min(questionCount, 30, availableQuestionCount);
 
+  useEffect(() => {
+    if (!shouldResume || restoredRef.current || allQuestions.length === 0) return;
+    const raw = window.sessionStorage.getItem(practiceSnapshotKey(testId));
+    if (!raw) return;
+    try {
+      const snapshot = JSON.parse(raw) as PracticeSnapshot;
+      if (
+        snapshot.version !== 1
+        || snapshot.testId !== testId
+        || !Array.isArray(snapshot.queueIds)
+        || !Array.isArray(snapshot.results)
+        || snapshot.queueIds.length === 0
+      ) return;
+      const byId = new Map(allQuestions.map((question) => [question.id, question]));
+      const restoredQueue = snapshot.queueIds
+        .map((questionId) => byId.get(questionId))
+        .filter((question): question is Question => !!question);
+      if (restoredQueue.length === 0) return;
+      restoredRef.current = true;
+      setMode(snapshot.strategy);
+      setQueue(restoredQueue);
+      setResults(snapshot.results);
+      setCurrentIdx(restoredQueue.length);
+      setSessionStartedAt(snapshot.sessionStartedAt);
+      setSessionPurpose(snapshot.purpose);
+      setSessionState("complete");
+    } catch {
+      // Ignore an invalid browser snapshot and let the user start a new session.
+    }
+  }, [allQuestions, shouldResume, testId]);
+
   const startSession = useCallback(async () => {
+    window.sessionStorage.removeItem(practiceSnapshotKey(testId));
     setStarting(true);
     setStartError(null);
     let pool = allQuestions;
@@ -214,12 +264,16 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
     return (
       <SessionSummary
         testId={testId}
+        queue={queue}
         results={results}
         startedAt={sessionStartedAt}
         strategy={mode}
         purpose={sessionPurpose}
         questionBank={allQuestions}
-        onRestart={() => setSessionState("select")}
+        onRestart={() => {
+          window.sessionStorage.removeItem(practiceSnapshotKey(testId));
+          setSessionState("select");
+        }}
       />
     );
   }
@@ -823,6 +877,7 @@ function LongAnswerCard({
 
 function SessionSummary({
   testId,
+  queue,
   results,
   startedAt,
   strategy,
@@ -831,6 +886,7 @@ function SessionSummary({
   onRestart,
 }: {
   testId: string;
+  queue: Question[];
   results: SessionResult[];
   startedAt: number;
   strategy: PracticeMode;
@@ -864,6 +920,20 @@ function SessionSummary({
       firstSelected: result.firstSelected ?? result.selected,
     }] : [];
   }));
+
+  useEffect(() => {
+    const snapshot: PracticeSnapshot = {
+      version: 1,
+      testId,
+      queueIds: queue.map((question) => question.id),
+      results,
+      sessionStartedAt: startedAt,
+      strategy,
+      purpose,
+      savedAt: Date.now(),
+    };
+    window.sessionStorage.setItem(practiceSnapshotKey(testId), JSON.stringify(snapshot));
+  }, [purpose, queue, results, startedAt, strategy, testId]);
 
   // Save to DB silently (best-effort, non-blocking)
   useEffect(() => {
@@ -932,8 +1002,8 @@ function SessionSummary({
               if (!question) return null;
               return (
                 <div key={item.questionId} className="py-4">
-                  <p className="text-xs font-medium text-[var(--ink-faint)]">第 {index + 1} 项 · {question.topicId}</p>
-                  <QuestionDiagnosis diagnosis={item} question={question} compact />
+                  <p className="text-xs font-medium text-[var(--ink-faint)]">第 {index + 1} 题 · {question.topicId}</p>
+                  <QuestionDiagnosis diagnosis={item} question={question} compact returnTo={`/tests/${testId}/practice?resume=1`} />
                 </div>
               );
             })}
@@ -944,7 +1014,8 @@ function SessionSummary({
       <div className="flex flex-wrap justify-center gap-3">
         {savedSessionId && (
           <Link
-            href={`/tests/${testId}/history/${savedSessionId}`}
+            href={`/tests/${testId}/history/${savedSessionId}?returnTo=${encodeURIComponent(`/tests/${testId}/practice?resume=1`)}`}
+            onClick={forceFullNavigation}
             className="px-6 py-3 rounded-xl border border-[var(--indigo)] font-medium text-[var(--indigo)]"
           >
             查看完整报告
@@ -958,7 +1029,8 @@ function SessionSummary({
           再练一轮
         </button>
         <Link
-          href={`/tests/${testId}?tab=analysis`}
+          href={`/tests/${testId}?tab=analysis&returnTo=${encodeURIComponent(`/tests/${testId}/practice?resume=1`)}`}
+          onClick={forceFullNavigation}
           className="px-6 py-3 rounded-xl border border-[var(--border)] font-medium hover:bg-[var(--surface)]"
         >
           查看能力画像
