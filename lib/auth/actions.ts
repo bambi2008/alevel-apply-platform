@@ -78,10 +78,38 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
 }
 
 export async function loginAction(_prev: AuthState, formData: FormData): Promise<AuthState> {
-  const email = String(formData.get("email") ?? "");
+  const email = normalizeEmail(formData.get("email"));
   const password = String(formData.get("password") ?? "");
   try {
-    await signIn("credentials", { email, password, redirectTo: "/profile" });
+    const existing = await db.user.findUnique({
+      where: { email },
+      select: {
+        profile: {
+          select: {
+            fullName: true,
+            school: true,
+            intakeYear: true,
+            targetRegions: true,
+            intendedMajors: true,
+            betaParticipant: { select: { onboardingCompletedAt: true } },
+            _count: { select: { subjects: true } },
+          },
+        },
+      },
+    });
+    const profile = existing?.profile;
+    const onboardingCompleted = Boolean(
+      profile?.betaParticipant?.onboardingCompletedAt
+      || (
+        profile?.fullName
+        && profile.school
+        && profile.intakeYear
+        && (profile.targetRegions?.length ?? 0) > 0
+        && (profile.intendedMajors?.length ?? 0) > 0
+        && (profile._count.subjects ?? 0) > 0
+      ),
+    );
+    await signIn("credentials", { email, password, redirectTo: onboardingCompleted ? "/" : "/profile" });
     return {};
   } catch (e) {
     if (e instanceof AuthError) return { error: "BADCREDS" };

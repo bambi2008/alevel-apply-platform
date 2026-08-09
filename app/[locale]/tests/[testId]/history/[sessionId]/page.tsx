@@ -1,6 +1,6 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useState, type MouseEvent } from "react";
 import { useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { getQuestionById } from "@/lib/tests/lookup";
@@ -61,7 +61,25 @@ export default function SessionReviewPage({
   const requestedReturnTo = searchParams.get("returnTo");
   const returnTo = requestedReturnTo && requestedReturnTo.startsWith("/") && !requestedReturnTo.startsWith("//")
     ? requestedReturnTo
-    : `/tests/${testId}`;
+    : undefined;
+  const fallbackReturnTo = `/tests/${testId}`;
+  const handleBack = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (returnTo) {
+      forceFullNavigation(event);
+      return;
+    }
+    if (
+      event.defaultPrevented
+      || event.button !== 0
+      || event.metaKey
+      || event.ctrlKey
+      || event.shiftKey
+      || event.altKey
+    ) return;
+    event.preventDefault();
+    if (window.history.length > 1) window.history.back();
+    else window.location.assign(fallbackReturnTo);
+  };
 
   const [data, setData] = useState<SessionDetail | null>(null);
   const [report, setReport] = useState<ExamPerformanceReport | null>(null);
@@ -88,7 +106,7 @@ export default function SessionReviewPage({
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 text-center text-neutral-500">
         <p className="text-lg mb-4">⚠️ {error}</p>
-        <Link href={returnTo} onClick={forceFullNavigation} className="text-sm text-blue-600 hover:underline">
+        <Link href={returnTo ?? fallbackReturnTo} onClick={handleBack} className="text-sm text-blue-600 hover:underline">
           ← 返回备考详情
         </Link>
       </div>
@@ -106,7 +124,7 @@ export default function SessionReviewPage({
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
       <div className="flex items-center justify-between mb-6">
-        <Link href={returnTo} onClick={forceFullNavigation} className="text-sm text-neutral-500 hover:text-neutral-800">
+        <Link href={returnTo ?? fallbackReturnTo} onClick={handleBack} className="text-sm text-neutral-500 hover:text-neutral-800">
           ← 返回本次复盘
         </Link>
         <span className="text-sm text-neutral-400">{fmtDate}</span>

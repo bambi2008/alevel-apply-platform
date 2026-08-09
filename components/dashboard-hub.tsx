@@ -156,7 +156,11 @@ export function DashboardHub({
           {TILES.map((tile, i) => {
             const tint = TINTS[i % TINTS.length];
             const pct = tile.id ? nodes[tile.id]?.pct : undefined;
-            const meta = tile.href === "/applications" && appCount > 0 ? `${appCount} 个志愿` : undefined;
+            const meta = tile.href === "/applications" && appCount > 0
+              ? `${appCount} 个志愿`
+              : tile.id === "tests" && nodes.tests?.denominator
+                ? `已练 ${nodes.tests.numerator ?? 0}/${nodes.tests.denominator} 题`
+                : undefined;
             return (
               <Link key={tile.href} href={tile.href} className={`group ${tint} notion-lift rounded-xl p-5 flex flex-col border border-black/5`}>
                 <div className="flex items-center justify-between">
