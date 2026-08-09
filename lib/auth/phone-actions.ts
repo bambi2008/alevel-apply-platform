@@ -2,6 +2,7 @@
 
 import { headers } from "next/headers";
 import { AuthError, signIn } from "@/auth";
+import { db } from "@/lib/db";
 import { getSms } from "@/lib/sms";
 import { clientIp, consumePersistentRateLimit, rateLimitKey } from "@/lib/security/rate-limit";
 import {
@@ -66,7 +67,16 @@ export async function phoneLoginAction(
   const privacyConsent = formData.get("privacyConsent") === "on";
   const termsConsent = formData.get("termsConsent") === "on";
   try {
-    await signIn("phone", { phone, code, privacyConsent, termsConsent, redirectTo: "/profile" });
+    const existing = PHONE_RE.test(phone)
+      ? await db.user.findUnique({ where: { phone }, select: { id: true } })
+      : null;
+    await signIn("phone", {
+      phone,
+      code,
+      privacyConsent,
+      termsConsent,
+      redirectTo: existing ? "/" : "/profile",
+    });
     return {};
   } catch (e) {
     if (e instanceof AuthError) return { error: "BADCODE" };
