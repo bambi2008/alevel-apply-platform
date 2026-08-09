@@ -61,7 +61,7 @@ export async function createBetaInvitesAction(rawEmails: string): Promise<Create
   if (emails.length === 0) return { ok: false, created: [], skipped: [] };
 
   const result = await db.$transaction(async (tx) => {
-    await tx.$queryRaw`SELECT pg_advisory_xact_lock(${BETA_INVITE_LOCK_ID})`;
+    await tx.$queryRaw`SELECT pg_advisory_xact_lock(${BETA_INVITE_LOCK_ID})::text`;
     const existing = await tx.betaInvite.findMany({
       where: { cohort: BETA_COHORT, email: { in: valid } },
       select: { id: true, email: true, status: true },
@@ -124,7 +124,7 @@ export async function createBetaInvitesAction(rawEmails: string): Promise<Create
 export async function revokeBetaInviteAction(inviteId: string): Promise<{ ok: boolean }> {
   const actorId = await requireAdmin();
   const updated = await db.$transaction(async (tx) => {
-    await tx.$queryRaw`SELECT pg_advisory_xact_lock(${BETA_INVITE_LOCK_ID})`;
+    await tx.$queryRaw`SELECT pg_advisory_xact_lock(${BETA_INVITE_LOCK_ID})::text`;
     const result = await tx.betaInvite.updateMany({
       where: { id: inviteId, cohort: BETA_COHORT, status: "AVAILABLE" },
       data: { status: "REVOKED" },

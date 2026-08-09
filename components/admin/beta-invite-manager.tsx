@@ -26,17 +26,24 @@ export function BetaInviteManager({ rows, limit, used, reserved }: Props) {
   const router = useRouter();
   const [emails, setEmails] = useState("");
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
   const [created, setCreated] = useState<Array<{ email: string; code: string }>>([]);
   const [skipped, setSkipped] = useState<Array<{ email: string; reason: keyof typeof reasonLabel }>>([]);
 
   const create = async () => {
     setBusy(true);
-    const result = await createBetaInvitesAction(emails);
-    setBusy(false);
-    setCreated(result.created);
-    setSkipped(result.skipped);
-    if (result.created.length) setEmails("");
-    router.refresh();
+    setError("");
+    try {
+      const result = await createBetaInvitesAction(emails);
+      setCreated(result.created);
+      setSkipped(result.skipped);
+      if (result.created.length) setEmails("");
+      router.refresh();
+    } catch {
+      setError("邀请码生成失败。请刷新页面后重试；如果仍然失败，请查看服务器日志。");
+    } finally {
+      setBusy(false);
+    }
   };
 
   const copyCreated = async () => {
@@ -80,6 +87,12 @@ export function BetaInviteManager({ rows, limit, used, reserved }: Props) {
           {busy ? "生成中..." : "生成邀请码"}
         </button>
       </div>
+
+      {error && (
+        <p role="alert" className="mt-3 border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-700">
+          {error}
+        </p>
+      )}
 
       {created.length > 0 && (
         <div className="mt-4 border border-emerald-300 bg-emerald-50 p-3 text-sm">

@@ -57,7 +57,7 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
   if (crossBorderConsent) consents.push({ type: "CROSS_BORDER", version: LEGAL_VERSION });
 
   const registrationError = await db.$transaction(async (tx) => {
-    await tx.$queryRaw`SELECT pg_advisory_xact_lock(${BETA_INVITE_LOCK_ID})`;
+    await tx.$queryRaw`SELECT pg_advisory_xact_lock(${BETA_INVITE_LOCK_ID})::text`;
 
     const invite = await tx.betaInvite.findUnique({
       where: { codeHash: hashInviteCode(inviteCode) },
