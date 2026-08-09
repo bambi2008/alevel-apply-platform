@@ -21,6 +21,39 @@ type ObjectivePaper = Omit<MockPaper, "modules"> & {
 };
 type Phase = "briefing" | "instructions" | "running" | "results";
 
+interface ObjectiveReviewSnapshot {
+  version: 1;
+  paperId: string;
+  answers: Record<string, string>;
+  behavior: Record<string, QuestionTelemetrySnapshot>;
+  startedAt: number;
+  timeUsedSec: number;
+}
+
+function objectiveReviewKey(paperId: string) {
+  return `qiaoshen:objective-review:${paperId}`;
+}
+
+function parseObjectiveReviewSnapshot(raw: string | null, paperId: string): ObjectiveReviewSnapshot | null {
+  if (!raw) return null;
+  try {
+    const value = JSON.parse(raw) as Partial<ObjectiveReviewSnapshot>;
+    if (
+      value.version !== 1
+      || value.paperId !== paperId
+      || !value.answers
+      || typeof value.answers !== "object"
+      || !value.behavior
+      || typeof value.behavior !== "object"
+      || typeof value.startedAt !== "number"
+      || typeof value.timeUsedSec !== "number"
+    ) return null;
+    return value as ObjectiveReviewSnapshot;
+  } catch {
+    return null;
+  }
+}
+
 function instructionDuration(paper: ObjectivePaper, moduleId: string): number {
   if (paper.testId !== "ucat") return 0;
   return moduleId === "qr" ? 120 : 90;
@@ -42,16 +75,66 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
   const [calculatorOpen, setCalculatorOpen] = useState(false);
   const [playedAudioSections, setPlayedAudioSections] = useState<Record<string, boolean>>({});
   const [speakingSection, setSpeakingSection] = useState<string | null>(null);
+  const [restoredReview, setRestoredReview] = useState(false);
+  const [restoredSessionId, setRestoredSessionId] = useState<string | null>(null);
   const startedAtRef = useRef(0);
   const moduleDeadlineRef = useRef(0);
   const telemetryRef = useRef<QuestionTelemetryTracker>(createQuestionTelemetry());
   const lastRemoteSaveRef = useRef(0);
+  const restoredReviewRef = useRef(false);
   const storageKey = useMemo(() => examProgressKey(paper.id), [paper.id]);
   const currentModule = paper.modules[moduleIndex];
   const currentQuestion = currentModule.questions[questionIndex];
   const { online } = useExamReliability(phase === "running" || phase === "instructions");
 
   useEffect(() => () => window.speechSynthesis?.cancel(), []);
+
+  useEffect(() => {
+    const query = new URLSearchParams(window.location.search);
+    const sessionId = query.get("reviewSession");
+    if (!sessionId || restoredReviewRef.current) return;
+    restoredReviewRef.current = true;
+    const controller = new AbortController();
+    fetch(`/api/exam-sessions/${encodeURIComponent(sessionId)}/report`, { signal: controller.signal })
+      .then((response) => response.ok ? response.json() : Promise.reject(new Error("Unable to load review")))
+      .then((result: { session?: { testId?: string; paperId?: string | null; startedAt?: string | null; timeUsedSec?: number | null; answers?: Array<{ questionId: string; selected: string | null; timeSpentSec?: number | null; answerChanges?: number; visits?: number; flagged?: boolean; firstSelected?: string | null }> } }) => {
+        const session = result.session;
+        if (!session || session.testId !== paper.testId || session.paperId !== paper.id || !Array.isArray(session.answers)) return;
+        setAnswers(Object.fromEntries(session.answers.flatMap((answer) => answer.selected ? [[answer.questionId, answer.selected]] : [])));
+        setBehavior(Object.fromEntries(session.answers.map((answer) => [answer.questionId, {
+          timeSpentSec: answer.timeSpentSec ?? 0,
+          answerChanges: answer.answerChanges ?? 0,
+          visits: answer.visits ?? 0,
+          flagged: answer.flagged ?? false,
+          firstSelected: answer.firstSelected ?? undefined,
+        }])));
+        setStartedAt(session.startedAt ? new Date(session.startedAt).getTime() : 0);
+        setTimeUsedSec(session.timeUsedSec ?? 0);
+        setRestoredReview(true);
+        setRestoredSessionId(sessionId);
+        setPhase("results");
+      })
+      .catch((error) => {
+        if (!(error instanceof DOMException && error.name === "AbortError")) restoredReviewRef.current = false;
+      });
+    return () => controller.abort();
+  }, [paper.id, paper.testId]);
+
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("review") !== "1" || restoredReviewRef.current) return;
+    restoredReviewRef.current = true;
+    const snapshot = parseObjectiveReviewSnapshot(
+      window.sessionStorage.getItem(objectiveReviewKey(paper.id)),
+      paper.id,
+    );
+    if (!snapshot) return;
+    setAnswers(snapshot.answers);
+    setBehavior(snapshot.behavior);
+    setStartedAt(snapshot.startedAt);
+    setTimeUsedSec(snapshot.timeUsedSec);
+    setRestoredReview(true);
+    setPhase("results");
+  }, [paper.id]);
 
   const playListeningSection = useCallback((question: MCQQuestion) => {
     if (!question.audioSectionId || !question.audioScript || playedAudioSections[question.audioSectionId]) return;
@@ -289,7 +372,7 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
     </main>
   );
 
-  if (phase === "results") return <ObjectiveResults paper={paper} answers={answers} behavior={behavior} startedAt={startedAt} timeUsedSec={timeUsedSec} />;
+  if (phase === "results") return <ObjectiveResults paper={paper} answers={answers} behavior={behavior} startedAt={startedAt} timeUsedSec={timeUsedSec} persist={!restoredReview} initialSessionId={restoredSessionId} />;
 
   if (phase === "instructions") {
     const instructionMinutes = String(Math.floor(instructionTimeLeft / 60)).padStart(2, "0");
@@ -437,13 +520,16 @@ function Metric({ value, label }: { value: number; label: string }) {
   return <div className="bg-white p-4"><strong className="text-2xl">{value}</strong><p className="text-xs text-neutral-500">{label}</p></div>;
 }
 
-function ObjectiveResults({ paper, answers, behavior, startedAt, timeUsedSec }: { paper: ObjectivePaper; answers: Record<string, string>; behavior: Record<string, QuestionTelemetrySnapshot>; startedAt: number; timeUsedSec: number }) {
+function ObjectiveResults({ paper, answers, behavior, startedAt, timeUsedSec, persist, initialSessionId }: { paper: ObjectivePaper; answers: Record<string, string>; behavior: Record<string, QuestionTelemetrySnapshot>; startedAt: number; timeUsedSec: number; persist: boolean; initialSessionId: string | null }) {
   const [open, setOpen] = useState<Record<string, boolean>>({});
-  const [savedSessionId, setSavedSessionId] = useState<string | null>(null);
+  const [savedSessionId, setSavedSessionId] = useState<string | null>(initialSessionId);
   const persistedRef = useRef(false);
   const moduleScores = paper.modules.map((module) => ({ module, earned: module.questions.reduce((sum, question) => sum + scoreObjectiveAnswer(question, answers[question.id]).earned, 0), max: module.questions.reduce((sum, question) => sum + scoreObjectiveAnswer(question, answers[question.id]).max, 0) }));
   const totalEarned = moduleScores.reduce((sum, item) => sum + item.earned, 0);
   const totalMax = moduleScores.reduce((sum, item) => sum + item.max, 0);
+  const reviewReturnTo = savedSessionId
+    ? `/tests/${paper.testId}/paper/${paper.id}?reviewSession=${encodeURIComponent(savedSessionId)}`
+    : `/tests/${paper.testId}/paper/${paper.id}?review=1`;
   const diagnosis = buildSessionDiagnosis(paper.modules.flatMap((module) => module.questions.map((question) => {
     const score = scoreObjectiveAnswer(question, answers[question.id]);
     return {
@@ -463,6 +549,19 @@ function ObjectiveResults({ paper, answers, behavior, startedAt, timeUsedSec }: 
     : [];
 
   useEffect(() => {
+    const snapshot: ObjectiveReviewSnapshot = {
+      version: 1,
+      paperId: paper.id,
+      answers,
+      behavior,
+      startedAt,
+      timeUsedSec,
+    };
+    window.sessionStorage.setItem(objectiveReviewKey(paper.id), JSON.stringify(snapshot));
+  }, [answers, behavior, paper.id, startedAt, timeUsedSec]);
+
+  useEffect(() => {
+    if (!persist) return;
     if (persistedRef.current) return;
     persistedRef.current = true;
     const questions = paper.modules.flatMap((module) => module.questions);
@@ -476,7 +575,7 @@ function ObjectiveResults({ paper, answers, behavior, startedAt, timeUsedSec }: 
     }).then((id) => setSavedSessionId(id));
     // Result persistence is intentionally best-effort and runs once per completed attempt.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [persist]);
 
   return <main className="mx-auto max-w-3xl px-4 py-10">
     <header className="border-b border-neutral-200 pb-7 text-center"><p className="text-sm text-neutral-500">{paper.title} · 成绩</p><p className="mt-3 text-5xl font-bold text-blue-600">{totalEarned}<span className="text-2xl text-neutral-400">/{totalMax}</span></p><p className="mt-1 text-sm text-neutral-500">正确率 {Math.round((totalEarned / totalMax) * 100)}%</p></header>
@@ -498,10 +597,10 @@ function ObjectiveResults({ paper, answers, behavior, startedAt, timeUsedSec }: 
     <section className="mt-6 grid gap-px overflow-hidden rounded-lg border border-neutral-200 bg-neutral-200 sm:grid-cols-2">{moduleScores.map(({ module, earned, max }) => <div key={module.id} className="bg-white p-4 text-center"><p className="text-xs text-neutral-500">{module.title}</p><p className="mt-1 text-2xl font-bold">{earned}<span className="text-base text-neutral-400">/{max}</span></p><p className="text-xs text-neutral-400">{Math.round((earned / max) * 100)}%</p></div>)}</section>
     <DiagnosisSummary diagnosis={diagnosis} />
     <h2 className="mt-8 text-base font-bold">逐题回看</h2>
-    <div className="mt-3 space-y-5">{paper.modules.map((module) => <section key={module.id}><p className="mb-2 text-xs font-semibold text-neutral-500">{module.title}</p><div className="divide-y divide-neutral-100 border-y border-neutral-200">{module.questions.map((question, index) => { const selected = answers[question.id]; const score = scoreObjectiveAnswer(question, selected); const itemDiagnosis = diagnoseAnswer({ question, selected, earned: score.earned, max: score.max, ...behavior[question.id] }); const selectedOption = question.options.find((option) => option.key === selected); const selectedReview = selectedOption ? optionReview(question, selectedOption.key) : null; return <div key={question.id}><button type="button" onClick={() => setOpen((current) => ({ ...current, [question.id]: !current[question.id] }))} className="flex w-full items-center gap-3 py-3 text-left"><span className={`flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${score.correct ? "bg-green-100 text-green-700" : score.earned > 0 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}`}>{score.correct ? "✓" : score.earned > 0 ? "½" : "×"}</span><span className="text-xs text-neutral-400">Q{index + 1}</span><MathRenderer text={question.question} className="line-clamp-1 flex-1 text-sm" /><span className="text-xs text-neutral-400">{open[question.id] ? "收起" : "查看"}</span></button>{open[question.id] && <div className="pb-4 pl-9"><p className="text-xs text-neutral-500">得分：{score.earned}/{score.max} · 你的答案：{selected || "未答"}{question.responseMode !== "matrix" ? ` · 正确答案：${question.answer}` : ""}</p>{selectedReview && <p className="mt-2 text-xs leading-5 text-neutral-600"><span className="font-semibold">{selectedReview.title}：</span>{selectedReview.detail}</p>}<MathRenderer text={question.solution} className="mt-2 rounded bg-neutral-50 px-3 py-2 text-sm text-neutral-700" block /><QuestionDiagnosis diagnosis={itemDiagnosis} question={question} compact /></div>}</div>; })}</div></section>)}</div>
+    <div className="mt-3 space-y-5">{paper.modules.map((module) => <section key={module.id}><p className="mb-2 text-xs font-semibold text-neutral-500">{module.title}</p><div className="divide-y divide-neutral-100 border-y border-neutral-200">{module.questions.map((question, index) => { const selected = answers[question.id]; const score = scoreObjectiveAnswer(question, selected); const itemDiagnosis = diagnoseAnswer({ question, selected, earned: score.earned, max: score.max, ...behavior[question.id] }); const selectedOption = question.options.find((option) => option.key === selected); const selectedReview = selectedOption ? optionReview(question, selectedOption.key) : null; return <div key={question.id}><button type="button" onClick={() => setOpen((current) => ({ ...current, [question.id]: !current[question.id] }))} className="flex w-full items-center gap-3 py-3 text-left"><span className={`flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${score.correct ? "bg-green-100 text-green-700" : score.earned > 0 ? "bg-amber-100 text-amber-700" : "bg-red-100 text-red-700"}`}>{score.correct ? "✓" : score.earned > 0 ? "½" : "×"}</span><span className="text-xs text-neutral-400">Q{index + 1}</span><MathRenderer text={question.question} className="line-clamp-1 flex-1 text-sm" /><span className="text-xs text-neutral-400">{open[question.id] ? "收起" : "查看"}</span></button>{open[question.id] && <div className="pb-4 pl-9"><p className="text-xs text-neutral-500">得分：{score.earned}/{score.max} · 你的答案：{selected || "未答"}{question.responseMode !== "matrix" ? ` · 正确答案：${question.answer}` : ""}</p>{selectedReview && <p className="mt-2 text-xs leading-5 text-neutral-600"><span className="font-semibold">{selectedReview.title}：</span>{selectedReview.detail}</p>}<MathRenderer text={question.solution} className="mt-2 rounded bg-neutral-50 px-3 py-2 text-sm text-neutral-700" block /><QuestionDiagnosis diagnosis={itemDiagnosis} question={question} compact returnTo={reviewReturnTo} /></div>}</div>; })}</div></section>)}</div>
     <div className="mt-8 grid gap-3 sm:grid-cols-3">
       <Link href={`/tests/${paper.testId}`} className="rounded-md border border-neutral-300 py-3 text-center text-sm">返回考试主页</Link>
-      {savedSessionId && <Link href={`/tests/${paper.testId}/history/${savedSessionId}`} className="rounded-md border border-blue-600 py-3 text-center text-sm font-semibold text-blue-700">查看完整报告</Link>}
+      {savedSessionId && <Link href={`/tests/${paper.testId}/history/${savedSessionId}?returnTo=${encodeURIComponent(reviewReturnTo)}`} className="rounded-md border border-blue-600 py-3 text-center text-sm font-semibold text-blue-700">查看完整报告</Link>}
       <Link href={`/tests/${paper.testId}/paper/${paper.id}`} className="rounded-md bg-blue-600 py-3 text-center text-sm font-semibold text-white">重新作答</Link>
     </div>
   </main>;

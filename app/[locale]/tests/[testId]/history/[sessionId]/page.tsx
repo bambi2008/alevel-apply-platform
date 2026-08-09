@@ -44,6 +44,7 @@ interface SessionDetail {
   id: string;
   testId: string;
   mode: string;
+  paperId: string | null;
   totalEarned: number;
   totalMax: number;
   timeUsedSec: number | null;
@@ -57,12 +58,18 @@ export default function SessionReviewPage({
   params: Promise<{ testId: string; sessionId: string }>;
 }) {
   const { testId, sessionId } = use(params);
+  const [data, setData] = useState<SessionDetail | null>(null);
+  const [report, setReport] = useState<ExamPerformanceReport | null>(null);
+  const [questionBank, setQuestionBank] = useState<Question[]>([]);
+  const [error, setError] = useState<string | null>(null);
   const searchParams = useSearchParams();
   const requestedReturnTo = searchParams.get("returnTo");
   const returnTo = requestedReturnTo && requestedReturnTo.startsWith("/") && !requestedReturnTo.startsWith("//")
     ? requestedReturnTo
     : undefined;
-  const fallbackReturnTo = `/tests/${testId}`;
+  const fallbackReturnTo = data?.paperId
+    ? `/tests/${testId}/paper/${data.paperId}?reviewSession=${encodeURIComponent(sessionId)}`
+    : `/tests/${testId}`;
   const handleBack = (event: MouseEvent<HTMLAnchorElement>) => {
     if (returnTo) {
       forceFullNavigation(event);
@@ -80,11 +87,6 @@ export default function SessionReviewPage({
     if (window.history.length > 1) window.history.back();
     else window.location.assign(fallbackReturnTo);
   };
-
-  const [data, setData] = useState<SessionDetail | null>(null);
-  const [report, setReport] = useState<ExamPerformanceReport | null>(null);
-  const [questionBank, setQuestionBank] = useState<Question[]>([]);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetch(`/api/exam-sessions/${sessionId}/report`)
