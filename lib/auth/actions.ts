@@ -81,35 +81,9 @@ export async function loginAction(_prev: AuthState, formData: FormData): Promise
   const email = normalizeEmail(formData.get("email"));
   const password = String(formData.get("password") ?? "");
   try {
-    const existing = await db.user.findUnique({
-      where: { email },
-      select: {
-        profile: {
-          select: {
-            fullName: true,
-            school: true,
-            intakeYear: true,
-            targetRegions: true,
-            intendedMajors: true,
-            betaParticipant: { select: { onboardingCompletedAt: true } },
-            _count: { select: { subjects: true } },
-          },
-        },
-      },
-    });
-    const profile = existing?.profile;
-    const onboardingCompleted = Boolean(
-      profile?.betaParticipant?.onboardingCompletedAt
-      || (
-        profile?.fullName
-        && profile.school
-        && profile.intakeYear
-        && (profile.targetRegions?.length ?? 0) > 0
-        && (profile.intendedMajors?.length ?? 0) > 0
-        && (profile._count.subjects ?? 0) > 0
-      ),
-    );
-    await signIn("credentials", { email, password, redirectTo: onboardingCompleted ? "/" : "/profile" });
+    // 注册完成后的首次进入由 registerAction 引导填写档案；已有账号再次登录直接进入工作台。
+    // 档案是否完整由工作台展示待办，不应阻断登录，也不应因历史数据差异反复把用户送回档案页。
+    await signIn("credentials", { email, password, redirectTo: "/" });
     return {};
   } catch (e) {
     if (e instanceof AuthError) return { error: "BADCREDS" };
