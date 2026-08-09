@@ -36,6 +36,15 @@ export default function RegisterPage() {
         <h2 className="text-2xl font-bold text-[var(--ink)] mb-6">{t("registerTitle")}</h2>
         <form action={formAction} className="space-y-3">
           <input name="email" type="email" required placeholder={t("email")} className="input" />
+          <input
+            name="inviteCode"
+            type="text"
+            required
+            autoComplete="one-time-code"
+            placeholder={t("inviteCode")}
+            className="input font-mono uppercase"
+          />
+          <p className="text-xs text-[var(--ink-soft)]">{t("inviteHint")}</p>
           <input name="password" type="password" required minLength={10} maxLength={128} placeholder={t("password")} className="input" />
           <label className="flex items-start gap-2 text-sm text-[var(--ink-soft)]">
             <input name="privacyConsent" type="checkbox" required className="mt-1 accent-[var(--indigo)]" />

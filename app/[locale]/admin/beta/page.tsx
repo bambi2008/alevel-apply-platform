@@ -1,4 +1,6 @@
 import { getBetaAnalytics } from "@/lib/admin/beta-analytics";
+import { listBetaInvitesAction } from "@/lib/admin/beta-invite-actions";
+import { BetaInviteManager } from "@/components/admin/beta-invite-manager";
 
 function date(value: Date | null) {
   return value
@@ -11,7 +13,7 @@ function rate(value: number, total: number) {
 }
 
 export default async function BetaAnalyticsPage() {
-  const data = await getBetaAnalytics();
+  const [data, invites] = await Promise.all([getBetaAnalytics(), listBetaInvitesAction()]);
   const total = data.funnel.registered;
   const cards = [
     ["注册", `${total}`],
@@ -33,6 +35,8 @@ export default async function BetaAnalyticsPage() {
         <h1 className="text-xl font-bold text-neutral-950">Beta 学生数据</h1>
         <p className="mt-1 text-sm text-neutral-500">服务器事件口径，更新时间 {data.generatedAt.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}</p>
       </header>
+
+      <BetaInviteManager {...invites} />
 
       <section className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {cards.map(([label, value]) => (

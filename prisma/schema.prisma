@@ -41,8 +41,33 @@ model User {
   authoredQuestions      QuestionDraftRecord[]   @relation("QuestionDraftAuthor")
   subjectReviews         QuestionDraftRecord[]   @relation("QuestionDraftSubjectReviewer")
   teachingReviews        QuestionDraftRecord[]   @relation("QuestionDraftTeachingReviewer")
+  betaInvite             BetaInvite?
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
+}
+
+enum BetaInviteStatus {
+  AVAILABLE
+  USED
+  REVOKED
+}
+
+model BetaInvite {
+  id           String           @id @default(cuid())
+  codeHash     String           @unique
+  email        String
+  cohort       String           @default("beta-2026-1")
+  status       BetaInviteStatus @default(AVAILABLE)
+  usedByUserId String?          @unique
+  usedBy       User?            @relation(fields: [usedByUserId], references: [id], onDelete: SetNull)
+  usedAt       DateTime?
+  expiresAt    DateTime?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@unique([cohort, email])
+  @@index([cohort, status])
+  @@index([email, status])
 }
 
 model AuthSession {
