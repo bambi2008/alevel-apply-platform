@@ -28,6 +28,7 @@ export interface EsatMockAuditReport {
   paperCount: number;
   completePaperCount: number;
   gapPaperCount: number;
+  intensificationPaperCount: number;
   moduleCount: number;
   questionCount: number;
   subjectModules: Record<EsatSubject, number>;
@@ -41,7 +42,7 @@ type EsatSubject = "math" | "physics" | "chemistry" | "biology";
 
 const ANSWER_KEYS = ["A", "B", "C", "D", "E"];
 const EXPECTED_SUBJECT_MODULES: Record<EsatSubject, number> = {
-  math: 9,
+  math: 11,
   physics: 8,
   chemistry: 3,
   biology: 3,
@@ -93,17 +94,18 @@ export function buildEsatMockAudit(): EsatMockAuditReport {
   const papers = getMockPapersForTest("esat");
   const completePapers = papers.filter((paper) => /^esat-mock-\d+$/.test(paper.id));
   const gapPapers = papers.filter((paper) => paper.id.startsWith("esat-gap-"));
+  const intensificationPapers = papers.filter((paper) => paper.id.startsWith("esat-math-intensification-"));
   const issues: EsatAuditIssue[] = [];
   const seenIds = new Map<string, string>();
   const seenPrompts = new Map<string, string>();
   const seenStructures = new Map<string, string>();
 
-  if (papers.length !== 13 || completePapers.length !== 10 || gapPapers.length !== 3) {
-    issues.push({ paperId: "suite", code: "PAPER_INVENTORY", severity: "critical", message: "ESAT must contain ten complete papers and three gap-module papers." });
+  if (papers.length !== 15 || completePapers.length !== 10 || gapPapers.length !== 3 || intensificationPapers.length !== 2) {
+    issues.push({ paperId: "suite", code: "PAPER_INVENTORY", severity: "critical", message: "ESAT must contain ten complete papers, three gap-module papers and two mathematics intensification papers." });
   }
 
   const modules = papers.flatMap((paper): EsatModuleAuditSummary[] => {
-    const expectedModules = paper.id.startsWith("esat-gap-") ? 1 : 2;
+    const expectedModules = paper.id.startsWith("esat-gap-") || paper.id.startsWith("esat-math-intensification-") ? 1 : 2;
     if (paper.modules.length !== expectedModules) {
       issues.push({ paperId: paper.id, code: "MODULE_COUNT", severity: "critical", message: `Paper must contain ${expectedModules} module(s).` });
     }
@@ -211,6 +213,7 @@ export function buildEsatMockAudit(): EsatMockAuditReport {
     paperCount: papers.length,
     completePaperCount: completePapers.length,
     gapPaperCount: gapPapers.length,
+    intensificationPaperCount: intensificationPapers.length,
     moduleCount: modules.length,
     questionCount: modules.reduce((total, module) => total + module.questions, 0),
     subjectModules,

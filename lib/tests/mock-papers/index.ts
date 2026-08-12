@@ -10,6 +10,7 @@ import { ESAT_MK7_MATH, ESAT_MK7_PHYS } from "./esat-mock-7";
 import { ESAT_MK8_MATH, ESAT_MK8_CHEM } from "./esat-mock-8";
 import { ESAT_MK9_MATH, ESAT_MK9_BIO } from "./esat-mock-9";
 import { ESAT_MK10_MAG, ESAT_MK10_SCI } from "./esat-mock-10";
+import { ESAT_MATH_PRESSURE_1, ESAT_MATH_PRESSURE_2 } from "./esat-math-intensification";
 import { ESAT_GAP_BIOLOGY_MODULE, ESAT_GAP_CHEMISTRY_MODULE, ESAT_GAP_PHYSICS_MODULE } from "./esat-gap-module-papers";
 import { balanceEsatAnswers } from "./esat-calibration";
 import { TMUA_MK1_P1, TMUA_MK1_P2 } from "./tmua-mock-1";
@@ -385,6 +386,26 @@ export const ESAT_MOCK_10: MockPaper = {
     { id: "magnetism", title: "磁学与电磁", titleEn: "Magnetism & Electromagnetism", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MK10_MAG) },
     { id: "science", title: "热 / 物质 / 波 / 放射性", titleEn: "Thermal / Matter / Waves / Radioactivity", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MK10_SCI) },
   ],
+};
+
+export const ESAT_MATH_INTENSIFICATION_1: MockPaper = {
+  id: "esat-math-intensification-1",
+  testId: "esat",
+  title: "ESAT 数学高压强化卷一",
+  titleEn: "ESAT Mathematics Pressure Paper 1",
+  description: "保持官方数学模块的 27 题、40 分钟节奏，增加多步推理、参数问题以及微分、积分与优化题的密度。题目为原创强化训练，不冒充官方真题。",
+  modules: [{ id: "math-intensification-1", title: "数学高压模块一", titleEn: "Mathematics Pressure Module 1", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MATH_PRESSURE_1) }],
+  formatType: "extension",
+};
+
+export const ESAT_MATH_INTENSIFICATION_2: MockPaper = {
+  id: "esat-math-intensification-2",
+  testId: "esat",
+  title: "ESAT 数学高压强化卷二",
+  titleEn: "ESAT Mathematics Pressure Paper 2",
+  description: "第二套高难度数学限时卷，重点检验微积分迁移、代数参数、概率统计与几何综合能力。题目为原创强化训练，不冒充官方真题。",
+  modules: [{ id: "math-intensification-2", title: "数学高压模块二", titleEn: "Mathematics Pressure Module 2", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MATH_PRESSURE_2) }],
+  formatType: "extension",
 };
 
 export const MAT_MOCK_1: MockPaper = {
@@ -1290,6 +1311,7 @@ export const TARA_WRITTEN_PAPERS: MockPaper[] = TARA_WRITTEN_QUESTIONS.map((ques
 
 const ALL_MOCK_PAPERS: MockPaper[] = [BMO_R2_MOCK_1, BMO_R2_MOCK_2, BMO_R2_MOCK_3, BMO_R2_MOCK_4, BMO_R2_MOCK_5, BMO_R2_MOCK_6, BMO_R2_MOCK_7, BMO_R2_MOCK_8, BMO_MOCK_1, BMO_MOCK_2, BMO_MOCK_3, BMO_MOCK_4, BMO_MOCK_5, BMO_MOCK_6, BMO_MOCK_7, BMO_MOCK_8, ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, ESAT_GAP_PHYSICS_PAPER, ESAT_GAP_CHEMISTRY_PAPER, ESAT_GAP_BIOLOGY_PAPER, TMUA_CALIBRATION_1, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3, TARA_MOCK_4, TARA_MOCK_5, TARA_MOCK_6, BPHO_MOCK_1, BPHO_MOCK_2, BPHO_MOCK_3, BPHO_MOCK_4, BPHO_MOCK_5, BPHO_MOCK_6, BPHO_MOCK_7, BPHO_MOCK_8, BPHO_R2_MOCK_1, BPHO_R2_MOCK_2, BPHO_R2_MOCK_3, BPHO_R2_MOCK_4];
 ALL_MOCK_PAPERS.unshift(
+  ESAT_MATH_INTENSIFICATION_1, ESAT_MATH_INTENSIFICATION_2,
   ...IELTS_FULL_PAPERS_1,
   IELTS_WRITTEN_DIAGNOSTIC, ...CSAT_WRITTEN_PAPERS,
   UCAT_MOCK_1, ...UCAT_MOCKS_2_TO_5,

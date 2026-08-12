@@ -8,8 +8,8 @@ import type { MCQQuestion } from "@/lib/tests/questions/types";
 import { getCountedResults } from "./scoring";
 
 describe("mock papers", () => {
-  it("ESAT has ten general papers and three specification-completion modules", () => {
-    expect(getMockPapersForTest("esat").length).toBe(13);
+  it("ESAT has ten general papers, three specification-completion modules and two mathematics intensification papers", () => {
+    expect(getMockPapersForTest("esat").length).toBe(15);
   });
 
   it("getMockPaper resolves known ids and rejects unknown", () => {
@@ -43,6 +43,20 @@ describe("mock papers", () => {
       expect(paper.modules[0].durationSec).toBe(40 * 60);
       expect(paper.modules[0].questions).toHaveLength(27);
       expect(paper.modules[0].questions.every((question) => question.type === "mcq")).toBe(true);
+    }
+  });
+
+  it("keeps both ESAT mathematics intensification papers hard and calculus-heavy", () => {
+    const papers = getMockPapersForTest("esat").filter((paper) => paper.id.startsWith("esat-math-intensification-"));
+    expect(papers).toHaveLength(2);
+
+    for (const paper of papers) {
+      expect(paper.formatType).toBe("extension");
+      expect(paper.modules).toHaveLength(1);
+      expect(paper.modules[0].durationSec).toBe(40 * 60);
+      expect(paper.modules[0].questions).toHaveLength(27);
+      expect(paper.modules[0].questions.filter((question) => question.difficulty === 3).length).toBeGreaterThanOrEqual(10);
+      expect(paper.modules[0].questions.filter((question) => question.topicId === "esat-math2").length).toBeGreaterThanOrEqual(7);
     }
   });
 

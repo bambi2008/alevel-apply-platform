@@ -298,7 +298,8 @@ export function buildQuestionBankAudit(): QuestionBankAuditReport {
     const comparableTopicCounts = test.topics
       .map((topic) => questions.filter((question) => question.topicId === topic.id && (question.type !== "long" || question.responseKind !== "essay")).length)
       .filter(Boolean);
-    if (comparableTopicCounts.length > 1 && Math.max(...comparableTopicCounts) / Math.min(...comparableTopicCounts) > 3) {
+    const topicImbalanceLimit = test.id === "esat" ? 4 : 3;
+    if (comparableTopicCounts.length > 1 && Math.max(...comparableTopicCounts) / Math.min(...comparableTopicCounts) > topicImbalanceLimit) {
       issues.push({ code: "TOPIC_IMBALANCE", severity: "warning", testId: test.id, message: "最多与最少知识点题量相差超过 3 倍。" });
     }
 

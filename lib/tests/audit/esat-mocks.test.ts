@@ -2,14 +2,15 @@ import { describe, expect, it } from "vitest";
 import { buildEsatMockAudit } from "./esat-mocks";
 
 describe("ESAT mock-paper audit", () => {
-  it("locks the ten complete papers and three gap modules", () => {
+  it("locks the ten complete papers, three gap modules and two maths intensification papers", () => {
     const report = buildEsatMockAudit();
-    expect(report.paperCount).toBe(13);
+    expect(report.paperCount).toBe(15);
     expect(report.completePaperCount).toBe(10);
     expect(report.gapPaperCount).toBe(3);
-    expect(report.moduleCount).toBe(23);
-    expect(report.questionCount).toBe(621);
-    expect(report.subjectModules).toEqual({ math: 9, physics: 8, chemistry: 3, biology: 3 });
+    expect(report.intensificationPaperCount).toBe(2);
+    expect(report.moduleCount).toBe(25);
+    expect(report.questionCount).toBe(675);
+    expect(report.subjectModules).toEqual({ math: 11, physics: 8, chemistry: 3, biology: 3 });
   });
 
   it("keeps every module structurally valid and calibrated", () => {
