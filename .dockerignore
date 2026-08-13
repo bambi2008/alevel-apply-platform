@@ -1,0 +1,12 @@
+.git
+.github
+.next
+.storage
+backups
+coverage
+node_modules
+tmp
+*.log
+.env
+.env.local
+.env.production

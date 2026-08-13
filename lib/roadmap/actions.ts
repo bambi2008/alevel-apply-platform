@@ -3,8 +3,10 @@
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { UK_UCAS_SECTIONS, HK_SECTIONS } from "@/lib/application/prep-schema";
+import { getAllQuestionIds } from "@/lib/tests/lookup";
+import { calculateQuestionCoverage } from "@/lib/roadmap/question-coverage";
 
-export type NodeProgress = { pct: number };
+export type NodeProgress = { pct: number; numerator?: number; denominator?: number };
 export type RoadmapProgress = {
   authed: boolean;
   nodes: Record<string, NodeProgress>;
@@ -52,6 +54,15 @@ export async function getRoadmapProgress(): Promise<RoadmapProgress> {
 
   const c = profile._count;
 
+  const examSessions = await db.examSession.findMany({
+    where: { studentId: profile.id },
+    select: { answers: { select: { questionId: true } } },
+  });
+  const examCoverage = calculateQuestionCoverage(
+    getAllQuestionIds(),
+    examSessions.flatMap((session) => session.answers.map((answer) => answer.questionId)),
+  );
+
   // 1) 个人档案：关键字段填写比例
   const profileFields = [
     !!profile.fullName,
@@ -75,8 +86,8 @@ export async function getRoadmapProgress(): Promise<RoadmapProgress> {
   // 3) 背景提升：以 3 项为“较充分”参照
   const backgroundPct = clamp((Math.min(c.backgroundItems, 3) / 3) * 100);
 
-  // 4) 考试备考：做多做少看个人，以 8 次练习/模考为满参照（完成比例）
-  const testsPct = clamp((Math.min(c.examSessions, 8) / 8) * 100);
+  // 4) 考试备考：按静态题库中已经练过的去重题数计算覆盖率
+  const testsPct = examCoverage.pct;
 
   // 5) 文书：UK 三题 + HK essay，按已完成篇/段计
   let stmtUnits = 0;
@@ -118,7 +129,7 @@ export async function getRoadmapProgress(): Promise<RoadmapProgress> {
       profile: { pct: profilePct },
       match: { pct: matchPct },
       background: { pct: backgroundPct },
-      tests: { pct: testsPct },
+      tests: { pct: testsPct, numerator: examCoverage.attempted, denominator: examCoverage.available },
       statements: { pct: statementsPct },
       prep: { pct: prepPct },
       submit: { pct: submitPct },

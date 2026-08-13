@@ -1,13 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { captureError } from "@/lib/monitoring";
+import { requireAiAccess } from "@/lib/security/ai-route";
 
 export const runtime = "nodejs";
-
-const client = new OpenAI({
-  apiKey: process.env.DEEPSEEK_API_KEY,
-  baseURL: "https://api.deepseek.com",
-});
 
 interface Msg {
   role: "interviewer" | "student";
@@ -60,10 +56,56 @@ const FEEDBACK_SYSTEM = `你刚刚作为牛津/剑桥面试官，完成了对一
 **一句话建议**：最重要的那一条。
 **大致水平**：用描述性判断（如"接近录取水准 / 有基础但需打磨 / 需较多练习"），不要打分数。`;
 
+const IELTS_FEEDBACK_SYSTEM = `你是 IELTS Speaking 训练教练。学生刚按 Part 1、Part 2、Part 3 完成了一场打字模拟。
+
+重要限制：
+- 只能依据文字评价 Fluency and Coherence、Lexical Resource、Grammatical Range and Accuracy。
+- 无法从打字稿评价 Pronunciation，必须明确写“发音未评估”。
+- 不给官方 Band，也不要假装这是正式 IELTS 评分。
+- 引用学生的具体表达，指出哪些回答太短、像作文、缺少例子或没有正面回应问题。
+
+请用中文按以下结构输出：
+**任务完成度**：Part 1–3 是否都充分回应。
+**连贯与展开**：结构、持续表达和例子是否自然。
+**词汇**：准确表达、重复与可改进搭配。
+**语法**：句式范围、妨碍理解的错误及一处改写示例。
+**发音**：明确说明未评估，并给出一次录音复盘任务。
+**下次训练**：列出 3 个可执行动作。
+
+反馈应简洁、具体、诚实，不输出官方或估算 Band。`;
+
+const HK_INTERVIEW_FEEDBACK_SYSTEM = `你是香港大学本科面试训练教练。学生刚完成一套打字固定流程。请根据具体回答提供形成性复盘，不预测录取、不输出虚构分数。
+
+共同要求：
+- 引用学生的具体表达，不给模板化赞美。
+- 检查是否正面回应问题、结构是否清楚、例子是否具体、是否承认不确定性。
+- 打字流程不能评价语速、眼神、倾听或真实小组互动，必须明确限制。
+
+按面试类型调整重点：
+- 综合面试：课程动机是否具体，经历与反思是否一致，观点能否被证据修正。
+- 医学 MMI：患者安全、同理、保密与自主、角色边界、比例原则和适当升级。
+- 商科讨论：利益相关者、评价标准、风险、数据需求和推进共识；不得假装已评价真实小组协作。
+- 理工面试：假设、基本原理、量纲、误差、验证方案和被追问后的修正。
+
+请用中文输出：
+**任务完成度**
+**证据与推理**
+**应对追问**
+**最强片段**
+**优先改进**（3 项，每项给具体改法）
+**现场能力未评估**
+**下一次训练任务**`;
+
 export async function POST(req: NextRequest) {
+  const access = await requireAiAccess(req, "interview-mock");
+  if (!access.ok) return access.response;
   if (!process.env.DEEPSEEK_API_KEY) {
     return NextResponse.json({ error: "AI 暂未配置" }, { status: 503 });
   }
+  const client = new OpenAI({
+    apiKey: process.env.DEEPSEEK_API_KEY,
+    baseURL: "https://api.deepseek.com",
+  });
   try {
     const body = (await req.json()) as MockRequest;
     const { mode = "interview", subject, question, history = [], studentReply } = body;
@@ -76,7 +118,14 @@ export async function POST(req: NextRequest) {
       const completion = await client.chat.completions.create({
         model: "deepseek-chat",
         messages: [
-          { role: "system", content: `${FEEDBACK_SYSTEM}\n\n本场学科：${subject || "综合"}。` },
+          {
+            role: "system",
+            content: subject === "IELTS Speaking"
+              ? IELTS_FEEDBACK_SYSTEM
+              : subject.startsWith("港校")
+                ? `${HK_INTERVIEW_FEEDBACK_SYSTEM}\n\n本场类型：${subject}。`
+              : `${FEEDBACK_SYSTEM}\n\n本场学科：${subject || "综合"}。`,
+          },
           { role: "user", content: `以下是完整面试记录，请复盘：\n\n${transcript}` },
         ],
         temperature: 0.6,

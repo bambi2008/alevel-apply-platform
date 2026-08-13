@@ -43,6 +43,7 @@ export async function listApplicationsAction(): Promise<{
   });
 
   const items: ApplicationItem[] = apps.map((a) => ({
+    id: a.id,
     programId: a.programId,
     addedAt: a.createdAt.getTime(),
     status: a.status as AppStatus,

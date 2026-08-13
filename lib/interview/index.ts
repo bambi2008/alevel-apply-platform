@@ -1,16 +1,22 @@
 import {
-  INTERVIEW_SUBJECTS,
-  INTERVIEW_QUESTIONS,
-  INTERVIEW_CATEGORIES,
+  INTERVIEW_SUBJECTS as CORE_SUBJECTS,
+  INTERVIEW_QUESTIONS as CORE_QUESTIONS,
+  INTERVIEW_CATEGORIES as CORE_CATEGORIES,
   type InterviewSubject,
   type InterviewQuestion,
   type InterviewCategory,
 } from "./questions";
+import {
+  ASSESSMENT_CATEGORIES,
+  ASSESSMENT_QUESTIONS,
+  ASSESSMENT_SUBJECTS,
+} from "./assessment-questions";
+
+export const INTERVIEW_SUBJECTS = [...CORE_SUBJECTS, ...ASSESSMENT_SUBJECTS];
+export const INTERVIEW_QUESTIONS = [...CORE_QUESTIONS, ...ASSESSMENT_QUESTIONS];
+export const INTERVIEW_CATEGORIES = [...CORE_CATEGORIES, ...ASSESSMENT_CATEGORIES];
 
 export {
-  INTERVIEW_SUBJECTS,
-  INTERVIEW_QUESTIONS,
-  INTERVIEW_CATEGORIES,
   type InterviewSubject,
   type InterviewQuestion,
   type InterviewCategory,

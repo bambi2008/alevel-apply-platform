@@ -25,7 +25,7 @@ export default async function SubjectPage({
         subtitle={subject.blurb}
         icon="🎙️"
       />
-      <SubjectInterview subjectName={subject.name} questions={questions} />
+      <SubjectInterview subjectId={subject.id} subjectName={subject.name} questions={questions} />
     </div>
   );
 }

@@ -1,11 +1,13 @@
 "use client";
 
 import { use, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { getTestById } from "@/lib/tests";
 import { getKnowledgeByTopicId, type TopicKnowledge } from "@/lib/tests/knowledge";
 import { MathRenderer } from "@/components/math-renderer";
+import { forceFullNavigation } from "@/lib/navigation";
 
 export default function LearnPage({
   params,
@@ -13,6 +15,11 @@ export default function LearnPage({
   params: Promise<{ testId: string; topicId: string }>;
 }) {
   const { testId, topicId } = use(params);
+  const searchParams = useSearchParams();
+  const requestedReturnTo = searchParams.get("returnTo");
+  const returnTo = requestedReturnTo && requestedReturnTo.startsWith("/") && !requestedReturnTo.startsWith("//")
+    ? requestedReturnTo
+    : null;
   const test = getTestById(testId);
   if (!test) notFound();
 
@@ -25,10 +32,11 @@ export default function LearnPage({
       {/* Header */}
       <div>
         <Link
-          href={`/tests/${testId}`}
+          href={returnTo ?? `/tests/${testId}`}
+          onClick={forceFullNavigation}
           className="text-sm text-neutral-500 hover:text-neutral-800 inline-block mb-4"
         >
-          ← {test.abbr} 备考详情
+          ← {returnTo ? "返回本次复盘" : `${test.abbr} 备考详情`}
         </Link>
         <div className="flex items-start justify-between gap-4">
           <div>

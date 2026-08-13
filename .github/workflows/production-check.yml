@@ -1,0 +1,132 @@
+name: Production check
+
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      DATABASE_URL: postgresql://build:build-password@postgres:5432/build
+      AUTH_SECRET: ci-only-secret-with-more-than-thirty-two-characters
+      APP_ORIGIN: https://ci.example.com
+      STORAGE_DRIVER: local
+      LOCAL_STORAGE_PATH: /tmp/qiaoshen-storage
+      ALLOW_LOCAL_STORAGE_IN_PRODUCTION: "true"
+      BACKUP_DIR: /tmp/qiaoshen-backups
+      BACKUP_ENCRYPTION_KEY: AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=
+      REQUIRE_BACKUPS: "true"
+      PRIVACY_CONTACT_EMAIL: privacy@ci.example.com
+      EMAIL_DRIVER: resend
+      RESEND_API_KEY: re_ci_placeholder
+      EMAIL_FROM: QiaoShen <account@ci.example.com>
+      NEXT_PUBLIC_PHONE_AUTH_ENABLED: "false"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.9.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm preflight:production
+      - run: pnpm typecheck
+      - run: pnpm lint
+      - run: pnpm test
+      - run: docker compose --env-file .env.preproduction.example -f compose.production.yml -f compose.preproduction.yml config --quiet
+        env:
+          APP_ENV_FILE: .env.preproduction.example
+      - run: pnpm audit:questions
+      - run: pnpm audit --registry=https://registry.npmjs.org --prod --audit-level high
+      - run: pnpm build
+      - name: Build immutable release image
+        run: docker build --target production -t "qiaoshen-app:ci-${GITHUB_SHA}" .
+      - name: Prepare isolated recovery drill
+        run: |
+          cp .env.preproduction.example .env.preproduction
+          sed -i 's/replace-with-at-least-32-random-characters/ci-preproduction-auth-secret-1234567890/g' .env.preproduction
+          sed -i 's/replace-with-a-long-random-password/ci-preproduction-db-password/g' .env.preproduction
+          sed -i 's#replace-with-output-of-openssl-rand-base64-32#AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=#g' .env.preproduction
+          mkdir -p backups-preproduction
+          sudo chown 1001:1001 backups-preproduction
+          docker tag "qiaoshen-app:ci-${GITHUB_SHA}" "qiaoshen-app:baseline-${GITHUB_SHA}"
+      - name: Establish rollback baseline
+        run: >-
+          pnpm deploy:production --
+          --release "baseline-${GITHUB_SHA}"
+          --image "qiaoshen-app:baseline-${GITHUB_SHA}"
+          --env-file .env.preproduction
+          --state-dir .deploy/preproduction
+          --compose-file compose.production.yml
+          --compose-file compose.preproduction.yml
+          --no-build
+          --skip-backup
+          --confirm
+      - name: Prove backup can be restored
+        run: pnpm drill:preproduction -- --release "ci-${GITHUB_SHA}" --no-build --skip-e2e --skip-backup
+      - name: Prove one-command rollback
+        run: >-
+          pnpm rollback:production --
+          --env-file .env.preproduction
+          --state-dir .deploy/preproduction
+          --compose-file compose.production.yml
+          --compose-file compose.preproduction.yml
+          --skip-backup
+          --confirm
+      - name: Clean recovery drill containers
+        if: always()
+        run: docker compose --env-file .env.preproduction -f compose.production.yml -f compose.preproduction.yml down -v --remove-orphans
+        env:
+          APP_ENV_FILE: .env.preproduction
+          APP_IMAGE: qiaoshen-app:ci-${{ github.sha }}
+
+  e2e:
+    needs: verify
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: qiaoshen
+          POSTGRES_PASSWORD: e2e-password
+          POSTGRES_DB: qiaoshen_e2e
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U qiaoshen -d qiaoshen_e2e"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://qiaoshen:e2e-password@127.0.0.1:5432/qiaoshen_e2e
+      AUTH_SECRET: ci-e2e-secret-with-more-than-thirty-two-characters
+      APP_ORIGIN: http://127.0.0.1:3130
+      STORAGE_DRIVER: local
+      LOCAL_STORAGE_PATH: /tmp/qiaoshen-e2e-storage
+      NEXT_PUBLIC_PHONE_AUTH_ENABLED: "false"
+      AI_REQUIRES_CROSS_BORDER_CONSENT: "true"
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11.9.0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec prisma generate
+      - run: pnpm exec prisma migrate deploy
+      - run: pnpm db:seed
+      - run: pnpm exec playwright install --with-deps chromium
+      - run: pnpm test:e2e

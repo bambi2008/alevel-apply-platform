@@ -1,13 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { captureError } from "@/lib/monitoring";
+import { requireAiAccess } from "@/lib/security/ai-route";
 
 export const runtime = "nodejs";
-
-const client = new OpenAI({
-  apiKey: process.env.DEEPSEEK_API_KEY,
-  baseURL: "https://api.deepseek.com",
-});
 
 export interface ProjectFeedbackRequest {
   mode?: "stage" | "reflection"; // stage=阶段成果反馈；reflection=反思与延伸的文书式教练反馈
@@ -108,12 +104,18 @@ ${r.submission || "（学生尚未填写反思）"}
 - 若反思空白或太简略，strengths 可指出"目前还看不出你的独立思考"，把重点放在 suggestions 与 questions 上，引导他写出具体、个人化的思考。`;
 
 export async function POST(req: NextRequest) {
+  const access = await requireAiAccess(req, "project-feedback", 30);
+  if (!access.ok) return access.response;
   if (!process.env.DEEPSEEK_API_KEY) {
     return NextResponse.json(
       { error: "AI 反馈暂未配置（缺少 DEEPSEEK_API_KEY）" },
       { status: 503 }
     );
   }
+  const client = new OpenAI({
+    apiKey: process.env.DEEPSEEK_API_KEY,
+    baseURL: "https://api.deepseek.com",
+  });
 
   let body: ProjectFeedbackRequest;
   try {

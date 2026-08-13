@@ -29,6 +29,7 @@ const TILES: { id?: string; label: string; href: string; icon: string }[] = [
   { label: "院校库", href: "/universities", icon: "building" },
   { id: "background", label: "背景提升", href: "/background", icon: "star" },
   { id: "tests", label: "入学笔试", href: "/tests", icon: "compass" },
+  { label: "备考中心", href: "/study", icon: "calendar" },
   { label: "面试准备", href: "/interview", icon: "mic" },
   { id: "statements", label: "文书写作", href: "/statements", icon: "pen" },
   { id: "prep", label: "填表助手", href: "/apply-prep", icon: "listChecks" },
@@ -155,7 +156,11 @@ export function DashboardHub({
           {TILES.map((tile, i) => {
             const tint = TINTS[i % TINTS.length];
             const pct = tile.id ? nodes[tile.id]?.pct : undefined;
-            const meta = tile.href === "/applications" && appCount > 0 ? `${appCount} 个志愿` : undefined;
+            const meta = tile.href === "/applications" && appCount > 0
+              ? `${appCount} 个志愿`
+              : tile.id === "tests" && nodes.tests?.denominator
+                ? `已练 ${nodes.tests.numerator ?? 0}/${nodes.tests.denominator} 题`
+                : undefined;
             return (
               <Link key={tile.href} href={tile.href} className={`group ${tint} notion-lift rounded-xl p-5 flex flex-col border border-black/5`}>
                 <div className="flex items-center justify-between">

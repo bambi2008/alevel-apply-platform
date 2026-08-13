@@ -1,0 +1,29 @@
+name: Production uptime monitor
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    env:
+      MONITOR_HEALTH_URL: ${{ secrets.PRODUCTION_HEALTH_URL }}
+      OPERATIONS_ALERT_WEBHOOK_URL: ${{ secrets.OPERATIONS_ALERT_WEBHOOK_URL }}
+      OPERATIONS_ALERT_WEBHOOK_TOKEN: ${{ secrets.OPERATIONS_ALERT_WEBHOOK_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Check configuration
+        if: ${{ env.MONITOR_HEALTH_URL == '' }}
+        run: echo "PRODUCTION_HEALTH_URL is not configured; uptime probe skipped."
+      - name: Probe production readiness
+        if: ${{ env.MONITOR_HEALTH_URL != '' }}
+        run: node scripts/monitor-production.mjs

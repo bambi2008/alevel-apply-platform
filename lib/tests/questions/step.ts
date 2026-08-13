@@ -219,7 +219,7 @@ $= \\dfrac{e^{\\pi/2}-1}{2}+\\dfrac{e^{3\\pi/2}+e^{\\pi/2}}{2}+\\dfrac{e^{2\\pi}
         label: "(iv)",
         marks: 5,
         question: "Hence evaluate $I_6$ and $I_7$.",
-        solutionOutline: "I_6=(5!!/6!!)·π/2=(5·3·1)/(6·4·2)·π/2=15/48·π/2=5π/32. I_7=(6!!/7!!)=wait: I_{2m+1}=((2m)!!/((2m+1)!!))·1. For n=7 (odd): I_7=(6/7)·I_5=(6/7)·(4/5)·I_3=(6/7)·(4/5)·(2/3)·I_1=48/(105)·1=16/35.",
+        solutionOutline: "$I_6=\\frac{5\\cdot3\\cdot1}{6\\cdot4\\cdot2}\\cdot\\frac{\\pi}{2}=\\frac{5\\pi}{32}$. Repeatedly applying the reduction formula gives $I_7=\\frac67\\cdot\\frac45\\cdot\\frac23 I_1=\\frac{16}{35}$.",
       },
     ],
     fullSolution: `(i) $I_0=\\int_0^{\\pi/2}dx=\\frac{\\pi}{2}$; $I_1=[-\\cos x]_0^{\\pi/2}=1$.
@@ -392,7 +392,7 @@ $I_7=\\frac{6}{7}\\cdot\\frac{4}{5}\\cdot\\frac{2}{3}\\cdot I_1=\\frac{48}{105}=
         label: "(iv)",
         marks: 6,
         question: "Using your series, find the sum $1 + \\dfrac{1}{3\\cdot 3} + \\dfrac{1}{5\\cdot 3^2} + \\dfrac{1}{7\\cdot 3^3} + \\cdots$",
-        solutionOutline: "This is ∑_{n=0}^∞ 1/((2n+1)·3^n)=∑1/(2n+1)·(1/√3)^{2n}·(1/√3)... Actually ∑x^{2n+1}/(2n+1) at x=1/√3 gives (1/√3)∑(1/3)^n/(2n+1)... Hmm. The series is ∑_{n=0}^∞ 1/((2n+1)·3^n). At x=1/√3: f(1/√3)=2∑(1/√3)^{2n+1}/(2n+1)=(2/√3)∑(1/3)^n/(2n+1). So ∑(1/3)^n/(2n+1)=(√3/2)f(1/√3)=(√3/2)ln((1+1/√3)/(1-1/√3))=(√3/2)ln((√3+1)/(√3-1))=(√3/2)ln(2+√3).",
+        solutionOutline: "At $x=1/\\sqrt3$, $f(x)=2\\sum_{n=0}^{\\infty}\\frac{x^{2n+1}}{2n+1}=\\frac{2}{\\sqrt3}\\sum_{n=0}^{\\infty}\\frac{1}{(2n+1)3^n}$. Therefore the required sum is $\\frac{\\sqrt3}{2}f(1/\\sqrt3)=\\frac{\\sqrt3}{2}\\ln(2+\\sqrt3)$.",
       },
     ],
     fullSolution: `(i) $f(x)=\\ln(1+x)-\\ln(1-x)=2\\cdot\\frac{1}{2}\\ln\\frac{1+x}{1-x}=2\\operatorname{artanh}x$. $f'(x)=\\frac{1}{1+x}+\\frac{1}{1-x}=\\frac{2}{1-x^2}$.
@@ -521,7 +521,7 @@ $I_7=\\frac{6}{7}\\cdot\\frac{4}{5}\\cdot\\frac{2}{3}\\cdot I_1=\\frac{48}{105}=
         label: "(iv)",
         marks: 5,
         question: "Find all positive integers $n$ such that $n^4 + 4^n$ is prime.",
-        solutionOutline: "If n is odd: 4^n=(2^2)^n=2^{2n}=(2^n)². n⁴+4^n=n⁴+(2^n)². Use Sophie Germain identity: a⁴+4b⁴=(a²+2b²+2ab)(a²+2b²-2ab). With a=n, b=2^{(n-1)/2}... Hmm this only works when n is odd and 4^n=4·(4^{(n-1)/2})²... Actually Sophie Germain: a⁴+4b⁴=(a²+2b²)²-(2ab)²=(a²+2b²+2ab)(a²+2b²-2ab). Set b=1: n⁴+4=(n²+2)²-4n²=(n²+2+2n)(n²+2-2n)=(n+1)²+1)((n-1)²+1). For n>1 both factors >1, so composite. For n=1: 1+4=5 prime. For even n: 4^n is divisible by 4 and n⁴ is divisible by 16, so n⁴+4^n is divisible by 4 (for n>2 even)... actually for n=2: 16+16=32 not prime. n=4: 256+256=512 not prime. Only n=1 gives a prime.",
+        solutionOutline: "For $n=1$, the value is $5$, which is prime. If $n>1$ is even, both terms are even, so the sum is an even integer greater than $2$. If $n>1$ is odd, set $b=2^{(n-1)/2}$. Then $4^n=4b^4$, and Sophie Germain's identity factors $n^4+4b^4=(n^2+2b^2+2nb)(n^2+2b^2-2nb)$ into two integers greater than $1$. Hence only $n=1$ works.",
       },
     ],
     fullSolution: `(i) $n^5-n=n(n-1)(n+1)(n^2+1)$. The product $(n-1)n(n+1)$ of three consecutive integers is divisible by $6$. By Fermat (or direct check): $5\\mid n^5-n$ for all $n$ (see part ii). Since $\\gcd(5,6)=1$, $30\\mid n^5-n$.
@@ -592,14 +592,14 @@ $I_7=\\frac{6}{7}\\cdot\\frac{4}{5}\\cdot\\frac{2}{3}\\cdot I_1=\\frac{48}{105}=
     difficulty: 3,
     totalMarks: 20,
     context:
-      "For $n \\ge 0$ define $I_n = \\displaystyle\\int_0^{\\pi/2} x^n \\sin x \\, dx$.",
+      "For $n \\ge 0$ define $I_n = \\displaystyle\\int_0^{\\pi/2} x^n \\cos x \\, dx$.",
     parts: [
       {
         label: "(i)",
         marks: 4,
         question: "Show that $I_0 = 1$ and $I_1 = \\dfrac{\\pi}{2} - 1$.",
         solutionOutline:
-          "I_0=∫₀^{π/2} sin x dx=[-cos x]₀^{π/2}=0-(-1)=1. I_1=∫₀^{π/2} x sin x dx. IBP: u=x, dv=sin x dx. [−x cos x]₀^{π/2}+∫₀^{π/2}cos x dx=0+[sin x]₀^{π/2}=1. Wait: I_1=[-x cos x]₀^{π/2}+∫₀^{π/2}cos x dx=0+1=1. Hmm: at π/2, cos(π/2)=0. So I_1=0+[sin x]₀^{π/2}=1. Actually I_1=π/2·0+[sin x]₀^{π/2}=1? Let me redo: IBP u=x dv=sin x dx → v=-cos x. I_1=[-x cos x]₀^{π/2}+∫₀^{π/2} cos x dx=(-(π/2)·0+0·1)+[sin x]₀^{π/2}=0+1=1. So I_1=1. Wait the question says I_1=π/2-1. Let me reconsider the definition: perhaps I_n=∫₀^{π/2} x^n cos x dx? Or I_n=∫₀^1 x^n sin(πx/2)dx? Re-examining: with I_n=∫₀^{π/2} x^n sin x dx, I_1=1. The question states π/2-1, which corresponds to I_n=∫₀^{π/2} x^n cos x dx: I_0=[sin x]₀^{π/2}=1, I_1=[x sin x]₀^{π/2}-∫sin x dx=(π/2)·1+[cos x]₀^{π/2}=π/2+0-1=π/2-1. Use that definition.",
+          "With $I_n=\\int_0^{\\pi/2}x^n\\cos x\\,dx$, $I_0=[\\sin x]_0^{\\pi/2}=1$. Integration by parts gives $I_1=[x\\sin x]_0^{\\pi/2}-\\int_0^{\\pi/2}\\sin x\\,dx=\\frac{\\pi}{2}-1$.",
         hint: "Use integration by parts with $u = x^n$ and $dv = \\cos x\\,dx$.",
       },
       {
@@ -763,7 +763,7 @@ $$\\int_1^\\infty\\frac{\\ln x}{x^s}dx=\\left[\\frac{x^{1-s}\\ln x}{1-s}\\right]
         question:
           "Show that $ab + bc + ca \\le \\dfrac{1}{3}$, and deduce that $a^3 + b^3 + c^3 \\ge \\dfrac{1}{9}$.",
         solutionOutline:
-          "(a+b+c)²=a²+b²+c²+2(ab+bc+ca)=1. So ab+bc+ca=(1-a²-b²-c²)/2≤(1-1/3)/2=1/3. For a³+b³+c³: use identity a³+b³+c³-3abc=(a+b+c)(a²+b²+c²-ab-bc-ca). So a³+b³+c³=3abc+(a²+b²+c²-ab-bc-ca)≥a²+b²+c²-ab-bc-ca (since abc≥0)≥1/3-1/3=0... Better: a³+b³+c³≥(a+b+c)(a²+b²+c²)/3... or use power mean: (a³+b³+c³)/3≥((a+b+c)/3)³? No, that's not right. By AM: a³+b³+c³≥a²b... use Chebyshev or Schur. Actually by power mean M₃≥M₁: (a³+b³+c³)/3≥((a+b+c)/3)³... No: power mean says M_r≥M_s for r≥s when comparing to each other... We have (a³+b³+c³)/3≥((a²+b²+c²)/3)^{3/2} by power mean? No. Simpler: a³+b³+c³≥(a²+b²+c²)·(a+b+c)/3... Hmm. By Cauchy-Schwarz: (a²+b²+c²)²≤(a³+b³+c³)(a+b+c). So a³+b³+c³≥(a²+b²+c²)²≥(1/3)²=1/9.",
+          "Since $(a+b+c)^2=1$, $ab+bc+ca=\\frac{1-(a^2+b^2+c^2)}2\\le\\frac13$. Also Cauchy-Schwarz gives $(a^2+b^2+c^2)^2\\le(a^3+b^3+c^3)(a+b+c)$, so $a^3+b^3+c^3\\ge(a^2+b^2+c^2)^2\\ge\\frac19$.",
       },
       {
         label: "(iii)",
@@ -777,9 +777,9 @@ $$\\int_1^\\infty\\frac{\\ln x}{x^s}dx=\\left[\\frac{x^{1-s}\\ln x}{1-s}\\right]
         label: "(iv)",
         marks: 6,
         question:
-          "Show that $a(1-a)^2 + b(1-b)^2 + c(1-c)^2 \\le \\dfrac{4}{27}$ with equality iff $a = b = c = \\dfrac{1}{3}$. [You may use the fact that $f(t)=t(1-t)^2$ is concave on $[0,1]$.]",
+          "Show that $a(1-a)^2 + b(1-b)^2 + c(1-c)^2 \\le \\dfrac{4}{9}$ with equality iff $a = b = c = \\dfrac{1}{3}$. [You may use the fact that $f(t)=t(1-t)^2$ is concave on $[0,1]$.]",
         solutionOutline:
-          "By Jensen's inequality (since f is concave): f(a)+f(b)+f(c)≤3f((a+b+c)/3)=3f(1/3)=3·(1/3)·(2/3)²=3·(1/3)·(4/9)=4/9... wait: 3·(1/3)·(4/9)=4/9≠4/27. Recheck: f(1/3)=(1/3)(1-1/3)²=(1/3)(2/3)²=(1/3)(4/9)=4/27. Jensen: (f(a)+f(b)+f(c))/3≤f((a+b+c)/3)=f(1/3)=4/27. So f(a)+f(b)+f(c)≤3·4/27=4/9? That gives 4/9 not 4/27. The bound ∑f≤4/9 with equality at a=b=c=1/3 where ∑f=3·4/27=4/9. So the bound should be 4/9, not 4/27. Perhaps the question meant f(t)=t(1-t)² and shows ∑≤4/9. Let me keep as stated in question but correct bound to 4/9.",
+          "For the given concave function $f(t)=t(1-t)^2$, Jensen gives $\\frac{f(a)+f(b)+f(c)}3\\le f(1/3)=4/27$. Therefore $f(a)+f(b)+f(c)\\le4/9$, with equality exactly when $a=b=c=1/3$.",
         hint: "Jensen's inequality states that for a concave function $f$ and weights $\\lambda_i$ summing to 1: $\\sum \\lambda_i f(x_i) \\le f\\!\\left(\\sum \\lambda_i x_i\\right)$.",
       },
     ],
@@ -866,7 +866,7 @@ $(2,1)\\to(3,4,5)$; $(3,2)\\to(5,12,13)$; $(4,1)\\to(15,8,17)$; $(4,3)\\to(7,24,
         question:
           "Let $p = x + y + z$, $q = xy + yz + zx$, $r = xyz$. Show that $p^2 \\ge 3q$ and $q^2 \\ge 3pr$.",
         solutionOutline:
-          "p²-3q=(x+y+z)²-3(xy+yz+zx)=x²+y²+z²-xy-yz-zx=½[(x-y)²+(y-z)²+(z-x)²]≥0. For q²≥3pr: q²-3pr=(xy+yz+zx)²-3xyz(x+y+z). Expand: x²y²+y²z²+z²x²+2xy²z+2xyz²+2x²yz-3x²yz-3xy²z-3xyz²=x²y²+y²z²+z²x²-xy²z-xyz²-x²yz=x²y²+y²z²+z²x²-xyz(x+y+z)... factor or apply part (i) with substitution X=√(xy), etc. Actually: by AM-GM on cyclic terms, or substitute a=xy, b=yz, c=zx in (i): a²+b²+c²≥ab+bc+ca=(x²y²+y²z²+z²x²: need (xy)²+(yz)²+(zx)²≥(xy)(yz)+(yz)(zx)+(zx)(xy)=xyz(y+z+x)=pr·? hmm: (xy)(yz)+(yz)(zx)+(zx)(xy)=xy²z+xyz²+x²yz=xyz(x+y+z)=pr. So q²=(xy+yz+zx)²=(a+b+c)²≥... actually (a+b+c)²≥3(ab+bc+ca)=3xyz(x+y+z)=3pr from p²≥3q applied to a,b,c.",
+          "$p^2-3q=\\frac12[(x-y)^2+(y-z)^2+(z-x)^2]\\ge0$. For the second inequality, apply the same result to $xy,yz,zx$: $q^2=(xy+yz+zx)^2\\ge3[(xy)(yz)+(yz)(zx)+(zx)(xy)]=3xyz(x+y+z)=3pr$.",
       },
       {
         label: "(iii)",
@@ -882,7 +882,7 @@ $(2,1)\\to(3,4,5)$; $(3,2)\\to(5,12,13)$; $(4,1)\\to(15,8,17)$; $(4,3)\\to(7,24,
         question:
           "Show that for positive reals $a, b, c$, $\\dfrac{a^3}{b^2} + \\dfrac{b^3}{c^2} + \\dfrac{c^3}{a^2} \\ge a + b + c$.",
         solutionOutline:
-          "By AM-GM applied to each term: a³/b²+b²/2+b²/2≥3·(a³/b²·b²/2·b²/2)^{1/3}... better: by Cauchy-Schwarz (Titu/Engel): a³/b²=a⁴/(ab²)... or use AM-GM directly: by AM-GM, a³/b²+b²≥2a^{3/2}/b·b... try: a³/b²≥a by AM-GM applied to a³/b² ≥ a iff a²≥b², not true in general. Use weighted AM-GM: a³/b² = a·(a/b)² and since (a/b)² ≥ 2(a/b)-1... or Schur's/SOS. Simplest: by AM-GM on 3 copies: (a³/b²)+(a³/b²)+(b³/c²)≥... use Chebyshev or power mean. Actually: ∑a³/b²≥∑a by Cauchy-Schwarz: (∑a³/b²)(∑ab²)≥(∑a²)². And ∑ab²≤... this approach needs more work. Alternatively, by AM-GM applied twice: a³/b²≥a when a≥b. For the general case: by Cauchy-Schwarz (Sedrakyan): ∑a³/b²≥(a+b+c)²/(a+b+c)·... Let me use: ∑(a³/b²)≥∑a by SOS. Or note by AM-GM: a³/b²+b/2+b/2≥3·a (cube root of a³/b²·b/2·b/2=a³/4·... no). Use: for each term, a³/b²≥3a/b²·... Use Cauchy-Schwarz in Engel form: ∑a³/b²=∑a⁴/(ab²)≥(a²+b²+c²)²/((ab²+bc²+ca²))... complex. Cleaner: by AM-GM a³/b² ≥ a when a ≥ b, and handle via SOS/Schur inequality. Note the inequality is homogeneous of degree 1, so WLOG a+b+c=3 and need ∑a³/b²≥3. At a=b=c=1: equality. By Schur or direct SOS argument the inequality holds.",
+          "Apply Cauchy-Schwarz twice: $\\sum\\frac{a^3}{b^2}=\\sum\\frac{(a^2/b)^2}{a}\\ge\\frac{(\\sum a^2/b)^2}{a+b+c}$, while $\\sum a^2/b\\ge\\frac{(a+b+c)^2}{a+b+c}=a+b+c$. Combining the two inequalities gives $\\sum a^3/b^2\\ge a+b+c$.",
       },
     ],
     fullSolution: `(i) $\\text{LHS}-\\text{RHS}=(x^2+y^2+z^2)^2-3(x^2y^2+y^2z^2+z^2x^2)=x^4+y^4+z^4-x^2y^2-y^2z^2-z^2x^2=\\tfrac{1}{2}[(x^2-y^2)^2+(y^2-z^2)^2+(z^2-x^2)^2]\\ge 0$. ✓
@@ -891,9 +891,13 @@ $(2,1)\\to(3,4,5)$; $(3,2)\\to(5,12,13)$; $(4,1)\\to(15,8,17)$; $(4,3)\\to(7,24,
 
 (iii) $(x+y+z)\\cdot\\frac{xy+yz+zx}{xyz}=p\\cdot q$ (using $xyz=1$). By Cauchy-Schwarz: $(x+y+z)(\\frac{1}{x}+\\frac{1}{y}+\\frac{1}{z})\\ge(1+1+1)^2=9$. Equality iff $x=y=z=1$. ✓
 
-(iv) By the Cauchy-Schwarz (Engel/Titu) inequality:
-$$\\frac{a^3}{b^2}+\\frac{b^3}{c^2}+\\frac{c^3}{a^2}=\\frac{a^4}{ab^2}+\\frac{b^4}{bc^2}+\\frac{c^4}{ca^2}\\ge\\frac{(a^2+b^2+c^2)^2}{ab^2+bc^2+ca^2}.$$
-It suffices to show $(a^2+b^2+c^2)^2\\ge(a+b+c)(ab^2+bc^2+ca^2)$. By AM-GM applied cyclically and SOS methods (or Schur's inequality), this holds with equality iff $a=b=c$.`,
+(iv) Applying the Cauchy-Schwarz inequality in Engel form twice,
+$$\\sum_{cyc}\\frac{a^3}{b^2}
+=\\sum_{cyc}\\frac{(a^2/b)^2}{a}
+\\ge\\frac{\\left(\\sum_{cyc}a^2/b\\right)^2}{a+b+c},$$
+and
+$$\\sum_{cyc}\\frac{a^2}{b}\\ge\\frac{(a+b+c)^2}{a+b+c}=a+b+c.$$
+Therefore $\\sum_{cyc}a^3/b^2\\ge a+b+c$, with equality when $a=b=c$.`,
   },
   {
     id: "step-020",
@@ -911,7 +915,7 @@ It suffices to show $(a^2+b^2+c^2)^2\\ge(a+b+c)(ab^2+bc^2+ca^2)$. By AM-GM appli
         question:
           "Show that the tangent to $H$ at $P$ has equation $\\dfrac{x\\sec\\theta}{a} - \\dfrac{y\\tan\\theta}{b} = 1$.",
         solutionOutline:
-          "Differentiate x²/a²-y²/b²=1 implicitly: 2x/a²-2y/b²·dy/dx=0 → dy/dx=(b²x)/(a²y). At P: dy/dx=(b²·a sec θ)/(a²·b tan θ)=(b sec θ)/(a tan θ)=b cos θ/(a sin θ·cos θ... wait: sec θ/a · b/tan θ=b/(a·sin θ). Tangent: y-b tan θ=(b sec θ)/(a tan θ)·(x-a sec θ). Multiply through by a tan θ/(b): (a tan θ/b)(y-b tan θ)=sec θ(x-a sec θ). a y tan θ/b - tan²θ = x sec θ - sec²θ. Rearranging: x sec θ/a - y tan θ/b = sec²θ-tan²θ=1. ✓",
+          "Implicit differentiation gives $dy/dx=b^2x/(a^2y)$, so the slope at $P$ is $b\\sec\\theta/(a\\tan\\theta)$. Substituting $P$ into the point-slope equation and rearranging gives $x\\sec\\theta/a-y\\tan\\theta/b=\\sec^2\\theta-\\tan^2\\theta=1$.",
       },
       {
         label: "(ii)",
@@ -925,9 +929,9 @@ It suffices to show $(a^2+b^2+c^2)^2\\ge(a+b+c)(ab^2+bc^2+ca^2)$. By AM-GM appli
         label: "(iii)",
         marks: 5,
         question:
-          "Show that $|OQ| \\cdot |OR| = |OP|^2$, where $O$ is the origin.",
+          "Show that $\\overrightarrow{OQ}\\cdot\\overrightarrow{OR}=a^2-b^2$, where $O$ is the origin.",
         solutionOutline:
-          "|OQ|²=(a/(secθ-tanθ))²+(b/(secθ-tanθ))²=(a²+b²)/(secθ-tanθ)². |OR|²=(a²+b²)/(secθ+tanθ)². |OQ||OR|=(a²+b²)/|(sec²θ-tan²θ)|=a²+b². |OP|²=a²sec²θ+b²tan²θ. These are not generally equal... The identity OQ·OR=OP² means (a²+b²)/[(secθ-tanθ)(secθ+tanθ)]·... Actually |OQ|·|OR|=√[(a²+b²)/(secθ-tanθ)²·(a²+b²)/(secθ+tanθ)²]=(a²+b²)/|sec²θ-tan²θ|=a²+b². And |OP|²=a²sec²θ+b²tan²θ. These are equal only if a²sec²θ+b²tan²θ=a²+b², i.e. a²(sec²θ-1)+b²(tan²θ-1)... no, not generally. Perhaps the question states |OQ|·|OR| as scalars with OQ, OR as the vector product? Or perhaps it's about areas? Re-reading: maybe |OQ·OR| means dot product = |OP|²: OQ·OR=(a²+b²)/[(secθ-tanθ)(secθ+tanθ)]=a²+b² but |OP|²=a²sec²θ+b²tan²θ≠a²+b² in general. The STEP property is usually: OQ·OR = a² (from the asymptote property). Let me state the correct result: since OQ=(a/(s-t), b/(s-t)) and OR=(a/(s+t), -b/(s+t)) where s=secθ, t=tanθ: OQ·OR=a²/(s²-t²)+b²·(-1)/(s²-t²)=(a²-b²)/(1)=a²-b² (if a>b) or in terms of the original: a²-b². Not a²+b². The product |OQ||OR|=(a²+b²)^{1/2}... I'll correct the question to state OQ⃗·OR⃗=a²-b² or reframe.",
+          "Write $s=\\sec\\theta$ and $t=\\tan\\theta$. From part (ii), $\\overrightarrow{OQ}=(a,b)/(s-t)$ and $\\overrightarrow{OR}=(a,-b)/(s+t)$. Their dot product is $\\frac{a^2-b^2}{(s-t)(s+t)}=a^2-b^2$ because $s^2-t^2=1$.",
       },
       {
         label: "(iv)",
@@ -984,9 +988,9 @@ It suffices to show $(a^2+b^2+c^2)^2\\ge(a+b+c)(ab^2+bc^2+ca^2)$. By AM-GM appli
         label: "(iv)",
         marks: 6,
         question:
-          "Find the polar equation of the tangent to $C$ at the point where $\\theta = \\pi/3$, and find where this tangent crosses the initial line $\\theta = 0$.",
+          "Find the Cartesian equation of the tangent to $C$ at the point where $\\theta = \\pi/2$, and find where this tangent crosses the initial line $\\theta = 0$.",
         solutionOutline:
-          "At θ=π/3: r=a(1+1/2)=3a/2. Cartesian: x=r cos θ=3a/2·1/2=3a/4, y=r sin θ=3a/2·√3/2=3a√3/4. Slope dy/dx: y=r sin θ=a(1+cos θ)sin θ, x=a(1+cos θ)cos θ. dx/dθ=a(-sin θ cos θ+(1+cos θ)(-sin θ))=-a sin θ(1+2cos θ)... let me compute: dx/dθ=a(-sin θ cos θ-sin θ(1+cos θ))... Actually x=a(cos θ+cos²θ), dx/dθ=a(-sin θ-2sin θ cos θ)=-a sin θ(1+2cos θ). y=a(sin θ+sin θ cos θ), dy/dθ=a(cos θ+cos²θ-sin²θ)=a(cos θ+cos 2θ). At θ=π/3: dx/dθ=-a·(√3/2)·(1+1)=-√3a. dy/dθ=a(1/2+cos(2π/3))=a(1/2-1/2)=0. So dy/dx=0/(−√3a)=0. Tangent is horizontal: y=3a√3/4. This tangent y=3a√3/4 meets θ=0 (the positive x-axis) only if it's horizontal and crosses x-axis... it never crosses the x-axis (y=3a√3/4≠0). So the tangent is horizontal and parallel to the initial line; it doesn't cross θ=0 in the usual sense (unless extended to negative x). Actually the initial line θ=0 is the positive x-axis, which has y=0. A horizontal line y=c≠0 doesn't cross y=0. So tangent at θ=π/3 is horizontal and does not cross the initial line θ=0 (or crosses it at infinity). Question may intend a different θ value; let's take θ=π/2 instead: r=a, point=(0,a). dy/dθ=a(0+cos π)=-a. dx/dθ=-a·1·(1+0)=-a. dy/dx=(-a)/(-a)=1. Tangent: y-a=1·(x-0), y=x+a. Crosses θ=0 (y=0): x=-a, point (-a,0).",
+          "At $\\theta=\\pi/2$, $r=a$ and $P=(0,a)$. Using $x=a(\\cos\\theta+\\cos^2\\theta)$ and $y=a(\\sin\\theta+\\sin\\theta\\cos\\theta)$ gives $dy/dx=1$ there. Hence the tangent is $y=x+a$; setting $y=0$ gives the intersection $(-a,0)$.",
       },
     ],
     fullSolution: `(i) $A=\\tfrac{a^2}{2}\\int_0^{2\\pi}(1+2\\cos\\theta+\\cos^2\\theta)\\,d\\theta=\\tfrac{a^2}{2}(2\\pi+0+\\pi)=\\dfrac{3\\pi a^2}{2}$.
@@ -1013,7 +1017,7 @@ It suffices to show $(a^2+b^2+c^2)^2\\ge(a+b+c)(ab^2+bc^2+ca^2)$. By AM-GM appli
         question:
           "Show that $\\displaystyle\\sum_{k=0}^{n-1} \\omega_k^j = \\begin{cases} n & \\text{if } n \\mid j \\\\ 0 & \\text{otherwise} \\end{cases}$ for any integer $j$.",
         solutionOutline:
-          "If n|j: each term ω_k^j=(e^{2πij/n})^k... wait: ω_k=e^{2πik/n}, so ω_k^j=e^{2πijk/n}. Sum=∑_{k=0}^{n-1}e^{2πijk/n}. If n|j: e^{2πijk/n}=e^{2πi·(j/n)·k}=1 for all k (since j/n∈Z). Sum=n. If n∤j: this is a geometric series with ratio e^{2πij/n}≠1. Sum=(e^{2πij}-1)/(e^{2πij/n}-1)=0/(e^{2πij/n}-1)=0.",
+          "Since $\\omega_k^j=e^{2\\pi ijk/n}$, the sum is geometric with ratio $q=e^{2\\pi ij/n}$. If $n\\mid j$, then $q=1$ and every term is $1$, so the sum is $n$. Otherwise $q\\ne1$ and the sum is $(q^n-1)/(q-1)=0$.",
       },
       {
         label: "(ii)",
@@ -1035,9 +1039,9 @@ It suffices to show $(a^2+b^2+c^2)^2\\ge(a+b+c)(ab^2+bc^2+ca^2)$. By AM-GM appli
         label: "(iv)",
         marks: 5,
         question:
-          "Using $\\cos\\dfrac{2\\pi}{5}$, find the exact value of $\\sin\\dfrac{\\pi}{5}$ and verify that a regular pentagon inscribed in a unit circle has side length $\\dfrac{1}{2}\\sqrt{\\dfrac{5-\\sqrt{5}}{2}}\\cdot 2 = \\sqrt{\\dfrac{5-\\sqrt{5}}{2}}$.",
+          "Using $\\cos\\dfrac{2\\pi}{5}$, find the exact value of $\\sin\\dfrac{\\pi}{5}$ and verify that a regular pentagon inscribed in a unit circle has side length $\\sqrt{\\dfrac{5-\\sqrt{5}}{2}}$.",
         solutionOutline:
-          "sin²(π/5)=1-cos²(2π/10)... Note π/5=36°, 2π/5=72°. cos(2π/5)=(√5-1)/4. sin(π/5)=sin 36°=√(1-cos²72°)... We use cos 36°=(√5+1)/4: this is the value of 2cos(2π/5)... wait: cos(2π/5)=cos 72°=(√5-1)/4. And cos(π/5)=cos 36°=(√5+1)/4. sin(π/5)=√(1-((√5+1)/4)²)=√((16-(6+2√5))/16)=√((10-2√5)/16)=√(10-2√5)/4. Side of regular pentagon in unit circle=2sin(π/5)=√(10-2√5)/2=√((10-2√5)/4)·2... side=2sin(π/5)=√(10-2√5)/2.",
+          "Since $\\cos(\\pi/5)=(\\sqrt5+1)/4$, $\\sin(\\pi/5)=\\sqrt{1-\\cos^2(\\pi/5)}=\\sqrt{10-2\\sqrt5}/4$. The pentagon side subtends an angle $2\\pi/5$, so its length is $2\\sin(\\pi/5)=\\sqrt{10-2\\sqrt5}/2=\\sqrt{(5-\\sqrt5)/2}$.",
       },
     ],
     fullSolution: `(i) If $n\\mid j$: $e^{2\\pi ijk/n}=1$ for all $k$, sum $=n$. If $n\\nmid j$: geometric series with ratio $r=e^{2\\pi ij/n}\\ne 1$; sum $=\\frac{r^n-1}{r-1}=\\frac{e^{2\\pi ij}-1}{r-1}=0$.
@@ -1072,13 +1076,13 @@ It suffices to show $(a^2+b^2+c^2)^2\\ge(a+b+c)(ab^2+bc^2+ca^2)$. By AM-GM appli
         question:
           "Hence solve the equation $16t^5 - 20t^3 + 5t = 0$ and deduce the exact values of $\\cos\\dfrac{\\pi}{5}$ and $\\cos\\dfrac{2\\pi}{5}$.",
         solutionOutline:
-          "16t⁵-20t³+5t=t(16t⁴-20t²+5)=0. So t=0 or 16t⁴-20t²+5=0 → t²=(20±√(400-320))/32=(20±√80)/32=(20±4√5)/32=(5±√5)/8. t=±√((5±√5)/8). The 5 solutions of cos5θ=0 with 5θ=π/2,3π/2,5π/2,7π/2,9π/2, so θ=π/10,3π/10,π/2,7π/10,9π/10. So the nonzero cosines are cos(π/10),cos(3π/10),cos(7π/10),cos(9π/10). Since cos(2π/5)=cos(4π/10) wait: θ values giving cos5θ=0 are 5θ=π/2+kπ, so θ=π/10+kπ/5. k=0: θ=π/10; k=1: 3π/10; k=2: π/2 (cosθ=0); k=3: 7π/10; k=4: 9π/10. So cos(π/10),cos(3π/10) are positive roots; cos(7π/10)=-cos(3π/10),cos(9π/10)=-cos(π/10). t²=(5+√5)/8: t=cos(π/10) or cos(9π/10)... The two positive roots are cos(π/10)=√((5+√5)/8) and cos(3π/10)=√((5-√5)/8)... Note cos(π/5)=cos(2π/10): 5θ not used directly. Hmm, from the original equation cos5θ=0 so 5θ=π/2+kπ: to get cos(π/5) we need 5θ=π so cos5θ=-1, not from this equation. Better equation: use 16c⁵-20c³+5c=-1 for cos5θ=-1: 5θ=π, θ=π/5. Or solve cos5θ=1/2 for 5θ=π/3 → θ=π/15 which is cos(π/15), not cos(π/5). Actually cos(2π/5) comes from step-022. Here we can derive: from the factored quadratic t²=(5±√5)/8, positive roots are √((5+√5)/8)=cos(π/10) and √((5-√5)/8)=cos(3π/10). Note cos(π/5)=2cos²(π/10)-1=2(5+√5)/8-1=(5+√5)/4-1=(1+√5)/4. And cos(2π/5)=2cos²(π/5)-1=... or from step-022 (√5-1)/4. ✓",
+          "Factoring gives $t(16t^4-20t^2+5)=0$, so $t=0$ or $t^2=(5\\pm\\sqrt5)/8$. The positive nonzero roots are $\\cos(\\pi/10)=\\sqrt{(5+\\sqrt5)/8}$ and $\\cos(3\\pi/10)=\\sqrt{(5-\\sqrt5)/8}$. Hence $\\cos(\\pi/5)=2\\cos^2(\\pi/10)-1=(1+\\sqrt5)/4$, and $\\cos(2\\pi/5)=2\\cos^2(\\pi/5)-1=(\\sqrt5-1)/4$.",
       },
       {
         label: "(iii)",
         marks: 5,
         question:
-          "Similarly use De Moivre's theorem to express $\\sin 5\\theta$ in terms of $\\sin\\theta$, and hence show that $16s^4 - 20s^2 + 5 = 0$ has roots $\\sin\\dfrac{\\pi}{10}$, $\\cos\\dfrac{\\pi}{10}$ (and their negatives).",
+          "Similarly use De Moivre's theorem to express $\\sin 5\\theta$ in terms of $\\sin\\theta$, and hence show that $16s^4 - 20s^2 + 5 = 0$ has roots $\\sin\\dfrac{\\pi}{5}$, $\\cos\\dfrac{\\pi}{10}$ (and their negatives).",
         solutionOutline:
           "Im part of (cosθ+isinθ)⁵: k=1: 5cos⁴θ·isinθ → 5cos⁴θsinθ; k=3: C(5,3)cos²θ·i³sin³θ=-10cos²θsin³θ; k=5: i⁵sin⁵θ=isin⁵θ. So sin5θ=5cos⁴θsinθ-10cos²θsin³θ+sin⁵θ=sinθ(5cos⁴θ-10cos²θsin²θ+sin⁴θ)=sinθ(5(1-s²)²-10(1-s²)s²+s⁴) where s=sinθ. =sinθ(5-10s²+5s⁴-10s²+10s⁴+s⁴)=sinθ(5-20s²+16s⁴). For sin5θ=0 (other than sinθ=0): 16s⁴-20s²+5=0, giving s²=(5±√5)/8. Roots: sin(π/10), sin(3π/10)=cos(2π/10)... sin(π/10)=√((5-√5)/8) and sin(3π/10)=cos(π/5)... comparing: cos(π/10)=√((5+√5)/8)=sin(2π/5)... The roots of 16s⁴-20s²+5=0 are ±sin(π/5), ±sin(2π/5), which equal ±sin(π/5), ±cos(π/10)... the positive roots are sin(π/5) and sin(2π/5)=cos(π/10).",
       },
@@ -2166,19 +2170,39 @@ $$M^n=PD^nP^{-1}=\\begin{pmatrix}1&1\\\\0&-1\\end{pmatrix}\\begin{pmatrix}3^n&0\
     type: "long",
     testId: "step",
     topicId: "step-mech",
-    difficulty: 2,
+    difficulty: 3,
     totalMarks: 20,
-    context: "A block of mass $5\\,\\text{kg}$ rests on a rough plane inclined at $30^\\circ$ to the horizontal. Take $g=9.8\\,\\text{m s}^{-2}$.",
+    context: "A particle of mass $m$ is on a rough plane inclined at an angle $\\alpha$ to the horizontal. The coefficient of friction is $\\mu$. A force of magnitude $P$ acts at an angle $\\beta$ above the line of greatest slope and is just sufficient to move the particle up the plane. You may assume that the particle remains in contact with the plane.",
     parts: [
-      { label: "(i)", marks: 6, question: "Find the component of the weight acting down the slope.", solutionOutline: "mg sin30=5·9.8·0.5=24.5 N." },
-      { label: "(ii)", marks: 6, question: "The block is on the point of slipping down. Find the coefficient of friction.", solutionOutline: "μ=mg sin30/(mg cos30)=tan30=1/√3≈0.577." },
-      { label: "(iii)", marks: 8, question: "A force $P$ is applied up the slope so the block moves up at constant speed. Find $P$.", solutionOutline: "P=mg sin30+μ mg cos30=24.5+24.5=49 N (since μ mg cos30=mg sin30)." },
+      { label: "(i)", marks: 5, question: "By resolving perpendicular and parallel to the plane, show that $$P(\\cos\\beta+\\mu\\sin\\beta)=mg(\\sin\\alpha+\\mu\\cos\\alpha).$$", solutionOutline: "$R=mg\\cos\\alpha-P\\sin\\beta$. Limiting friction $\\mu R$ acts down the plane, so $P\\cos\\beta=mg\\sin\\alpha+\\mu R$. Substitute and rearrange." },
+      { label: "(ii)", marks: 6, question: "Write $\\mu=\\tan\\phi$, where $0<\\phi<\\tfrac{\\pi}{2}$. Show that $$P=\\frac{mg\\sin(\\alpha+\\phi)}{\\cos(\\beta-\\phi)},$$ and hence find the value of $\\beta$ for which $P$ is least.", solutionOutline: "Use sum formulae after multiplying numerator and denominator by $\\cos\\phi$. Since $\\cos(\\beta-\\phi)\\le1$, $P$ is least when $\\beta=\\phi$." },
+      { label: "(iii)", marks: 5, question: "For $\\alpha=30^\\circ$ and $\\mu=1/\\sqrt3$, find the least force and the corresponding normal reaction.", solutionOutline: "$\\phi=30^\\circ$, so $\\beta=30^\\circ$ and $P_{min}=mg\\sin60^\\circ=\\sqrt3mg/2$. Then $R=mg\\cos30^\\circ-P\\sin30^\\circ=\\sqrt3mg/4$." },
+      { label: "(iv)", marks: 4, question: "For the same values of $\\alpha$ and $\\mu$, find the force required if it acts parallel to the plane, and determine the percentage reduction achieved by using the optimal direction.", solutionOutline: "Put $\\beta=0$: $P=mg\\sin60^\\circ/\\cos30^\\circ=mg$. Reduction $=(1-\\sqrt3/2)\\times100\\%\\approx13.4\\%$." },
     ],
-    fullSolution: `(i) Down-slope weight component $=mg\\sin30^\\circ=5\\times9.8\\times0.5=24.5\\,\\text{N}.$
+    fullSolution: `(i) Let the normal reaction be $R$. Resolving perpendicular to the plane gives
+$$R+P\sin\beta=mg\cos\alpha,$$
+so $R=mg\cos\alpha-P\sin\beta$. Since motion is impending up the plane, limiting friction $\mu R$ acts down the plane. Resolving along the plane,
+$$P\cos\beta=mg\sin\alpha+\mu R.$$
+Substitution gives
+$$P(\cos\beta+\mu\sin\beta)=mg(\sin\alpha+\mu\cos\alpha).$$
 
-(ii) On the point of slipping, friction $=\\mu N=\\mu mg\\cos30^\\circ$ balances $mg\\sin30^\\circ$, so $\\mu=\\tan30^\\circ=\\tfrac{1}{\\sqrt3}\\approx0.577.$
+(ii) Put $\mu=\tan\phi$. Then
+$$\sin\alpha+\mu\cos\alpha=\frac{\sin(\alpha+\phi)}{\cos\phi},\qquad
+\cos\beta+\mu\sin\beta=\frac{\cos(\beta-\phi)}{\cos\phi}.$$
+Hence
+$$P=\frac{mg\sin(\alpha+\phi)}{\cos(\beta-\phi)}.$$
+The numerator is fixed and $\cos(\beta-\phi)\le1$, so $P$ is least when $\beta=\phi$.
 
-(iii) Moving up at constant speed, $P=mg\\sin30^\\circ+\\mu mg\\cos30^\\circ$. Here $\\mu mg\\cos30^\\circ=mg\\sin30^\\circ=24.5\\,\\text{N}$, so $P=24.5+24.5=49\\,\\text{N}.$`,
+(iii) Here $\phi=30^\circ$. Thus $\beta=30^\circ$ and
+$$P_{\min}=mg\sin60^\circ=\frac{\sqrt3}{2}mg.$$
+Also
+$$R=mg\cos30^\circ-P_{\min}\sin30^\circ
+=\frac{\sqrt3}{2}mg-\frac{\sqrt3}{4}mg=\frac{\sqrt3}{4}mg>0.$$
+
+(iv) For a force parallel to the plane, $\beta=0$, so
+$$P=\frac{mg\sin60^\circ}{\cos30^\circ}=mg.$$
+The percentage reduction is
+$$\frac{mg-(\sqrt3/2)mg}{mg}\times100\%=left(1-\frac{\sqrt3}{2}\right)100\%\approx13.4\%.$$`,
   },
 
   {
@@ -2188,17 +2212,42 @@ $$M^n=PD^nP^{-1}=\\begin{pmatrix}1&1\\\\0&-1\\end{pmatrix}\\begin{pmatrix}3^n&0\
     topicId: "step-mech",
     difficulty: 3,
     totalMarks: 20,
-    context: "A particle $A$ of mass $2\\,\\text{kg}$ moving at $5\\,\\text{m s}^{-1}$ collides with a stationary particle $B$ of mass $3\\,\\text{kg}$. After the collision they move together. Take $g=10\\,\\text{m s}^{-2}$.",
+    context: "Particles $A$ and $B$, of masses $m$ and $2m$ respectively, move on a smooth horizontal line. Initially $A$ moves with speed $u$ towards the stationary particle $B$. They collide with coefficient of restitution $e$, where $0<e<\\tfrac12$. A fixed smooth vertical wall is a distance $d$ beyond the point of this first collision. Particle $B$ rebounds elastically from the wall.",
     parts: [
-      { label: "(i)", marks: 6, question: "Find their common velocity after the collision.", solutionOutline: "Momentum: 2·5=(2+3)v ⇒ v=2 m/s." },
-      { label: "(ii)", marks: 6, question: "Find the kinetic energy lost in the collision.", solutionOutline: "KE_i=½·2·25=25 J; KE_f=½·5·4=10 J; lost=15 J." },
-      { label: "(iii)", marks: 8, question: "The combined particle then slides on a rough horizontal surface with coefficient of friction $0.2$ until it stops. Find the distance it travels.", solutionOutline: "a=μg=2 m/s². 0=v²-2as ⇒ s=4/(2·2)=1 m." },
+      { label: "(i)", marks: 5, question: "Show that immediately after the first collision the velocities of $A$ and $B$ are respectively $$\\frac{(1-2e)u}{3}\quad\\text{and}\\quad\\frac{(1+e)u}{3}.$$, explaining the significance of the restriction $e<\\tfrac12$.", solutionOutline: "Use momentum $u=v_A+2v_B$ and restitution $v_B-v_A=eu$. The restriction makes $v_A>0$, so both particles initially move towards the wall." },
+      { label: "(ii)", marks: 4, question: "Find the distance between $A$ and the wall at the instant $B$ first reaches the wall.", solutionOutline: "Time $=d/v_B$. Hence the gap is $d-v_A d/v_B=d(v_B-v_A)/v_B=3ed/(1+e)$." },
+      { label: "(iii)", marks: 5, question: "After $B$ rebounds, find the time until the particles collide again and the distance of this second collision from the wall.", solutionOutline: "Closing speed $v_A+v_B=(2-e)u/3$. Time $=9ed/[(1+e)(2-e)u]$. Distance travelled left by B, and hence collision distance from wall, is $3ed/(2-e)$." },
+      { label: "(iv)", marks: 6, question: "The coefficient of restitution in the second collision is also $e$. Find the velocities of $A$ and $B$ immediately after this collision, taking the original direction of motion as positive.", solutionOutline: "Before collision velocities are $v_A$ and $-v_B$. Momentum and restitution give $V_A=(2e^2-8e-1)u/9$ and $V_B=-(1+e)^2u/9$." },
     ],
-    fullSolution: `(i) Conservation of momentum: $2(5)=(2+3)v$, so $v=2\\,\\text{m s}^{-1}.$
+    fullSolution: `(i) Let the velocities after the first collision be $v_A,v_B$. Conservation of momentum and Newton's law of restitution give
+$$u=v_A+2v_B,\qquad v_B-v_A=eu.$$
+Solving,
+$$v_A=\frac{(1-2e)u}{3},\qquad v_B=\frac{(1+e)u}{3}.$$
+Since $0<e<\tfrac12$, both are positive; also $v_B>v_A$, so $B$ reaches the wall first.
 
-(ii) $\\text{KE}_i=\\tfrac12(2)(5^2)=25\\,\\text{J}$; $\\text{KE}_f=\\tfrac12(5)(2^2)=10\\,\\text{J}$. Energy lost $=15\\,\\text{J}.$
+(ii) The time for $B$ to reach the wall is $d/v_B$. In this time $A$ travels $v_A d/v_B$, so its distance from the wall is
+$$d\left(1-\frac{v_A}{v_B}\right)
+=d\frac{v_B-v_A}{v_B}
+=\frac{3ed}{1+e}.$$
 
-(iii) Friction gives deceleration $a=\\mu g=0.2\\times10=2\\,\\text{m s}^{-2}$. Using $v^2=u^2-2as$ with final speed $0$: $0=2^2-2(2)s$, so $s=1\\,\\text{m}.$`,
+(iii) After the elastic rebound, $B$ moves left with speed $v_B$, while $A$ still moves right with speed $v_A$. Their closing speed is
+$$v_A+v_B=\frac{(2-e)u}{3}.$$
+Hence the time to the second collision is
+$$\frac{3ed}{1+e}\div\frac{(2-e)u}{3}
+=\frac{9ed}{(1+e)(2-e)u}.$$
+During this time $B$ travels
+$$v_Bt=\frac{(1+e)u}{3}\cdot\frac{9ed}{(1+e)(2-e)u}
+=\frac{3ed}{2-e}$$
+from the wall. This is less than $d$ precisely because $e<\tfrac12$.
+
+(iv) Let the new velocities be $V_A,V_B$. Before this collision the velocities are $v_A$ and $-v_B$. Thus
+$$V_A+2V_B=v_A-2v_B=-\frac{(1+4e)u}{3},$$
+and restitution gives
+$$V_B-V_A=e(v_A+v_B)=\frac{e(2-e)u}{3}.$$
+Solving these simultaneous equations,
+$$V_A=\frac{(2e^2-8e-1)u}{9},\qquad
+V_B=-\frac{(1+e)^2u}{9}.$$
+Both are negative for $0<e<\tfrac12$, so both particles move away from the wall after the second collision.`,
   },
 
   {
@@ -2226,19 +2275,38 @@ $$M^n=PD^nP^{-1}=\\begin{pmatrix}1&1\\\\0&-1\\end{pmatrix}\\begin{pmatrix}3^n&0\
     type: "long",
     testId: "step",
     topicId: "step-stats",
-    difficulty: 2,
+    difficulty: 3,
     totalMarks: 20,
-    context: "A biased coin shows heads with probability $0.4$. It is tossed $6$ times; let $X$ be the number of heads.",
+    context: "A gambler has an integer fortune $r$, where $0\\le r\\le N$. On each play the fortune increases by $1$ with probability $p$ and decreases by $1$ with probability $q=1-p$. Plays are independent, and the game ends when the fortune first reaches either $0$ or $N$.",
     parts: [
-      { label: "(i)", marks: 5, question: "State the distribution of $X$ and find $P(X=3)$.", solutionOutline: "X~B(6,0.4). P(X=3)=C(6,3)(0.4)³(0.6)³=20·0.064·0.216≈0.2765." },
-      { label: "(ii)", marks: 7, question: "Find $P(X\\le 1)$.", solutionOutline: "(0.6)^6+6(0.4)(0.6)^5=0.046656+0.186624=0.23328." },
-      { label: "(iii)", marks: 8, question: "Find $E(X)$, $\\operatorname{Var}(X)$, and the most likely number of heads.", solutionOutline: "E=2.4, Var=1.44. P(X=2)=0.311 > P(X=3)=0.276 ⇒ mode=2." },
+      { label: "(i)", marks: 5, question: "Let $u_r$ be the probability that the gambler reaches $N$ before $0$, starting with fortune $r$. Explain why $$u_r=pu_{r+1}+qu_{r-1},$$ with $u_0=0$ and $u_N=1$.", solutionOutline: "Condition on the first play. The boundary values represent certain ruin and certain success." },
+      { label: "(ii)", marks: 7, question: "For $p\\ne q$, solve the recurrence to show that $$u_r=\\frac{1-(q/p)^r}{1-(q/p)^N}.$$ You may seek solutions of the form $u_r=\\lambda^r$.", solutionOutline: "Characteristic equation $p\\lambda^2-\\lambda+q=0$ has roots $1,q/p$. Thus $u_r=A+B(q/p)^r$; apply both boundaries." },
+      { label: "(iii)", marks: 3, question: "When $p=\\tfrac13$, $N=5$ and $r=2$, find the probability of reaching $5$ before ruin.", solutionOutline: "$q/p=2$, so $u_2=(1-4)/(1-32)=3/31$." },
+      { label: "(iv)", marks: 5, question: "Now suppose $p=q=\\tfrac12$. Let $t_r$ be the expected number of further plays before the game ends. By solving an appropriate recurrence, show that $$t_r=r(N-r).$$", solutionOutline: "$t_r=1+(t_{r+1}+t_{r-1})/2$, so second difference is $-2$. Hence $t_r=-r^2+Ar+B$; use $t_0=t_N=0$." },
     ],
-    fullSolution: `(i) $X\\sim B(6,0.4)$. $P(X=3)=\\binom{6}{3}(0.4)^3(0.6)^3=20(0.064)(0.216)\\approx0.2765.$
+    fullSolution: `(i) Condition on the first play. From fortune $r$, the next state is $r+1$ with probability $p$ and $r-1$ with probability $q$. Therefore
+$$u_r=pu_{r+1}+qu_{r-1}\qquad(1\le r\le N-1).$$
+At $0$ success is impossible, while at $N$ it has already occurred, so $u_0=0$ and $u_N=1$.
 
-(ii) $P(X\\le1)=(0.6)^6+\\binom{6}{1}(0.4)(0.6)^5=0.046656+0.186624=0.23328.$
+(ii) Substitute $u_r=\lambda^r$ into the recurrence:
+$$p\lambda^2-\lambda+q=0=(\lambda-1)(p\lambda-q).$$
+Since $p\ne q$, the roots are distinct, so
+$$u_r=A+B\left(\frac qp\right)^r.$$
+The condition $u_0=0$ gives $A=-B$. The condition $u_N=1$ then gives
+$$B\left[\left(\frac qp\right)^N-1\right]=1.$$
+Consequently
+$$u_r=\frac{(q/p)^r-1}{(q/p)^N-1}
+=\frac{1-(q/p)^r}{1-(q/p)^N}.$$
 
-(iii) $E(X)=np=2.4$; $\\operatorname{Var}(X)=np(1-p)=6(0.4)(0.6)=1.44$. Since $P(X=2)=\\binom{6}{2}(0.4)^2(0.6)^4\\approx0.311$ exceeds $P(X=3)\\approx0.276$, the most likely number of heads is $2.$`,
+(iii) Here $q/p=2$, so
+$$u_2=\frac{1-2^2}{1-2^5}=\frac{-3}{-31}=\frac3{31}.$$
+
+(iv) One play is used immediately, after which the expected remaining duration is conditioned on the next state:
+$$t_r=1+\frac12t_{r+1}+\frac12t_{r-1},\qquad t_0=t_N=0.$$
+Thus
+$$t_{r+1}-2t_r+t_{r-1}=-2.$$
+A quadratic particular solution is $-r^2$, so $t_r=-r^2+Ar+B$. From $t_0=0$, $B=0$; from $t_N=0$, $A=N$. Hence
+$$t_r=r(N-r).$$`,
   },
 
   {
@@ -2248,17 +2316,41 @@ $$M^n=PD^nP^{-1}=\\begin{pmatrix}1&1\\\\0&-1\\end{pmatrix}\\begin{pmatrix}3^n&0\
     topicId: "step-stats",
     difficulty: 3,
     totalMarks: 20,
-    context: "A continuous random variable $X$ is uniformly distributed with pdf $f(x)=\\tfrac12$ for $1\\le x\\le3$, and $0$ otherwise.",
+    context: "A continuous random variable $X$ has probability density function $$f(x)=kx(1-x)\\quad(0<x<1),$$ and $f(x)=0$ otherwise. Define $Y=X/(1-X)$.",
     parts: [
-      { label: "(i)", marks: 4, question: "Verify that $f$ is a valid probability density function.", solutionOutline: "f≥0 and ∫_1^3 ½ dx=½·2=1." },
-      { label: "(ii)", marks: 6, question: "Find $E(X)$ and $\\operatorname{Var}(X)$.", solutionOutline: "E(X)=2 (midpoint). Var=(b-a)²/12=4/12=1/3." },
-      { label: "(iii)", marks: 10, question: "Find the cumulative distribution function $F(x)$ for $1\\le x\\le3$, and hence $P(1.5\\le X\\le2.5)$.", solutionOutline: "F(x)=½(x-1). P=F(2.5)-F(1.5)=0.75-0.25=0.5." },
+      { label: "(i)", marks: 4, question: "Find $k$ and the cumulative distribution function $F(x)$ for $0<x<1$.", solutionOutline: "$1=k\\int_0^1(x-x^2)dx=k/6$, so $k=6$. Then $F(x)=3x^2-2x^3$." },
+      { label: "(ii)", marks: 6, question: "Find the probability density function of $Y$, stating its range.", solutionOutline: "$x=y/(1+y)$ and $dx/dy=1/(1+y)^2$. Therefore $g(y)=6y/(1+y)^4$ for $y>0$." },
+      { label: "(iii)", marks: 6, question: "Show that $E(Y)=2$, but that $\\operatorname{Var}(Y)$ does not exist as a finite number.", solutionOutline: "$E(Y)=\\int_0^1[x/(1-x)]6x(1-x)dx=6\\int_0^1x^2dx=2$. But $E(Y^2)=6\\int_0^1x^3/(1-x)dx$, which diverges logarithmically." },
+      { label: "(iv)", marks: 4, question: "Find $$P(1<Y<3\\mid Y<3).$$", solutionOutline: "$1<Y<3$ corresponds to $1/2<X<3/4$. Ratio $[F(3/4)-F(1/2)]/F(3/4)=(11/32)/(27/32)=11/27$." },
     ],
-    fullSolution: `(i) $f(x)=\\tfrac12\\ge0$ and $\\int_1^3\\tfrac12\\,dx=\\tfrac12\\cdot2=1$, so $f$ is a valid pdf.
+    fullSolution: `(i) Normalisation requires
+$$1=k\int_0^1x(1-x)\,dx=k\left(\frac12-\frac13\right)=\frac{k}{6},$$
+so $k=6$. For $0<x<1$,
+$$F(x)=\int_0^x6t(1-t)\,dt=3x^2-2x^3.$$
 
-(ii) $E(X)=\\int_1^3 x\\cdot\\tfrac12\\,dx=\\tfrac12\\big[\\tfrac{x^2}{2}\\big]_1^3=\\tfrac12\\cdot4=2$. For a uniform distribution $\\operatorname{Var}(X)=\\tfrac{(b-a)^2}{12}=\\tfrac{4}{12}=\\tfrac13.$
+(ii) Since $Y=X/(1-X)$ is increasing on $(0,1)$, its range is $y>0$. Inverting,
+$$x=\frac{y}{1+y},\qquad \frac{dx}{dy}=\frac1{(1+y)^2}.$$
+Also $1-x=1/(1+y)$, so
+$$g(y)=f\left(\frac{y}{1+y}\right)\left|\frac{dx}{dy}\right|
+=6\frac{y}{1+y}\frac1{1+y}\frac1{(1+y)^2}
+=\frac{6y}{(1+y)^4},\qquad y>0.$$
 
-(iii) For $1\\le x\\le3$, $F(x)=\\int_1^x\\tfrac12\\,dt=\\tfrac12(x-1)$. Hence $P(1.5\\le X\\le2.5)=F(2.5)-F(1.5)=0.75-0.25=0.5.$`,
+(iii) It is simplest to calculate using $X$:
+$$E(Y)=\int_0^1\frac{x}{1-x}\,6x(1-x)\,dx
+=6\int_0^1x^2\,dx=2.$$
+However,
+$$E(Y^2)=6\int_0^1\frac{x^3}{1-x}\,dx.$$
+For $x\ge\tfrac12$, $x^3\ge\tfrac18$, so this integral is at least
+$$\frac34\int_{1/2}^1\frac{dx}{1-x},$$
+which diverges. Hence $E(Y^2)$, and therefore $\operatorname{Var}(Y)$, is not finite.
+
+(iv) The inequalities $1<Y<3$ are equivalent to $\tfrac12<X<\tfrac34$, while $Y<3$ is equivalent to $X<\tfrac34$. Now
+$$F\left(\frac12\right)=\frac12,\qquad F\left(\frac34\right)=\frac{27}{32}.$$
+Therefore
+$$P(1<Y<3\mid Y<3)
+=\frac{F(3/4)-F(1/2)}{F(3/4)}
+=\frac{11/32}{27/32}=\frac{11}{27}.$$
+`,
   },
 
 ];

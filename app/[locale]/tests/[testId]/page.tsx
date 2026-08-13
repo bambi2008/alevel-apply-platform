@@ -1,13 +1,17 @@
 "use client";
 
 import { useState, useEffect, use } from "react";
-import { notFound } from "next/navigation";
+import { notFound, useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
+import { forceFullNavigation } from "@/lib/navigation";
 import { getTestById, type AdmissionsTest } from "@/lib/tests";
 import { getKnowledgeByTopicId } from "@/lib/tests/knowledge";
 import { REGISTRATION_INFO } from "@/lib/tests/registration";
 import { ExamTimer, getTimerPresets } from "@/components/exam-timer";
 import { getMockPapersForTest } from "@/lib/tests/mock-papers";
+import { ArrowRight, FileText } from "lucide-react";
+import { AdaptiveLearningPanel } from "@/components/adaptive-learning-panel";
+import { ExamReadinessPanel } from "@/components/exam-readiness-panel";
 
 export default function TestDetailPage({
   params,
@@ -21,10 +25,15 @@ export default function TestDetailPage({
   return <TestDetailContent test={test} />;
 }
 
-type TabId = "overview" | "topics" | "plan" | "practice" | "history" | "analysis";
+type TabId = "overview" | "topics" | "plan" | "practice" | "history" | "analysis" | "readiness";
 
 function TestDetailContent({ test }: { test: AdmissionsTest }) {
-  const [tab, setTab] = useState<TabId>("overview");
+  const searchParams = useSearchParams();
+  const requestedTab = searchParams.get("tab");
+  const requestedReturnTo = searchParams.get("returnTo");
+  const returnTo = requestedReturnTo && requestedReturnTo.startsWith("/") && !requestedReturnTo.startsWith("//")
+    ? requestedReturnTo
+    : null;
 
   const tabs: { id: TabId; label: string; labelEn: string }[] = [
     { id: "overview", label: "考试结构", labelEn: "Structure" },
@@ -33,13 +42,15 @@ function TestDetailContent({ test }: { test: AdmissionsTest }) {
     { id: "practice", label: "练习 / 模拟", labelEn: "Practice" },
     ...(test.hasQuestionBank ? [{ id: "history" as TabId, label: "历史记录", labelEn: "History" }] : []),
     ...(test.hasQuestionBank ? [{ id: "analysis" as TabId, label: "学情分析", labelEn: "Analysis" }] : []),
+    ...(test.hasQuestionBank ? [{ id: "readiness" as TabId, label: "考前冲刺", labelEn: "Readiness" }] : []),
   ];
+  const tab = tabs.some((item) => item.id === requestedTab) ? requestedTab as TabId : "overview";
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
       {/* Back */}
-      <Link href="/tests" className="text-sm text-[var(--ink-soft)] hover:text-[var(--ink)] mb-6 inline-flex items-center gap-1">
-        ← 返回考试列表
+      <Link href={returnTo ?? "/tests"} onClick={forceFullNavigation} className="text-sm text-[var(--ink-soft)] hover:text-[var(--ink)] mb-6 inline-flex items-center gap-1">
+        ← {returnTo ? "返回本次复盘" : "返回考试列表"}
       </Link>
 
       {/* Header */}
@@ -108,10 +119,10 @@ function TestDetailContent({ test }: { test: AdmissionsTest }) {
       {/* Tabs */}
       <div className="flex gap-1 border-b border-[var(--border)] mb-6 overflow-x-auto">
         {tabs.map((t) => (
-          <button
+          <Link
             key={t.id}
-            type="button"
-            onClick={() => setTab(t.id)}
+            href={`/tests/${test.id}?tab=${t.id}`}
+            aria-current={tab === t.id ? "page" : undefined}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition whitespace-nowrap ${
               tab === t.id
                 ? "border-[var(--indigo)] text-[var(--indigo)]"
@@ -120,7 +131,7 @@ function TestDetailContent({ test }: { test: AdmissionsTest }) {
           >
             {t.label}
             <span className="ml-1 text-xs opacity-60">{t.labelEn}</span>
-          </button>
+          </Link>
         ))}
       </div>
 
@@ -131,6 +142,7 @@ function TestDetailContent({ test }: { test: AdmissionsTest }) {
       {tab === "practice" && <PracticeTab test={test} />}
       {tab === "history" && <HistoryTab test={test} />}
       {tab === "analysis" && <AnalysisTab test={test} />}
+      {tab === "readiness" && <ExamReadinessPanel testId={test.id} />}
     </div>
   );
 }
@@ -288,7 +300,11 @@ function TopicsTab({ test }: { test: AdmissionsTest }) {
 
 function PlanTab({ test }: { test: AdmissionsTest }) {
   return (
-    <div className="space-y-4">
+    <div className="space-y-8">
+      <AdaptiveLearningPanel testId={test.id} variant="plan" />
+      <div className="border-t border-[var(--border)] pt-6">
+        <h3 className="font-semibold text-[var(--ink)]">长期阶段参考</h3>
+      </div>
       <p className="text-sm text-[var(--ink-soft)]">
         以下是针对 {test.abbr} 的系统备考计划，可根据自己距考试的时间弹性调整。
         考试通常在 10–11 月，Year 13 开学（9 月）应开始密集备考。
@@ -319,6 +335,7 @@ function PlanTab({ test }: { test: AdmissionsTest }) {
 }
 
 function PracticeTab({ test }: { test: AdmissionsTest }) {
+  const mockPapers = getMockPapersForTest(test.id);
   if (!test.hasQuestionBank) {
     return (
       <div className="text-center py-16">
@@ -423,26 +440,38 @@ function PracticeTab({ test }: { test: AdmissionsTest }) {
       </div>
 
       {/* 完整模拟卷 */}
-      {getMockPapersForTest(test.id).length > 0 && (
+      {mockPapers.length > 0 && (
         <div className="rounded-xl border border-indigo-100 bg-indigo-50/50 px-4 py-4">
-          <h4 className="font-semibold text-indigo-900 text-sm mb-1">📝 完整模拟卷（计时考试）</h4>
+          <h4 className="flex items-center gap-2 font-semibold text-indigo-900 text-sm mb-1">
+            <FileText className="size-4" aria-hidden="true" />
+            固定套卷（计时考试）
+          </h4>
           <p className="text-xs text-indigo-700 mb-3">
-            按真实考试结构组卷、分模块独立计时、全新原创题（未在练习中出现），模拟真实考场。
+            每套题目与顺序固定，便于限时作答、复盘和比较进步；卷面标签会说明其格式定位。
           </p>
           <div className="space-y-2">
-            {getMockPapersForTest(test.id).map((paper) => (
+            {mockPapers.map((paper) => (
               <Link
                 key={paper.id}
                 href={`/tests/${test.id}/paper/${paper.id}`}
                 className="flex items-center justify-between rounded-lg border border-indigo-200 bg-white px-3 py-2.5 hover:bg-indigo-50 transition group"
               >
-                <div>
-                  <span className="text-sm font-medium text-indigo-900">{paper.title}</span>
+                <div className="min-w-0 pr-3">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="text-sm font-medium text-indigo-900">{paper.title}</span>
+                    {paper.formatType && (
+                      <span className="rounded border border-indigo-200 bg-indigo-50 px-1.5 py-0.5 text-[11px] leading-none text-indigo-700">
+                        {paper.formatType === "current" ? "现行结构" : paper.formatType === "legacy" ? "历史格式" : "能力拓展"}
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xs text-indigo-500 mt-0.5">
-                    {paper.modules.map((m) => `${m.title} ${Math.round(m.durationSec / 60)}分钟`).join(" · ")}
+                    {paper.modules.reduce((sum, module) => sum + module.questions.length, 0)} 题 · {paper.modules.map((m) => `${m.title} ${Math.round(m.durationSec / 60)}分钟`).join(" · ")}
                   </p>
                 </div>
-                <span className="text-indigo-400 text-sm group-hover:text-indigo-700">开始 →</span>
+                <span className="inline-flex shrink-0 items-center gap-1 text-indigo-500 text-sm group-hover:text-indigo-700">
+                  开始 <ArrowRight className="size-3.5" aria-hidden="true" />
+                </span>
               </Link>
             ))}
           </div>
@@ -606,7 +635,7 @@ function HistoryTab({ test }: { test: AdmissionsTest }) {
                 {s.timeUsedSec && <span className="text-xs text-[var(--ink-faint)] ml-2">用时 {fmtTime(s.timeUsedSec)}</span>}
               </div>
             </div>
-            <span className="text-[var(--ink-faint)] shrink-0">›</span>
+            <span className="shrink-0 text-xs font-medium text-[var(--indigo)]">查看报告 ›</span>
           </Link>
         );
       })}
@@ -614,114 +643,8 @@ function HistoryTab({ test }: { test: AdmissionsTest }) {
   );
 }
 
-interface TopicStat {
-  topicId: string;
-  title: string;
-  earned: number;
-  max: number;
-  count: number;
-  accuracy: number;
-}
-
 function AnalysisTab({ test }: { test: AdmissionsTest }) {
-  const [data, setData] = useState<{ topics: TopicStat[]; totalAnswered: number } | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    fetch(`/api/exam-sessions/stats?testId=${test.id}`)
-      .then((r) => {
-        if (r.status === 401) throw new Error("请先登录查看学情分析");
-        if (!r.ok) throw new Error("加载失败");
-        return r.json() as Promise<{ topics: TopicStat[]; totalAnswered: number }>;
-      })
-      .then(setData)
-      .catch((e) => setError(e.message));
-  }, [test.id]);
-
-  if (error) {
-    return (
-      <div className="text-center py-16 text-[var(--ink-soft)]">
-        <p className="text-lg mb-2">⚠️ {error}</p>
-        {error.includes("登录") && (
-          <Link href="/login" className="mt-3 inline-block px-4 py-2 rounded-lg bg-[var(--indigo)] text-white text-sm">
-            前往登录
-          </Link>
-        )}
-      </div>
-    );
-  }
-
-  if (!data) {
-    return <div className="text-center py-16 text-[var(--ink-faint)] text-sm">加载中…</div>;
-  }
-
-  if (data.topics.length === 0) {
-    return (
-      <div className="text-center py-16 text-[var(--ink-faint)]">
-        <p className="text-5xl mb-4">📊</p>
-        <p>还没有足够的练习数据</p>
-        <p className="text-sm mt-1">完成一些练习或模拟后，这里会按知识点显示你的正确率和薄弱点。</p>
-        <Link href={`/tests/${test.id}/practice`} className="mt-6 inline-block px-4 py-2 rounded-lg bg-[var(--indigo)] text-white text-sm">
-          开始练习
-        </Link>
-      </div>
-    );
-  }
-
-  const weakest = data.topics.filter((t) => t.accuracy < 0.6).slice(0, 3);
-
-  return (
-    <div className="space-y-6">
-      <p className="text-sm text-[var(--ink-soft)]">
-        基于你累计作答的 {data.totalAnswered} 道题，按知识点统计正确率（由低到高排列）。
-      </p>
-
-      {weakest.length > 0 && (
-        <div className="rounded-2xl border border-[color:var(--warning)]/25 bg-[var(--warning-bg)] p-5">
-          <h3 className="font-semibold text-[var(--warning)] mb-2">🎯 建议优先突破</h3>
-          <div className="flex flex-wrap gap-2">
-            {weakest.map((t) => (
-              <Link
-                key={t.topicId}
-                href={`/tests/${test.id}/practice?topic=${t.topicId}`}
-                className="text-sm px-3 py-1.5 rounded-lg bg-white border border-[color:var(--warning)]/40 text-[var(--warning)] hover:bg-[var(--warning-bg)]"
-              >
-                {t.title}（{Math.round(t.accuracy * 100)}%）→ 去练习
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-
-      <div className="space-y-3">
-        {data.topics.map((t) => {
-          const pct = Math.round(t.accuracy * 100);
-          const barColor = pct >= 80 ? "bg-[var(--success-bg)]0" : pct >= 60 ? "bg-[var(--warning-bg)]0" : "bg-[var(--danger-bg)]0";
-          return (
-            <div key={t.topicId} className="rounded-xl border border-[var(--border)] bg-white px-4 py-3">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-sm font-medium text-[var(--ink)]">{t.title}</span>
-                <span className="text-xs text-[var(--ink-soft)]">
-                  {t.earned}/{t.max} 分 · {t.count} 题 · <span className="font-semibold">{pct}%</span>
-                </span>
-              </div>
-              <div className="h-2 bg-[var(--surface-2)] rounded-full overflow-hidden">
-                <div className={`h-full ${barColor} rounded-full transition-all`} style={{ width: `${pct}%` }} />
-              </div>
-              <div className="mt-2 text-right">
-                <Link
-                  href={`/tests/${test.id}/practice?topic=${t.topicId}`}
-                  className="text-xs text-[var(--indigo)] hover:underline"
-                >
-                  专项练习 →
-                </Link>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </div>
-  );
+  return <AdaptiveLearningPanel testId={test.id} variant="analysis" />;
 }
 
 function Section({

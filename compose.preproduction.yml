@@ -1,0 +1,55 @@
+name: qiaoshen-preproduction
+
+services:
+  postgres:
+    ports:
+      - "127.0.0.1:${PREPRODUCTION_DB_PORT:-5434}:5432"
+    networks:
+      - backend
+      - diagnostics
+
+  app:
+    ports:
+      - "127.0.0.1:${PREPRODUCTION_PORT:-3200}:3000"
+    volumes:
+      - app_storage:/app/.storage
+      - ./backups-preproduction:/backups
+
+  backup:
+    restart: "no"
+    profiles:
+      - scheduled-backup
+    volumes:
+      - app_storage:/app/.storage:ro
+      - ./backups-preproduction:/backups
+
+  caddy:
+    profiles:
+      - edge
+
+  restore-db:
+    image: postgres:16-alpine
+    profiles:
+      - restore-drill
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+    tmpfs:
+      - /var/lib/postgresql/data
+    networks:
+      - backend
+
+volumes:
+  postgres_data:
+    name: qiaoshen_preproduction_postgres
+  app_storage:
+    name: qiaoshen_preproduction_storage
+
+networks:
+  diagnostics:

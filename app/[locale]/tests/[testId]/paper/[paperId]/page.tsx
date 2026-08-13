@@ -6,8 +6,19 @@ import { Link } from "@/i18n/navigation";
 import { getMockPaper, type MockPaper } from "@/lib/tests/mock-papers";
 import type { MCQQuestion } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
+import { WrittenPaperRunner } from "@/components/written-paper-runner";
+import { ObjectiveExamRunner } from "@/components/objective-exam-runner";
+import { ChevronLeft, ChevronRight, Flag, Send } from "lucide-react";
+import { createQuestionTelemetry, type QuestionTelemetrySnapshot, type QuestionTelemetryTracker } from "@/lib/tests/telemetry";
+import { persistExamSession } from "@/lib/tests/persist-session";
+import { examProgressKey, parseExamProgress, type ObjectiveExamProgress } from "@/lib/tests/exam-progress";
+import { useExamReliability } from "@/hooks/use-exam-reliability";
+import { ExamReliabilityStatus } from "@/components/exam-reliability-status";
 
 type Phase = "briefing" | "running" | "results";
+type ObjectivePaper = Omit<MockPaper, "modules"> & {
+  modules: Array<Omit<MockPaper["modules"][number], "questions"> & { questions: MCQQuestion[] }>;
+};
 
 export default function MockPaperPage({
   params,
@@ -18,15 +29,27 @@ export default function MockPaperPage({
   const paper = getMockPaper(paperId);
   if (!paper || paper.testId !== testId) notFound();
 
-  return <PaperRunner paper={paper!} />;
+  const hasWrittenQuestions = paper.modules.some((module) => module.questions.some((question) => question.type === "long"));
+  return hasWrittenQuestions
+    ? <WrittenPaperRunner paper={paper} />
+    : paper.testId === "lnat"
+      ? <LnatPaperRunner paper={paper as ObjectivePaper} />
+      : <ObjectiveExamRunner paper={paper as ObjectivePaper} />;
 }
 
-function PaperRunner({ paper }: { paper: MockPaper }) {
+// Kept as a compatibility reference while all objective papers use the unified runner.
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+function PaperRunner({ paper }: { paper: ObjectivePaper }) {
   const [phase, setPhase] = useState<Phase>("briefing");
   const [moduleIndex, setModuleIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [timeLeft, setTimeLeft] = useState(0);
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const startedAtRef = useRef(0);
+  const telemetryRef = useRef<QuestionTelemetryTracker>(createQuestionTelemetry());
+  const [startedAtValue, setStartedAtValue] = useState(0);
+  const [timeUsedSec, setTimeUsedSec] = useState(0);
+  const [behavior, setBehavior] = useState<Record<string, QuestionTelemetrySnapshot>>({});
 
   const currentModule = paper.modules[moduleIndex];
 
@@ -41,8 +64,10 @@ function PaperRunner({ paper }: { paper: MockPaper }) {
 
   const finish = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
+    setTimeUsedSec(startedAtRef.current ? Math.max(0, Math.round((Date.now() - startedAtRef.current) / 1000)) : 0);
+    setBehavior(telemetryRef.current.snapshot(paper.modules.flatMap((module) => module.questions.map((question) => question.id))));
     setPhase("results");
-  }, []);
+  }, [paper.modules]);
 
   const nextModule = useCallback(() => {
     if (timerRef.current) clearInterval(timerRef.current);
@@ -74,12 +99,17 @@ function PaperRunner({ paper }: { paper: MockPaper }) {
 
   const begin = () => {
     setAnswers({});
+    startedAtRef.current = Date.now();
+    setStartedAtValue(startedAtRef.current);
+    telemetryRef.current = createQuestionTelemetry();
     setPhase("running");
     startModule(0);
   };
 
-  const choose = (qid: string, key: string) =>
+  const choose = (qid: string, key: string) => {
+    telemetryRef.current.answer(qid, key);
     setAnswers((a) => ({ ...a, [qid]: key }));
+  };
 
   if (phase === "briefing") {
     return (
@@ -125,7 +155,7 @@ function PaperRunner({ paper }: { paper: MockPaper }) {
     return (
       <div className="mx-auto max-w-3xl px-4 py-6">
         {/* 顶部模块计时条 */}
-        <div className="sticky top-0 z-10 -mx-4 px-4 py-3 bg-white/95 backdrop-blur border-b border-neutral-200 flex items-center justify-between">
+        <div className="sticky top-16 z-10 -mx-4 px-4 py-3 bg-white/95 backdrop-blur border-b border-neutral-200 flex items-center justify-between">
           <div>
             <p className="text-xs text-neutral-500">模块 {moduleIndex + 1}/{paper.modules.length}</p>
             <p className="text-sm font-semibold text-neutral-800">{currentModule.title}</p>
@@ -154,7 +184,305 @@ function PaperRunner({ paper }: { paper: MockPaper }) {
   }
 
   // results
-  return <PaperResults paper={paper} answers={answers} />;
+  return <PaperResults paper={paper} answers={answers} behavior={behavior} startedAt={startedAtValue} timeUsedSec={timeUsedSec} />;
+}
+
+function splitLnatQuestion(question: string): { passage: string; prompt: string } {
+  const [passagePart, promptPart = ""] = question.split("**Question**");
+  return {
+    passage: passagePart.replace("**Passage**", "").trim(),
+    prompt: promptPart.trim(),
+  };
+}
+
+function LnatPaperRunner({ paper }: { paper: ObjectivePaper }) {
+  const paperModule = paper.modules[0];
+  const [phase, setPhase] = useState<Phase>("briefing");
+  const [answers, setAnswers] = useState<Record<string, string>>({});
+  const [flagged, setFlagged] = useState<Record<string, boolean>>({});
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const [reviewing, setReviewing] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(paperModule.durationSec);
+  const startedAtRef = useRef(0);
+  const deadlineAtRef = useRef(0);
+  const telemetryRef = useRef<QuestionTelemetryTracker>(createQuestionTelemetry());
+  const [startedAtValue, setStartedAtValue] = useState(0);
+  const [timeUsedSec, setTimeUsedSec] = useState(0);
+  const [behavior, setBehavior] = useState<Record<string, QuestionTelemetrySnapshot>>({});
+  const storageKey = examProgressKey(paper.id);
+  const [savedSession, setSavedSession] = useState<ObjectiveExamProgress | null>(null);
+  const { online } = useExamReliability(phase === "running");
+
+  useEffect(() => {
+    const restored = parseExamProgress(
+      window.localStorage.getItem(storageKey),
+      paper.id,
+      [paperModule.questions.length],
+    );
+    if (restored) queueMicrotask(() => setSavedSession(restored));
+  }, [paper.id, paperModule.questions.length, storageKey]);
+
+  const finish = useCallback(() => {
+    setTimeUsedSec(startedAtRef.current ? Math.max(0, Math.round((Date.now() - startedAtRef.current) / 1000)) : 0);
+    setBehavior(telemetryRef.current.snapshot(paperModule.questions.map((question) => question.id)));
+    window.localStorage.removeItem(storageKey);
+    setSavedSession(null);
+    setReviewing(false);
+    setPhase("results");
+  }, [paperModule.questions, storageKey]);
+
+  useEffect(() => {
+    if (phase !== "running") return;
+    const timer = setInterval(() => {
+      const remaining = Math.max(0, Math.ceil((deadlineAtRef.current - Date.now()) / 1000));
+      setTimeLeft(remaining);
+      if (remaining === 0) {
+        clearInterval(timer);
+        setTimeout(finish, 0);
+      }
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [finish, phase]);
+
+  const begin = () => {
+    setAnswers({});
+    setFlagged({});
+    setCurrentIndex(0);
+    setReviewing(false);
+    setTimeLeft(paperModule.durationSec);
+    startedAtRef.current = Date.now();
+    deadlineAtRef.current = startedAtRef.current + paperModule.durationSec * 1000;
+    setStartedAtValue(startedAtRef.current);
+    telemetryRef.current = createQuestionTelemetry();
+    window.localStorage.removeItem(storageKey);
+    setSavedSession(null);
+    setPhase("running");
+    window.scrollTo({ top: 0 });
+  };
+
+  const resume = () => {
+    if (!savedSession) return;
+    setAnswers(savedSession.answers);
+    setFlagged(savedSession.flagged);
+    setCurrentIndex(savedSession.questionIndex);
+    setTimeLeft(savedSession.timeLeft);
+    startedAtRef.current = savedSession.startedAt;
+    deadlineAtRef.current = Date.now() + savedSession.timeLeft * 1000;
+    setStartedAtValue(savedSession.startedAt);
+    telemetryRef.current = createQuestionTelemetry();
+    setReviewing(false);
+    setPhase("running");
+  };
+
+  const discardSaved = () => {
+    window.localStorage.removeItem(storageKey);
+    setSavedSession(null);
+  };
+
+  useEffect(() => {
+    if (phase === "running" && !reviewing) telemetryRef.current.visit(paperModule.questions[currentIndex].id);
+  }, [currentIndex, paperModule.questions, phase, reviewing]);
+
+  useEffect(() => {
+    if (phase !== "running") return;
+    const progress: ObjectiveExamProgress = {
+      version: 1,
+      paperId: paper.id,
+      moduleIndex: 0,
+      questionIndex: currentIndex,
+      answers,
+      flagged,
+      timeLeft,
+      startedAt: startedAtRef.current,
+      savedAt: Date.now(),
+    };
+    window.localStorage.setItem(storageKey, JSON.stringify(progress));
+  }, [answers, currentIndex, flagged, paper.id, phase, storageKey, timeLeft]);
+
+  const moveToQuestion = (index: number) => {
+    setCurrentIndex(index);
+    setReviewing(false);
+    window.scrollTo({ top: 0 });
+  };
+
+  if (phase === "briefing") {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-10">
+        <Link href="/tests/lnat" className="text-sm text-blue-600 hover:underline">← 返回 LNAT</Link>
+        <h1 className="mt-4 text-2xl font-bold text-neutral-900">{paper.title}</h1>
+        <p className="mt-1 text-sm text-neutral-500">{paper.titleEn}</p>
+        <div className="mt-6 rounded-lg border border-neutral-200 bg-white p-6">
+          <p className="text-sm leading-relaxed text-neutral-700">{paper.description}</p>
+          {savedSession && (
+            <div className="mt-4 border border-blue-200 bg-blue-50 p-4 text-sm text-blue-900">
+              <p className="font-semibold">检测到未完成的 LNAT 试卷</p>
+              <p className="mt-1 text-xs">已保存 {Object.keys(savedSession.answers).length} / {paperModule.questions.length} 题。</p>
+              <div className="mt-3 flex gap-2">
+                <button type="button" onClick={resume} className="bg-blue-600 px-3 py-2 text-xs font-medium text-white">继续考试</button>
+                <button type="button" onClick={discardSaved} className="border border-blue-200 px-3 py-2 text-xs">放弃旧进度</button>
+              </div>
+            </div>
+          )}
+          <div className="mt-5 grid grid-cols-3 gap-3 border-y border-neutral-100 py-4 text-center">
+            <div><p className="text-xl font-semibold text-neutral-900">12</p><p className="text-xs text-neutral-500">篇文章</p></div>
+            <div><p className="text-xl font-semibold text-neutral-900">42</p><p className="text-xs text-neutral-500">道题</p></div>
+            <div><p className="text-xl font-semibold text-neutral-900">95</p><p className="text-xs text-neutral-500">分钟</p></div>
+          </div>
+          <p className="mt-4 text-xs leading-relaxed text-neutral-500">考试期间可以前后切换题目并标记复查。倒计时结束后系统自动交卷；选择题无负分。</p>
+          <button type="button" onClick={begin} className="mt-5 w-full rounded-lg bg-blue-600 py-3 font-medium text-white hover:bg-blue-700">
+            开始考试
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  if (phase === "results") return <PaperResults paper={paper} answers={answers} behavior={behavior} startedAt={startedAtValue} timeUsedSec={timeUsedSec} />;
+
+  const question = paperModule.questions[currentIndex];
+  const { passage, prompt } = splitLnatQuestion(question.question);
+  const answeredCount = paperModule.questions.filter((item) => answers[item.id]).length;
+  const flaggedCount = paperModule.questions.filter((item) => flagged[item.id]).length;
+  const unanswered = paperModule.questions.length - answeredCount;
+  const mm = String(Math.floor(timeLeft / 60)).padStart(2, "0");
+  const ss = String(timeLeft % 60).padStart(2, "0");
+  const urgent = timeLeft <= 60;
+
+  if (reviewing) {
+    return (
+      <div className="mx-auto max-w-3xl px-4 py-8">
+        <ExamReliabilityStatus online={online} />
+        <div className="flex items-center justify-between border-b border-neutral-200 pb-4">
+          <div>
+            <p className="text-xs text-neutral-500">交卷总览</p>
+            <h1 className="text-xl font-semibold text-neutral-900">检查作答状态</h1>
+          </div>
+          <p className={`font-mono text-xl font-bold tabular-nums ${urgent ? "text-red-600" : "text-neutral-900"}`}>{mm}:{ss}</p>
+        </div>
+        <div className="mt-6 grid grid-cols-3 gap-3 text-center">
+          <div className="border-r border-neutral-200"><p className="text-2xl font-semibold text-green-700">{answeredCount}</p><p className="text-xs text-neutral-500">已答</p></div>
+          <div className="border-r border-neutral-200"><p className="text-2xl font-semibold text-amber-700">{unanswered}</p><p className="text-xs text-neutral-500">未答</p></div>
+          <div><p className="text-2xl font-semibold text-blue-700">{flaggedCount}</p><p className="text-xs text-neutral-500">已标记</p></div>
+        </div>
+        <div className="mt-6 grid grid-cols-7 gap-2 sm:grid-cols-10">
+          {paperModule.questions.map((item, index) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => moveToQuestion(index)}
+              className={`aspect-square rounded border text-sm font-medium ${
+                flagged[item.id]
+                  ? "border-amber-400 bg-amber-50 text-amber-800"
+                  : answers[item.id]
+                    ? "border-green-300 bg-green-50 text-green-800"
+                    : "border-neutral-300 bg-white text-neutral-600"
+              }`}
+            >
+              {index + 1}
+            </button>
+          ))}
+        </div>
+        {unanswered > 0 && <p className="mt-5 rounded border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">还有 {unanswered} 题未作答。LNAT 不倒扣分，建议检查后再提交。</p>}
+        <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row">
+          <button type="button" onClick={() => moveToQuestion(currentIndex)} className="flex-1 rounded-lg border border-neutral-300 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-50">返回检查</button>
+          <button type="button" onClick={finish} className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-blue-600 py-3 text-sm font-medium text-white hover:bg-blue-700">
+            <Send size={16} /> 确认交卷
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mx-auto max-w-7xl px-4 py-4 sm:py-6">
+      <ExamReliabilityStatus online={online} />
+      <div className="sticky top-16 z-10 -mx-4 flex items-center justify-between border-b border-neutral-200 bg-white/95 px-4 py-3 backdrop-blur">
+        <div>
+          <p className="text-xs text-neutral-500">Section A · Q{currentIndex + 1}/42</p>
+          <p className="text-sm font-medium text-neutral-800">{answeredCount}/42 已答 · {flaggedCount} 标记</p>
+        </div>
+        <div className="flex items-center gap-3">
+          <p className={`font-mono text-xl font-bold tabular-nums ${urgent ? "text-red-600" : "text-neutral-900"}`}>{mm}:{ss}</p>
+          <button type="button" onClick={() => setReviewing(true)} title="交卷总览" className="flex h-9 items-center gap-1.5 rounded border border-neutral-300 px-3 text-sm font-medium text-neutral-700 hover:bg-neutral-50">
+            <Send size={15} /> <span className="hidden sm:inline">交卷</span>
+          </button>
+        </div>
+      </div>
+
+      <div className="mt-4 grid items-start gap-4 lg:grid-cols-[minmax(0,1.15fr)_minmax(360px,0.85fr)]">
+        <section className="rounded-lg border border-neutral-200 bg-white p-5 lg:sticky lg:top-32 lg:max-h-[calc(100vh-9rem)] lg:overflow-y-auto">
+          <p className="mb-3 text-xs font-semibold uppercase text-neutral-400">Passage</p>
+          <MathRenderer text={passage} className="text-[15px] leading-7 text-neutral-800" block />
+        </section>
+
+        <section className="rounded-lg border border-neutral-200 bg-white p-5">
+          <div className="flex items-start justify-between gap-3">
+            <p className="text-xs font-semibold text-neutral-400">QUESTION {currentIndex + 1}</p>
+            <button
+              type="button"
+              onClick={() => setFlagged((current) => {
+                const next = !current[question.id];
+                telemetryRef.current.flag(question.id, next);
+                return { ...current, [question.id]: next };
+              })}
+              title={flagged[question.id] ? "取消标记" : "标记复查"}
+              className={`flex h-8 items-center gap-1.5 rounded border px-2.5 text-xs font-medium ${flagged[question.id] ? "border-amber-400 bg-amber-50 text-amber-800" : "border-neutral-300 text-neutral-600 hover:bg-neutral-50"}`}
+            >
+              <Flag size={14} fill={flagged[question.id] ? "currentColor" : "none"} /> {flagged[question.id] ? "已标记" : "标记"}
+            </button>
+          </div>
+          <MathRenderer text={prompt} className="mt-3 text-base font-medium leading-7 text-neutral-900" block />
+          <div className="mt-5 space-y-2">
+            {question.options.map((option) => (
+              <button
+                key={option.key}
+                type="button"
+                onClick={() => {
+                  telemetryRef.current.answer(question.id, option.key);
+                  setAnswers((current) => ({ ...current, [question.id]: option.key }));
+                }}
+                className={`flex w-full items-start gap-3 rounded-lg border px-3 py-3 text-left transition ${answers[question.id] === option.key ? "border-blue-500 bg-blue-50" : "border-neutral-200 hover:bg-neutral-50"}`}
+              >
+                <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-xs font-bold ${answers[question.id] === option.key ? "border-blue-500 bg-blue-600 text-white" : "border-neutral-300 text-neutral-500"}`}>{option.key}</span>
+                <MathRenderer text={option.text} className="flex-1 text-sm leading-6 text-neutral-800" />
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-5 flex items-center justify-between border-t border-neutral-100 pt-4">
+            <button type="button" disabled={currentIndex === 0} onClick={() => moveToQuestion(currentIndex - 1)} title="上一题" className="flex h-9 items-center gap-1 rounded border border-neutral-300 px-3 text-sm text-neutral-700 hover:bg-neutral-50 disabled:cursor-not-allowed disabled:opacity-40">
+              <ChevronLeft size={16} /> 上一题
+            </button>
+            <button type="button" onClick={() => currentIndex === 41 ? setReviewing(true) : moveToQuestion(currentIndex + 1)} title={currentIndex === 41 ? "交卷总览" : "下一题"} className="flex h-9 items-center gap-1 rounded bg-blue-600 px-3 text-sm font-medium text-white hover:bg-blue-700">
+              {currentIndex === 41 ? "查看总览" : "下一题"} <ChevronRight size={16} />
+            </button>
+          </div>
+
+          <div className="mt-5 grid grid-cols-7 gap-1.5 border-t border-neutral-100 pt-4">
+            {paperModule.questions.map((item, index) => (
+              <button
+                key={item.id}
+                type="button"
+                onClick={() => moveToQuestion(index)}
+                title={`第 ${index + 1} 题`}
+                className={`aspect-square rounded border text-xs font-medium ${
+                  index === currentIndex
+                    ? "border-blue-600 bg-blue-600 text-white"
+                    : flagged[item.id]
+                      ? "border-amber-400 bg-amber-50 text-amber-800"
+                      : answers[item.id]
+                        ? "border-green-300 bg-green-50 text-green-800"
+                        : "border-neutral-200 text-neutral-500 hover:bg-neutral-50"
+                }`}
+              >
+                {index + 1}
+              </button>
+            ))}
+          </div>
+        </section>
+      </div>
+    </div>
+  );
 }
 
 function McqCard({
@@ -195,8 +523,9 @@ function McqCard({
   );
 }
 
-function PaperResults({ paper, answers }: { paper: MockPaper; answers: Record<string, string> }) {
+function PaperResults({ paper, answers, behavior, startedAt, timeUsedSec }: { paper: ObjectivePaper; answers: Record<string, string>; behavior: Record<string, QuestionTelemetrySnapshot>; startedAt: number; timeUsedSec: number }) {
   const [open, setOpen] = useState<Record<string, boolean>>({});
+  const [savedSessionId, setSavedSessionId] = useState<string | null>(null);
 
   // 分模块计分
   const moduleScores = paper.modules.map((m) => {
@@ -214,6 +543,10 @@ function PaperResults({ paper, answers }: { paper: MockPaper; answers: Record<st
     const payload = {
       testId: paper.testId,
       mode: "paper",
+      paperId: paper.id,
+      startedAt: startedAt ? new Date(startedAt).toISOString() : undefined,
+      timeUsedSec,
+      clientMeta: { schemaVersion: 1, viewport: `${window.innerWidth}x${window.innerHeight}`, locale: navigator.language },
       totalEarned,
       totalMax,
       answers: allQ.map((q) => ({
@@ -222,13 +555,10 @@ function PaperResults({ paper, answers }: { paper: MockPaper; answers: Record<st
         selected: answers[q.id] ?? undefined,
         earned: answers[q.id] === q.answer ? 1 : 0,
         max: 1,
+        ...behavior[q.id],
       })),
     };
-    fetch("/api/exam-sessions", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    }).catch(() => {});
+    void persistExamSession(payload).then((id) => setSavedSessionId(id));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -301,7 +631,12 @@ function PaperResults({ paper, answers }: { paper: MockPaper; answers: Record<st
         ))}
       </div>
 
-      <div className="flex gap-3 mt-8">
+      <div className="mt-8 flex flex-wrap gap-3">
+        {savedSessionId && (
+          <Link href={`/tests/${paper.testId}/history/${savedSessionId}`} className="flex-1 rounded-xl border border-blue-500 py-3 text-center text-sm font-medium text-blue-700">
+            查看完整报告
+          </Link>
+        )}
         <Link href={`/tests/${paper.testId}`} className="flex-1 text-center py-3 rounded-xl border border-neutral-300 text-sm text-neutral-600 hover:bg-neutral-50">
           返回考试主页
         </Link>

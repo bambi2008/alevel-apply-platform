@@ -1,5 +1,5 @@
 // 完整模拟卷注册表。每套卷 = 若干个独立计时的模块。
-import type { MCQQuestion } from "@/lib/tests/questions/types";
+import type { MCQQuestion, Question } from "@/lib/tests/questions/types";
 import { ESAT_MK1_MATH, ESAT_MK1_PHYS } from "./esat-mock-1";
 import { ESAT_MK2_MATH, ESAT_MK2_PHYS } from "./esat-mock-2";
 import { ESAT_MK3_MATH, ESAT_MK3_CHEM } from "./esat-mock-3";
@@ -10,6 +10,9 @@ import { ESAT_MK7_MATH, ESAT_MK7_PHYS } from "./esat-mock-7";
 import { ESAT_MK8_MATH, ESAT_MK8_CHEM } from "./esat-mock-8";
 import { ESAT_MK9_MATH, ESAT_MK9_BIO } from "./esat-mock-9";
 import { ESAT_MK10_MAG, ESAT_MK10_SCI } from "./esat-mock-10";
+import { ESAT_MATH_PRESSURE_1, ESAT_MATH_PRESSURE_2 } from "./esat-math-intensification";
+import { ESAT_GAP_BIOLOGY_MODULE, ESAT_GAP_CHEMISTRY_MODULE, ESAT_GAP_PHYSICS_MODULE } from "./esat-gap-module-papers";
+import { balanceEsatAnswers } from "./esat-calibration";
 import { TMUA_MK1_P1, TMUA_MK1_P2 } from "./tmua-mock-1";
 import { MAT_MK1_MCQ } from "./mat-mock-1";
 import { MAT_MK2_MCQ } from "./mat-mock-2";
@@ -25,9 +28,12 @@ import { LNAT_MK2_MCQ } from "./lnat-mock-2";
 import { LNAT_MK3_MCQ } from "./lnat-mock-3";
 import { LNAT_MK4_MCQ } from "./lnat-mock-4";
 import { LNAT_MK5_MCQ } from "./lnat-mock-5";
-import { TARA_MK1_CT, TARA_MK1_PS } from "./tara-mock-1";
-import { TARA_MK2_CT, TARA_MK2_PS } from "./tara-mock-2";
-import { TARA_MK3_CT, TARA_MK3_PS } from "./tara-mock-3";
+import { buildFullLnatPaper } from "./lnat-full-papers";
+import { TARA_MK1_CT } from "./tara-mock-1";
+import { TARA_MK2_CT } from "./tara-mock-2";
+import { TARA_MK3_CT } from "./tara-mock-3";
+import { calibrateTaraCriticalModule, TARA_FIXED_CT_PAPERS } from "./tara-fixed-critical-papers";
+import { TARA_FIXED_PS_PAPERS } from "./tara-fixed-problem-papers";
 import { BPHO_MK1_S1, BPHO_MK1_S2 } from "./bpho-mock-1";
 import { BPHO_MK2_S1, BPHO_MK2_S2 } from "./bpho-mock-2";
 import { BPHO_MK3_S1, BPHO_MK3_S2 } from "./bpho-mock-3";
@@ -54,6 +60,23 @@ import { TMUA_MK7_P1, TMUA_MK7_P2 } from "./tmua-mock-7";
 import { TMUA_MK8_P1, TMUA_MK8_P2 } from "./tmua-mock-8";
 import { TMUA_MK9_P1, TMUA_MK9_P2 } from "./tmua-mock-9";
 import { TMUA_MK10_P1, TMUA_MK10_P2 } from "./tmua-mock-10";
+import { TMUA_CALIBRATION_1_P1, TMUA_CALIBRATION_1_P2 } from "./tmua-calibration-1";
+import {
+  TMUA_MK6_P1_CALIBRATED, TMUA_MK6_P2_CALIBRATED,
+  TMUA_MK9_P1_CALIBRATED, TMUA_MK9_P2_CALIBRATED,
+  TMUA_MK10_P1_CALIBRATED, TMUA_MK10_P2_CALIBRATED,
+} from "./tmua-calibrated-replacements";
+import {
+  TMUA_MK2_P1_CALIBRATED, TMUA_MK2_P2_CALIBRATED,
+  TMUA_MK3_P1_CALIBRATED, TMUA_MK3_P2_CALIBRATED,
+  TMUA_MK5_P1_CALIBRATED, TMUA_MK5_P2_CALIBRATED,
+  TMUA_MK7_P1_CALIBRATED, TMUA_MK7_P2_CALIBRATED,
+  TMUA_MK8_P1_CALIBRATED, TMUA_MK8_P2_CALIBRATED,
+} from "./tmua-calibrated-replacements-2";
+import {
+  TMUA_MK1_P1_FINAL, TMUA_MK1_P2_FINAL,
+  TMUA_MK4_P1_FINAL, TMUA_MK4_P2_FINAL,
+} from "./tmua-final-calibration";
 import { BMO_MK1_MCQ } from "./bmo-mock-1";
 import { BMO_MK2_MCQ } from "./bmo-mock-2";
 import { BMO_MK3_MCQ } from "./bmo-mock-3";
@@ -70,13 +93,30 @@ import { BMO_R2M5_T1, BMO_R2M5_T2, BMO_R2M5_T3, BMO_R2M5_T4 } from "./bmo-r2-moc
 import { BMO_R2M6_T1, BMO_R2M6_T2, BMO_R2M6_T3, BMO_R2M6_T4 } from "./bmo-r2-mock-6";
 import { BMO_R2M7_T1, BMO_R2M7_T2, BMO_R2M7_T3, BMO_R2M7_T4 } from "./bmo-r2-mock-7";
 import { BMO_R2M8_T1, BMO_R2M8_T2, BMO_R2M8_T3, BMO_R2M8_T4 } from "./bmo-r2-mock-8";
+import { BMO1_WRITTEN_1, BMO1_WRITTEN_2, BMO1_WRITTEN_3 } from "./bmo1-written-papers";
+import {
+  BPHO_WRITTEN_1_S1, BPHO_WRITTEN_1_S2,
+  BPHO_WRITTEN_2_S1, BPHO_WRITTEN_2_S2,
+  BPHO_WRITTEN_3_S1, BPHO_WRITTEN_3_S2,
+} from "./bpho-written-papers";
+import {
+  MAT_WRITTEN_1, MAT_WRITTEN_2, MAT_WRITTEN_3, MAT_WRITTEN_4, MAT_WRITTEN_5,
+} from "./mat-written-papers";
+import { PAT_WRITTEN_1, PAT_WRITTEN_2, PAT_WRITTEN_3 } from "./pat-written-papers";
+import { STEP_WRITTEN_1, STEP_WRITTEN_2, STEP_WRITTEN_3, STEP_WRITTEN_4 } from "./step-written-papers";
+import { LNAT_WRITTEN_QUESTIONS, TARA_WRITTEN_QUESTIONS } from "./writing-papers";
+import { UCAT_M1_VR, UCAT_M1_DM, UCAT_M1_QR, UCAT_M1_SJT } from "./ucat-mock-1";
+import { UCAT_GENERATED_MOCKS } from "./ucat-mocks-2-5";
+import { IELTS_WRITTEN_DIAGNOSTIC, CSAT_WRITTEN_PAPERS } from "./ielts-csat-written-papers";
+import { IELTS_FULL_PAPERS_1 } from "./ielts-full-paper-1";
+import { CAIE9709_P3_WRITTEN_PAPERS } from "./caie9709-p3-written-papers";
 
 export interface MockModule {
   id: string;
   title: string;
   titleEn: string;
   durationSec: number; // 该模块独立计时时长
-  questions: MCQQuestion[];
+  questions: Question[];
 }
 
 export interface MockPaper {
@@ -86,7 +126,78 @@ export interface MockPaper {
   titleEn: string;
   description: string;
   modules: MockModule[];
+  instructions?: string[];
+  bestQuestionCount?: number;
+  formatType?: "current" | "legacy" | "extension";
 }
+
+function balanceUcatOptions(questions: MCQQuestion[]): MCQQuestion[] {
+  let singleIndex = 0;
+  return questions.map((question) => {
+    if (question.responseMode === "matrix" || question.options.length !== 4) return question;
+    const targetIndex = singleIndex % 4;
+    singleIndex += 1;
+    const correct = question.options.find((option) => option.key === question.answer);
+    if (!correct) return question;
+    const reordered = question.options.filter((option) => option.key !== question.answer);
+    reordered.splice(targetIndex, 0, correct);
+    return {
+      ...question,
+      options: reordered.map((option, index) => ({ ...option, key: "ABCD"[index] as MCQQuestion["answer"] })),
+      answer: "ABCD"[targetIndex] as MCQQuestion["answer"],
+    };
+  });
+}
+
+function calibrateUcatQrDifficulty(questions: MCQQuestion[]): MCQQuestion[] {
+  return questions.map((question, index) => ({
+    ...question,
+    difficulty: (index % 4 === 3 ? 3 : index % 4 >= 2 ? 2 : 1) as 1 | 2 | 3,
+  }));
+}
+
+function calibrateUcatSjtDifficulty(questions: MCQQuestion[]): MCQQuestion[] {
+  return questions.map((question, index) => ({
+    ...question,
+    difficulty: (question.difficulty === 3 || index % 5 === 4 ? 3 : question.difficulty) as 1 | 2 | 3,
+  }));
+}
+
+export const UCAT_MOCK_1: MockPaper = {
+  id: "ucat-mock-1",
+  testId: "ucat",
+  title: "UCAT 全真模拟卷一",
+  titleEn: "UCAT Full Mock 1",
+  description: "184 道原创题，严格按现行 UCAT 四模块题量和作答时间编排，包含 Decision Making 多陈述部分得分和 SJT 相邻等级部分得分。",
+  modules: [
+    { id: "vr", title: "文字推理", titleEn: "Verbal Reasoning", durationSec: 22 * 60, questions: UCAT_M1_VR },
+    { id: "dm", title: "决策判断", titleEn: "Decision Making", durationSec: 37 * 60, questions: balanceUcatOptions(UCAT_M1_DM) },
+    { id: "qr", title: "数量推理", titleEn: "Quantitative Reasoning", durationSec: 26 * 60, questions: calibrateUcatQrDifficulty(balanceUcatOptions(UCAT_M1_QR)) },
+    { id: "sjt", title: "情境判断", titleEn: "Situational Judgement", durationSec: 26 * 60, questions: calibrateUcatSjtDifficulty(UCAT_M1_SJT) },
+  ],
+  instructions: [
+    "四个模块独立计时；模块提交后不能返回上一模块。",
+    "所有题目都应作答，答错不倒扣；不确定时先选择、标记，再在模块结束前回看。",
+    "训练换算分与 SJT Band 是平台估计，不代表官方 UCAT 成绩。",
+  ],
+  formatType: "current",
+};
+
+export const UCAT_MOCKS_2_TO_5: MockPaper[] = UCAT_GENERATED_MOCKS.map((generated) => ({
+  id: `ucat-mock-${generated.number}`,
+  testId: "ucat",
+  title: `UCAT 全真模拟卷${["", "", "二", "三", "四", "五"][generated.number]}`,
+  titleEn: `UCAT Full Mock ${generated.number}`,
+  description: "原创 UCAT 四模块固定卷，严格按现行题量、作答时间、Decision Making 部分得分与 SJT 相邻等级得分规则编排。",
+  modules: [
+    { id: "vr", title: "文字推理", titleEn: "Verbal Reasoning", durationSec: 22 * 60, questions: generated.vr },
+    { id: "dm", title: "决策判断", titleEn: "Decision Making", durationSec: 37 * 60, questions: balanceUcatOptions(generated.dm) },
+    { id: "qr", title: "数量推理", titleEn: "Quantitative Reasoning", durationSec: 26 * 60, questions: calibrateUcatQrDifficulty(balanceUcatOptions(generated.qr)) },
+    { id: "sjt", title: "情境判断", titleEn: "Situational Judgement", durationSec: 26 * 60, questions: calibrateUcatSjtDifficulty(generated.sjt) },
+  ],
+  instructions: UCAT_MOCK_1.instructions,
+  formatType: "current",
+}));
 
 export const ESAT_MOCK_1: MockPaper = {
   id: "esat-mock-1",
@@ -101,14 +212,14 @@ export const ESAT_MOCK_1: MockPaper = {
       title: "数学（模块一）",
       titleEn: "Mathematics (Module 1)",
       durationSec: 40 * 60,
-      questions: ESAT_MK1_MATH,
+      questions: balanceEsatAnswers(ESAT_MK1_MATH),
     },
     {
       id: "physics",
       title: "物理（模块二）",
       titleEn: "Physics (Module 2)",
       durationSec: 40 * 60,
-      questions: ESAT_MK1_PHYS,
+      questions: balanceEsatAnswers(ESAT_MK1_PHYS),
     },
   ],
 };
@@ -126,14 +237,14 @@ export const ESAT_MOCK_2: MockPaper = {
       title: "数学（模块一）",
       titleEn: "Mathematics (Module 1)",
       durationSec: 40 * 60,
-      questions: ESAT_MK2_MATH,
+      questions: balanceEsatAnswers(ESAT_MK2_MATH),
     },
     {
       id: "physics",
       title: "物理（模块二）",
       titleEn: "Physics (Module 2)",
       durationSec: 40 * 60,
-      questions: ESAT_MK2_PHYS,
+      questions: balanceEsatAnswers(ESAT_MK2_PHYS),
     },
   ],
 };
@@ -151,14 +262,14 @@ export const ESAT_MOCK_3: MockPaper = {
       title: "数学（模块一）",
       titleEn: "Mathematics (Module 1)",
       durationSec: 40 * 60,
-      questions: ESAT_MK3_MATH,
+      questions: balanceEsatAnswers(ESAT_MK3_MATH),
     },
     {
       id: "chemistry",
       title: "化学（模块二）",
       titleEn: "Chemistry (Module 2)",
       durationSec: 40 * 60,
-      questions: ESAT_MK3_CHEM,
+      questions: balanceEsatAnswers(ESAT_MK3_CHEM),
     },
   ],
 };
@@ -176,14 +287,14 @@ export const ESAT_MOCK_4: MockPaper = {
       title: "数学（模块一）",
       titleEn: "Mathematics (Module 1)",
       durationSec: 40 * 60,
-      questions: ESAT_MK4_MATH,
+      questions: balanceEsatAnswers(ESAT_MK4_MATH),
     },
     {
       id: "biology",
       title: "生物（模块二）",
       titleEn: "Biology (Module 2)",
       durationSec: 40 * 60,
-      questions: ESAT_MK4_BIO,
+      questions: balanceEsatAnswers(ESAT_MK4_BIO),
     },
   ],
 };
@@ -201,14 +312,14 @@ export const ESAT_MOCK_5: MockPaper = {
       title: "数学（含进阶）",
       titleEn: "Mathematics (incl. advanced)",
       durationSec: 40 * 60,
-      questions: ESAT_MK5_MATH,
+      questions: balanceEsatAnswers(ESAT_MK5_MATH),
     },
     {
       id: "physics",
       title: "物理（含进阶）",
       titleEn: "Physics (incl. advanced)",
       durationSec: 40 * 60,
-      questions: ESAT_MK5_PHYS,
+      questions: balanceEsatAnswers(ESAT_MK5_PHYS),
     },
   ],
 };
@@ -221,8 +332,8 @@ export const ESAT_MOCK_6: MockPaper = {
   description:
     "依据 ENGAA 2016–2023 真题演变设计：出题人自 2019 年将卷子由 54 题/80 分钟改为 40 题/60 分钟，以「少而精、多步推理」的更硬题目补偿，并加重进阶数学与电路/波/热。本卷据此校准，难度偏高、综合多步题为主。数学 + 物理各 27 题、每模块 40 分钟、五选一、无负分。题目全新原创，与真题及其他卷均不重复。",
   modules: [
-    { id: "math", title: "数学（含进阶）", titleEn: "Mathematics (incl. advanced)", durationSec: 40 * 60, questions: ESAT_MK6_MATH },
-    { id: "physics", title: "物理（含进阶）", titleEn: "Physics (incl. advanced)", durationSec: 40 * 60, questions: ESAT_MK6_PHYS },
+    { id: "math", title: "数学（含进阶）", titleEn: "Mathematics (incl. advanced)", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MK6_MATH) },
+    { id: "physics", title: "物理（含进阶）", titleEn: "Physics (incl. advanced)", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MK6_PHYS) },
   ],
 };
 
@@ -234,8 +345,8 @@ export const ESAT_MOCK_7: MockPaper = {
   description:
     "提取 ENGAA 2016–2023 八年真题中跨年稳定、几乎每年必考的「高频核心」考点，组成的打基本功均衡卷（与偏难的卷六互补）。数学 + 物理各 27 题、每模块 40 分钟、五选一、无负分。难度以基础—中等为主。题目全新原创，与真题及其他卷均不重复。",
   modules: [
-    { id: "math", title: "数学（高频核心）", titleEn: "Mathematics (core)", durationSec: 40 * 60, questions: ESAT_MK7_MATH },
-    { id: "physics", title: "物理（高频核心）", titleEn: "Physics (core)", durationSec: 40 * 60, questions: ESAT_MK7_PHYS },
+    { id: "math", title: "数学（高频核心）", titleEn: "Mathematics (core)", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MK7_MATH) },
+    { id: "physics", title: "物理（高频核心）", titleEn: "Physics (core)", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MK7_PHYS) },
   ],
 };
 
@@ -247,8 +358,8 @@ export const ESAT_MOCK_8: MockPaper = {
   description:
     "依据 NSAA 2016–2023 真题校准的自然科学方向卷，补足化学（与工程卷五/六/七的数理侧互补）。数学 + 化学各 27 题、每模块 40 分钟、五选一、无负分。题目全新原创，与真题及其他卷均不重复。",
   modules: [
-    { id: "math", title: "数学", titleEn: "Mathematics", durationSec: 40 * 60, questions: ESAT_MK8_MATH },
-    { id: "chemistry", title: "化学", titleEn: "Chemistry", durationSec: 40 * 60, questions: ESAT_MK8_CHEM },
+    { id: "math", title: "数学", titleEn: "Mathematics", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MK8_MATH) },
+    { id: "chemistry", title: "化学", titleEn: "Chemistry", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MK8_CHEM) },
   ],
 };
 
@@ -260,8 +371,8 @@ export const ESAT_MOCK_9: MockPaper = {
   description:
     "依据 NSAA 2016–2023 真题校准的自然科学方向卷，补足生物（与化学卷八、工程卷共同构成完整科目覆盖）。数学 + 生物各 27 题、每模块 40 分钟、五选一、无负分。题目全新原创，与真题及其他卷均不重复。",
   modules: [
-    { id: "math", title: "数学", titleEn: "Mathematics", durationSec: 40 * 60, questions: ESAT_MK9_MATH },
-    { id: "biology", title: "生物", titleEn: "Biology", durationSec: 40 * 60, questions: ESAT_MK9_BIO },
+    { id: "math", title: "数学", titleEn: "Mathematics", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MK9_MATH) },
+    { id: "biology", title: "生物", titleEn: "Biology", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MK9_BIO) },
   ],
 };
 
@@ -273,9 +384,29 @@ export const ESAT_MOCK_10: MockPaper = {
   description:
     "对照官方 ESAT 物理考纲（P1–P7）审计题库后补齐薄弱考点的专项卷：模块一为磁学与电磁（官方 P2，此前完全缺失），模块二覆盖热物理、物质、波与放射性。各 27 题、每模块 40 分钟、五选一、无负分。题目全新原创，仅以官方考纲做结构校准，未照搬任何指南或真题。",
   modules: [
-    { id: "magnetism", title: "磁学与电磁", titleEn: "Magnetism & Electromagnetism", durationSec: 40 * 60, questions: ESAT_MK10_MAG },
-    { id: "science", title: "热 / 物质 / 波 / 放射性", titleEn: "Thermal / Matter / Waves / Radioactivity", durationSec: 40 * 60, questions: ESAT_MK10_SCI },
+    { id: "magnetism", title: "磁学与电磁", titleEn: "Magnetism & Electromagnetism", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MK10_MAG) },
+    { id: "science", title: "热 / 物质 / 波 / 放射性", titleEn: "Thermal / Matter / Waves / Radioactivity", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MK10_SCI) },
   ],
+};
+
+export const ESAT_MATH_INTENSIFICATION_1: MockPaper = {
+  id: "esat-math-intensification-1",
+  testId: "esat",
+  title: "ESAT 数学高压强化卷一",
+  titleEn: "ESAT Mathematics Pressure Paper 1",
+  description: "保持官方数学模块的 27 题、40 分钟节奏，增加多步推理、参数问题以及微分、积分与优化题的密度。题目为原创强化训练，不冒充官方真题。",
+  modules: [{ id: "math-intensification-1", title: "数学高压模块一", titleEn: "Mathematics Pressure Module 1", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MATH_PRESSURE_1) }],
+  formatType: "extension",
+};
+
+export const ESAT_MATH_INTENSIFICATION_2: MockPaper = {
+  id: "esat-math-intensification-2",
+  testId: "esat",
+  title: "ESAT 数学高压强化卷二",
+  titleEn: "ESAT Mathematics Pressure Paper 2",
+  description: "第二套高难度数学限时卷，重点检验微积分迁移、代数参数、概率统计与几何综合能力。题目为原创强化训练，不冒充官方真题。",
+  modules: [{ id: "math-intensification-2", title: "数学高压模块二", titleEn: "Mathematics Pressure Module 2", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_MATH_PRESSURE_2) }],
+  formatType: "extension",
 };
 
 export const MAT_MOCK_1: MockPaper = {
@@ -358,7 +489,7 @@ export const LNAT_MOCK_2: MockPaper = {
   description:
     "对标 LNAT 第一节：原创论述文 + 阅读/推理选择题（因果谬误、动机性推理、激励逻辑等）。题目原创，仅以官方结构校准。",
   modules: [
-    { id: "mcq", title: "Section A 阅读推理", titleEn: "Section A Reading", durationSec: 40 * 60, questions: LNAT_MK2_MCQ },
+    { id: "mcq", title: "Section A 阅读推理", titleEn: "Section A Reading", durationSec: 95 * 60, questions: buildFullLnatPaper(LNAT_MK2_MCQ, 2) },
   ],
 };
 
@@ -370,7 +501,7 @@ export const LNAT_MOCK_3: MockPaper = {
   description:
     "对标 LNAT 第一节：原创论述文 + 阅读/推理选择题（幸存者偏差、诉诸出身谬误、内生性需求等）。题目原创，仅以官方结构校准。",
   modules: [
-    { id: "mcq", title: "Section A 阅读推理", titleEn: "Section A Reading", durationSec: 40 * 60, questions: LNAT_MK3_MCQ },
+    { id: "mcq", title: "Section A 阅读推理", titleEn: "Section A Reading", durationSec: 95 * 60, questions: buildFullLnatPaper(LNAT_MK3_MCQ, 3) },
   ],
 };
 
@@ -382,7 +513,7 @@ export const LNAT_MOCK_4: MockPaper = {
   description:
     "对标 LNAT 第一节：原创论述文 + 阅读/推理选择题（基率忽视、偷换概念、假两难等）。题目原创，仅以官方结构校准。",
   modules: [
-    { id: "mcq", title: "Section A 阅读推理", titleEn: "Section A Reading", durationSec: 40 * 60, questions: LNAT_MK4_MCQ },
+    { id: "mcq", title: "Section A 阅读推理", titleEn: "Section A Reading", durationSec: 95 * 60, questions: buildFullLnatPaper(LNAT_MK4_MCQ, 4) },
   ],
 };
 
@@ -394,7 +525,7 @@ export const LNAT_MOCK_5: MockPaper = {
   description:
     "对标 LNAT 第一节：原创论述文 + 阅读/推理选择题（以偏概全、诉诸自然、你也一样谬误等）。题目原创，仅以官方结构校准。",
   modules: [
-    { id: "mcq", title: "Section A 阅读推理", titleEn: "Section A Reading", durationSec: 40 * 60, questions: LNAT_MK5_MCQ },
+    { id: "mcq", title: "Section A 阅读推理", titleEn: "Section A Reading", durationSec: 95 * 60, questions: buildFullLnatPaper(LNAT_MK5_MCQ, 5) },
   ],
 };
 
@@ -628,10 +759,10 @@ export const TARA_MOCK_1: MockPaper = {
   title: "TARA 模拟卷1",
   titleEn: "TARA Mock Paper 1",
   description:
-    "对标 TARA 三模块结构：批判性思维 22 题 + 问题解决 22 题（各 40 分钟）。问题解决题 sympy 验算；批判性思维题答案由文段锁定。写作任务见讲解卡。",
+    "按官方能力模型校准：批判性思维覆盖七类论证题，问题解决按相关选择 / 寻找程序 / 识别相似编排。两个客观模块各 22 题、40 分钟；写作任务使用独立固定写作卷。",
   modules: [
-    { id: "ct", title: "批判性思维", titleEn: "Critical Thinking", durationSec: 40 * 60, questions: TARA_MK1_CT },
-    { id: "ps", title: "问题解决", titleEn: "Problem Solving", durationSec: 40 * 60, questions: TARA_MK1_PS },
+    { id: "ct", title: "批判性思维", titleEn: "Critical Thinking", durationSec: 40 * 60, questions: calibrateTaraCriticalModule(TARA_MK1_CT, "tara-mk1-ct") },
+    { id: "ps", title: "问题解决", titleEn: "Problem Solving", durationSec: 40 * 60, questions: TARA_FIXED_PS_PAPERS[0] },
   ],
 };
 
@@ -641,10 +772,10 @@ export const TARA_MOCK_2: MockPaper = {
   title: "TARA 模拟卷2",
   titleEn: "TARA Mock Paper 2",
   description:
-    "对标 TARA 三模块结构：批判性思维 22 题 + 问题解决 22 题（各 40 分钟）。问题解决题 sympy 验算；批判性思维题答案由文段锁定。写作任务见讲解卡。",
+    "按官方能力模型校准：批判性思维覆盖七类论证题，问题解决按相关选择 / 寻找程序 / 识别相似编排。两个客观模块各 22 题、40 分钟；写作任务使用独立固定写作卷。",
   modules: [
-    { id: "ct", title: "批判性思维", titleEn: "Critical Thinking", durationSec: 40 * 60, questions: TARA_MK2_CT },
-    { id: "ps", title: "问题解决", titleEn: "Problem Solving", durationSec: 40 * 60, questions: TARA_MK2_PS },
+    { id: "ct", title: "批判性思维", titleEn: "Critical Thinking", durationSec: 40 * 60, questions: calibrateTaraCriticalModule(TARA_MK2_CT, "tara-mk2-ct") },
+    { id: "ps", title: "问题解决", titleEn: "Problem Solving", durationSec: 40 * 60, questions: TARA_FIXED_PS_PAPERS[1] },
   ],
 };
 
@@ -654,12 +785,30 @@ export const TARA_MOCK_3: MockPaper = {
   title: "TARA 模拟卷3",
   titleEn: "TARA Mock Paper 3",
   description:
-    "对标 TARA 三模块结构：批判性思维 22 题 + 问题解决 22 题（各 40 分钟）。问题解决题 sympy 验算；批判性思维题答案由文段锁定。写作任务见讲解卡。",
+    "按官方能力模型校准：批判性思维覆盖七类论证题，问题解决按相关选择 / 寻找程序 / 识别相似编排。两个客观模块各 22 题、40 分钟；写作任务使用独立固定写作卷。",
   modules: [
-    { id: "ct", title: "批判性思维", titleEn: "Critical Thinking", durationSec: 40 * 60, questions: TARA_MK3_CT },
-    { id: "ps", title: "问题解决", titleEn: "Problem Solving", durationSec: 40 * 60, questions: TARA_MK3_PS },
+    { id: "ct", title: "批判性思维", titleEn: "Critical Thinking", durationSec: 40 * 60, questions: calibrateTaraCriticalModule(TARA_MK3_CT, "tara-mk3-ct") },
+    { id: "ps", title: "问题解决", titleEn: "Problem Solving", durationSec: 40 * 60, questions: TARA_FIXED_PS_PAPERS[2] },
   ],
 };
+
+function taraFixedMock(paperNumber: number): MockPaper {
+  return {
+    id: `tara-mock-${paperNumber}`,
+    testId: "tara",
+    title: `TARA 模拟卷${paperNumber}`,
+    titleEn: `TARA Mock Paper ${paperNumber}`,
+    description: "按官方能力模型校准：批判性思维覆盖七类论证题，问题解决按相关选择 / 寻找程序 / 识别相似编排。两个客观模块各 22 题、40 分钟；写作任务使用独立固定写作卷。",
+    modules: [
+      { id: "ct", title: "批判性思维", titleEn: "Critical Thinking", durationSec: 40 * 60, questions: TARA_FIXED_CT_PAPERS[paperNumber - 4] },
+      { id: "ps", title: "问题解决", titleEn: "Problem Solving", durationSec: 40 * 60, questions: TARA_FIXED_PS_PAPERS[paperNumber - 1] },
+    ],
+  };
+}
+
+export const TARA_MOCK_4 = taraFixedMock(4);
+export const TARA_MOCK_5 = taraFixedMock(5);
+export const TARA_MOCK_6 = taraFixedMock(6);
 
 export const LNAT_MOCK_1: MockPaper = {
   id: "lnat-mock-1",
@@ -667,9 +816,9 @@ export const LNAT_MOCK_1: MockPaper = {
   title: "LNAT 模拟卷1（Section A 阅读推理）",
   titleEn: "LNAT Mock Paper 1 (Section A)",
   description:
-    "对标 LNAT 第一节：原创论述文 + 阅读/推理选择题（主旨、推断、假设、削弱/加强、谬误识别）。真实考试为 42 题 95 分钟、外加第二节 essay；本卷为 Section A 精选练习。题目原创，仅以官方结构校准。",
+    "对标 LNAT Section A 的完整模拟卷：12 篇原创议论文、42 道阅读与推理选择题、95 分钟独立计时，覆盖主旨、推断、假设、削弱/加强与谬误识别。题目原创，仅以官方结构校准。",
   modules: [
-    { id: "mcq", title: "Section A 阅读推理", titleEn: "Section A Reading", durationSec: 40 * 60, questions: LNAT_MK1_MCQ },
+    { id: "mcq", title: "Section A 阅读推理", titleEn: "Section A Reading", durationSec: 95 * 60, questions: LNAT_MK1_MCQ },
   ],
 };
 
@@ -715,10 +864,10 @@ export const TMUA_MOCK_2: MockPaper = {
   title: "TMUA 模拟卷二（数学应用 + 数学推理）",
   titleEn: "TMUA Mock Paper 2 (Applications + Reasoning)",
   description:
-    "第二套完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与模拟卷一、练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
+    "第二套完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、无负分、无计算器；选项按题型使用 A–E 至 A–H。与模拟卷一、练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
   modules: [
-    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK2_P1 },
-    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK2_P2 },
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: [...TMUA_MK2_P1.slice(0, 12), ...TMUA_MK2_P1_CALIBRATED] },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: [...TMUA_MK2_P2.slice(0, 12), ...TMUA_MK2_P2_CALIBRATED] },
   ],
 };
 
@@ -728,10 +877,10 @@ export const TMUA_MOCK_3: MockPaper = {
   title: "TMUA 模拟卷三（数学应用 + 数学推理）",
   titleEn: "TMUA Mock Paper 3 (Applications + Reasoning)",
   description:
-    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
+    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、无负分、无计算器；选项按题型使用 A–E 至 A–H。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
   modules: [
-    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK3_P1 },
-    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK3_P2 },
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: [...TMUA_MK3_P1.slice(0, 12), ...TMUA_MK3_P1_CALIBRATED] },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: [...TMUA_MK3_P2.slice(0, 12), ...TMUA_MK3_P2_CALIBRATED] },
   ],
 };
 
@@ -741,10 +890,10 @@ export const TMUA_MOCK_4: MockPaper = {
   title: "TMUA 模拟卷四（数学应用 + 数学推理）",
   titleEn: "TMUA Mock Paper 4 (Applications + Reasoning)",
   description:
-    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
+    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、无负分、无计算器；选项按题型使用 A–E 至 A–H。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
   modules: [
-    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK4_P1 },
-    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK4_P2 },
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: [...TMUA_MK4_P1.slice(0, 10), ...TMUA_MK4_P1_FINAL] },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: [...TMUA_MK4_P2.slice(0, 10), ...TMUA_MK4_P2_FINAL] },
   ],
 };
 
@@ -754,10 +903,10 @@ export const TMUA_MOCK_5: MockPaper = {
   title: "TMUA 模拟卷五（数学应用 + 数学推理）",
   titleEn: "TMUA Mock Paper 5 (Applications + Reasoning)",
   description:
-    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
+    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、无负分、无计算器；选项按题型使用 A–E 至 A–H。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
   modules: [
-    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK5_P1 },
-    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK5_P2 },
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: [...TMUA_MK5_P1.slice(0, 12), ...TMUA_MK5_P1_CALIBRATED] },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: [...TMUA_MK5_P2.slice(0, 12), ...TMUA_MK5_P2_CALIBRATED] },
   ],
 };
 
@@ -767,10 +916,10 @@ export const TMUA_MOCK_6: MockPaper = {
   title: "TMUA 模拟卷六（数学应用 + 数学推理）",
   titleEn: "TMUA Mock Paper 6 (Applications + Reasoning)",
   description:
-    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
+    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、无负分、无计算器；选项按题型使用 A–E 至 A–H。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
   modules: [
-    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK6_P1 },
-    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK6_P2 },
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: [...TMUA_MK6_P1.slice(0, 12), ...TMUA_MK6_P1_CALIBRATED] },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: [...TMUA_MK6_P2.slice(0, 12), ...TMUA_MK6_P2_CALIBRATED] },
   ],
 };
 
@@ -780,10 +929,10 @@ export const TMUA_MOCK_7: MockPaper = {
   title: "TMUA 模拟卷七（数学应用 + 数学推理）",
   titleEn: "TMUA Mock Paper 7 (Applications + Reasoning)",
   description:
-    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
+    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、无负分、无计算器；选项按题型使用 A–E 至 A–H。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
   modules: [
-    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK7_P1 },
-    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK7_P2 },
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: [...TMUA_MK7_P1.slice(0, 12), ...TMUA_MK7_P1_CALIBRATED] },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: [...TMUA_MK7_P2.slice(0, 12), ...TMUA_MK7_P2_CALIBRATED] },
   ],
 };
 
@@ -793,10 +942,10 @@ export const TMUA_MOCK_8: MockPaper = {
   title: "TMUA 模拟卷八（数学应用 + 数学推理）",
   titleEn: "TMUA Mock Paper 8 (Applications + Reasoning)",
   description:
-    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
+    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、无负分、无计算器；选项按题型使用 A–E 至 A–H。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
   modules: [
-    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK8_P1 },
-    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK8_P2 },
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: [...TMUA_MK8_P1.slice(0, 12), ...TMUA_MK8_P1_CALIBRATED] },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: [...TMUA_MK8_P2.slice(0, 12), ...TMUA_MK8_P2_CALIBRATED] },
   ],
 };
 
@@ -806,10 +955,10 @@ export const TMUA_MOCK_9: MockPaper = {
   title: "TMUA 模拟卷九（数学应用 + 数学推理）",
   titleEn: "TMUA Mock Paper 9 (Applications + Reasoning)",
   description:
-    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
+    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、无负分、无计算器；选项按题型使用 A–E 至 A–H。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
   modules: [
-    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK9_P1 },
-    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK9_P2 },
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: [...TMUA_MK9_P1.slice(0, 12), ...TMUA_MK9_P1_CALIBRATED] },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: [...TMUA_MK9_P2.slice(0, 12), ...TMUA_MK9_P2_CALIBRATED] },
   ],
 };
 
@@ -819,10 +968,10 @@ export const TMUA_MOCK_10: MockPaper = {
   title: "TMUA 模拟卷十（数学应用 + 数学推理）",
   titleEn: "TMUA Mock Paper 10 (Applications + Reasoning)",
   description:
-    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、五选一、无负分、无计算器。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
+    "完整 TMUA 计时模考：两卷各 20 题、各 75 分钟、无负分、无计算器；选项按题型使用 A–E 至 A–H。与其它卷及练习题均不重复。题目全新原创，仅以真题题型与结构做校准。",
   modules: [
-    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK10_P1 },
-    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK10_P2 },
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: [...TMUA_MK10_P1.slice(0, 12), ...TMUA_MK10_P1_CALIBRATED] },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: [...TMUA_MK10_P2.slice(0, 10), ...TMUA_MK10_P2_CALIBRATED] },
   ],
 };
 
@@ -832,10 +981,10 @@ export const TMUA_MOCK_1: MockPaper = {
   title: "TMUA 模拟卷一（数学应用 + 数学推理 · 对标真实两卷结构）",
   titleEn: "TMUA Mock Paper 1 (Applications + Reasoning)",
   description:
-    "对标真实 TMUA：两卷各 20 题、各 75 分钟、五选一（A–E）、无负分、无计算器。Paper 1 考数学应用，Paper 2 考数学推理与逻辑（命题/逆否/必要充分/反例/证明）。题目全新原创，仅以官方考纲与结构做校准，未照搬任何真题。",
+    "对标真实 TMUA：两卷各 20 题、各 75 分钟、无负分、无计算器；选项按题型使用 A–E 至 A–H。Paper 1 考数学应用，Paper 2 考数学推理与逻辑（命题/逆否/必要充分/反例/证明）。题目全新原创，仅以官方考纲与结构做校准，未照搬任何真题。",
   modules: [
-    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_MK1_P1 },
-    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_MK1_P2 },
+    { id: "paper1", title: "Paper 1：数学应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: [...TMUA_MK1_P1.slice(0, 10), ...TMUA_MK1_P1_FINAL] },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: [...TMUA_MK1_P2.slice(0, 10), ...TMUA_MK1_P2_FINAL] },
   ],
 };
 
@@ -881,6 +1030,106 @@ export const BMO_MOCK_8: MockPaper = {
   id: "bmo-mock-8", testId: "bmo", title: "SMC 模拟卷八（25 题 · 难度递增）", titleEn: "SMC Mock Paper 8",
   description: BMO_SMC_MOCK_DESC,
   modules: [{ id: "mcq", title: "选择题（25 题 / 90 分钟）", titleEn: "Multiple Choice (Q1–25)", durationSec: 90 * 60, questions: BMO_MK8_MCQ }],
+};
+
+export const TMUA_CALIBRATION_1: MockPaper = {
+  id: "tmua-calibration-1",
+  testId: "tmua",
+  title: "TMUA 原创校准卷一（真题结构基准）",
+  titleEn: "TMUA Calibration Paper 1 (Official-structure benchmark)",
+  description:
+    "依据 2016-2023 真题结构与 2025 官方考纲重新校准的原创完整套卷。Paper 1 与 Paper 2 各 20 题、各 75 分钟、无计算器、无负分；选项按题目需要使用 A-E 至 A-H。题目只借鉴官方题型结构、推理密度与干扰项逻辑，不复制真题题面、数值或解答。",
+  formatType: "current",
+  instructions: [
+    "每个 Paper 独立计时 75 分钟。",
+    "不使用计算器或公式册。",
+    "每题只有一个正确答案；答错不倒扣。",
+  ],
+  modules: [
+    { id: "paper1", title: "Paper 1：数学知识应用", titleEn: "Paper 1: Applications of Mathematical Knowledge", durationSec: 75 * 60, questions: TMUA_CALIBRATION_1_P1 },
+    { id: "paper2", title: "Paper 2：数学推理", titleEn: "Paper 2: Mathematical Reasoning", durationSec: 75 * 60, questions: TMUA_CALIBRATION_1_P2 },
+  ],
+};
+
+export const ESAT_GAP_PHYSICS_PAPER: MockPaper = {
+  id: "esat-gap-physics-module",
+  testId: "esat",
+  title: "ESAT 物理考纲补齐模块卷",
+  titleEn: "ESAT Physics Specification Completion Module",
+  description: "现行 ESAT 物理模块训练：27 道五选一，40 分钟，无计算器。集中覆盖波、放射性、热与物质、磁学与电磁。",
+  modules: [{ id: "physics", title: "物理补齐模块", titleEn: "Physics completion module", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_GAP_PHYSICS_MODULE) }],
+  formatType: "current",
+};
+
+export const ESAT_GAP_CHEMISTRY_PAPER: MockPaper = {
+  id: "esat-gap-chemistry-module",
+  testId: "esat",
+  title: "ESAT 化学考纲补齐模块卷",
+  titleEn: "ESAT Chemistry Specification Completion Module",
+  description: "现行 ESAT 化学模块训练：27 道五选一，40 分钟，无计算器。集中覆盖定量化学、化学计量与电解。",
+  modules: [{ id: "chemistry", title: "化学补齐模块", titleEn: "Chemistry completion module", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_GAP_CHEMISTRY_MODULE) }],
+  formatType: "current",
+};
+
+export const ESAT_GAP_BIOLOGY_PAPER: MockPaper = {
+  id: "esat-gap-biology-module",
+  testId: "esat",
+  title: "ESAT 生物考纲补齐模块卷",
+  titleEn: "ESAT Biology Specification Completion Module",
+  description: "现行 ESAT 生物模块训练：27 道五选一，40 分钟，无计算器。重点覆盖基因技术、生态系统、能量流动与碳循环。",
+  modules: [{ id: "biology", title: "生物补齐模块", titleEn: "Biology completion module", durationSec: 40 * 60, questions: balanceEsatAnswers(ESAT_GAP_BIOLOGY_MODULE) }],
+  formatType: "current",
+};
+
+const BMO1_WRITTEN_DESC =
+  "按现行 BMO1 结构编排的固定书面模拟卷：3.5 小时、6 道完整证明题、每题 10 分。题目为桥申原创并经题库审计，不是 UKMT 官方历年真题；固定题序便于复盘、复测和比较进步。交卷后按证明步骤评分，AI 不可用时提供评分要点自评且不计零分。";
+
+export const BMO1_WRITTEN_PAPER_1: MockPaper = {
+  id: "bmo1-written-1", testId: "bmo", title: "BMO1 固定书面卷一（结构校准）", titleEn: "BMO1 Written Mock 1",
+  description: BMO1_WRITTEN_DESC,
+  modules: [{ id: "written", title: "完整证明卷（6 题 / 210 分钟）", titleEn: "Written Paper (6 problems)", durationSec: 210 * 60, questions: BMO1_WRITTEN_1 }],
+};
+
+export const BMO1_WRITTEN_PAPER_2: MockPaper = {
+  id: "bmo1-written-2", testId: "bmo", title: "BMO1 固定书面卷二（结构校准）", titleEn: "BMO1 Written Mock 2",
+  description: BMO1_WRITTEN_DESC,
+  modules: [{ id: "written", title: "完整证明卷（6 题 / 210 分钟）", titleEn: "Written Paper (6 problems)", durationSec: 210 * 60, questions: BMO1_WRITTEN_2 }],
+};
+
+export const BMO1_WRITTEN_PAPER_3: MockPaper = {
+  id: "bmo1-written-3", testId: "bmo", title: "BMO1 固定书面卷三（结构校准）", titleEn: "BMO1 Written Mock 3",
+  description: BMO1_WRITTEN_DESC,
+  modules: [{ id: "written", title: "完整证明卷（6 题 / 210 分钟）", titleEn: "Written Paper (6 problems)", durationSec: 210 * 60, questions: BMO1_WRITTEN_3 }],
+};
+
+const BPHO_WRITTEN_DESC =
+  "固定原创书面套卷，按 Section 1 短答与 Section 2 长题组织。学生直接输入推导过程，交卷后按物理原理、关键步骤和最终结论分步评分；本卷不是历年真题。";
+
+export const BPHO_WRITTEN_PAPER_1: MockPaper = {
+  id: "bpho-written-1", testId: "bpho", title: "BPhO 固定书面套卷一", titleEn: "BPhO Fixed Written Paper 1",
+  description: BPHO_WRITTEN_DESC,
+  modules: [
+    { id: "section-1", title: "Section 1 · 书面短答（13 题 / 50 分）", titleEn: "Section 1 · Short Written Problems", durationSec: 80 * 60, questions: BPHO_WRITTEN_1_S1 },
+    { id: "section-2", title: "Section 2 · 书面长题（2 题 / 50 分）", titleEn: "Section 2 · Long Written Problems", durationSec: 80 * 60, questions: BPHO_WRITTEN_1_S2 },
+  ],
+};
+
+export const BPHO_WRITTEN_PAPER_2: MockPaper = {
+  id: "bpho-written-2", testId: "bpho", title: "BPhO 固定书面套卷二", titleEn: "BPhO Fixed Written Paper 2",
+  description: BPHO_WRITTEN_DESC,
+  modules: [
+    { id: "section-1", title: "Section 1 · 书面短答（13 题 / 50 分）", titleEn: "Section 1 · Short Written Problems", durationSec: 80 * 60, questions: BPHO_WRITTEN_2_S1 },
+    { id: "section-2", title: "Section 2 · 书面长题（2 题 / 50 分）", titleEn: "Section 2 · Long Written Problems", durationSec: 80 * 60, questions: BPHO_WRITTEN_2_S2 },
+  ],
+};
+
+export const BPHO_WRITTEN_PAPER_3: MockPaper = {
+  id: "bpho-written-3", testId: "bpho", title: "BPhO 固定书面套卷三", titleEn: "BPhO Fixed Written Paper 3",
+  description: BPHO_WRITTEN_DESC,
+  modules: [
+    { id: "section-1", title: "Section 1 · 书面短答（13 题 / 50 分）", titleEn: "Section 1 · Short Written Problems", durationSec: 80 * 60, questions: BPHO_WRITTEN_3_S1 },
+    { id: "section-2", title: "Section 2 · 书面长题（2 题 / 50 分）", titleEn: "Section 2 · Long Written Problems", durationSec: 80 * 60, questions: BPHO_WRITTEN_3_S2 },
+  ],
 };
 
 const BMO_R2_MOCK_DESC =
@@ -970,7 +1219,109 @@ export const BMO_R2_MOCK_8: MockPaper = {
   ],
 };
 
-const ALL_MOCK_PAPERS: MockPaper[] = [BMO_R2_MOCK_1, BMO_R2_MOCK_2, BMO_R2_MOCK_3, BMO_R2_MOCK_4, BMO_R2_MOCK_5, BMO_R2_MOCK_6, BMO_R2_MOCK_7, BMO_R2_MOCK_8, BMO_MOCK_1, BMO_MOCK_2, BMO_MOCK_3, BMO_MOCK_4, BMO_MOCK_5, BMO_MOCK_6, BMO_MOCK_7, BMO_MOCK_8, ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3, BPHO_MOCK_1, BPHO_MOCK_2, BPHO_MOCK_3, BPHO_MOCK_4, BPHO_MOCK_5, BPHO_MOCK_6, BPHO_MOCK_7, BPHO_MOCK_8, BPHO_R2_MOCK_1, BPHO_R2_MOCK_2, BPHO_R2_MOCK_3, BPHO_R2_MOCK_4];
+const MAT_WRITTEN_DESC =
+  "按 Oxford MAT 2025 最后一年格式中的键入长题部分编排：每套 2 道多小问长题、共 30 分。MAT 已于 2026 年停用并由 TMUA 取代；本卷用于保留深度数学推理训练，不是当前申请考试。题目为桥申原创固定题组。";
+
+export const MAT_WRITTEN_PAPERS: MockPaper[] = [
+  MAT_WRITTEN_1, MAT_WRITTEN_2, MAT_WRITTEN_3, MAT_WRITTEN_4, MAT_WRITTEN_5,
+].map((questions, index) => ({
+  id: `mat-written-${index + 1}`,
+  testId: "mat",
+  title: `MAT 2025 历史格式键入长题 ${index + 1}`,
+  titleEn: `MAT 2025 Typed-Response Set ${index + 1}`,
+  description: MAT_WRITTEN_DESC,
+  modules: [{ id: "typed-response", title: "键入长题（2 题 / 30 分）", titleEn: "Typed-response questions", durationSec: 45 * 60, questions }],
+  instructions: [
+    "这是 2025 历史格式的长题专项，不是 2026 年现行入学考试。",
+    "每个小问都应写出关键推理；只填最终答案不能获得完整分数。",
+    "建议使用标准键盘可输入的数学表达，复杂排版不是评分重点。",
+  ],
+  formatType: "legacy",
+}));
+
+const PAT_WRITTEN_DESC =
+  "非官方 PAT 书面能力拓展卷：把历史 PAT 风格选择题改为必须写出物理原理、公式和计算过程的短答题。PAT 已于 2026 年由 ESAT 取代，且最后阶段为全选择题；本卷用于牛津物理面试与深度问题解决训练，不应当作现行考试模拟。";
+
+export const PAT_WRITTEN_PAPERS: MockPaper[] = [PAT_WRITTEN_1, PAT_WRITTEN_2, PAT_WRITTEN_3].map((questions, index) => ({
+  id: `pat-written-extension-${index + 1}`,
+  testId: "pat",
+  title: `PAT 历史能力书面拓展卷 ${index + 1}`,
+  titleEn: `PAT Legacy Written Extension ${index + 1}`,
+  description: PAT_WRITTEN_DESC,
+  modules: [{ id: "written-extension", title: "物理书面短答（12 题）", titleEn: "Written problem-solving extension", durationSec: 120 * 60, questions }],
+  instructions: [
+    "本卷是非官方能力拓展，不对应 2026 年 ESAT 的选择题结构。",
+    "每题写明所用定律、符号含义、代入过程和带单位的结论。",
+    "遇到估算题应说明近似假设，并检查量纲与数量级。",
+  ],
+  formatType: "extension",
+}));
+
+const stepPaper = (number: number, level: 2 | 3, questions: Question[]): MockPaper => ({
+  id: `step${level}-written-${number}`,
+  testId: "step",
+  title: `STEP ${level} 固定书面套卷 ${number}`,
+  titleEn: `STEP ${level} Fixed Written Paper ${number}`,
+  description: `按现行 STEP ${level} 结构编排：3 小时、12 道书面长题（8 道纯数、2 道力学、2 道统计与概率），最终成绩只取最高 6 题，每题 20 分。题目为桥申原创固定题组，不是 OCR 官方历年真题。`,
+  modules: [{ id: "written", title: "完整书面卷（12 题 / 最高六题计分）", titleEn: "Full written paper", durationSec: 180 * 60, questions }],
+  instructions: [
+    "先浏览全部 12 题，再选择最有把握的题目作答；不要求完成全部题目。",
+    "最终只计得分最高的 6 题，每题 20 分，计分上限 120 分。",
+    "必须保留完整推导、证明与必要文字说明。",
+  ],
+  bestQuestionCount: 6,
+  formatType: "current",
+});
+
+export const STEP_WRITTEN_PAPERS: MockPaper[] = [
+  stepPaper(1, 2, STEP_WRITTEN_1),
+  stepPaper(2, 2, STEP_WRITTEN_2),
+  stepPaper(1, 3, STEP_WRITTEN_3),
+  stepPaper(2, 3, STEP_WRITTEN_4),
+];
+
+export const LNAT_WRITTEN_PAPERS: MockPaper[] = LNAT_WRITTEN_QUESTIONS.map((question, index) => ({
+  id: `lnat-written-${index + 1}`,
+  testId: "lnat",
+  title: `LNAT Section B 固定写作卷 ${index + 1}`,
+  titleEn: `LNAT Section B Fixed Essay Paper ${index + 1}`,
+  description: "按现行 LNAT Section B 编排：40 分钟，从 3 个题目中选择 1 题作答。官方建议不超过 750 词，理想篇幅约 500–600 词。Section B 不计入 LNAT 的 42 分选择题成绩，由申请院校直接查看；平台 20 分量表仅用于形成性训练反馈。",
+  modules: [{ id: "essay", title: "Section B · 三选一议论文", titleEn: "Section B · Choose one essay", durationSec: 40 * 60, questions: [question] }],
+  instructions: [
+    "只选择一个题目作答；先用约 5 分钟确定立场和论证顺序。",
+    "建议写 500–600 词，最多 750 词，必须形成清楚结论。",
+    "平台分数是训练量表，不是 LNAT 官方成绩或院校最终评价。",
+  ],
+  formatType: "current",
+}));
+
+export const TARA_WRITTEN_PAPERS: MockPaper[] = TARA_WRITTEN_QUESTIONS.map((question, index) => ({
+  id: `tara-written-${index + 1}`,
+  testId: "tara",
+  title: `TARA Writing Task 固定写作卷 ${index + 1}`,
+  titleEn: `TARA Writing Task Fixed Paper ${index + 1}`,
+  description: "按 2026 TARA Writing Task 编排：40 分钟，从 3 个命题中选择 1 个，解释命题、提出有理由的反论证，并讨论认同程度；上限 750 词。官方写作任务不评分，原文发送申请院校；平台 20 分量表仅用于形成性训练反馈。",
+  modules: [{ id: "writing", title: "Writing Task · 三选一", titleEn: "Writing Task · Choose one", durationSec: 40 * 60, questions: [question] }],
+  instructions: [
+    "只选择一个命题，并完整回应解释、反驳、权衡立场三个要求。",
+    "最多 750 词；优先选择和组织最重要的观点，不追求材料堆积。",
+    "TARA 官方不为写作任务打分；平台分数仅用于训练反馈。",
+  ],
+  formatType: "current",
+}));
+
+const ALL_MOCK_PAPERS: MockPaper[] = [BMO_R2_MOCK_1, BMO_R2_MOCK_2, BMO_R2_MOCK_3, BMO_R2_MOCK_4, BMO_R2_MOCK_5, BMO_R2_MOCK_6, BMO_R2_MOCK_7, BMO_R2_MOCK_8, BMO_MOCK_1, BMO_MOCK_2, BMO_MOCK_3, BMO_MOCK_4, BMO_MOCK_5, BMO_MOCK_6, BMO_MOCK_7, BMO_MOCK_8, ESAT_MOCK_1, ESAT_MOCK_2, ESAT_MOCK_3, ESAT_MOCK_4, ESAT_MOCK_5, ESAT_MOCK_6, ESAT_MOCK_7, ESAT_MOCK_8, ESAT_MOCK_9, ESAT_MOCK_10, ESAT_GAP_PHYSICS_PAPER, ESAT_GAP_CHEMISTRY_PAPER, ESAT_GAP_BIOLOGY_PAPER, TMUA_CALIBRATION_1, TMUA_MOCK_1, TMUA_MOCK_2, TMUA_MOCK_3, TMUA_MOCK_4, TMUA_MOCK_5, TMUA_MOCK_6, TMUA_MOCK_7, TMUA_MOCK_8, TMUA_MOCK_9, TMUA_MOCK_10, MAT_MOCK_1, MAT_MOCK_2, MAT_MOCK_3, MAT_MOCK_4, PAT_MOCK_1, PAT_MOCK_2, PAT_MOCK_3, PAT_MOCK_4, PAT_MOCK_5, LNAT_MOCK_1, LNAT_MOCK_2, LNAT_MOCK_3, LNAT_MOCK_4, LNAT_MOCK_5, STEP_MOCK_1, STEP_MOCK_2, STEP_MOCK_3, STEP_MOCK_4, STEP_MOCK_5, TARA_MOCK_1, TARA_MOCK_2, TARA_MOCK_3, TARA_MOCK_4, TARA_MOCK_5, TARA_MOCK_6, BPHO_MOCK_1, BPHO_MOCK_2, BPHO_MOCK_3, BPHO_MOCK_4, BPHO_MOCK_5, BPHO_MOCK_6, BPHO_MOCK_7, BPHO_MOCK_8, BPHO_R2_MOCK_1, BPHO_R2_MOCK_2, BPHO_R2_MOCK_3, BPHO_R2_MOCK_4];
+ALL_MOCK_PAPERS.unshift(
+  ...CAIE9709_P3_WRITTEN_PAPERS,
+  ESAT_MATH_INTENSIFICATION_1, ESAT_MATH_INTENSIFICATION_2,
+  ...IELTS_FULL_PAPERS_1,
+  IELTS_WRITTEN_DIAGNOSTIC, ...CSAT_WRITTEN_PAPERS,
+  UCAT_MOCK_1, ...UCAT_MOCKS_2_TO_5,
+  ...MAT_WRITTEN_PAPERS, ...PAT_WRITTEN_PAPERS, ...STEP_WRITTEN_PAPERS,
+  ...LNAT_WRITTEN_PAPERS, ...TARA_WRITTEN_PAPERS,
+  BPHO_WRITTEN_PAPER_1, BPHO_WRITTEN_PAPER_2, BPHO_WRITTEN_PAPER_3,
+  BMO1_WRITTEN_PAPER_1, BMO1_WRITTEN_PAPER_2, BMO1_WRITTEN_PAPER_3
+);
 
 export function getMockPapersForTest(testId: string): MockPaper[] {
   return ALL_MOCK_PAPERS.filter((p) => p.testId === testId);
@@ -981,6 +1332,6 @@ export function getMockPaper(paperId: string): MockPaper | undefined {
 }
 
 /** 给 lookup 用：扁平化所有模拟卷题目，便于历史回看/学情分析按 id 反查 */
-export function getAllMockQuestions(): MCQQuestion[] {
+export function getAllMockQuestions(): Question[] {
   return ALL_MOCK_PAPERS.flatMap((p) => p.modules.flatMap((m) => m.questions));
 }

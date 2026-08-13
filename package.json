@@ -2,6 +2,10 @@
   "name": "alevel-apply-platform",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@11.9.0",
+  "engines": {
+    "node": ">=22.13.0"
+  },
   "scripts": {
     "dev": "next dev -p 3100",
     "build": "next build",
@@ -9,11 +13,30 @@
     "lint": "eslint",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:e2e": "playwright test",
+    "test:e2e:headed": "playwright test --headed",
+    "audit:questions": "tsx scripts/audit-question-bank.ts",
+    "audit:tmua": "tsx scripts/audit-tmua-mocks.ts",
+    "audit:esat": "tsx scripts/audit-esat-mocks.ts",
+    "audit:tara": "tsx scripts/audit-tara-mocks.ts",
+    "audit:lnat": "tsx scripts/audit-lnat-mocks.ts",
+    "audit:release": "tsx scripts/audit-question-release.ts",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
     "db:studio": "prisma studio",
     "db:seed": "tsx prisma/seed.ts",
-    "db:start": "node scripts/pg.mjs"
+    "db:start": "node scripts/pg.mjs",
+    "typecheck": "tsc --noEmit --incremental false",
+    "preflight:production": "node scripts/check-production-env.mjs",
+    "start:production": "node scripts/start-production.mjs",
+    "backup:production": "node scripts/backup-production.mjs",
+    "restore:production": "node scripts/restore-production.mjs",
+    "deploy:production": "node scripts/deploy-release.mjs",
+    "rollback:production": "node scripts/rollback-release.mjs",
+    "drill:preproduction": "node scripts/preproduction-drill.mjs",
+    "monitor:production": "node scripts/monitor-production.mjs",
+    "check:beta-capacity": "node scripts/beta-capacity-check.mjs",
+    "check:beta-data-capacity": "node scripts/beta-data-capacity-check.mjs"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
@@ -30,15 +53,16 @@
     "embedded-postgres": "18.4.0-beta.17",
     "katex": "^0.17.0",
     "lucide-react": "^0.460.0",
-    "next": "16.2.9",
-    "next-auth": "5.0.0-beta.29",
+    "next": "16.2.11",
     "next-intl": "^4.13.0",
     "openai": "^6.45.0",
+    "postcss": "8.5.18",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "react-hook-form": "^7.54.2",
+    "sharp": "0.35.0",
     "tailwind-merge": "^2.6.0",
-    "zod": "^3.24.1"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@playwright/test": "^1.49.1",
@@ -49,11 +73,11 @@
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.2.9",
+    "eslint-config-next": "16.2.11",
     "prisma": "^6.5.0",
     "tailwindcss": "^4",
     "tsx": "^4.19.2",
-    "typescript": "^5",
+    "typescript": "^5.9.3",
     "vitest": "^2.1.8"
   }
 }

@@ -33,6 +33,8 @@
     "loginTitle": "Sign in",
     "registerTitle": "Sign up",
     "email": "Email",
+    "inviteCode": "One-time invite code",
+    "inviteHint": "The code is bound to the invited email and expires immediately after registration.",
     "password": "Password",
     "guardian": "I am a minor and have guardian consent",
     "consent": "I have read and agree to the Privacy Policy (PIPL)",
@@ -43,9 +45,12 @@
     "login": "Sign in",
     "logout": "Sign out",
     "errors": {
-      "INVALID": "Invalid email or password (min 6 characters)",
+      "INVALID": "Invalid email or password (10–128 characters)",
       "EXISTS": "Email already registered",
-      "BADCREDS": "Wrong email or password"
+      "BADCREDS": "Wrong email or password",
+      "CONSENT_REQUIRED": "Please read and accept the Privacy Policy and Terms",
+      "INVITE_INVALID": "The invite code is invalid, already used, or does not match this email",
+      "BETA_FULL": "The first 20 beta places are full"
     }
   },
   "common": {
@@ -98,10 +103,10 @@
     "titleBefore": "prepared for ",
     "titleHighlight": "next to nothing",
     "titleAfter": "",
-    "subtitle": "University admission tests like MAT, TMUA, ESAT, STEP, PAT, LNAT and TARA, plus academic competitions for profile-building — the two kinds of exam a UK/HK application calls for, in one subscription: original question banks, full timed mocks, step-by-step solutions and knowledge cards.",
+    "subtitle": "Current university admission tests such as TMUA, ESAT, STEP, LNAT and TARA, historical MAT and PAT training, plus academic competitions for profile-building — original question banks, full timed mocks, step-by-step solutions and knowledge cards in one platform.",
     "ctaTry": "Start practising free",
     "ctaBrowse": "Which tests do I need?",
-    "priceNote": "Subscription · from ~¥33/mo for every question bank and full mock.",
+    "priceNote": "Free during the Beta: every question bank and full mock is open at no charge.",
     "features": [
       {
         "emoji": "📚",
@@ -227,7 +232,7 @@
   },
   "profile": {
     "title": "My Profile",
-    "intro": "Once filled in, Course Matching auto-loads your grades. Saved in your browser for now (cloud sync after login).",
+    "intro": "Once filled in, Course Matching auto-loads your grades. Signed-in profiles are saved to the cloud and sync across devices.",
     "basicInfo": "Basic info",
     "fullName": "Name (optional)",
     "school": "School (optional)",
@@ -244,7 +249,7 @@
   },
   "applications": {
     "title": "Applications",
-    "intro": "Track your application progress and offers. Saved in your browser for now (cloud sync after login).",
+    "intro": "Track your application progress and offers. Signed-in data is saved to the cloud and syncs across devices.",
     "statTotal": "Total",
     "statOffers": "Offers",
     "statSubmitted": "Submitted",

@@ -12,6 +12,7 @@
 //   之后 captureError 会自动把错误转发给 Sentry —— 业务代码无需改动。
 
 import { logger } from "./logger";
+import { reportOperationalEvent } from "./operations/events";
 
 export type ErrorContext = Record<string, unknown>;
 
@@ -37,6 +38,17 @@ export function hasReporter(): boolean {
 export function captureError(error: unknown, context?: ErrorContext): void {
   const err = error instanceof Error ? error : new Error(String(error));
   logger.error(err.message, { stack: err.stack, ...(context ?? {}) });
+  void reportOperationalEvent({
+    code: "APPLICATION_ERROR",
+    message: err.message || "Unhandled application error",
+    severity: "CRITICAL",
+    source: typeof context?.route === "string"
+      ? context.route
+      : typeof context?.action === "string"
+        ? context.action
+        : "application",
+    meta: { errorType: err.name, ...(context ?? {}) },
+  });
   if (reporter) {
     try {
       reporter(err, context);

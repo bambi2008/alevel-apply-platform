@@ -3,6 +3,20 @@ import { MAT_QUESTIONS } from "@/lib/tests/questions/mat";
 import { STEP_QUESTIONS } from "@/lib/tests/questions/step";
 import { ESAT_QUESTIONS } from "@/lib/tests/questions/esat";
 import { TMUA_QUESTIONS } from "@/lib/tests/questions/tmua";
+import { BPHO_QUESTIONS } from "@/lib/tests/questions/bpho";
+import { PAT_QUESTIONS } from "@/lib/tests/questions/pat";
+import { LNAT_QUESTIONS } from "@/lib/tests/questions/lnat";
+import { TARA_QUESTIONS } from "@/lib/tests/questions/tara";
+import { UCAT_QUESTIONS } from "@/lib/tests/questions/ucat";
+import { IELTS_QUESTIONS } from "@/lib/tests/questions/ielts";
+import { CSAT_QUESTIONS } from "@/lib/tests/questions/csat";
+import { TMUA_REASONING_ROUND_2 } from "@/lib/tests/questions/tmua-reasoning-round-2";
+import { TMUA_SPEC_COVERAGE } from "@/lib/tests/questions/tmua-spec-coverage";
+import { TMUA_ADVANCED_ROUND_3 } from "@/lib/tests/questions/tmua-advanced-round-3";
+import { BPHO4_LONG_SAMPLE } from "@/lib/tests/questions/bpho4-long";
+import { BPHO5_LONG_SAMPLE } from "@/lib/tests/questions/bpho5-long";
+import { BMO_SMC_TOPUP } from "@/lib/tests/questions/bmo-smc-topup";
+import { BMO_SHORT_PROOFS } from "@/lib/tests/questions/bmo-short-proofs";
 import { getAllMockQuestions } from "@/lib/tests/mock-papers";
 import { getTestById } from "@/lib/tests";
 import { getQuestionById } from "@/lib/tests/lookup";
@@ -13,6 +27,10 @@ const banks: Record<string, Question[]> = {
   step: STEP_QUESTIONS,
   esat: ESAT_QUESTIONS,
   tmua: TMUA_QUESTIONS,
+  bpho: BPHO_QUESTIONS,
+  ucat: UCAT_QUESTIONS,
+  ielts: IELTS_QUESTIONS,
+  csat: CSAT_QUESTIONS,
 };
 
 const allQuestions: Question[] = [
@@ -20,6 +38,10 @@ const allQuestions: Question[] = [
   ...STEP_QUESTIONS,
   ...ESAT_QUESTIONS,
   ...TMUA_QUESTIONS,
+  ...BPHO_QUESTIONS,
+  ...UCAT_QUESTIONS,
+  ...IELTS_QUESTIONS,
+  ...CSAT_QUESTIONS,
   ...getAllMockQuestions(),
 ];
 
@@ -39,6 +61,206 @@ describe("question bank global integrity", () => {
       .filter((q) => !getQuestionById(q.id))
       .map((q) => q.id);
     expect(unresolved).toEqual([]);
+  });
+});
+
+describe("ESAT science gap fill", () => {
+  it("keeps at least twenty questions and all difficulty levels in every target topic", () => {
+    const topics = [
+      "esat-phys4", "esat-phys5", "esat-phys6", "esat-phys7",
+      "esat-chem4", "esat-chem5", "esat-bio4",
+    ];
+    for (const topicId of topics) {
+      const questions = ESAT_QUESTIONS.filter((question) => question.topicId === topicId);
+      expect(questions.length, `${topicId}: insufficient practice`).toBeGreaterThanOrEqual(20);
+      expect(new Set(questions.map((question) => question.difficulty)), `${topicId}: missing difficulty`).toEqual(new Set([1, 2, 3]));
+    }
+  });
+});
+
+describe("question bank difficulty calibration", () => {
+  it("keeps every calibrated topic represented at all three relative difficulty levels", () => {
+    const targets = [
+      { bank: PAT_QUESTIONS, topicId: "pat-wave" },
+      { bank: LNAT_QUESTIONS, topicId: "lnat-read" },
+      { bank: LNAT_QUESTIONS, topicId: "lnat-analyse" },
+      { bank: TARA_QUESTIONS, topicId: "tara-critical" },
+      ...["step-pure1", "step-pure2", "step-pure3", "step-pure4", "step-mech"]
+        .map((topicId) => ({ bank: STEP_QUESTIONS, topicId })),
+    ];
+    for (const { bank, topicId } of targets) {
+      const levels = new Set(bank.filter((question) => question.topicId === topicId).map((question) => question.difficulty));
+      expect(levels, `${topicId}: missing relative difficulty level`).toEqual(new Set([1, 2, 3]));
+    }
+  });
+
+  it("retains a genuine high-difficulty PAT wave set", () => {
+    const hardWaveQuestions = PAT_QUESTIONS.filter((question) => question.topicId === "pat-wave" && question.difficulty === 3);
+    expect(hardWaveQuestions).toHaveLength(5);
+    expect(hardWaveQuestions.every((question) => question.id.startsWith("pat-wave-cal-"))).toBe(true);
+  });
+});
+
+describe("TMUA reasoning round two", () => {
+  it("adds five medium-to-hard questions to every TMUA topic", () => {
+    expect(TMUA_REASONING_ROUND_2).toHaveLength(25);
+    for (const topicId of ["tmua-algebra", "tmua-calc", "tmua-stats", "tmua-logic", "tmua-discrete"]) {
+      const questions = TMUA_REASONING_ROUND_2.filter((question) => question.topicId === topicId);
+      expect(questions, `${topicId}: wrong batch size`).toHaveLength(5);
+      expect(questions.every((question) => question.difficulty >= 2)).toBe(true);
+    }
+  });
+
+  it("keeps the independently checked answer key stable", () => {
+    expect(TMUA_REASONING_ROUND_2.map((question) => question.answer).join("")).toBe(
+      "CBCDC" + "CCBCC" + "CDBCD" + "CDCCA" + "DCCDD",
+    );
+  });
+});
+
+describe("TMUA official specification coverage", () => {
+  it("adds one full paper-equivalent across the two missing modules", () => {
+    expect(TMUA_SPEC_COVERAGE).toHaveLength(40);
+    expect(TMUA_SPEC_COVERAGE.filter((question) => question.topicId === "tmua-geometry")).toHaveLength(20);
+    expect(TMUA_SPEC_COVERAGE.filter((question) => question.topicId === "tmua-number")).toHaveLength(20);
+  });
+
+  it("covers all difficulty levels in both new modules", () => {
+    for (const topicId of ["tmua-geometry", "tmua-number"]) {
+      const levels = new Set(TMUA_SPEC_COVERAGE
+        .filter((question) => question.topicId === topicId)
+        .map((question) => question.difficulty));
+      expect(levels, `${topicId}: missing difficulty`).toEqual(new Set([1, 2, 3]));
+    }
+  });
+
+  it("repairs the missing D and E answer positions without making any option impossible", () => {
+    const counts = TMUA_QUESTIONS.reduce<Record<string, number>>((acc, question) => {
+      acc[question.answer] = (acc[question.answer] ?? 0) + 1;
+      return acc;
+    }, {});
+    for (const answer of ["A", "B", "C", "D", "E"]) {
+      expect(counts[answer], `${answer}: answer position under-represented`).toBeGreaterThanOrEqual(20);
+    }
+  });
+
+  it("keeps every TMUA module practice-ready", () => {
+    const tmua = getTestById("tmua");
+    expect(tmua).toBeDefined();
+    for (const topic of tmua!.topics) {
+      const questions = TMUA_QUESTIONS.filter((question) => question.topicId === topic.id);
+      expect(questions.length, `${topic.id}: insufficient practice`).toBeGreaterThanOrEqual(20);
+      expect(new Set(questions.map((question) => question.difficulty)), `${topic.id}: missing difficulty`).toEqual(new Set([1, 2, 3]));
+    }
+  });
+});
+
+describe("TMUA advanced round three", () => {
+  const topicIds = [
+    "tmua-algebra",
+    "tmua-calc",
+    "tmua-stats",
+    "tmua-logic",
+    "tmua-discrete",
+    "tmua-geometry",
+    "tmua-number",
+  ];
+
+  it("adds ten medium-to-hard questions to every TMUA module", () => {
+    expect(TMUA_ADVANCED_ROUND_3).toHaveLength(70);
+    for (const topicId of topicIds) {
+      const questions = TMUA_ADVANCED_ROUND_3.filter((question) => question.topicId === topicId);
+      expect(questions, topicId).toHaveLength(10);
+      expect(questions.every((question) => question.difficulty >= 2)).toBe(true);
+      expect(questions.some((question) => question.difficulty === 3)).toBe(true);
+    }
+  });
+
+  it("keeps option keys continuous and every answer selectable", () => {
+    for (const question of TMUA_ADVANCED_ROUND_3) {
+      const keys = question.options.map((option) => option.key);
+      expect(keys, question.id).toEqual(keys.map((_, index) => String.fromCharCode(65 + index)));
+      expect(keys, question.id).toContain(question.answer);
+      expect(question.solution.trim().length, question.id).toBeGreaterThan(20);
+    }
+  });
+});
+
+describe("BPhO fourth long-question batch", () => {
+  it("covers every BPhO topic exactly once", () => {
+    expect(BPHO4_LONG_SAMPLE).toHaveLength(5);
+    expect(BPHO4_LONG_SAMPLE.map((q) => q.topicId).sort()).toEqual(
+      ["bpho-mechanics", "bpho-waves", "bpho-em", "bpho-thermal", "bpho-modern"].sort()
+    );
+  });
+
+  it("contains five 25-mark staged problems", () => {
+    for (const question of BPHO4_LONG_SAMPLE) {
+      expect(question.totalMarks).toBe(25);
+      expect(question.parts.length).toBeGreaterThanOrEqual(5);
+      expect(question.parts.reduce((sum, part) => sum + part.marks, 0)).toBe(25);
+    }
+  });
+});
+
+describe("BPhO fifth long-question batch", () => {
+  it("covers every BPhO topic exactly once", () => {
+    expect(BPHO5_LONG_SAMPLE).toHaveLength(5);
+    expect(BPHO5_LONG_SAMPLE.map((q) => q.topicId).sort()).toEqual(
+      ["bpho-mechanics", "bpho-waves", "bpho-em", "bpho-thermal", "bpho-modern"].sort()
+    );
+  });
+
+  it("contains five 25-mark staged problems", () => {
+    for (const question of BPHO5_LONG_SAMPLE) {
+      expect(question.totalMarks).toBe(25);
+      expect(question.parts.length).toBeGreaterThanOrEqual(5);
+      expect(question.parts.reduce((sum, part) => sum + part.marks, 0)).toBe(25);
+    }
+  });
+});
+
+describe("BMO number theory and geometry top-up", () => {
+  it("adds ten questions to each under-represented topic", () => {
+    expect(BMO_SMC_TOPUP).toHaveLength(20);
+    expect(BMO_SMC_TOPUP.filter((q) => q.topicId === "bmo-number")).toHaveLength(10);
+    expect(BMO_SMC_TOPUP.filter((q) => q.topicId === "bmo-geometry")).toHaveLength(10);
+  });
+
+  it("contains a deliberate difficulty spread", () => {
+    const counts = BMO_SMC_TOPUP.reduce<Record<number, number>>((acc, question) => {
+      acc[question.difficulty] = (acc[question.difficulty] ?? 0) + 1;
+      return acc;
+    }, {});
+    expect(counts[1]).toBeGreaterThanOrEqual(3);
+    expect(counts[2]).toBeGreaterThanOrEqual(8);
+    expect(counts[3]).toBeGreaterThanOrEqual(5);
+  });
+});
+
+describe("BMO number theory and geometry short proofs", () => {
+  it("adds twelve typed short proofs to each target topic", () => {
+    expect(BMO_SHORT_PROOFS).toHaveLength(24);
+    expect(BMO_SHORT_PROOFS.filter((q) => q.topicId === "bmo-number")).toHaveLength(12);
+    expect(BMO_SHORT_PROOFS.filter((q) => q.topicId === "bmo-geometry")).toHaveLength(12);
+  });
+
+  it("keeps every problem within the 4-6 mark bridge range", () => {
+    for (const question of BMO_SHORT_PROOFS) {
+      expect(question.parts).toHaveLength(1);
+      expect(question.totalMarks).toBeGreaterThanOrEqual(4);
+      expect(question.totalMarks).toBeLessThanOrEqual(6);
+      expect(question.parts[0].marks).toBe(question.totalMarks);
+    }
+  });
+
+  it("covers all three difficulty levels in both target topics", () => {
+    for (const topicId of ["bmo-number", "bmo-geometry"]) {
+      const difficulties = BMO_SHORT_PROOFS
+        .filter((question) => question.topicId === topicId)
+        .map((question) => question.difficulty);
+      expect(new Set(difficulties)).toEqual(new Set([1, 2, 3]));
+    }
   });
 });
 
@@ -72,8 +294,16 @@ for (const [name, bank] of Object.entries(banks)) {
           expect(q.totalMarks, `${q.id}: non-positive totalMarks`).toBeGreaterThan(0);
           expect(q.parts.length, `${q.id}: no parts`).toBeGreaterThan(0);
           expect((q.fullSolution ?? "").length, `${q.id}: empty fullSolution`).toBeGreaterThan(0);
+          expect(
+            q.parts.reduce((sum, part) => sum + part.marks, 0),
+            `${q.id}: part marks do not add up to totalMarks`
+          ).toBe(q.totalMarks);
           for (const part of q.parts) {
             expect((part.question ?? "").length, `${q.id}: empty part question`).toBeGreaterThan(0);
+            expect(
+              (part.solutionOutline ?? "").length,
+              `${q.id}: empty part solution outline`
+            ).toBeGreaterThan(0);
           }
         }
       }

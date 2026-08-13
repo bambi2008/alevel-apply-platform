@@ -1,57 +1,91 @@
-// 手机验证码存储（数据库版）。
-// 存于 PhoneCode 表，可跨进程重启与多实例存活。
-// 逻辑不变：6 位码、5 分钟有效、60 秒重发冷却、一次性消费。
-
+import { createHmac, randomInt, timingSafeEqual } from "node:crypto";
 import { db } from "@/lib/db";
 
-const CODE_TTL_MS = 5 * 60 * 1000; // 验证码有效期 5 分钟
-const RESEND_COOLDOWN_MS = 60 * 1000; // 重发冷却 60 秒
+const CODE_TTL_MS = 5 * 60_000;
+const RESEND_COOLDOWN_MS = 60_000;
 
-/** 生成 6 位数字验证码（纯函数）。 */
 export function generateCode(): string {
-  return String(Math.floor(100000 + Math.random() * 900000));
+  return String(randomInt(100000, 1_000_000));
 }
 
-/** 是否可以发送（冷却期内不可重发）。 */
+function codePepper(): string {
+  const pepper = process.env.PHONE_CODE_PEPPER || process.env.AUTH_SECRET;
+  if (pepper) return pepper;
+  if (process.env.NODE_ENV === "production") {
+    throw new Error("PHONE_CODE_PEPPER or AUTH_SECRET is required");
+  }
+  return "development-only-phone-code-pepper";
+}
+
+export function hashPhoneCode(phone: string, code: string): string {
+  return createHmac("sha256", codePepper())
+    .update(`${phone}:${code}`, "utf8")
+    .digest("hex");
+}
+
+function equalHash(first: string, second: string): boolean {
+  const a = Buffer.from(first, "hex");
+  const b = Buffer.from(second, "hex");
+  return a.length === b.length && timingSafeEqual(a, b);
+}
+
 export async function canSend(phone: string): Promise<boolean> {
-  const e = await db.phoneCode.findUnique({ where: { phone } });
-  if (!e) return true;
-  return Date.now() - e.lastSentAt.getTime() >= RESEND_COOLDOWN_MS;
+  const entry = await db.phoneCode.findUnique({ where: { phone } });
+  return !entry || Date.now() - entry.lastSentAt.getTime() >= RESEND_COOLDOWN_MS;
 }
 
-/** 距离可再次发送还需多少秒（0 表示现在即可）。 */
 export async function cooldownRemaining(phone: string): Promise<number> {
-  const e = await db.phoneCode.findUnique({ where: { phone } });
-  if (!e) return 0;
-  const left = RESEND_COOLDOWN_MS - (Date.now() - e.lastSentAt.getTime());
-  return left > 0 ? Math.ceil(left / 1000) : 0;
+  const entry = await db.phoneCode.findUnique({ where: { phone } });
+  if (!entry) return 0;
+  const remaining = RESEND_COOLDOWN_MS - (Date.now() - entry.lastSentAt.getTime());
+  return remaining > 0 ? Math.ceil(remaining / 1000) : 0;
 }
 
-/** 保存新验证码（重发即覆盖）。 */
 export async function saveCode(phone: string, code: string): Promise<void> {
   const now = new Date();
-  const expiresAt = new Date(now.getTime() + CODE_TTL_MS);
+  const codeHash = hashPhoneCode(phone, code);
   await db.phoneCode.upsert({
     where: { phone },
-    update: { code, expiresAt, lastSentAt: now },
-    create: { phone, code, expiresAt, lastSentAt: now },
+    update: {
+      codeHash,
+      attempts: 0,
+      expiresAt: new Date(now.getTime() + CODE_TTL_MS),
+      lastSentAt: now,
+    },
+    create: {
+      phone,
+      codeHash,
+      attempts: 0,
+      expiresAt: new Date(now.getTime() + CODE_TTL_MS),
+      lastSentAt: now,
+    },
   });
 }
 
-/**
- * 校验验证码。成功即消费（一次性删除）。
- * 返回 true 表示通过。
- */
 export async function verifyCode(phone: string, code: string): Promise<boolean> {
-  const e = await db.phoneCode.findUnique({ where: { phone } });
-  if (!e) return false;
-  // 过期或不匹配
-  if (Date.now() > e.expiresAt.getTime()) {
+  const entry = await db.phoneCode.findUnique({ where: { phone } });
+  if (!entry) return false;
+  if (Date.now() > entry.expiresAt.getTime() || entry.attempts >= 5) {
     await db.phoneCode.delete({ where: { phone } }).catch(() => {});
     return false;
   }
-  if (e.code !== code) return false;
-  // 一次性消费
-  await db.phoneCode.delete({ where: { phone } }).catch(() => {});
-  return true;
+
+  const expected = hashPhoneCode(phone, code);
+  if (!equalHash(entry.codeHash, expected)) {
+    await db.phoneCode.update({
+      where: { phone },
+      data: { attempts: { increment: 1 } },
+    }).catch(() => {});
+    return false;
+  }
+
+  const consumed = await db.phoneCode.deleteMany({
+    where: {
+      phone,
+      codeHash: expected,
+      expiresAt: { gt: new Date() },
+      attempts: { lt: 5 },
+    },
+  });
+  return consumed.count === 1;
 }

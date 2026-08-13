@@ -2,8 +2,10 @@
 
 export type QuestionDifficulty = 1 | 2 | 3;  // 1=基础, 2=中等, 3=挑战
 
+export type MCQOptionKey = "A" | "B" | "C" | "D" | "E" | "F" | "G" | "H";
+
 export interface MCQOption {
-  key: "A" | "B" | "C" | "D" | "E";
+  key: MCQOptionKey;
   text: string;  // supports $...$ LaTeX
 }
 
@@ -17,9 +19,19 @@ export interface MCQQuestion {
   marks: number;
   question: string;   // LaTeX: $ inline, $$ display
   options: MCQOption[];
-  answer: "A" | "B" | "C" | "D" | "E";
+  answer: MCQOptionKey;
   solution: string;   // step-by-step solution in LaTeX
+  optionExplanations?: Partial<Record<MCQOptionKey, string>>;
   hint?: string;
+  context?: string;
+  responseMode?: "single" | "matrix";
+  statements?: Array<{ id: string; text: string }>;
+  matrixAnswer?: Array<"yes" | "no">;
+  scoringMode?: "exact" | "adjacent";
+  /** Original practice audio rendered by the browser; the script is hidden during the exam. */
+  audioSectionId?: string;
+  audioTitle?: string;
+  audioScript?: string;
 }
 
 /** 大题（MAT Part B, STEP 等）—— 需 AI 分步评分 */
@@ -29,6 +41,18 @@ export interface LongPart {
   question: string; // LaTeX
   solutionOutline: string;  // key steps for Claude grader
   hint?: string;
+}
+
+export interface EssayPrompt {
+  id: string;
+  title: string;
+}
+
+export interface EssayRubricDimension {
+  id: string;
+  label: string;
+  maxMarks: number;
+  description: string;
 }
 
 export interface LongQuestion {
@@ -41,6 +65,11 @@ export interface LongQuestion {
   context?: string;   // shared context/preamble before parts
   parts: LongPart[];
   fullSolution: string;  // complete model solution
+  responseKind?: "structured" | "essay";
+  essayPrompts?: EssayPrompt[];
+  recommendedWords?: [number, number];
+  maxWords?: number;
+  rubricDimensions?: EssayRubricDimension[];
 }
 
 export type Question = MCQQuestion | LongQuestion;
@@ -50,7 +79,7 @@ export interface AnswerRecord {
   questionId: string;
   type: "mcq" | "long";
   // MCQ
-  chosenOption?: "A" | "B" | "C" | "D" | "E";
+  chosenOption?: MCQOptionKey;
   correct?: boolean;
   // Long
   studentWork?: string;

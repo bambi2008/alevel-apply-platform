@@ -20,24 +20,133 @@ enum Role {
 }
 
 model User {
-  id           String   @id @default(cuid())
-  phone        String?  @unique
-  email        String?  @unique
-  passwordHash String?
-  role         Role     @default(STUDENT)
-  locale       String   @default("zh-CN")
-  profile      StudentProfile?
-  consents     Consent[]
-  documents    Document[]
-  studentProjects StudentProject[]
-  applicationPreps ApplicationPrep[]
-  auditLogs    AuditLog[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  id                     String                  @id @default(cuid())
+  phone                  String?                 @unique
+  email                  String?                 @unique
+  passwordHash           String?
+  role                   Role                    @default(STUDENT)
+  locale                 String                  @default("zh-CN")
+  profile                StudentProfile?
+  consents               Consent[]
+  documents              Document[]
+  studentProjects        StudentProject[]
+  applicationPreps       ApplicationPrep[]
+  auditLogs              AuditLog[]
+  calibrationDecisions   CalibrationDecision[]
+  notifications          Notification[]
+  notificationPreference NotificationPreference?
+  passwordResetTokens    PasswordResetToken[]
+  authSessions           AuthSession[]
+  aiEvaluations          AiEvaluation[]
+  authoredQuestions      QuestionDraftRecord[]   @relation("QuestionDraftAuthor")
+  subjectReviews         QuestionDraftRecord[]   @relation("QuestionDraftSubjectReviewer")
+  teachingReviews        QuestionDraftRecord[]   @relation("QuestionDraftTeachingReviewer")
+  betaInvite             BetaInvite?
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+}
+
+enum BetaInviteStatus {
+  AVAILABLE
+  USED
+  REVOKED
+}
+
+model BetaInvite {
+  id           String           @id @default(cuid())
+  codeHash     String           @unique
+  email        String
+  cohort       String           @default("beta-2026-1")
+  status       BetaInviteStatus @default(AVAILABLE)
+  usedByUserId String?          @unique
+  usedBy       User?            @relation(fields: [usedByUserId], references: [id], onDelete: SetNull)
+  usedAt       DateTime?
+  expiresAt    DateTime?
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+
+  @@unique([cohort, email])
+  @@index([cohort, status])
+  @@index([email, status])
+}
+
+model AuthSession {
+  id            String    @id @default(cuid())
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash     String    @unique
+  expiresAt     DateTime
+  lastSeenAt    DateTime  @default(now())
+  revokedAt     DateTime?
+  userAgentHash String?
+  ipHash        String?
+  createdAt     DateTime  @default(now())
+
+  @@index([userId, revokedAt, expiresAt])
+  @@index([expiresAt])
+}
+
+model RateLimitBucket {
+  key       String   @id
+  count     Int
+  resetAt   DateTime
+  updatedAt DateTime @updatedAt
+
+  @@index([resetAt])
+}
+
+enum NotificationCategory {
+  STUDY
+  APPLICATION
+  DEADLINE
+  REPORT
+  SYSTEM
+}
+
+enum NotificationPriority {
+  INFO
+  IMPORTANT
+  URGENT
+}
+
+model Notification {
+  id           String               @id @default(cuid())
+  userId       String
+  user         User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  sourceKey    String
+  category     NotificationCategory
+  priority     NotificationPriority @default(INFO)
+  title        String
+  body         String
+  href         String?
+  scheduledFor DateTime             @default(now())
+  readAt       DateTime?
+  dismissedAt  DateTime?
+  expiresAt    DateTime?
+  createdAt    DateTime             @default(now())
+  updatedAt    DateTime             @updatedAt
+
+  @@unique([userId, sourceKey])
+  @@index([userId, dismissedAt, scheduledFor])
+  @@index([userId, readAt])
+}
+
+model NotificationPreference {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  studyEnabled        Boolean  @default(true)
+  applicationEnabled  Boolean  @default(true)
+  deadlineEnabled     Boolean  @default(true)
+  weeklyReportEnabled Boolean  @default(true)
+  emailDigestEnabled  Boolean  @default(false)
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
 }
 
 enum ConsentType {
   PRIVACY_PIPL
+  TERMS
   CROSS_BORDER
   GUARDIAN
   MARKETING
@@ -61,26 +170,161 @@ enum Region {
 }
 
 model StudentProfile {
-  id             String              @id @default(cuid())
-  userId         String              @unique
-  user           User                @relation(fields: [userId], references: [id], onDelete: Cascade)
-  fullName       String?
-  school         String?
-  isMinor        Boolean             @default(false)
-  intakeYear     Int?
-  targetRegions  Region[]
-  intendedMajors String[]
-  budgetNote     String?
-  guideProgress  Json? // 申请指南清单进度：ModuleProgress[]
-  subjects       ALevelSubject[]
-  testScores     TestScore[]
-  applications   Application[]
-  statements     PersonalStatement[]
-  tasks          Task[]
-  examSessions   ExamSession[]
+  id              String              @id @default(cuid())
+  userId          String              @unique
+  user            User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  fullName        String?
+  school          String?
+  isMinor         Boolean             @default(false)
+  intakeYear      Int?
+  targetRegions   Region[]
+  intendedMajors  String[]
+  budgetNote      String?
+  guideProgress   Json? // 申请指南清单进度：ModuleProgress[]
+  subjects        ALevelSubject[]
+  testScores      TestScore[]
+  applications    Application[]
+  statements      PersonalStatement[]
+  tasks           Task[]
+  studyGoals      StudyGoal[]
+  studyTasks      StudyTask[]
+  shortlistItems  ShortlistItem[]
+  examSessions    ExamSession[]
   backgroundItems BackgroundItem[]
-  createdAt      DateTime            @default(now())
-  updatedAt      DateTime            @updatedAt
+  betaParticipant BetaParticipant?
+  progress        ProgressSnapshot[]
+  learningEvents  LearningEvent[]
+  learningRecords LearningRecord[]
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+}
+
+enum BetaParticipantStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  WITHDRAWN
+}
+
+model BetaParticipant {
+  id                    String                @id @default(cuid())
+  studentId             String                @unique
+  student               StudentProfile        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  cohort                String                @default("beta-2026-1")
+  status                BetaParticipantStatus @default(ACTIVE)
+  source                String?
+  onboardingCompletedAt DateTime?
+  lastActiveAt          DateTime              @default(now())
+  notes                 String?
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+
+  @@index([cohort, status])
+  @@index([lastActiveAt])
+}
+
+enum ProgressKind {
+  OBJECTIVE_EXAM
+  WRITTEN_EXAM
+  INTERVIEW_DRILL
+  INTERVIEW_PAPER
+  CAMBRIDGE_ASSESSMENT
+  IELTS_SPEAKING
+}
+
+model ProgressSnapshot {
+  id         String         @id @default(cuid())
+  studentId  String
+  student    StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  kind       ProgressKind
+  resourceId String
+  payload    Json
+  startedAt  DateTime?
+  expiresAt  DateTime
+  createdAt  DateTime       @default(now())
+  updatedAt  DateTime       @updatedAt
+
+  @@unique([studentId, kind, resourceId])
+  @@index([studentId, updatedAt])
+  @@index([expiresAt])
+}
+
+enum LearningEventType {
+  REGISTERED
+  PROFILE_COMPLETED
+  DIAGNOSTIC_STARTED
+  DIAGNOSTIC_COMPLETED
+  PRACTICE_STARTED
+  PRACTICE_COMPLETED
+  MOCK_STARTED
+  MOCK_COMPLETED
+  REMEDIATION_STARTED
+  REMEDIATION_COMPLETED
+  INTERVIEW_STARTED
+  INTERVIEW_COMPLETED
+  ACTIVE_DAY
+}
+
+model LearningEvent {
+  id         String            @id @default(cuid())
+  studentId  String
+  student    StudentProfile    @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  type       LearningEventType
+  eventKey   String            @unique
+  testId     String?
+  resourceId String?
+  sessionId  String?
+  score      Float?
+  maxScore   Float?
+  metadata   Json?
+  occurredAt DateTime          @default(now())
+  createdAt  DateTime          @default(now())
+
+  @@index([studentId, occurredAt])
+  @@index([type, occurredAt])
+  @@index([testId, type])
+}
+
+enum LearningRecordKind {
+  INTERVIEW_DRILL
+  INTERVIEW_PAPER
+  CAMBRIDGE_ASSESSMENT
+  IELTS_SPEAKING
+}
+
+model LearningRecord {
+  id             String             @id @default(cuid())
+  studentId      String
+  student        StudentProfile     @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  kind           LearningRecordKind
+  resourceId     String
+  subject        String?
+  score          Float?
+  maxScore       Float?
+  weakestSkillId String?
+  payload        Json?
+  attemptKey     String             @unique
+  completedAt    DateTime           @default(now())
+  createdAt      DateTime           @default(now())
+
+  @@index([studentId, kind, completedAt])
+  @@index([resourceId, completedAt])
+}
+
+model ShortlistItem {
+  id        String         @id @default(cuid())
+  studentId String
+  student   StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  programId String
+  program   Program        @relation(fields: [programId], references: [id], onDelete: Cascade)
+  note      String?
+  priority  Int            @default(0)
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+
+  @@unique([studentId, programId])
+  @@index([studentId, priority])
+  @@index([programId])
 }
 
 enum GradeKind {
@@ -120,19 +364,19 @@ enum AppSystem {
 }
 
 model University {
-  id                  String     @id @default(cuid())
-  name                String // 英文全称
-  nameZh              String?
-  region              Region // UK / HK
-  city                String?
-  league              String? // Russell Group / HK UGC 8 ...
-  qsRankWorld         Int?
-  qsRankSubject       Json? // { "Computer Science": 5, ... }
-  ucasCode            String? // 单字母院校代码（UK）
-  ucasInstitutionCode String? // 四位字母代码
-  website             String?
-  admissionsUrl       String?
-  logoUrl             String?
+  id                   String     @id @default(cuid())
+  name                 String // 英文全称
+  nameZh               String?
+  region               Region // UK / HK
+  city                 String?
+  league               String? // Russell Group / HK UGC 8 ...
+  qsRankWorld          Int?
+  qsRankSubject        Json? // { "Computer Science": 5, ... }
+  ucasCode             String? // 单字母院校代码（UK）
+  ucasInstitutionCode  String? // 四位字母代码
+  website              String?
+  admissionsUrl        String?
+  logoUrl              String?
   // 申请系统
   applicationSystem    AppSystem?
   applicationPortalUrl String?
@@ -140,14 +384,14 @@ model University {
   applicationFeeHkd    Int?
   maxChoices           Int? // UK=5；HK 无限制可留空
   // 截止与时间
-  openDate          DateTime?
-  deadlineEarly     DateTime? // 牛剑 / 医学等
-  deadlineMain      DateTime?
-  deadlineLate      DateTime?
-  resultReleaseFrom DateTime?
-  resultReleaseTo   DateTime?
-  ranking           Json?
-  programs          Program[]
+  openDate             DateTime?
+  deadlineEarly        DateTime? // 牛剑 / 医学等
+  deadlineMain         DateTime?
+  deadlineLate         DateTime?
+  resultReleaseFrom    DateTime?
+  resultReleaseTo      DateTime?
+  ranking              Json?
+  programs             Program[]
 
   @@index([region])
 }
@@ -223,6 +467,7 @@ model Program {
 
   requirementsText String?
   applications     Application[]
+  shortlistItems   ShortlistItem[]
 
   @@index([universityId])
   @@index([applyRoute])
@@ -246,23 +491,85 @@ enum AppStatus {
 }
 
 model Application {
-  id          String                @id @default(cuid())
+  id          String                  @id @default(cuid())
   studentId   String
-  student     StudentProfile        @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  student     StudentProfile          @relation(fields: [studentId], references: [id], onDelete: Cascade)
   programId   String
-  program     Program               @relation(fields: [programId], references: [id])
+  program     Program                 @relation(fields: [programId], references: [id])
   choiceType  ChoiceType
-  status      AppStatus             @default(PLANNING)
+  status      AppStatus               @default(PLANNING)
   externalRef String?
   submittedAt DateTime?
   offer       Offer?
   documents   ApplicationDocument[]
   tasks       Task[]
-  createdAt   DateTime              @default(now())
-  updatedAt   DateTime              @updatedAt
+  materials   ApplicationMaterial[]
+  references  RecommendationRequest[]
+  feePaid     Boolean                 @default(false)
+  createdAt   DateTime                @default(now())
+  updatedAt   DateTime                @updatedAt
 
   @@index([studentId])
   @@index([programId])
+}
+
+enum MaterialStatus {
+  MISSING
+  READY
+  NEEDS_UPDATE
+  WAIVED
+}
+
+model ApplicationMaterial {
+  id                String                  @id @default(cuid())
+  applicationId     String
+  application       Application             @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  key               String
+  label             String
+  category          String
+  required          Boolean                 @default(true)
+  acceptedTypes     DocType[]
+  status            MaterialStatus          @default(MISSING)
+  documentId        String?
+  document          Document?               @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  dueDate           DateTime?
+  notes             String?
+  createdAt         DateTime                @default(now())
+  updatedAt         DateTime                @updatedAt
+  referenceRequests RecommendationRequest[]
+
+  @@unique([applicationId, key])
+  @@index([applicationId, status])
+  @@index([documentId])
+}
+
+enum RecommendationStatus {
+  PENDING
+  SUBMITTED
+  REVOKED
+  EXPIRED
+}
+
+model RecommendationRequest {
+  id               String               @id @default(cuid())
+  applicationId    String
+  application      Application          @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  materialId       String?
+  material         ApplicationMaterial? @relation(fields: [materialId], references: [id], onDelete: SetNull)
+  recommenderName  String
+  recommenderEmail String?
+  message          String?
+  tokenHash        String               @unique
+  status           RecommendationStatus @default(PENDING)
+  expiresAt        DateTime
+  documentId       String?
+  document         Document?            @relation(fields: [documentId], references: [id], onDelete: SetNull)
+  submittedAt      DateTime?
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  @@index([applicationId, status])
+  @@index([materialId])
 }
 
 enum OfferType {
@@ -302,18 +609,26 @@ enum DocType {
 }
 
 model Document {
-  id        String                @id @default(cuid())
-  ownerId   String
-  owner     User                  @relation(fields: [ownerId], references: [id], onDelete: Cascade)
-  type      DocType
-  fileKey   String // 存储适配器的 key
-  fileName  String
-  mime      String?
-  size      Int?
-  createdAt DateTime              @default(now())
-  links     ApplicationDocument[]
+  id              String                  @id @default(cuid())
+  ownerId         String
+  owner           User                    @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  type            DocType
+  fileKey         String // 存储适配器的 key
+  fileName        String
+  mime            String?
+  size            Int?
+  createdAt       DateTime                @default(now())
+  links           ApplicationDocument[]
+  version         Int                     @default(1)
+  validUntil      DateTime?
+  supersedesId    String?
+  supersedes      Document?               @relation("DocumentVersions", fields: [supersedesId], references: [id], onDelete: SetNull)
+  revisions       Document[]              @relation("DocumentVersions")
+  materials       ApplicationMaterial[]
+  recommendations RecommendationRequest[]
 
   @@index([ownerId])
+  @@index([supersedesId])
 }
 
 model ApplicationDocument {
@@ -337,11 +652,11 @@ model StudentProject {
   ownerId    String
   owner      User                 @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   title      String
-  field      String               // 专业领域（ProjectField 值或自由文本）
+  field      String // 专业领域（ProjectField 值或自由文本）
   summary    String?
-  ideaInputs Json                 // 学生填写的原始想法（研究问题/动机/方法/变量）
-  structure  Json?                // AI 生成并经学生编辑的课题结构（阶段/指标/反思/psUse）
-  progress   Json?                // 学生进度（每阶段提交/文件/反思笔记）
+  ideaInputs Json // 学生填写的原始想法（研究问题/动机/方法/变量）
+  structure  Json? // AI 生成并经学生编辑的课题结构（阶段/指标/反思/psUse）
+  progress   Json? // 学生进度（每阶段提交/文件/反思笔记）
   status     StudentProjectStatus @default(DRAFT)
   createdAt  DateTime             @default(now())
   updatedAt  DateTime             @updatedAt
@@ -360,7 +675,7 @@ model ApplicationPrep {
   ownerId   String
   owner     User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
   region    AppPrepRegion
-  data      Json          // { sectionId: { fields..., done: bool } } 学生准备好的各栏内容
+  data      Json // { sectionId: { fields..., done: bool } } 学生准备好的各栏内容
   updatedAt DateTime      @updatedAt
   createdAt DateTime      @default(now())
 
@@ -423,6 +738,61 @@ model Task {
   @@index([applicationId])
 }
 
+enum StudyTaskStatus {
+  PLANNED
+  DONE
+  SKIPPED
+}
+
+enum StudyTaskKind {
+  DIAGNOSTIC
+  REVIEW
+  FOCUS
+  MOCK
+}
+
+model StudyGoal {
+  id            String         @id @default(cuid())
+  studentId     String
+  student       StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  testId        String
+  targetDate    DateTime
+  targetLevel   String?
+  weeklyMinutes Int            @default(180)
+  active        Boolean        @default(true)
+  tasks         StudyTask[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@unique([studentId, testId])
+  @@index([studentId, active])
+}
+
+model StudyTask {
+  id               String          @id @default(cuid())
+  studentId        String
+  student          StudentProfile  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  goalId           String?
+  goal             StudyGoal?      @relation(fields: [goalId], references: [id], onDelete: SetNull)
+  testId           String
+  sourceKey        String
+  kind             StudyTaskKind
+  title            String
+  detail           String?
+  href             String
+  topicId          String?
+  scheduledFor     DateTime
+  estimatedMinutes Int
+  status           StudyTaskStatus @default(PLANNED)
+  completedAt      DateTime?
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+
+  @@unique([studentId, sourceKey, scheduledFor])
+  @@index([studentId, scheduledFor, status])
+  @@index([goalId])
+}
+
 // ---------- 内容 / 合规 ----------
 model ContentArticle {
   id        String   @id @default(cuid())
@@ -457,11 +827,16 @@ model ExamSession {
   id          String         @id @default(cuid())
   studentId   String
   student     StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
-  testId      String         // "mat" | "step" | "engaa"
-  mode        String         // "practice" | "mock"
+  testId      String // "mat" | "step" | "engaa"
+  mode        String // "practice" | "mock"
   totalEarned Int
   totalMax    Int
   timeUsedSec Int?
+  paperId     String?
+  presetId    String?
+  startedAt   DateTime?
+  completedAt DateTime       @default(now())
+  clientMeta  Json?
   answers     ExamAnswer[]
   createdAt   DateTime       @default(now())
 
@@ -474,14 +849,119 @@ model ExamAnswer {
   sessionId  String
   session    ExamSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   questionId String
-  type       String      // "mcq" | "long"
-  selected   String?     // MCQ: 所选选项
-  work       Json?       // 大题: { "(i)": "...", ... }
+  type       String // "mcq" | "long"
+  selected   String? // MCQ: 所选选项
+  work       Json? // 大题: { "(i)": "...", ... }
   earned     Int
   max        Int
-  feedback   Json?       // AI 评分 perPart 数组
+  feedback   Json? // AI 评分 perPart 数组
+
+  timeSpentSec  Int?
+  answerChanges Int     @default(0)
+  visits        Int     @default(1)
+  flagged       Boolean @default(false)
+  firstSelected String?
 
   @@index([sessionId])
+}
+
+enum CalibrationDecisionStatus {
+  APPROVED
+  DISMISSED
+  ROLLED_BACK
+}
+
+model CalibrationDecision {
+  id             String                    @id @default(cuid())
+  questionId     String
+  testId         String
+  fromDifficulty Int
+  toDifficulty   Int
+  status         CalibrationDecisionStatus
+  metrics        Json
+  note           String?
+  actorId        String?
+  actor          User?                     @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  createdAt      DateTime                  @default(now())
+  updatedAt      DateTime                  @updatedAt
+
+  @@index([questionId, createdAt])
+  @@index([testId, status])
+}
+
+enum AiEvaluationStatus {
+  RUNNING
+  SUCCEEDED
+  FAILED
+  TIMED_OUT
+}
+
+model AiEvaluation {
+  id                  String             @id @default(cuid())
+  userId              String
+  user                User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  route               String
+  purpose             String
+  provider            String
+  model               String
+  status              AiEvaluationStatus @default(RUNNING)
+  requestHash         String
+  inputChars          Int
+  outputChars         Int                @default(0)
+  promptTokens        Int?
+  completionTokens    Int?
+  totalTokens         Int?
+  estimatedCostMicros Int?
+  latencyMs           Int?
+  confidence          String?
+  agreementRate       Int?
+  scoreDelta          Int?
+  errorCode           String?
+  createdAt           DateTime           @default(now())
+  updatedAt           DateTime           @updatedAt
+
+  @@index([userId, createdAt])
+  @@index([route, status, createdAt])
+  @@index([requestHash, createdAt])
+}
+
+enum QuestionWorkflowStage {
+  DRAFT
+  SUBJECT_REVIEW
+  TEACHING_REVIEW
+  APPROVED
+  RETIRED
+}
+
+model QuestionDraftRecord {
+  id                 String                @id
+  questionId         String
+  testId             String
+  topicId            String
+  version            Int
+  stage              QuestionWorkflowStage @default(DRAFT)
+  contentHash        String
+  payload            Json
+  sourceType         String
+  sourceTitle        String
+  sourceUrl          String?
+  rightsStatus       String
+  authorId           String
+  author             User                  @relation("QuestionDraftAuthor", fields: [authorId], references: [id], onDelete: Restrict)
+  subjectReviewerId  String?
+  subjectReviewer    User?                 @relation("QuestionDraftSubjectReviewer", fields: [subjectReviewerId], references: [id], onDelete: SetNull)
+  subjectReviewedAt  DateTime?
+  teachingReviewerId String?
+  teachingReviewer   User?                 @relation("QuestionDraftTeachingReviewer", fields: [teachingReviewerId], references: [id], onDelete: SetNull)
+  teachingReviewedAt DateTime?
+  publishedAt        DateTime?
+  createdAt          DateTime              @default(now())
+  updatedAt          DateTime              @updatedAt
+
+  @@unique([questionId, version])
+  @@index([testId, stage])
+  @@index([rightsStatus, stage])
+  @@index([updatedAt])
 }
 
 // ---------- Phase 2 预留（暂不建表）----------
@@ -489,7 +969,6 @@ model ExamAnswer {
 // model Booking { ... }           // 预约
 // model Order / Payment { ... }   // 支付订单
 // model Reference { ... }         // 推荐信
-// model Notification { ... }      // 通知记录
 // model Embedding { ... }         // pgvector 向量（RAG）
 
 model BackgroundItem {
@@ -510,9 +989,21 @@ model BackgroundItem {
 
 model PhoneCode {
   phone      String   @id
-  code       String
+  codeHash   String
+  attempts   Int      @default(0)
   expiresAt  DateTime
   lastSentAt DateTime
   createdAt  DateTime @default(now())
 }
 
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String   @unique
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
+}

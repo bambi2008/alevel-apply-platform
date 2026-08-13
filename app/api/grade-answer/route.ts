@@ -1,156 +1,239 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
+import { createHash } from "node:crypto";
+import { requireAiAccess } from "@/lib/security/ai-route";
+import { db } from "@/lib/db";
+import {
+  buildEmptyGradeResponse,
+  buildGradeResponse,
+  isBlankSubmission,
+  needsAdjudication,
+  normalizeGradePass,
+  type GradePass,
+  type GradeRequest,
+  type GradeResponse,
+  type RawGradePass,
+} from "@/lib/tests/grading";
+
+export type { GradeRequest, GradeResponse } from "@/lib/tests/grading";
 
 export const runtime = "nodejs";
 
-const client = new OpenAI({
-  apiKey: process.env.DEEPSEEK_API_KEY,
-  baseURL: "https://api.deepseek.com",
-});
+const STRUCTURED_SYSTEM = `You are an expert examiner for UK admissions tests and academic olympiads.
+Grade typed solutions against the supplied mark scheme. Award method and intermediate-result marks, accept valid alternative methods, and never award unsupported claims. For every awarded mark, identify the criterion and quote a short exact phrase from the candidate response when possible. Write feedback in Chinese. Return valid JSON only.`;
 
-export interface GradeRequest {
-  questionId: string;
-  testId: string;
-  questionContext?: string;
-  parts: {
-    label: string;
-    question: string;
-    marks: number;
-    solutionOutline: string;
-    studentWork: string;
-  }[];
-  fullSolution: string;
-}
+const ESSAY_SYSTEM = `You are an expert formative assessor for LNAT Section B and TARA Writing.
+Apply each supplied rubric dimension independently. Judge reasoning and expression rather than agreement with the viewpoint. Identify concise evidence from the candidate's own writing. Write feedback in Chinese and return valid JSON only.`;
 
-export interface GradeResponse {
-  questionId: string;
-  totalEarned: number;
-  totalMax: number;
-  perPart: {
-    label: string;
-    earned: number;
-    max: number;
-    feedback: string;
-    keyStepsFound: string[];
-    keyStepsMissing: string[];
-  }[];
-  overallFeedback: string;
-  modelSolution: string;
-}
+const ADJUDICATOR_SYSTEM = `You are a senior examination adjudicator. Two independent examiners disagreed materially.
+Re-grade from the original candidate response and mark scheme. Use the prior reports only to locate the disagreement; do not average them mechanically. Award only evidenced marks, accept valid alternative methods, and return valid JSON only.`;
 
-const GRADE_SYSTEM_PROMPT = `You are an expert mathematics examiner for UK university admissions tests (MAT, STEP, ESAT).
-Your task is to grade a student's handwritten/typed solution against the marking scheme.
-
-Rules:
-1. Award marks for correct METHOD even if the final answer is wrong (method marks).
-2. Award marks for correct intermediate results (accuracy marks).
-3. Be fair but rigorous — do not award marks for unsupported claims or circular reasoning.
-4. Respond ONLY with valid JSON in the exact format specified. No markdown, no extra text.
-5. Write feedback in Chinese (中文). Be specific about what was correct and what was missing.
-6. If a student's approach is valid but different from the outline, award appropriate marks.`;
-
-const GRADE_PROMPT = (req: GradeRequest) => `
-Grade the following student solution. Question ID: ${req.questionId}
-
-${req.questionContext ? `Context: ${req.questionContext}\n` : ""}
-
-Parts to grade:
-${req.parts
-  .map(
-    (p) => `
-Part ${p.label} [${p.marks} marks]:
-Question: ${p.question}
-Key steps required: ${p.solutionOutline}
-Student's work:
+function gradingPrompt(request: GradeRequest, role: string) {
+  const parts = request.parts.map((part) => `
+Part ${part.label} [${part.marks} marks]
+Question: ${part.question}
+Marking criteria: ${part.solutionOutline}
+Candidate response:
 """
-${p.studentWork || "(no answer provided)"}
-"""
-`
-  )
-  .join("\n---\n")}
+${part.studentWork || "(no answer)"}
+"""`).join("\n---\n");
+  const rubric = (request.rubricDimensions ?? [])
+    .map((item) => `- ${item.id} | ${item.label} | ${item.maxMarks}: ${item.description}`)
+    .join("\n");
+  return `${role}
+Question ID: ${request.questionId}
+${request.questionContext ? `Context: ${request.questionContext}` : ""}
 
-Full model solution (for reference):
-${req.fullSolution}
+${parts}
+${rubric ? `\nRubric dimensions:\n${rubric}` : ""}
 
-Respond with ONLY this JSON structure (no other text, no markdown code blocks):
+Reference solution:
+${request.fullSolution}
+
+Return exactly:
 {
-  "perPart": [
-    {
-      "label": "(i)",
-      "earned": 3,
-      "max": 4,
-      "feedback": "中文反馈：步骤正确但最后一步有误...",
-      "keyStepsFound": ["因式定理验证", "多项式除法"],
-      "keyStepsMissing": ["完整因式分解"]
-    }
-  ],
-  "overallFeedback": "总体评价（中文）..."
+  "perPart": [{
+    "label": "(i)",
+    "earned": 3,
+    "feedback": "具体中文反馈",
+    "keyStepsFound": ["已完成的评分点"],
+    "keyStepsMissing": ["缺失的评分点"],
+    "evidence": [{
+      "criterion": "评分点",
+      "status": "met",
+      "quote": "候选答案中的简短原文",
+      "marksAwarded": 1
+    }]
+  }],
+  "dimensions": [{ "id": "rubric-id", "earned": 2, "feedback": "具体中文反馈" }],
+  "overallFeedback": "先总结判断，再给一条最值得执行的改进建议"
 }
-`;
+Evidence status must be one of met, partial, missing. Omit dimensions when no rubric is supplied.`;
+}
+
+function validRequest(value: unknown): value is GradeRequest {
+  if (!value || typeof value !== "object") return false;
+  const request = value as Partial<GradeRequest>;
+  return (
+    typeof request.questionId === "string"
+    && typeof request.testId === "string"
+    && typeof request.fullSolution === "string"
+    && Array.isArray(request.parts)
+    && request.parts.length > 0
+    && request.parts.every((part) =>
+      part
+      && typeof part.label === "string"
+      && typeof part.question === "string"
+      && Number.isInteger(part.marks)
+      && part.marks > 0
+      && typeof part.solutionOutline === "string"
+      && typeof part.studentWork === "string"
+    )
+  );
+}
+
+type ExaminerRun = {
+  raw: RawGradePass;
+  outputChars: number;
+  promptTokens: number;
+  completionTokens: number;
+  totalTokens: number;
+};
+
+function gradingTimeoutMs() {
+  const configured = Number(process.env.AI_GRADING_TIMEOUT_MS ?? 25_000);
+  return Math.min(60_000, Math.max(5_000, Number.isFinite(configured) ? configured : 25_000));
+}
+
+function estimatedCostMicros(promptTokens: number, completionTokens: number) {
+  const inputRate = Number(process.env.DEEPSEEK_INPUT_USD_PER_M_TOKENS);
+  const outputRate = Number(process.env.DEEPSEEK_OUTPUT_USD_PER_M_TOKENS);
+  if (!Number.isFinite(inputRate) || !Number.isFinite(outputRate)) return null;
+  return Math.round(promptTokens * inputRate + completionTokens * outputRate);
+}
+
+async function runExaminer(client: OpenAI, system: string, prompt: string): Promise<ExaminerRun> {
+  const completion = await client.chat.completions.create({
+    model: "deepseek-chat",
+    max_tokens: 2600,
+    temperature: 0.15,
+    response_format: { type: "json_object" },
+    messages: [
+      { role: "system", content: system },
+      { role: "user", content: prompt },
+    ],
+  }, { signal: AbortSignal.timeout(gradingTimeoutMs()) });
+  const raw = completion.choices[0]?.message?.content?.trim() ?? "";
+  const json = raw.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
+  return {
+    raw: JSON.parse(json) as RawGradePass,
+    outputChars: raw.length,
+    promptTokens: completion.usage?.prompt_tokens ?? 0,
+    completionTokens: completion.usage?.completion_tokens ?? 0,
+    totalTokens: completion.usage?.total_tokens ?? 0,
+  };
+}
 
 export async function POST(req: NextRequest) {
-  if (!process.env.DEEPSEEK_API_KEY) {
-    return NextResponse.json(
-      { error: "DEEPSEEK_API_KEY not configured" },
-      { status: 503 }
-    );
-  }
-
-  let body: GradeRequest;
+  let body: unknown;
   try {
     body = await req.json();
   } catch {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
-
-  if (!body.parts || body.parts.length === 0) {
-    return NextResponse.json({ error: "No parts to grade" }, { status: 400 });
+  if (!validRequest(body)) {
+    return NextResponse.json({ error: "Invalid grading request" }, { status: 400 });
+  }
+  const request = body;
+  if (isBlankSubmission(request)) {
+    return NextResponse.json(buildEmptyGradeResponse(request));
+  }
+  const access = await requireAiAccess(req, "grading", 30);
+  if (!access.ok) return access.response;
+  if (!process.env.DEEPSEEK_API_KEY) {
+    return NextResponse.json({ error: "DEEPSEEK_API_KEY not configured" }, { status: 503 });
   }
 
-  try {
-    const completion = await client.chat.completions.create({
+  const client = new OpenAI({
+    apiKey: process.env.DEEPSEEK_API_KEY,
+    baseURL: "https://api.deepseek.com",
+  });
+  const requestJson = JSON.stringify(request);
+  const evaluation = await db.aiEvaluation.create({
+    data: {
+      userId: access.userId,
+      route: "/api/grade-answer",
+      purpose: request.responseKind === "essay" ? "essay-grading" : "written-grading",
+      provider: "deepseek",
       model: "deepseek-chat",
-      max_tokens: 2048,
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: GRADE_SYSTEM_PROMPT },
-        { role: "user", content: GRADE_PROMPT(body) },
-      ],
+      requestHash: createHash("sha256").update(requestJson).digest("hex"),
+      inputChars: requestJson.length,
+    },
+    select: { id: true, createdAt: true },
+  });
+  const system = request.responseKind === "essay" ? ESSAY_SYSTEM : STRUCTURED_SYSTEM;
+  const attempts = await Promise.allSettled([
+    runExaminer(client, system, gradingPrompt(request, "Act as independent examiner A. Apply the scheme directly.")),
+    runExaminer(client, system, gradingPrompt(request, "Act as independent examiner B. Be especially alert to unsupported jumps and valid alternative methods.")),
+  ]);
+  const successfulRuns = attempts.flatMap((attempt) => attempt.status === "fulfilled" ? [attempt.value] : []);
+  const passes: GradePass[] = successfulRuns.map((run) =>
+    normalizeGradePass(request, run.raw)
+  );
+  if (passes.length === 0) {
+    console.error("Both grading passes failed", attempts);
+    const timedOut = attempts.some((attempt) => attempt.status === "rejected" && (
+      attempt.reason?.name === "TimeoutError" || attempt.reason?.name === "AbortError"
+    ));
+    await db.aiEvaluation.update({
+      where: { id: evaluation.id },
+      data: {
+        status: timedOut ? "TIMED_OUT" : "FAILED",
+        latencyMs: Date.now() - evaluation.createdAt.getTime(),
+        errorCode: timedOut ? "GRADING_TIMEOUT" : "ALL_PASSES_FAILED",
+      },
     });
-
-    const raw = completion.choices[0]?.message?.content?.trim() ?? "";
-    // Strip markdown code blocks if model ignores the instruction
-    const jsonText = raw.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
-    const parsed = JSON.parse(jsonText) as {
-      perPart: {
-        label: string;
-        earned: number;
-        max: number;
-        feedback: string;
-        keyStepsFound: string[];
-        keyStepsMissing: string[];
-      }[];
-      overallFeedback: string;
-    };
-
-    const totalEarned = parsed.perPart.reduce((s, p) => s + p.earned, 0);
-    const totalMax = body.parts.reduce((s, p) => s + p.marks, 0);
-
-    const response: GradeResponse = {
-      questionId: body.questionId,
-      totalEarned,
-      totalMax,
-      perPart: parsed.perPart,
-      overallFeedback: parsed.overallFeedback,
-      modelSolution: body.fullSolution,
-    };
-
-    return NextResponse.json(response);
-  } catch (err) {
-    console.error("Grade API error:", err);
-    return NextResponse.json(
-      { error: "Grading failed. Please try again." },
-      { status: 500 }
-    );
+    return NextResponse.json({ error: "Grading failed. Please use the mark scheme for self-assessment." }, { status: 503 });
   }
+
+  let adjudicated: GradePass | undefined;
+  let adjudicatorRun: ExaminerRun | undefined;
+  if (passes.length > 1 && (request.reviewMode === "adjudicate" || needsAdjudication(request, passes))) {
+    try {
+      const priorReports = JSON.stringify(passes.map((pass) => ({
+        total: pass.perPart.reduce((sum, part) => sum + part.earned, 0),
+        perPart: pass.perPart,
+        dimensions: pass.dimensions,
+      })));
+      adjudicatorRun = await runExaminer(
+        client,
+        ADJUDICATOR_SYSTEM,
+        `${gradingPrompt(request, "Act as the senior adjudicator.")}\n\nPrior independent reports:\n${priorReports}`,
+      );
+      adjudicated = normalizeGradePass(request, adjudicatorRun.raw);
+    } catch (error) {
+      console.error("Grading adjudication failed", error);
+    }
+  }
+
+  const response: GradeResponse = buildGradeResponse(request, passes, adjudicated);
+  const runs = adjudicatorRun ? [...successfulRuns, adjudicatorRun] : successfulRuns;
+  const promptTokens = runs.reduce((sum, run) => sum + run.promptTokens, 0);
+  const completionTokens = runs.reduce((sum, run) => sum + run.completionTokens, 0);
+  await db.aiEvaluation.update({
+    where: { id: evaluation.id },
+    data: {
+      status: "SUCCEEDED",
+      outputChars: runs.reduce((sum, run) => sum + run.outputChars, 0),
+      promptTokens,
+      completionTokens,
+      totalTokens: runs.reduce((sum, run) => sum + run.totalTokens, 0),
+      estimatedCostMicros: estimatedCostMicros(promptTokens, completionTokens),
+      latencyMs: Date.now() - evaluation.createdAt.getTime(),
+      confidence: response.assessment.confidence,
+      agreementRate: response.assessment.agreementRate,
+      scoreDelta: response.assessment.scoreDelta,
+    },
+  });
+  return NextResponse.json(response);
 }

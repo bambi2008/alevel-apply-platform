@@ -26,10 +26,9 @@ class DevSmsAdapter implements SmsAdapter {
 // class TencentSmsAdapter implements SmsAdapter { ... }
 
 export function getSms(): SmsAdapter {
-  switch (process.env.SMS_DRIVER) {
-    // case "aliyun": return new AliyunSmsAdapter();
-    // case "tencent": return new TencentSmsAdapter();
-    default:
-      return new DevSmsAdapter();
+  const driver = process.env.SMS_DRIVER?.trim().toLowerCase();
+  if ((!driver || driver === "console") && process.env.NODE_ENV !== "production") {
+    return new DevSmsAdapter();
   }
+  throw new Error("Phone authentication is unavailable until a production SMS adapter is configured");
 }

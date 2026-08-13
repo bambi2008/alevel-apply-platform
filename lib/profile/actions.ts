@@ -4,7 +4,9 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { Prisma } from "@prisma/client";
 import type { UserProfile, GradeKind } from "./store";
+import type { IeltsSubscores } from "./store";
 import type { Region } from "@/lib/data/types";
+import { activeDayEventKey, recordLearningEvent } from "@/lib/beta/events";
 
 async function currentUserId(): Promise<string | null> {
   const session = await auth();
@@ -108,5 +110,76 @@ export async function saveProfileAction(
     });
   }
 
+  const profileComplete = Boolean(
+    p.fullName?.trim()
+    && p.school?.trim()
+    && p.intakeYear
+    && p.targetRegions.length
+    && p.intendedMajors.length
+    && subjects.length,
+  );
+  await db.betaParticipant.upsert({
+    where: { studentId: sp.id },
+    update: profileComplete ? { onboardingCompletedAt: new Date(), lastActiveAt: new Date() } : { lastActiveAt: new Date() },
+    create: { studentId: sp.id, onboardingCompletedAt: profileComplete ? new Date() : null },
+  });
+  await recordLearningEvent({
+    studentId: sp.id,
+    type: "ACTIVE_DAY",
+    eventKey: activeDayEventKey(sp.id),
+  });
+  if (profileComplete) {
+    await recordLearningEvent({
+      studentId: sp.id,
+      type: "PROFILE_COMPLETED",
+      eventKey: `profile-completed:${sp.id}`,
+    });
+  }
+
   return { authed: true };
+}
+
+export async function saveIeltsScoresAction(
+  overall: number,
+  subscores: IeltsSubscores,
+): Promise<{ authed: boolean; saved: boolean }> {
+  const userId = await currentUserId();
+  if (!userId) return { authed: false, saved: false };
+
+  const values = [
+    overall,
+    subscores.listening,
+    subscores.reading,
+    subscores.writing,
+    subscores.speaking,
+  ].filter((value): value is number => value != null);
+  if (values.some((value) => !Number.isFinite(value) || value < 0 || value > 9)) {
+    return { authed: true, saved: false };
+  }
+
+  const profile = await db.studentProfile.upsert({
+    where: { userId },
+    create: {
+      userId,
+      targetRegions: ["UK", "HK"],
+      intendedMajors: [],
+    },
+    update: {},
+  });
+
+  await db.$transaction([
+    db.testScore.deleteMany({
+      where: { profileId: profile.id, type: "IELTS" },
+    }),
+    db.testScore.create({
+      data: {
+        profileId: profile.id,
+        type: "IELTS",
+        overall,
+        subscores: subscores as unknown as Prisma.InputJsonValue,
+      },
+    }),
+  ]);
+
+  return { authed: true, saved: true };
 }

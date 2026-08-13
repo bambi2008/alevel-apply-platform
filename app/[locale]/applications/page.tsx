@@ -6,8 +6,9 @@ import { SceneCompass } from "@/components/illustrations";
 import { Photo } from "@/components/photo";
 
 import { useEffect, useState } from "react";
-import { useLocale, useTranslations } from "next-intl";
+import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { ArrowRight, ClipboardCheck } from "lucide-react";
 import type { ProgramWithUniversity } from "@/lib/data/types";
 import {
   APP_STATUSES,
@@ -28,9 +29,6 @@ export default function ApplicationsPage() {
   const t = useTranslations("applications");
   const tc = useTranslations("common");
   const tnav = useTranslations("nav");
-  const locale = useLocale();
-  const isEn = locale === "en";
-
   const [items, setItems] = useState<ApplicationItem[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [programs, setPrograms] = useState<ProgramWithUniversity[]>([]);
@@ -129,6 +127,11 @@ export default function ApplicationsPage() {
                       ))}
                     </select>
                   </label>
+                  {item.id && (
+                    <Link href={`/applications/${item.id}`} className="ml-auto inline-flex items-center gap-1.5 rounded-md bg-[var(--ink)] px-3 py-2 text-xs font-semibold text-white">
+                      <ClipboardCheck className="size-4" /> 提交作战室 <ArrowRight className="size-3.5" />
+                    </Link>
+                  )}
                 </div>
 
                 {showOffer && (

@@ -1,13 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import OpenAI from "openai";
 import { captureError } from "@/lib/monitoring";
+import { requireAiAccess } from "@/lib/security/ai-route";
 
 export const runtime = "nodejs";
-
-const client = new OpenAI({
-  apiKey: process.env.DEEPSEEK_API_KEY,
-  baseURL: "https://api.deepseek.com",
-});
 
 interface Req {
   question: "q2" | "q3";
@@ -57,9 +53,15 @@ ${r.currentAnswer ? `\n学生这一题已经写了的内容：\n"""\n${r.current
 注意：strengths 和 suggestions 都只给方向和提示，绝不能是可照抄的成句文书文字。`;
 
 export async function POST(req: NextRequest) {
+  const access = await requireAiAccess(req, "ps-from-project", 30);
+  if (!access.ok) return access.response;
   if (!process.env.DEEPSEEK_API_KEY) {
     return NextResponse.json({ error: "AI 暂未配置（缺少 DEEPSEEK_API_KEY）" }, { status: 503 });
   }
+  const client = new OpenAI({
+    apiKey: process.env.DEEPSEEK_API_KEY,
+    baseURL: "https://api.deepseek.com",
+  });
   let body: Req;
   try {
     body = await req.json();

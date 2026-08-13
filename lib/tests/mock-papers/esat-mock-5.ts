@@ -81,9 +81,9 @@ export const ESAT_MK5_MATH: MCQQuestion[] = [
     answer: "C", solution: "$\\dfrac{dy}{dx}=3x^2-12x+9=3(x-1)(x-3)=0$ at $x=1,3$ — two points." },
 
   { id: "esat-mk5-m-15", type: "mcq", testId: "esat", topicId: "esat-math2", difficulty: 1, marks: 1,
-    question: "The area under $y=3x^2$ between $x=0$ and $x=2$ is:",
-    options: [ {key:"A",text:"$4$"},{key:"B",text:"$6$"},{key:"C",text:"$8$"},{key:"D",text:"$12$"},{key:"E",text:"$16$"} ],
-    answer: "C", solution: "$\\displaystyle\\int_0^2 3x^2\\,dx=[x^3]_0^2=8$." },
+    question: "The area enclosed by $y=4x-x^2$ and the $x$-axis is:",
+    options: [ {key:"A",text:"$16/3$"},{key:"B",text:"$8$"},{key:"C",text:"$32/3$"},{key:"D",text:"$16$"},{key:"E",text:"$64/3$"} ],
+    answer: "C", solution: "The roots are $0$ and $4$. The area is $\\int_0^4(4x-x^2)\\,dx=32/3$." },
 
   { id: "esat-mk5-m-16", type: "mcq", testId: "esat", topicId: "esat-math2", difficulty: 2, marks: 1,
     question: "Evaluate $\\displaystyle\\int_{-1}^{2}(x+2)\\,dx$.",

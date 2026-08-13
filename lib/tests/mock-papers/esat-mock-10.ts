@@ -173,9 +173,9 @@ export const ESAT_MK10_SCI: MCQQuestion[] = [
     answer: "B", solution: "Latent heat changes state at constant temperature (breaking bonds between particles)." },
 
   { id: "esat-mk10-s-06", type: "mcq", testId: "esat", topicId: "esat-phys6", difficulty: 1, marks: 1,
-    question: "An object of mass $240\\,\\text{g}$ has a volume of $30\\,\\text{cm}^3$. Its density is:",
-    options: [ {key:"A",text:"$0.125\\,\\text{g/cm}^3$"},{key:"B",text:"$8\\,\\text{g/cm}^3$"},{key:"C",text:"$80\\,\\text{g/cm}^3$"},{key:"D",text:"$270\\,\\text{g/cm}^3$"},{key:"E",text:"$7200\\,\\text{g/cm}^3$"} ],
-    answer: "B", solution: "$\\rho=\\dfrac{240}{30}=8\\,\\text{g/cm}^3$." },
+    question: "A liquid has density $800\\,\\text{kg m}^{-3}$. What mass occupies a volume of $0.025\\,\\text{m}^3$?",
+    options: [ {key:"A",text:"$0.032\\,\\text{kg}$"},{key:"B",text:"$2.0\\,\\text{kg}$"},{key:"C",text:"$20\\,\\text{kg}$"},{key:"D",text:"$32\\,\\text{kg}$"},{key:"E",text:"$20000\\,\\text{kg}$"} ],
+    answer: "C", solution: "$m=\\rho V=800\\times0.025=20\\,\\text{kg}$." },
 
   { id: "esat-mk10-s-07", type: "mcq", testId: "esat", topicId: "esat-phys6", difficulty: 2, marks: 1,
     question: "In a liquid, pressure:",

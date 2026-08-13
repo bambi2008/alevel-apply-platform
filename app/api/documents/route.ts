@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { getStorage } from "@/lib/storage";
+import { validateDocumentUpload } from "@/lib/security/uploads";
 
 const DOC_TYPES = [
   "TRANSCRIPT",
@@ -38,6 +39,9 @@ export async function GET() {
       fileName: true,
       mime: true,
       size: true,
+      version: true,
+      validUntil: true,
+      supersedesId: true,
       createdAt: true,
     },
   });
@@ -60,6 +64,8 @@ export async function POST(req: NextRequest) {
 
   const file = form.get("file");
   const typeRaw = String(form.get("type") || "OTHER");
+  const validUntilRaw = String(form.get("validUntil") || "");
+  const supersedesId = String(form.get("supersedesId") || "") || null;
   const type: DocType = (DOC_TYPES as readonly string[]).includes(typeRaw)
     ? (typeRaw as DocType)
     : "OTHER";
@@ -74,32 +80,60 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "too_large" }, { status: 413 });
   }
 
+  const previous = supersedesId ? await db.document.findFirst({ where: { id: supersedesId, ownerId: userId } }) : null;
+  if (supersedesId && !previous) return NextResponse.json({ error: "invalid_previous_version" }, { status: 400 });
+  if (previous && previous.type !== type) return NextResponse.json({ error: "version_type_mismatch" }, { status: 409 });
   const buffer = Buffer.from(await file.arrayBuffer());
-  const stored = await getStorage().put({
+  const validation = validateDocumentUpload(file, buffer);
+  if (!validation.ok) return NextResponse.json({ error: validation.error }, { status: 415 });
+  const storage = getStorage();
+  const stored = await storage.put({
     body: buffer,
     fileName: file.name,
     mime: file.type || undefined,
   });
-
-  const doc = await db.document.create({
-    data: {
-      ownerId: userId,
-      type,
-      fileKey: stored.key,
-      fileName: stored.fileName,
-      mime: stored.mime ?? null,
-      size: stored.size,
-    },
-    select: {
-      id: true,
-      type: true,
-      fileKey: true,
-      fileName: true,
-      mime: true,
-      size: true,
-      createdAt: true,
-    },
-  });
-
-  return NextResponse.json({ document: doc }, { status: 201 });
+  const validUntil = /^\d{4}-\d{2}-\d{2}$/.test(validUntilRaw) ? new Date(`${validUntilRaw}T00:00:00Z`) : null;
+  try {
+    const doc = await db.$transaction(async (tx) => {
+      const created = await tx.document.create({
+        data: {
+          ownerId: userId,
+          type,
+          fileKey: stored.key,
+          fileName: stored.fileName,
+          mime: stored.mime ?? null,
+          size: stored.size,
+          version: previous ? previous.version + 1 : 1,
+          validUntil,
+          supersedesId: previous?.id ?? null,
+        },
+        select: {
+          id: true,
+          type: true,
+          fileKey: true,
+          fileName: true,
+          mime: true,
+          size: true,
+          version: true,
+          validUntil: true,
+          supersedesId: true,
+          createdAt: true,
+        },
+      });
+      if (previous) {
+        await tx.applicationMaterial.updateMany({
+          where: { documentId: previous.id },
+          data: {
+            documentId: created.id,
+            status: validUntil && validUntil < new Date() ? "NEEDS_UPDATE" : "READY",
+          },
+        });
+      }
+      return created;
+    });
+    return NextResponse.json({ document: doc }, { status: 201 });
+  } catch (error) {
+    await storage.delete(stored.key).catch(() => undefined);
+    throw error;
+  }
 }

@@ -1,18 +1,12 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
 import { notFound } from "next/navigation";
-
-const inter = Inter({
-  subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
 
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { routing, type AppLocale } from "@/i18n/routing";
 import { TopNav } from "@/components/top-nav";
 import { auth } from "@/auth";
+import { Link } from "@/i18n/navigation";
 import "../globals.css";
 
 export async function generateMetadata({
@@ -42,6 +36,11 @@ async function Footer() {
           <span>© {new Date().getFullYear()} {t("rights")}</span>
           <span className="text-white/50">{t("disclaimer")}</span>
         </div>
+        <nav aria-label="法律与账号" className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-sm">
+          <Link href="/privacy" className="hover:text-white">隐私政策</Link>
+          <Link href="/terms" className="hover:text-white">服务条款</Link>
+          <Link href="/account" className="hover:text-white">账号与隐私</Link>
+        </nav>
       </div>
     </footer>
   );
@@ -64,7 +63,7 @@ export default async function LocaleLayout({
   const isLoggedIn = !!session?.user;
 
   return (
-    <html lang={locale} className={`h-full antialiased ${inter.variable}`}>
+    <html lang={locale} className="h-full antialiased">
       <body className="min-h-full flex flex-col bg-white text-neutral-900">
         <NextIntlClientProvider messages={messages}>
           <TopNav

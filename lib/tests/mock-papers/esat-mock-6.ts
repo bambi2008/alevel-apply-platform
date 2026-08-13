@@ -10,14 +10,14 @@ import type { MCQQuestion } from "@/lib/tests/questions/types";
 // ── 模块一：数学（含进阶，偏多步）——27 题 / 40 分钟 ──────────────────────────
 export const ESAT_MK6_MATH: MCQQuestion[] = [
   { id: "esat-mk6-m-01", type: "mcq", testId: "esat", topicId: "esat-math2", difficulty: 2, marks: 1,
-    question: "How many stationary points does $y=x^3-3x^2+4$ have?",
-    options: [ {key:"A",text:"$0$"},{key:"B",text:"$1$"},{key:"C",text:"$2$"},{key:"D",text:"$3$"},{key:"E",text:"$4$"} ],
-    answer: "C", solution: "$\\dfrac{dy}{dx}=3x^2-6x=3x(x-2)=0$ at $x=0,2$ — two stationary points." },
+    question: "For $y=x^3-3x$, how is the stationary point at $x=1$ classified?",
+    options: [ {key:"A",text:"local maximum"},{key:"B",text:"local minimum"},{key:"C",text:"stationary point of inflection"},{key:"D",text:"non-stationary inflection"},{key:"E",text:"the curve has no stationary point there"} ],
+    answer: "B", solution: "$y'=3x^2-3$ vanishes at $x=1$, and $y''=6x$ is positive there, so the point is a local minimum." },
 
   { id: "esat-mk6-m-02", type: "mcq", testId: "esat", topicId: "esat-math1", difficulty: 2, marks: 1,
-    question: "The minimum value of $x^2-6x+11$ is:",
-    options: [ {key:"A",text:"$1$"},{key:"B",text:"$2$"},{key:"C",text:"$3$"},{key:"D",text:"$-2$"},{key:"E",text:"$11$"} ],
-    answer: "B", solution: "$(x-3)^2+2$; minimum value $2$ at $x=3$." },
+    question: "For which values of $x$ is $x^2-6x+5<0$?",
+    options: [ {key:"A",text:"$x<1$"},{key:"B",text:"$1<x<5$"},{key:"C",text:"$x>5$"},{key:"D",text:"$x<1$ or $x>5$"},{key:"E",text:"all real $x$"} ],
+    answer: "B", solution: "$x^2-6x+5=(x-1)(x-5)$. The upward-opening quadratic is negative between its roots, so $1<x<5$." },
 
   { id: "esat-mk6-m-03", type: "mcq", testId: "esat", topicId: "esat-math3", difficulty: 2, marks: 1,
     question: "Find the sum to infinity of $27+18+12+\\cdots$",
@@ -25,9 +25,9 @@ export const ESAT_MK6_MATH: MCQQuestion[] = [
     answer: "C", solution: "$r=\\tfrac23$; $S_\\infty=\\dfrac{27}{1-\\frac23}=\\dfrac{27}{1/3}=81$." },
 
   { id: "esat-mk6-m-04", type: "mcq", testId: "esat", topicId: "esat-math1", difficulty: 1, marks: 1,
-    question: "Solve $2^{x+1}=32$.",
-    options: [ {key:"A",text:"$x=3$"},{key:"B",text:"$x=4$"},{key:"C",text:"$x=5$"},{key:"D",text:"$x=6$"},{key:"E",text:"$x=16$"} ],
-    answer: "B", solution: "$2^{x+1}=2^5\\Rightarrow x+1=5\\Rightarrow x=4$." },
+    question: "Which power of $3$ is equal to $81$?",
+    options: [ {key:"A",text:"$2$"},{key:"B",text:"$3$"},{key:"C",text:"$4$"},{key:"D",text:"$9$"},{key:"E",text:"$27$"} ],
+    answer: "C", solution: "$3^4=81$, so the required power is $4$." },
 
   { id: "esat-mk6-m-05", type: "mcq", testId: "esat", topicId: "esat-math1", difficulty: 2, marks: 1,
     question: "Solve $\\log_2 x-\\log_2(x-3)=2$.",
@@ -85,9 +85,9 @@ export const ESAT_MK6_MATH: MCQQuestion[] = [
     answer: "C", solution: "$\\dfrac{dy}{dx}=3(2x+1)^2\\cdot2=6(2x+1)^2$; at $x=0$: $6$." },
 
   { id: "esat-mk6-m-16", type: "mcq", testId: "esat", topicId: "esat-math3", difficulty: 1, marks: 1,
-    question: "The distance between the points $(1,2)$ and $(4,6)$ is:",
-    options: [ {key:"A",text:"$3$"},{key:"B",text:"$4$"},{key:"C",text:"$5$"},{key:"D",text:"$7$"},{key:"E",text:"$\\sqrt{7}$"} ],
-    answer: "C", solution: "$\\sqrt{(4-1)^2+(6-2)^2}=\\sqrt{9+16}=5$." },
+    question: "The perpendicular distance from $(3,4)$ to the line $3x+4y=0$ is:",
+    options: [ {key:"A",text:"$3$"},{key:"B",text:"$4$"},{key:"C",text:"$5$"},{key:"D",text:"$7$"},{key:"E",text:"$25/7$"} ],
+    answer: "C", solution: "The distance is $|3(3)+4(4)|/\\sqrt{3^2+4^2}=25/5=5$." },
 
   { id: "esat-mk6-m-17", type: "mcq", testId: "esat", topicId: "esat-math1", difficulty: 2, marks: 1,
     question: "Solve $x^2-5x+6<0$.",

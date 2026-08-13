@@ -1,11 +1,18 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useState, type MouseEvent } from "react";
+import { useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
-import { getTestById } from "@/lib/tests";
 import { getQuestionById } from "@/lib/tests/lookup";
-import type { MCQQuestion, LongQuestion } from "@/lib/tests/questions/types";
+import type { MCQQuestion, LongQuestion, Question } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
+import { QuestionDiagnosis } from "@/components/exam-diagnosis";
+import { diagnoseAnswer, optionReview } from "@/lib/tests/diagnosis";
+import { ExamPerformanceReportView } from "@/components/exam-performance-report";
+import type { ExamPerformanceReport } from "@/lib/tests/report";
+import type { GradeAssessment, GradeEvidence } from "@/lib/tests/grading";
+import { GradingTrustPanel } from "@/components/grading-trust-panel";
+import { forceFullNavigation } from "@/lib/navigation";
 
 interface PartFeedback {
   label: string;
@@ -14,6 +21,8 @@ interface PartFeedback {
   feedback: string;
   keyStepsFound?: string[];
   keyStepsMissing?: string[];
+  evidence?: GradeEvidence[];
+  assessment?: GradeAssessment;
 }
 
 interface SessionAnswer {
@@ -24,12 +33,18 @@ interface SessionAnswer {
   earned: number;
   max: number;
   feedback: PartFeedback[] | null;
+  timeSpentSec: number | null;
+  answerChanges: number;
+  visits: number;
+  flagged: boolean;
+  firstSelected: string | null;
 }
 
 interface SessionDetail {
   id: string;
   testId: string;
   mode: string;
+  paperId: string | null;
   totalEarned: number;
   totalMax: number;
   timeUsedSec: number | null;
@@ -43,20 +58,49 @@ export default function SessionReviewPage({
   params: Promise<{ testId: string; sessionId: string }>;
 }) {
   const { testId, sessionId } = use(params);
-  const test = getTestById(testId);
-
   const [data, setData] = useState<SessionDetail | null>(null);
+  const [report, setReport] = useState<ExamPerformanceReport | null>(null);
+  const [questionBank, setQuestionBank] = useState<Question[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const searchParams = useSearchParams();
+  const requestedReturnTo = searchParams.get("returnTo");
+  const returnTo = requestedReturnTo && requestedReturnTo.startsWith("/") && !requestedReturnTo.startsWith("//")
+    ? requestedReturnTo
+    : undefined;
+  const fallbackReturnTo = data?.paperId
+    ? `/tests/${testId}/paper/${data.paperId}?reviewSession=${encodeURIComponent(sessionId)}`
+    : `/tests/${testId}`;
+  const handleBack = (event: MouseEvent<HTMLAnchorElement>) => {
+    if (returnTo) {
+      forceFullNavigation(event);
+      return;
+    }
+    if (
+      event.defaultPrevented
+      || event.button !== 0
+      || event.metaKey
+      || event.ctrlKey
+      || event.shiftKey
+      || event.altKey
+    ) return;
+    event.preventDefault();
+    if (window.history.length > 1) window.history.back();
+    else window.location.assign(fallbackReturnTo);
+  };
 
   useEffect(() => {
-    fetch(`/api/exam-sessions/${sessionId}`)
+    fetch(`/api/exam-sessions/${sessionId}/report`)
       .then((r) => {
         if (r.status === 401) throw new Error("请先登录后查看");
         if (r.status === 404) throw new Error("记录不存在或无权访问");
         if (!r.ok) throw new Error("加载失败");
-        return r.json() as Promise<SessionDetail>;
+        return r.json() as Promise<{ session: SessionDetail; questions?: Question[]; report: ExamPerformanceReport }>;
       })
-      .then(setData)
+      .then((result) => {
+        setData(result.session);
+        setQuestionBank(result.questions ?? []);
+        setReport(result.report);
+      })
       .catch((e) => setError(e.message));
   }, [sessionId]);
 
@@ -64,64 +108,67 @@ export default function SessionReviewPage({
     return (
       <div className="mx-auto max-w-2xl px-4 py-16 text-center text-neutral-500">
         <p className="text-lg mb-4">⚠️ {error}</p>
-        <Link href={`/tests/${testId}`} className="text-sm text-blue-600 hover:underline">
+        <Link href={returnTo ?? fallbackReturnTo} onClick={handleBack} className="text-sm text-blue-600 hover:underline">
           ← 返回备考详情
         </Link>
       </div>
     );
   }
 
-  if (!data) {
+  if (!data || !report) {
     return <div className="mx-auto max-w-2xl px-4 py-16 text-center text-neutral-400 text-sm">加载中…</div>;
   }
 
-  const pct = data.totalMax > 0 ? Math.round((data.totalEarned / data.totalMax) * 100) : 0;
   const fmtDate = new Date(data.createdAt).toLocaleString("zh-CN", {
     year: "numeric", month: "numeric", day: "numeric", hour: "2-digit", minute: "2-digit",
   });
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
+    <div className="mx-auto max-w-5xl px-4 py-10">
       <div className="flex items-center justify-between mb-6">
-        <Link href={`/tests/${testId}`} className="text-sm text-neutral-500 hover:text-neutral-800">
-          ← {test?.abbr ?? testId} 备考详情
+        <Link href={returnTo ?? fallbackReturnTo} onClick={handleBack} className="text-sm text-neutral-500 hover:text-neutral-800">
+          ← 返回本次复盘
         </Link>
         <span className="text-sm text-neutral-400">{fmtDate}</span>
       </div>
 
-      {/* 概要 */}
-      <div className="rounded-2xl border border-neutral-200 bg-white p-6 mb-8 flex items-center gap-5">
-        <div className={`w-16 h-16 rounded-full flex items-center justify-center text-lg font-bold shrink-0 ${
-          pct >= 80 ? "bg-green-100 text-green-700" :
-          pct >= 60 ? "bg-amber-100 text-amber-700" :
-          "bg-red-100 text-red-600"
-        }`}>
-          {pct}%
-        </div>
-        <div>
-          <div className="flex items-center gap-2">
-            <span className="text-xs px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-600">
-              {data.mode === "mock" ? "模拟考试" : "专项练习"}
-            </span>
-            <span className="text-sm font-medium">{data.totalEarned} / {data.totalMax} 分</span>
-          </div>
-          <p className="text-sm text-neutral-500 mt-1">共 {data.answers.length} 题 · 逐题回看</p>
-        </div>
-      </div>
+      <ExamPerformanceReportView report={report} />
 
       {/* 逐题回看 */}
-      <div className="space-y-6">
+      <div className="mt-12 border-t border-neutral-200 pt-8">
+        <h2 className="text-lg font-bold">逐题回看</h2>
+        <p className="mt-1 text-sm text-neutral-500">核对答案、评分点和本题错因</p>
+      </div>
+      <div className="mt-5 space-y-6">
         {data.answers.map((a, idx) => (
-          <ReviewCard key={`${a.questionId}-${idx}`} index={idx + 1} answer={a} />
+          <ReviewCard
+            key={`${a.questionId}-${idx}`}
+            index={idx + 1}
+            answer={a}
+            question={questionBank.find((question) => question.id === a.questionId) ?? getQuestionById(a.questionId)}
+            returnTo={returnTo}
+          />
         ))}
       </div>
     </div>
   );
 }
 
-function ReviewCard({ index, answer }: { index: number; answer: SessionAnswer }) {
-  const q = getQuestionById(answer.questionId);
+function ReviewCard({ index, answer, question: q, returnTo }: { index: number; answer: SessionAnswer; question?: Question; returnTo?: string }) {
   const correctish = answer.max > 0 && answer.earned >= answer.max;
+  const itemDiagnosis = q ? diagnoseAnswer({
+    question: q,
+    selected: answer.selected,
+    earned: answer.earned,
+    max: answer.max,
+    work: answer.work,
+    feedback: answer.feedback,
+    timeSpentSec: answer.timeSpentSec,
+    answerChanges: answer.answerChanges,
+    visits: answer.visits,
+    flagged: answer.flagged,
+    firstSelected: answer.firstSelected,
+  }) : null;
 
   return (
     <div className="rounded-2xl border border-neutral-200 bg-white p-6">
@@ -147,6 +194,7 @@ function ReviewCard({ index, answer }: { index: number; answer: SessionAnswer })
       {q && answer.type === "long" && (
         <LongReview q={q as LongQuestion} work={answer.work} feedback={answer.feedback} />
       )}
+      {q && itemDiagnosis && <QuestionDiagnosis diagnosis={itemDiagnosis} question={q} returnTo={returnTo} />}
     </div>
   );
 }
@@ -162,12 +210,20 @@ function MCQReview({ q, selected }: { q: MCQQuestion; selected: string | null })
           let cls = "border-neutral-200 bg-white";
           if (isCorrect) cls = "border-green-500 bg-green-50";
           else if (isChosen) cls = "border-red-400 bg-red-50";
+          const review = optionReview(q, opt.key);
           return (
-            <div key={opt.key} className={`rounded-xl border-2 px-4 py-2.5 flex items-start gap-3 ${cls}`}>
-              <span className="font-bold text-sm shrink-0 w-5">{opt.key}.</span>
-              <MathRenderer text={opt.text} className="flex-1 text-sm" />
-              {isCorrect && <span className="text-green-600 text-sm shrink-0">✓ 正确</span>}
-              {isChosen && !isCorrect && <span className="text-red-500 text-sm shrink-0">你的选择</span>}
+            <div key={opt.key} className={`rounded-xl border-2 px-4 py-2.5 ${cls}`}>
+              <div className="flex items-start gap-3">
+                <span className="font-bold text-sm shrink-0 w-5">{opt.key}.</span>
+                <MathRenderer text={opt.text} className="flex-1 text-sm" />
+                {isCorrect && <span className="text-green-600 text-sm shrink-0">✓ 正确</span>}
+                {isChosen && !isCorrect && <span className="text-red-500 text-sm shrink-0">你的选择</span>}
+              </div>
+              {(isCorrect || isChosen) && (
+                <p className="ml-8 mt-1 text-xs leading-5 text-neutral-500">
+                  <span className="font-medium">{review.title}：</span>{review.detail}
+                </p>
+              )}
             </div>
           );
         })}
@@ -191,9 +247,11 @@ function LongReview({
 }) {
   const [showSolution, setShowSolution] = useState(false);
   const fbByLabel = new Map((feedback ?? []).map((f) => [f.label, f] as const));
+  const assessment = feedback?.find((item) => item.assessment)?.assessment;
 
   return (
     <div className="space-y-5">
+      {assessment && <GradingTrustPanel assessment={assessment} />}
       {q.context && (
         <div className="p-3 bg-neutral-50 rounded-lg border border-neutral-200">
           <MathRenderer text={q.context} className="text-sm text-neutral-700" block />
@@ -227,6 +285,16 @@ function LongReview({
                   </span>
                 </div>
                 <p className="text-sm text-neutral-700 leading-relaxed">{fb.feedback}</p>
+                {fb.evidence && fb.evidence.length > 0 && (
+                  <ul className="mt-2 space-y-1 text-xs text-neutral-600">
+                    {fb.evidence.map((item, evidenceIndex) => (
+                      <li key={`${item.criterion}-${evidenceIndex}`}>
+                        <span className="font-semibold">{item.marksAwarded} 分 · {item.criterion}</span>
+                        {item.quote && <span>：“{item.quote}”</span>}
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 {fb.keyStepsMissing && fb.keyStepsMissing.length > 0 && (
                   <p className="mt-1 text-xs text-red-500">缺少：{fb.keyStepsMissing.join("、")}</p>
                 )}

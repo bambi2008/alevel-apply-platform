@@ -1,6 +1,8 @@
-// 英国大学入学笔试数据层 — 9 种考试
+// 英国大学申请考试与能力训练数据层
+import { ADDITIONAL_TESTS } from "./additional-tests";
 
-export type TestCategory = "mathematics" | "science" | "law" | "thinking" | "competition";
+export type TestCategory = "mathematics" | "science" | "law" | "thinking" | "competition" | "english";
+export type TestPurpose = "admissions" | "college-assessment" | "curriculum" | "offer-condition" | "language" | "legacy" | "competition";
 
 export interface TestTopic {
   id: string;
@@ -21,6 +23,7 @@ export interface AdmissionsTest {
   abbr: string;           // 缩写
   nameZh: string;         // 中文名
   category: TestCategory;
+  purpose?: TestPurpose;
   icon: string;
   universities: string[]; // 使用该考试的院校
   programs: string[];     // 适用专业（中文）
@@ -41,7 +44,7 @@ export interface AdmissionsTest {
   pastPaperLinks?: Array<{ label: string; url: string; note?: string }>; // 历年真题链接
 }
 
-export const ADMISSIONS_TESTS: AdmissionsTest[] = [
+const CORE_TESTS: AdmissionsTest[] = [
   {
     id: "mat",
     name: "Mathematics Admissions Test",
@@ -53,14 +56,15 @@ export const ADMISSIONS_TESTS: AdmissionsTest[] = [
     programs: ["数学", "计算机科学", "数学与统计", "数学与计算机"],
     programsEn: ["Mathematics", "Computer Science", "Mathematics & Statistics", "Mathematics & Computer Science"],
     duration: "2.5 小时",
-    format: "Multiple choice (Part A, 10 questions) + Long answer (Part B, 4 from 6 questions, 15 marks each)",
-    formatZh: "Part A：10 道选择题（共 40 分）；Part B：从 6 题中选 4 题作答，每题 15 分（共 60 分）。总分 100 分。",
-    registrationUrl: "https://www.ox.ac.uk/admissions/undergraduate/applying-to-oxford/guide/admissions-tests/mat",
-    officialSampleUrl: "https://www.ox.ac.uk/admissions/undergraduate/applying-to-oxford/guide/admissions-tests/mat",
+    format: "Historical 2025 format: 25 multiple-choice questions + 2 typed-response questions; 100 marks",
+    formatZh: "历史 2025 格式：25 道选择题 + 2 道键入长题，考试 2.5 小时，总分 100 分。2026 起不再举行。",
+    registrationUrl: "https://www.maths.ox.ac.uk/study-here/undergraduate-study/maths-admissions-test",
+    officialSampleUrl: "https://www.maths.ox.ac.uk/system/files/inline-files/test25.pdf",
     hasQuestionBank: true,
-    overview: "MAT 是牛津大学数学、计算机科学及相关专业的必考笔试，也用于帝国理工数学系。考试旨在测试 A-Level 数学知识的深度应用与解题推导能力，而非仅靠记忆公式。",
-    structureDetails: "考试内容覆盖 A-Level Core/Pure Mathematics（不含 Statistics/Mechanics），题目风格独特：选择题看似基础，但选项设计陷阱多；大题需书面推导过程，空白步骤无分。",
-    scoringNote: "Part A 每题 4 分，仅选答案（无计算步骤分）。Part B 按解题步骤给分，即使最终答案错误，正确的中间步骤也可得分。",
+    statusNote: "MAT 已于 2025 年后停用。2026 起 Oxford 数学、计算机及相关专业改用 TMUA；本页保留为历史题库与深度推理训练。",
+    overview: "MAT 是 Oxford 在 2007–2025 年使用的数学入学考试。虽然已由 TMUA 取代，其长题仍适合训练 A-Level 数学知识的深度应用、解释与推导能力。",
+    structureDetails: "最后一届 2025 MAT 含 25 道选择题和 2 道多小问键入长题，所有题目均需作答。长题要求解释推理，但不要求输入复杂数学排版。",
+    scoringNote: "2025 MAT 总分 100 分；选择题按题目标示为 2、3 或 4 分，两道长题各 15 分并按步骤给部分分。",
     topics: [
       { id: "mat-poly", title: "多项式与代数", titleEn: "Polynomials & Algebra", description: "因式分解、多项式除法、韦达定理、二项式展开" },
       { id: "mat-trig", title: "三角函数", titleEn: "Trigonometry", description: "恒等式、方程求解、sinx/cosx/tanx 图像变换" },
@@ -98,14 +102,15 @@ export const ADMISSIONS_TESTS: AdmissionsTest[] = [
     programs: ["物理", "工程科学", "材料科学", "地球科学"],
     programsEn: ["Physics", "Engineering Science", "Materials Science", "Earth Sciences"],
     duration: "2 小时",
-    format: "Mixed: multiple choice + short answer + longer problems (all written, no calculator)",
-    formatZh: "混合题型：选择题 + 简答题 + 综合推导题，不可使用计算器，考查数学推导与物理直觉。",
-    registrationUrl: "https://www.ox.ac.uk/admissions/undergraduate/applying-to-oxford/guide/admissions-tests/pat",
-    officialSampleUrl: "https://www.ox.ac.uk/admissions/undergraduate/applying-to-oxford/guide/admissions-tests/pat",
+    format: "Historical final format: a two-hour multiple-choice paper combining mathematics and physics",
+    formatZh: "历史最终格式：2 小时全选择题，综合考查数学与物理。2026 起由 ESAT 取代。",
+    registrationUrl: "https://www.physics.ox.ac.uk/study/undergraduates/how-apply/engineering-and-science-admissions-test-esat",
+    officialSampleUrl: "https://www.physics.ox.ac.uk/study/undergraduates/how-apply/engineering-and-science-admissions-test-esat",
     hasQuestionBank: true,
-    overview: "PAT 是牛津物理、工程科学等专业的必考笔试。考试考查 A-Level 数学与物理知识的综合应用，题目偏重推导与估算，不依赖死记公式。",
-    structureDetails: "内容覆盖 A-Level 物理全部核心模块（力学、电磁学、波动、热力学、量子与粒子物理初步）以及 A-Level 数学（微积分、向量、三角等）。题目通常将数学工具直接用于物理情境。",
-    scoringNote: "每题书面作答，按步骤给分。无计算器，大量计算会简化为「精确到 1 位有效数字」或「用字母表示」。",
+    statusNote: "PAT 已于 2025 年后停用。2026 起 Oxford 物理与工程申请者改考 ESAT；PAT 题库继续用于物理问题解决与面试训练。",
+    overview: "PAT 是 Oxford 过去用于物理、工程等专业的入学测试。它已由 ESAT 取代，但其中的数学物理综合题仍适合训练建模、估算和陌生情境推理。",
+    structureDetails: "PAT 最后阶段采用 2 小时全选择题形式，综合覆盖数学与物理。本站的“书面拓展卷”会额外要求写出过程，用于能力训练，并非历史官方卷面结构。",
+    scoringNote: "历史最终格式按选择题答案计分。本站书面拓展卷采用过程评分，仅用于训练，不对应官方 PAT 或现行 ESAT 成绩。",
     topics: [
       { id: "pat-mech", title: "力学", titleEn: "Mechanics", description: "牛顿定律、动量守恒、能量守恒、圆周运动、转动惯量" },
       { id: "pat-em", title: "电磁学", titleEn: "Electromagnetism", description: "电场、磁场、感应电动势、交直流电路、电容/电感" },
@@ -186,12 +191,12 @@ export const ADMISSIONS_TESTS: AdmissionsTest[] = [
     duration: "每模块 40 分钟（共 3 模块，约 120 分钟）",
     format: "3 modules × 27 MCQ (5 options, 40 min each): Module 1 Mathematics (all) + 2 of: Biology/Chemistry/Physics/Mathematics 2 (by course)",
     formatZh: "共 3 模块，每模块 27 道五选一选择题（40 分钟）：模块一数学（必选）+ 从生物/化学/物理/数学2中选 2 个模块（按专业）。工程选数学+物理；自然科学(物化方向)选物理+化学；自然科学(生化方向)选化学+生物。",
-    registrationUrl: "https://www.undergraduate.study.cam.ac.uk/applying/admissions-tests",
-    officialSampleUrl: "https://www.undergraduate.study.cam.ac.uk/applying/admissions-tests",
+    registrationUrl: "https://esat-tmua.ac.uk/about-the-tests/esat-test/",
+    officialSampleUrl: "https://esat-tmua.ac.uk/esat-preparation-materials/",
     hasQuestionBank: true,
-    overview: "ESAT 自 2024 年 11 月起全面取代 ENGAA 和 NSAA，成为剑桥工程、自然科学、化学工程、兽医及帝国理工部分课程的统一入学笔试。考试由 2 个独立计时模块组成：Module 1 数学（必选）+ Module 2 理科（按专业）。",
-    structureDetails: "Module 1 数学：代数与函数、微积分、几何、数列与级数——与 A-Level Pure Maths 范围一致，但题目设计需快速判断，平均每题不到 90 秒。Module 2 物理（工程方向）：力学、电磁学、波动与现代物理。全为五选一选择题，无负分。",
-    scoringNote: "每题 1 分，无负分。两个模块各自独立计分。剑桥综合两模块成绩及面试成绩评估录取。历年 ENGAA 真题（2016–2023）内容结构高度相似，是目前最优质的 ESAT 备考材料。",
+    overview: "ESAT 取代 ENGAA 和 NSAA，供剑桥、帝国理工、牛津及 UCL 的部分工程与科学课程使用。多数考生完成 3 个独立计时模块：Mathematics 1 必考，再按课程要求选择 Biology、Chemistry、Physics 或 Mathematics 2 中的两个模块。",
+    structureDetails: "每个模块均为 27 道五选一选择题、40 分钟且不可使用计算器。Mathematics 1 为所有考生必考；其余两个模块由目标课程指定。五个模块分别独立计时，重点考查在短时间内应用数学与科学知识解决问题。",
+    scoringNote: "答错不扣分，建议作答每一道题。考生所参加的每个模块分别报告 1.0–9.0 分，保留一位小数；院校会结合其他申请材料使用这些成绩，ESAT 不设统一及格线。",
     topics: [
       { id: "esat-math1", title: "数学1 — 代数与函数", titleEn: "Math 1: Algebra & Functions", description: "方程组、不等式、多项式、二项式定理、函数变换（Module 1 必考）" },
       { id: "esat-math2", title: "数学1 — 微积分", titleEn: "Math 1: Calculus", description: "导数规则、积分基础、运动方程推导、面积计算（Module 1 必考）" },
@@ -225,7 +230,7 @@ export const ADMISSIONS_TESTS: AdmissionsTest[] = [
       "无负分——所有题必须作答，不确定的要猜，不要留空白。",
       "Module 1 数学节奏是关键：27 题 40 分钟，平均 89 秒/题——速度和准确度同样重要。",
       "ENGAA 历年真题（2016–2023）是目前最好的 ESAT 备考材料，结构几乎一致。",
-      "Module 2 物理需要结合数学能力：公式推导 + 代入计算，不只是定性理解。",
+      "两个选修模块由目标课程指定；预约前必须核对课程要求，考点现场不能更换模块。",
       "帝国理工 EEE/ME 方向也使用 ESAT，备考思路与剑桥工程完全相同。",
     ],
     pastPaperLinks: [
@@ -256,11 +261,13 @@ export const ADMISSIONS_TESTS: AdmissionsTest[] = [
     structureDetails: "Paper 1 偏知识应用（A-Level 数学范围）；Paper 2 偏逻辑推理与数学论证，需要判断数学命题的真伪。",
     scoringNote: "每题 1 分，无惩罚分。各 Paper 分别给出标准化分数（1–9），院校综合评估。",
     topics: [
+      { id: "tmua-number", title: "数、比例与估算", titleEn: "Number, Ratio & Estimation", description: "数值、单位、界限、比例与增长衰减" },
       { id: "tmua-algebra", title: "代数与函数", titleEn: "Algebra & Functions", description: "方程、不等式、多项式、复合函数" },
+      { id: "tmua-geometry", title: "坐标几何与三角", titleEn: "Geometry & Trigonometry", description: "直线、圆、圆定理、弧度与三角方程" },
       { id: "tmua-calc", title: "微积分", titleEn: "Calculus", description: "微分、积分、微分方程基础" },
       { id: "tmua-stats", title: "统计与概率", titleEn: "Statistics & Probability", description: "分布、期望、概率推导" },
       { id: "tmua-logic", title: "数学推理与证明（Paper 2）", titleEn: "Mathematical Reasoning & Proof", description: "命题真伪判断、反例、数学归纳法" },
-      { id: "tmua-discrete", title: "离散数学入门", titleEn: "Discrete Mathematics", description: "集合、逻辑门、图论基础" },
+      { id: "tmua-discrete", title: "数列与计数", titleEn: "Sequences & Counting", description: "递推、系统枚举与组合计数" },
     ],
     studyPlan: [
       { week: "第 1–3 周", focus: "A-Level 数学全面复习", tasks: ["纯数 (Paper 1 范围) 逐章精练", "统计模块 2 套历年题", "每天 20 道选择题计时练习"] },
@@ -399,6 +406,50 @@ export const ADMISSIONS_TESTS: AdmissionsTest[] = [
   },
 
   {
+    id: "ucat",
+    name: "University Clinical Aptitude Test",
+    abbr: "UCAT",
+    nameZh: "大学临床能力倾向测试",
+    category: "thinking",
+    icon: "✚",
+    universities: ["UK and partner consortium medical and dental schools"],
+    programs: ["医学", "牙医学"],
+    programsEn: ["Medicine", "Dentistry"],
+    duration: "约 2 小时（正式作答 111 分钟）",
+    format: "VR 44 questions / 22 min; DM 35 / 37 min; QR 36 / 26 min; SJT 69 / 26 min",
+    formatZh: "四个独立计时模块：文字推理 44 题/22 分钟、决策判断 35 题/37 分钟、数量推理 36 题/26 分钟、情境判断 69 题/26 分钟。",
+    registrationUrl: "https://www.ucat.ac.uk/register/",
+    officialSampleUrl: "https://www.ucat.ac.uk/prepare/practice-tests/",
+    hasQuestionBank: true,
+    statusNote: "本题库按现行四模块结构制作；抽象推理已从 2025 年起移除。平台换算分与 SJT Band 仅作训练估计，不是官方成绩。",
+    overview: "UCAT 是英国及合作地区医学、牙医学申请广泛使用的计算机能力倾向测试。它不考医学知识，核心挑战是高时间压力下的阅读、逻辑、数量处理与职业判断。",
+    structureDetails: "全卷分为 Verbal Reasoning、Decision Making、Quantitative Reasoning 和 Situational Judgement。模块独立计时；Decision Making 含五陈述 Yes/No 组合题，Situational Judgement 按与最佳答案的接近程度给予部分分。",
+    scoringNote: "前三个认知模块各按 300-900 报告，总分 900-2700；SJT 单独报告 Band 1-4。答错不倒扣。本站显示的是基于原始得分率的训练估计，不能替代官方等值换算。",
+    topics: [
+      { id: "ucat-vr", title: "文字推理", titleEn: "Verbal Reasoning", description: "快速阅读、证据定位、True/False/Can't Tell 与观点推断" },
+      { id: "ucat-dm", title: "决策判断", titleEn: "Decision Making", description: "三段论、逻辑谜题、论证、概率、维恩图与多陈述判断" },
+      { id: "ucat-qr", title: "数量推理", titleEn: "Quantitative Reasoning", description: "表格图表、比例百分比、汇率、速率与多步估算" },
+      { id: "ucat-sjt", title: "情境判断", titleEn: "Situational Judgement", description: "患者安全、诚信、沟通、保密、团队合作与职业边界" },
+    ],
+    studyPlan: [
+      { week: "第 1-2 周", focus: "摸底与方法", tasks: ["完成四模块短诊断", "建立错题原因标签", "熟悉屏幕计算器与计时节奏"] },
+      { week: "第 3-4 周", focus: "分模块提速", tasks: ["VR 每日两组证据定位", "DM 轮换逻辑与概率", "QR 训练心算、估算和跳题"] },
+      { week: "第 5-6 周", focus: "SJT 与混合训练", tasks: ["按患者安全和诚信原则复盘 SJT", "完成半套混合计时", "减少无效重读与答案修改"] },
+      { week: "第 7-8 周", focus: "全真机考", tasks: ["每周完成两次整卷或四模块连做", "按模块分析速度与正确率", "固定跳题、标记和回看策略"] },
+    ],
+    tips: [
+      "UCAT 是速度考试：卡住时先标记并前进，避免一题吞掉整个模块。",
+      "VR 只依据给定文本作答，不用常识补全；Can't Tell 需要确认文本既未证明也未否定。",
+      "DM 多陈述题要逐条判断，不能用第一条的结论代替其余判断。",
+      "QR 先估算数量级，再使用屏幕计算器确认，注意单位和百分比基数。",
+      "SJT 优先患者安全、诚实、及时升级、尊重保密和自身能力边界。",
+    ],
+    pastPaperLinks: [
+      { label: "UCAT 官方练习题与全真测试", url: "https://www.ucat.ac.uk/prepare/practice-tests/", note: "官方界面与题型最接近正式考试" },
+    ],
+  },
+
+  {
     id: "lnat",
     name: "Law National Aptitude Test",
     abbr: "LNAT",
@@ -438,6 +489,16 @@ export const ADMISSIONS_TESTS: AdmissionsTest[] = [
   },
 ];
 
+export const ADMISSIONS_TESTS: AdmissionsTest[] = [...CORE_TESTS, ...ADDITIONAL_TESTS];
+
+export function getTestPurpose(test: AdmissionsTest): TestPurpose {
+  if (test.purpose) return test.purpose;
+  if (test.id === "mat" || test.id === "pat") return "legacy";
+  if (test.id === "bmo" || test.id === "bpho") return "competition";
+  if (test.id === "step") return "offer-condition";
+  return "admissions";
+}
+
 export function getTestById(id: string): AdmissionsTest | undefined {
   return ADMISSIONS_TESTS.find((t) => t.id === id);
 }
@@ -448,4 +509,5 @@ export const TEST_CATEGORIES: Record<TestCategory, { label: string; labelEn: str
   science: { label: "理科类", labelEn: "Science" },
   law: { label: "法学类", labelEn: "Law" },
   thinking: { label: "思维类", labelEn: "Thinking Skills" },
+  english: { label: "英语", labelEn: "English" },
 };

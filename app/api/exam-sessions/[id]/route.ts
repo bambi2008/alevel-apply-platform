@@ -33,6 +33,10 @@ export async function GET(
       totalEarned: true,
       totalMax: true,
       timeUsedSec: true,
+      paperId: true,
+      presetId: true,
+      startedAt: true,
+      completedAt: true,
       createdAt: true,
       answers: {
         select: {
@@ -43,6 +47,11 @@ export async function GET(
           earned: true,
           max: true,
           feedback: true,
+          timeSpentSec: true,
+          answerChanges: true,
+          visits: true,
+          flagged: true,
+          firstSelected: true,
         },
       },
     },

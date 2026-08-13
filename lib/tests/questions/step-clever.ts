@@ -94,7 +94,7 @@ export const STEP_CLEVER: MCQQuestion[] = [
     question: "Evaluate $\\displaystyle\\sum_{k=0}^{8}\\binom{8}{k}$.",
     options: [{ key: "A", text: "$257$" },{ key: "B", text: "$256$" },{ key: "C", text: "$512$" },{ key: "D", text: "$128$" },{ key: "E", text: "$64$" }],
     answer: "B", solution: "$\\sum_{k=0}^{n}\\binom nk=2^n=2^{8}=256$ (put $x=1$ in the binomial theorem)." },
-  { id: "step-cx-024", type: "mcq", testId: "step", topicId: "step-pure1", difficulty: 2, marks: 20,
+  { id: "step-cx-024", type: "mcq", testId: "step", topicId: "step-pure1", difficulty: 1, marks: 20,
     question: "Evaluate $\\displaystyle\\sum_{k=0}^{10}\\binom{10}{k}$.",
     options: [{ key: "A", text: "$512$" },{ key: "B", text: "$1024$" },{ key: "C", text: "$100$" },{ key: "D", text: "$2048$" },{ key: "E", text: "$1025$" }],
     answer: "B", solution: "$\\sum_{k=0}^{n}\\binom nk=2^n=2^{10}=1024$ (put $x=1$ in the binomial theorem)." },
