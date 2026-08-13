@@ -13,6 +13,7 @@ import { TMUA_QUESTIONS } from "@/lib/tests/questions/tmua";
 import { UCAT_QUESTIONS } from "@/lib/tests/questions/ucat";
 import { IELTS_QUESTIONS } from "@/lib/tests/questions/ielts";
 import { CSAT_QUESTIONS } from "@/lib/tests/questions/csat";
+import { CAIE9709_QUESTIONS } from "@/lib/tests/questions/caie9709";
 import type { Question } from "@/lib/tests/questions/types";
 import { findSemanticRisks } from "./semantic";
 import { findTeachingRisks } from "./teaching";
@@ -93,6 +94,7 @@ const QUESTION_BANKS: Record<string, Question[]> = {
   ucat: UCAT_QUESTIONS,
   ielts: IELTS_QUESTIONS,
   csat: CSAT_QUESTIONS,
+  caie9709: CAIE9709_QUESTIONS,
 };
 
 const FORMAT_RULES: Record<string, { needsWrittenPractice: boolean; needsFixedWrittenPaper: boolean }> = {
@@ -109,6 +111,7 @@ const FORMAT_RULES: Record<string, { needsWrittenPractice: boolean; needsFixedWr
   ucat: { needsWrittenPractice: false, needsFixedWrittenPaper: false },
   ielts: { needsWrittenPractice: true, needsFixedWrittenPaper: true },
   csat: { needsWrittenPractice: true, needsFixedWrittenPaper: true },
+  caie9709: { needsWrittenPractice: true, needsFixedWrittenPaper: true },
 };
 
 function difficultyCounts(questions: Question[]): DifficultyCounts {

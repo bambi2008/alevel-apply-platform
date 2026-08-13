@@ -14,6 +14,7 @@ import { BMO_QUESTIONS } from "@/lib/tests/questions/bmo";
 import { UCAT_QUESTIONS } from "@/lib/tests/questions/ucat";
 import { IELTS_QUESTIONS } from "@/lib/tests/questions/ielts";
 import { CSAT_QUESTIONS } from "@/lib/tests/questions/csat";
+import { CAIE9709_QUESTIONS } from "@/lib/tests/questions/caie9709";
 import type { Question } from "@/lib/tests/questions/types";
 import { getTestById } from "@/lib/tests";
 import { getAllMockQuestions } from "@/lib/tests/mock-papers";
@@ -31,6 +32,7 @@ const PRACTICE_QUESTIONS: Question[] = [
   ...UCAT_QUESTIONS,
   ...IELTS_QUESTIONS,
   ...CSAT_QUESTIONS,
+  ...CAIE9709_QUESTIONS,
 ];
 
 const ALL_QUESTIONS: Question[] = [

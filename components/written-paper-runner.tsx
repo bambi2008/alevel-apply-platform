@@ -65,6 +65,15 @@ const TOPIC_LABELS: Record<string, string> = {
   "lnat-essay": "LNAT 议论文写作",
   "tara-writing": "TARA 写作任务",
   "ielts-writing": "IELTS Academic Writing",
+  "caie9709-algebra": "代数",
+  "caie9709-log-exp": "对数与指数",
+  "caie9709-trig": "三角函数",
+  "caie9709-differentiation": "微分",
+  "caie9709-integration": "积分",
+  "caie9709-numerical": "数值方法",
+  "caie9709-vectors": "向量",
+  "caie9709-de": "微分方程",
+  "caie9709-complex": "复数",
 };
 
 const TEST_LABELS: Record<string, string> = {
@@ -76,6 +85,7 @@ const TEST_LABELS: Record<string, string> = {
   lnat: "LNAT",
   tara: "TARA",
   ielts: "IELTS",
+  caie9709: "CAIE 9709 P3",
 };
 
 const ESSAY_PROMPT_KEY = "__selectedPrompt";

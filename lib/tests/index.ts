@@ -2,7 +2,7 @@
 import { ADDITIONAL_TESTS } from "./additional-tests";
 
 export type TestCategory = "mathematics" | "science" | "law" | "thinking" | "competition" | "english";
-export type TestPurpose = "admissions" | "college-assessment" | "offer-condition" | "language" | "legacy" | "competition";
+export type TestPurpose = "admissions" | "college-assessment" | "curriculum" | "offer-condition" | "language" | "legacy" | "competition";
 
 export interface TestTopic {
   id: string;

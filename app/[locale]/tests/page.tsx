@@ -31,6 +31,7 @@ const PURPOSES: Array<{
 }> = [
   { id: "admissions", label: "现行入学考试", labelEn: "Current admissions tests", note: "用于当前申请周期的统一或课程指定测试。" },
   { id: "college-assessment", label: "学院附加评估", labelEn: "College assessments", note: "只适用于指定学院或入围申请者，以学院通知为准。" },
+  { id: "curriculum", label: "A-Level 学科考试", labelEn: "A-Level subject exams", note: "用于课程成绩、预测分与 Offer 条件，不是大学统一入学考试。" },
   { id: "language", label: "英语要求", labelEn: "English requirements", note: "用于满足课程、Offer 或签证相关语言条件。" },
   { id: "offer-condition", label: "Offer 条件考试", labelEn: "Offer conditions", note: "通常在申请后作为录取条件，而非所有人申请前统一参加。" },
   { id: "legacy", label: "历史训练", labelEn: "Legacy training", note: "考试已停用，保留题目用于深度推理和面试训练。" },
@@ -40,6 +41,7 @@ const PURPOSES: Array<{
 const PURPOSE_BADGES: Record<TestPurpose, string> = {
   admissions: "现行入学考试",
   "college-assessment": "学院附加评估",
+  curriculum: "A-Level 学科考试",
   language: "英语要求",
   "offer-condition": "Offer 条件",
   legacy: "历史训练",

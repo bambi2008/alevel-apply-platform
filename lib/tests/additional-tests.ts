@@ -1,6 +1,8 @@
 import type { AdmissionsTest } from "./index";
+import { CAIE9709_TEST } from "./caie9709-test";
 
 export const ADDITIONAL_TESTS: AdmissionsTest[] = [
+  CAIE9709_TEST,
   {
     id: "ielts",
     name: "International English Language Testing System Academic",

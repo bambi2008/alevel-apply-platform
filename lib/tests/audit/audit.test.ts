@@ -8,11 +8,11 @@ import type { MCQQuestion } from "@/lib/tests/questions/types";
 describe("question bank audit", () => {
   it("inventories every supported test without structural blockers", () => {
     const report = buildQuestionBankAudit();
-    expect(report.totals.tests).toBe(12);
-    expect(report.totals.questions).toBe(2590);
-    expect(report.totals.mockPapers).toBe(114);
-    expect(report.totals.topicsCovered).toBe(77);
-    expect(report.totals.topicsTotal).toBe(77);
+    expect(report.totals.tests).toBe(13);
+    expect(report.totals.questions).toBe(2634);
+    expect(report.totals.mockPapers).toBe(118);
+    expect(report.totals.topicsCovered).toBe(86);
+    expect(report.totals.topicsTotal).toBe(86);
     expect(report.totals.critical).toBe(0);
     expect(report.totals.warning).toBe(0);
   });

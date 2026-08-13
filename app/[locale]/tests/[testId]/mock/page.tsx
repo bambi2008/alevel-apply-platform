@@ -16,6 +16,7 @@ import { BMO_QUESTIONS } from "@/lib/tests/questions/bmo";
 import { UCAT_QUESTIONS } from "@/lib/tests/questions/ucat";
 import { IELTS_QUESTIONS } from "@/lib/tests/questions/ielts";
 import { CSAT_QUESTIONS } from "@/lib/tests/questions/csat";
+import { CAIE9709_QUESTIONS } from "@/lib/tests/questions/caie9709";
 import type { Question, MCQQuestion, LongQuestion } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
 import type { GradeRequest, GradeResponse } from "@/app/api/grade-answer/route";
@@ -46,6 +47,7 @@ const QUESTION_BANKS: Record<string, Question[]> = {
   ucat: UCAT_QUESTIONS,
   ielts: IELTS_QUESTIONS,
   csat: CSAT_QUESTIONS,
+  caie9709: CAIE9709_QUESTIONS,
 };
 
 type ExamState = "briefing" | "running" | "grading" | "results";
