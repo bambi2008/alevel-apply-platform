@@ -4,9 +4,38 @@ import createNextIntlPlugin from "next-intl/plugin";
 const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 const nextConfig: NextConfig = {
+  distDir: process.env.NEXT_DIST_DIR || ".next",
   allowedDevOrigins: ["127.0.0.1", "localhost"],
   poweredByHeader: false,
   compress: true,
+  async redirects() {
+    const retiredSections = [
+      "applications",
+      "apply-guide",
+      "apply-prep",
+      "documents",
+      "match",
+      "reference",
+      "shortlist",
+      "study",
+      "tasks",
+      "timeline",
+      "universities",
+    ];
+
+    return [
+      ...retiredSections.map((section) => ({
+        source: `/:locale/${section}/:path*`,
+        destination: "/:locale",
+        permanent: false,
+      })),
+      {
+        source: "/:locale/english/:path*",
+        destination: "/:locale/tests/ielts",
+        permanent: false,
+      },
+    ];
+  },
   async headers() {
     const isProduction = process.env.NODE_ENV === "production";
     const contentSecurityPolicy = [

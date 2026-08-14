@@ -1,9 +1,9 @@
 "use client";
 
-import { PageHeader } from "@/components/page-header";
-
 import { useEffect, useState } from "react";
+import { BookOpen, CheckCircle2, FilePenLine, Library, Save } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { Link } from "@/i18n/navigation";
 import {
   UCAS_TOTAL_LIMIT,
   UCAS_PER_QUESTION_MIN,
@@ -107,10 +107,39 @@ export default function StatementsPage() {
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
-      <PageHeader title={t("title")} subtitle={t("intro")} icon="✍️" />
+      <header className="border-b border-[var(--border)] pb-6">
+        <p className="text-sm font-medium text-[var(--indigo)]">核心功能 4 / 4</p>
+        <h1 className="mt-2 text-3xl font-bold text-[var(--ink)] sm:text-4xl">文书工作台</h1>
+        <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)] sm:text-base">
+          从真实经历中整理素材、搭建结构、完成草稿，再进行诊断与修改。平台提供方法和反馈，不代写申请文书。
+        </p>
+      </header>
+
+      <nav aria-label="文书写作流程" className="grid grid-cols-2 border-b border-[var(--border)] sm:grid-cols-4">
+        <Link href="/background/my-projects" className="flex min-h-24 flex-col justify-center border-r border-[var(--border)] px-4 py-3 hover:bg-[var(--surface-2)]">
+          <Library className="h-5 w-5 text-[var(--indigo)]" aria-hidden="true" />
+          <span className="mt-2 text-sm font-medium text-[var(--ink)]">1. 素材库</span>
+          <span className="text-xs text-[var(--ink-faint)]">整理真实经历</span>
+        </Link>
+        <a href="#statement-structure" className="flex min-h-24 flex-col justify-center border-r border-[var(--border)] px-4 py-3 hover:bg-[var(--surface-2)]">
+          <BookOpen className="h-5 w-5 text-[var(--indigo)]" aria-hidden="true" />
+          <span className="mt-2 text-sm font-medium text-[var(--ink)]">2. 结构规划</span>
+          <span className="text-xs text-[var(--ink-faint)]">对应申请问题</span>
+        </a>
+        <a href="#statement-draft" className="flex min-h-24 flex-col justify-center border-r border-[var(--border)] px-4 py-3 hover:bg-[var(--surface-2)]">
+          <FilePenLine className="h-5 w-5 text-[var(--indigo)]" aria-hidden="true" />
+          <span className="mt-2 text-sm font-medium text-[var(--ink)]">3. 完成草稿</span>
+          <span className="text-xs text-[var(--ink-faint)]">保留自己的表达</span>
+        </a>
+        <a href="#statement-review" className="flex min-h-24 flex-col justify-center px-4 py-3 hover:bg-[var(--surface-2)]">
+          <CheckCircle2 className="h-5 w-5 text-[var(--indigo)]" aria-hidden="true" />
+          <span className="mt-2 text-sm font-medium text-[var(--ink)]">4. 点评保存</span>
+          <span className="text-xs text-[var(--ink-faint)]">修改并保存最新版</span>
+        </a>
+      </nav>
 
       {/* 英国 / 香港 切换 */}
-      <div className="mt-4 inline-flex rounded-lg border border-neutral-200 p-1 bg-neutral-50">
+      <div id="statement-structure" className="mt-6 inline-flex rounded-lg border border-neutral-200 p-1 bg-neutral-50">
         <button
           type="button"
           onClick={() => setRegion("uk")}
@@ -161,7 +190,7 @@ export default function StatementsPage() {
       </div>
 
       {/* Three questions */}
-      <div className="mt-4 space-y-6">
+      <div id="statement-draft" className="mt-4 space-y-6 scroll-mt-24">
         {questions.map((q, i) => {
           const key = KEYS[i];
           const val = content[key];
@@ -222,7 +251,7 @@ export default function StatementsPage() {
       <ImportFromProjects content={content} />
 
       {/* 整体统读点评 */}
-      <section className="mt-8 rounded-xl border border-indigo-200 bg-indigo-50/30 p-5">
+      <section id="statement-review" className="mt-8 scroll-mt-24 rounded-lg border border-indigo-200 bg-indigo-50/30 p-5">
         <div className="flex items-center justify-between gap-3">
           <div>
             <h2 className="font-semibold text-neutral-800">📋 整体点评</h2>
@@ -273,8 +302,9 @@ export default function StatementsPage() {
         <button
           type="button"
           onClick={onSave}
-          className="rounded-lg bg-blue-600 text-white px-6 py-2.5 font-medium hover:bg-blue-700"
+          className="inline-flex items-center gap-2 rounded-lg bg-blue-600 text-white px-6 py-2.5 font-medium hover:bg-blue-700"
         >
+          <Save className="h-4 w-4" aria-hidden="true" />
           {t("save")}
         </button>
         {savedAt && <span className="text-sm text-green-600">✓ {t("savedAt")}（{savedAt}）</span>}

@@ -1,10 +1,7 @@
 "use client";
 
-import { PageHeader } from "@/components/page-header";
-import { SceneGrowth } from "@/components/illustrations";
-import { Photo } from "@/components/photo";
-
 import { useEffect, useMemo, useState } from "react";
+import { ArrowRight, FlaskConical, FolderKanban, Trophy } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import {
   BACKGROUND_CATALOG,
@@ -45,7 +42,7 @@ export default function BackgroundPage() {
   const [items, setItems] = useState<BackgroundPlanItem[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [activeField, setActiveField] = useState<BgField | "AUTO">("AUTO");
-  const [activeGroup, setActiveGroup] = useState<BgGroup | "ALL">("ALL");
+  const [activeGroup, setActiveGroup] = useState<BgGroup | "ALL">("COMPETITION");
   const [customTitle, setCustomTitle] = useState("");
   const [customCat, setCustomCat] = useState("COMPETITION");
 
@@ -76,40 +73,34 @@ export default function BackgroundPage() {
 
   const reasonOf = (id: string) => scored.find((s) => s.item.id === id)?.reasons ?? [];
 
-  // 专业实践块内的两个课题入口（在线课题 / 自提课题）—— 鲜亮渐变底图
+  // 专业实践块内的两个课题入口（在线课题 / 自提课题）
   const projectEntries = (
     <div className="grid sm:grid-cols-2 gap-3 mb-4">
       <Link
         href="/background/projects"
-        className="card-hover block rounded-2xl bg-gradient-to-br from-indigo-500 to-violet-600 text-white p-5 shadow-lg shadow-indigo-500/20 hover:shadow-xl hover:shadow-indigo-500/30"
+        className="group block border border-[var(--border)] bg-white p-5 hover:border-[var(--indigo)]"
       >
-        <div className="flex items-center gap-3 mb-1">
-          <span className="flex items-center justify-center w-14 h-14 rounded-xl bg-white/20 text-3xl shrink-0">🛠️</span>
+        <div className="flex items-start gap-3">
+          <FlaskConical className="mt-0.5 h-5 w-5 shrink-0 text-[var(--indigo)]" aria-hidden="true" />
           <div className="flex-1 min-w-0">
-            <p className="text-[11px] font-bold text-white/80 tracking-wide">平台特色 · 强烈推荐</p>
-            <p className="text-lg font-bold leading-tight">在线课题 · 做出真实产出</p>
+            <p className="font-semibold text-[var(--ink)]">在线专业课题</p>
+            <p className="mt-1 text-sm leading-6 text-[var(--ink-soft)]">按阶段完成研究与工程任务，形成可验证的作品、报告或实验记录。</p>
           </div>
-          <span className="text-white text-2xl shrink-0">→</span>
+          <ArrowRight className="h-4 w-4 shrink-0 text-[var(--ink-faint)] group-hover:text-[var(--indigo)]" aria-hidden="true" />
         </div>
-        <p className="text-sm text-white/90">
-          贴近专业、分阶段引导的高含金量课题（工程方向已上线）——比「给个题自己做」更扎实，产出可写入文书与作品集。
-        </p>
       </Link>
       <Link
         href="/background/my-projects"
-        className="card-hover block rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 text-white p-5 shadow-lg shadow-orange-500/20 hover:shadow-xl hover:shadow-orange-500/30"
+        className="group block border border-[var(--border)] bg-white p-5 hover:border-[var(--indigo)]"
       >
-        <div className="flex items-center gap-3 mb-1">
-          <span className="flex items-center justify-center w-14 h-14 rounded-xl bg-white/25 text-3xl shrink-0">💡</span>
+        <div className="flex items-start gap-3">
+          <FolderKanban className="mt-0.5 h-5 w-5 shrink-0 text-[var(--indigo)]" aria-hidden="true" />
           <div className="flex-1 min-w-0">
-            <p className="text-[11px] font-bold text-white/90 tracking-wide">有想法就交给平台</p>
-            <p className="text-lg font-bold leading-tight">我的自提课题 · 提交你自己的研究</p>
+            <p className="font-semibold text-[var(--ink)]">我的专业实践</p>
+            <p className="mt-1 text-sm leading-6 text-[var(--ink-soft)]">记录自提研究、实践过程与产出，并沉淀为可用于文书的真实素材。</p>
           </div>
-          <span className="text-white text-2xl shrink-0">→</span>
+          <ArrowRight className="h-4 w-4 shrink-0 text-[var(--ink-faint)] group-hover:text-[var(--indigo)]" aria-hidden="true" />
         </div>
-        <p className="text-sm text-white/95">
-          有自己的研究想法？把它交给平台，AI 帮你梳理成规范课题，记录过程、产出个人陈述素材。
-        </p>
       </Link>
     </div>
   );
@@ -129,18 +120,33 @@ export default function BackgroundPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8">
-      <div className="grid lg:grid-cols-[1fr_auto] gap-8 items-center mb-8">
-        <div className="[&>div]:mb-0">
-          <PageHeader title="背景提升" subtitle="背景提升分为「竞赛」与「专业实践」两大类：竞赛用名次奖项证明实力，专业实践靠科研/论文/夏校等经历积累素材。推荐已按你的档案个性化排序。" icon="🌟" />
-        </div>
-        <Photo
-          src="/images/background-project.jpg"
-          alt="背景提升"
-          className="hidden lg:block w-[280px]"
-          imgClassName="h-auto w-full rounded-2xl object-cover aspect-[4/3]"
-          fallback={<SceneGrowth className="w-full h-auto rounded-2xl doodle-idle" />}
-        />
-      </div>
+      <header className="border-b border-[var(--border)] pb-6">
+        <p className="text-sm font-medium text-[var(--indigo)]">核心功能 2 / 4</p>
+        <h1 className="mt-2 text-3xl font-bold text-[var(--ink)] sm:text-4xl">竞赛与专业实践</h1>
+        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--ink-soft)] sm:text-base">
+          竞赛用于系统训练与能力证明，专业实践用于完成真实研究、工程任务和可展示产出。两类经历分别规划，不再混入申请待办。
+        </p>
+      </header>
+
+      <nav aria-label="背景提升分类" className="mb-8 grid grid-cols-3 border-b border-[var(--border)]">
+        <button
+          type="button"
+          onClick={() => setActiveGroup("COMPETITION")}
+          className={`flex min-h-20 items-center justify-center gap-2 border-r border-[var(--border)] px-3 text-sm font-medium ${activeGroup === "COMPETITION" ? "border-b-2 border-b-[var(--indigo)] text-[var(--indigo)]" : "text-[var(--ink-soft)] hover:bg-[var(--surface-2)]"}`}
+        >
+          <Trophy className="h-4 w-4" aria-hidden="true" /> 竞赛提升
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveGroup("PROFESSIONAL")}
+          className={`flex min-h-20 items-center justify-center gap-2 border-r border-[var(--border)] px-3 text-sm font-medium ${activeGroup === "PROFESSIONAL" ? "border-b-2 border-b-[var(--indigo)] text-[var(--indigo)]" : "text-[var(--ink-soft)] hover:bg-[var(--surface-2)]"}`}
+        >
+          <FlaskConical className="h-4 w-4" aria-hidden="true" /> 专业实践
+        </button>
+        <a href="#background-plan" className="flex min-h-20 items-center justify-center gap-2 px-3 text-sm font-medium text-[var(--ink-soft)] hover:bg-[var(--surface-2)]">
+          <FolderKanban className="h-4 w-4" aria-hidden="true" /> 我的进度
+        </a>
+      </nav>
 
       {/* 进度提醒 */}
       {reminders.length > 0 && (
@@ -194,32 +200,6 @@ export default function BackgroundPage() {
           </div>
         </div>
 
-        {/* 顶层两大类：竞赛 / 专业实践（鲜亮实色底图） */}
-        <div className="flex items-center gap-3 flex-wrap mb-2">
-          <button
-            onClick={() => setActiveGroup("ALL")}
-            className={`px-5 py-3 rounded-xl text-lg font-bold transition ${activeGroup === "ALL" ? "bg-[var(--ink)] text-white shadow-md" : "bg-[var(--surface-2)] text-[var(--ink-soft)] hover:bg-[var(--border)]"}`}
-          >
-            全部
-          </button>
-          {BG_GROUPS.map((g) => {
-            const bright =
-              g.value === "COMPETITION"
-                ? "bg-amber-400 hover:bg-amber-500"
-                : "bg-indigo-500 hover:bg-indigo-600";
-            const ring = g.value === "COMPETITION" ? "ring-amber-200" : "ring-indigo-200";
-            return (
-              <button
-                key={g.value}
-                onClick={() => setActiveGroup(g.value)}
-                className={`px-6 py-3 rounded-xl text-lg font-bold text-white transition ${bright} ${activeGroup === g.value ? `ring-4 ${ring} shadow-lg` : "opacity-90 hover:opacity-100"}`}
-              >
-                <span className="text-2xl mr-1.5 align-middle">{g.emoji}</span>
-                {g.label}
-              </button>
-            );
-          })}
-        </div>
         {activeGroup !== "ALL" && (
           <p className="text-sm text-[var(--ink-faint)] mb-3">
             {BG_GROUPS.find((g) => g.value === activeGroup)?.desc}
@@ -281,9 +261,9 @@ export default function BackgroundPage() {
                         {c.testId && (
                           <Link
                             href={`/tests/${c.testId}`}
-                            className="text-sm rounded-lg py-1.5 px-3 bg-amber-400 text-white font-medium hover:bg-amber-500 whitespace-nowrap"
+                            className="text-sm rounded-lg py-1.5 px-3 border border-[var(--indigo)] text-[var(--indigo)] font-medium hover:bg-[var(--info-bg)] whitespace-nowrap"
                           >
-                            去做题 →
+                            进入竞赛题库
                           </Link>
                         )}
                       </div>
@@ -302,7 +282,7 @@ export default function BackgroundPage() {
       </section>
 
       {/* 我的规划 */}
-      <section>
+      <section id="background-plan" className="scroll-mt-24">
         <h2 className="text-lg font-semibold mb-3">我的规划（{items.length}）</h2>
 
         {/* 自定义添加 */}
