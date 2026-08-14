@@ -110,7 +110,7 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
   if (registrationError) return { error: registrationError };
 
   // 注册后自动登录（成功会抛出重定向）
-  await signIn("credentials", { email, password, redirectTo: "/profile" });
+  await signIn("credentials", { email, password, redirectTo: "/" });
   return {};
 }
 

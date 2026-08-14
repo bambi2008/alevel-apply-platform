@@ -20,7 +20,6 @@ const CATEGORY_TABS: { id: TestCategory | "all"; label: string; labelEn: string 
   { id: "thinking", label: "思维", labelEn: "Thinking" },
   { id: "law", label: "法学", labelEn: "Law" },
   { id: "english", label: "英语", labelEn: "English" },
-  { id: "competition", label: "竞赛", labelEn: "Competition" },
 ];
 
 const PURPOSES: Array<{
@@ -35,7 +34,6 @@ const PURPOSES: Array<{
   { id: "language", label: "英语要求", labelEn: "English requirements", note: "用于满足课程、Offer 或签证相关语言条件。" },
   { id: "offer-condition", label: "Offer 条件考试", labelEn: "Offer conditions", note: "通常在申请后作为录取条件，而非所有人申请前统一参加。" },
   { id: "legacy", label: "历史训练", labelEn: "Legacy training", note: "考试已停用，保留题目用于深度推理和面试训练。" },
-  { id: "competition", label: "竞赛提升", labelEn: "Competition enrichment", note: "学术竞赛与能力证明，不是大学入学考试。" },
 ];
 
 const PURPOSE_BADGES: Record<TestPurpose, string> = {
@@ -50,17 +48,18 @@ const PURPOSE_BADGES: Record<TestPurpose, string> = {
 
 export default function TestsPage() {
   const [activeCategory, setActiveCategory] = useState<TestCategory | "all">("all");
+  const examTests = ADMISSIONS_TESTS.filter((test) => getTestPurpose(test) !== "competition");
   const filtered = activeCategory === "all"
-    ? ADMISSIONS_TESTS
-    : ADMISSIONS_TESTS.filter((test) => test.category === activeCategory);
+    ? examTests
+    : examTests.filter((test) => test.category === activeCategory);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-10">
       <div className="grid gap-8 items-center mb-8 lg:grid-cols-[minmax(0,1fr)_300px]">
         <div className="min-w-0 [&>div]:mb-0">
           <PageHeader
-            title="考试与能力训练"
-            subtitle="先分清考试用途，再进入专项练习、固定套卷、学情分析与自适应训练。"
+            title="考试训练中心"
+            subtitle="入学考试与 A-Level 学科考试：专项练习、完整模考、知识复习与学习分析。"
             icon="A+"
           />
         </div>
@@ -74,7 +73,7 @@ export default function TestsPage() {
 
       <div className="mb-8 border-l-4 border-[var(--indigo)] bg-[var(--info-bg)] px-4 py-3 text-sm text-[var(--ink-soft)]">
         <span className="font-semibold text-[var(--indigo)]">用途提示：</span>
-        MAT / PAT 已停用，标为“历史训练”；BMO / BPhO 是“竞赛提升”；STEP 通常属于 Offer 条件。
+        MAT / PAT 已停用，标为“历史训练”；BMO / BPhO 已移至“竞赛与专业实践”；STEP 通常属于 Offer 条件。
         当前考试要求会随申请周期和课程变化，请同时核对院校与考试机构官网。
       </div>
 

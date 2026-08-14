@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { routing, type AppLocale } from "@/i18n/routing";
-import { TopNav } from "@/components/top-nav";
+import { CoreTopNav } from "@/components/core-top-nav";
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
 import "../globals.css";
@@ -66,7 +66,7 @@ export default async function LocaleLayout({
     <html lang={locale} className="h-full antialiased">
       <body className="min-h-full flex flex-col bg-white text-neutral-900">
         <NextIntlClientProvider messages={messages}>
-          <TopNav
+          <CoreTopNav
             userEmail={user?.email ?? null}
             isAdmin={user?.role === "ADMIN"}
             isLoggedIn={isLoggedIn}

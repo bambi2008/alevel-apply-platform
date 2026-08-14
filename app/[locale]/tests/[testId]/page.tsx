@@ -9,7 +9,7 @@ import { getKnowledgeByTopicId } from "@/lib/tests/knowledge";
 import { REGISTRATION_INFO } from "@/lib/tests/registration";
 import { ExamTimer, getTimerPresets } from "@/components/exam-timer";
 import { getMockPapersForTest } from "@/lib/tests/mock-papers";
-import { ArrowRight, FileText } from "lucide-react";
+import { ArrowRight, BookOpenCheck, FileText, Timer } from "lucide-react";
 import { AdaptiveLearningPanel } from "@/components/adaptive-learning-panel";
 import { ExamReadinessPanel } from "@/components/exam-readiness-panel";
 
@@ -25,7 +25,7 @@ export default function TestDetailPage({
   return <TestDetailContent test={test} />;
 }
 
-type TabId = "overview" | "topics" | "plan" | "practice" | "history" | "analysis" | "readiness";
+type TabId = "overview" | "topics" | "history" | "analysis";
 
 function TestDetailContent({ test }: { test: AdmissionsTest }) {
   const searchParams = useSearchParams();
@@ -38,13 +38,15 @@ function TestDetailContent({ test }: { test: AdmissionsTest }) {
   const tabs: { id: TabId; label: string; labelEn: string }[] = [
     { id: "overview", label: "考试结构", labelEn: "Structure" },
     { id: "topics", label: "知识点模块", labelEn: "Topics" },
-    { id: "plan", label: "备考计划", labelEn: "Study Plan" },
-    { id: "practice", label: "练习 / 模拟", labelEn: "Practice" },
-    ...(test.hasQuestionBank ? [{ id: "history" as TabId, label: "历史记录", labelEn: "History" }] : []),
-    ...(test.hasQuestionBank ? [{ id: "analysis" as TabId, label: "学情分析", labelEn: "Analysis" }] : []),
-    ...(test.hasQuestionBank ? [{ id: "readiness" as TabId, label: "考前冲刺", labelEn: "Readiness" }] : []),
+    { id: "history", label: "历史记录", labelEn: "History" },
+    { id: "analysis", label: "学前分析", labelEn: "Analysis" },
   ];
-  const tab = tabs.some((item) => item.id === requestedTab) ? requestedTab as TabId : "overview";
+  const normalizedTab = requestedTab === "plan" || requestedTab === "readiness"
+    ? "analysis"
+    : requestedTab === "practice"
+      ? "overview"
+      : requestedTab;
+  const tab = tabs.some((item) => item.id === normalizedTab) ? normalizedTab as TabId : "overview";
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
@@ -116,6 +118,29 @@ function TestDetailContent({ test }: { test: AdmissionsTest }) {
         )}
       </div>
 
+      {test.hasQuestionBank ? (
+        <div className="mb-8 grid gap-3 sm:grid-cols-2">
+          <Link
+            href={`/tests/${test.id}/practice`}
+            className="flex min-h-16 items-center justify-between rounded-lg border border-[var(--border)] bg-white px-5 py-4 font-semibold text-[var(--ink)] transition hover:border-[color:var(--indigo)]/40 hover:bg-[var(--info-bg)]"
+          >
+            <span className="flex items-center gap-3"><BookOpenCheck className="size-5 text-[var(--indigo)]" />专项练习</span>
+            <ArrowRight className="size-4 text-[var(--indigo)]" />
+          </Link>
+          <Link
+            href={`/tests/${test.id}/mock`}
+            className="flex min-h-16 items-center justify-between rounded-lg bg-[var(--indigo)] px-5 py-4 font-semibold text-white transition hover:opacity-90"
+          >
+            <span className="flex items-center gap-3"><Timer className="size-5" />完整模考</span>
+            <ArrowRight className="size-4" />
+          </Link>
+        </div>
+      ) : (
+        <a href={test.officialSampleUrl} target="_blank" rel="noopener noreferrer" className="mb-8 inline-flex items-center gap-2 rounded-lg border border-[var(--border)] px-4 py-3 text-sm font-semibold text-[var(--indigo)]">
+          查看官方练习材料 <ArrowRight className="size-4" />
+        </a>
+      )}
+
       {/* Tabs */}
       <div className="flex gap-1 border-b border-[var(--border)] mb-6 overflow-x-auto">
         {tabs.map((t) => (
@@ -138,11 +163,8 @@ function TestDetailContent({ test }: { test: AdmissionsTest }) {
       {/* Tab content */}
       {tab === "overview" && <OverviewTab test={test} />}
       {tab === "topics" && <TopicsTab test={test} />}
-      {tab === "plan" && <PlanTab test={test} />}
-      {tab === "practice" && <PracticeTab test={test} />}
       {tab === "history" && <HistoryTab test={test} />}
       {tab === "analysis" && <AnalysisTab test={test} />}
-      {tab === "readiness" && <ExamReadinessPanel testId={test.id} />}
     </div>
   );
 }
@@ -644,7 +666,13 @@ function HistoryTab({ test }: { test: AdmissionsTest }) {
 }
 
 function AnalysisTab({ test }: { test: AdmissionsTest }) {
-  return <AdaptiveLearningPanel testId={test.id} variant="analysis" />;
+  return (
+    <div className="space-y-8">
+      <AdaptiveLearningPanel testId={test.id} variant="analysis" />
+      <AdaptiveLearningPanel testId={test.id} variant="plan" />
+      <ExamReadinessPanel testId={test.id} />
+    </div>
+  );
 }
 
 function Section({

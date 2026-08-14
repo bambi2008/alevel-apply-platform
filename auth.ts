@@ -210,7 +210,7 @@ export async function signIn(
   }
 
   await issueSession(user.id, requestHeaders);
-  redirect(safeRedirect(options.redirectTo, "/profile"));
+  redirect(safeRedirect(options.redirectTo, "/"));
 }
 
 export async function signOut(options: { redirectTo?: string } = {}) {
