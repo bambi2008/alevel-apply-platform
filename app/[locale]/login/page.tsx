@@ -21,14 +21,14 @@ export default function LoginPage() {
       <div className="hidden lg:block">
         <span className="ucas-accent-bar" />
         <h1 className="ucas-title" style={{ fontSize: "clamp(2rem,3vw,2.8rem)" }}>
-          自己掌控<br />你的留学申请
+          进入你的<br />核心训练
         </h1>
         <p className="mt-4 text-lg text-[var(--ink-soft)] max-w-md">
-          选校匹配、院校数据库、申请追踪、文书工具——透明、流程化、低成本。
+          考试训练、竞赛与专业实践、面试、文书，四个入口，直接从当前目标开始。
         </p>
         <Photo
           src="/images/hero-student.jpg"
-          alt="桥申"
+          alt="桥申四核心训练"
           className="mt-8 w-full max-w-md"
           imgClassName="h-auto w-full rounded-2xl object-cover aspect-[4/3]"
           fallback={<HeroBridge className="w-full h-auto doodle-idle" />}

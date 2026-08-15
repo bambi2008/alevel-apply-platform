@@ -17,14 +17,14 @@ export default function RegisterPage() {
       <div className="hidden lg:block">
         <span className="ucas-accent-bar" />
         <h1 className="ucas-title" style={{ fontSize: "clamp(2rem,3vw,2.8rem)" }}>
-          开始你的<br />申请之旅
+          建立你的<br />训练档案
         </h1>
         <p className="mt-4 text-lg text-[var(--ink-soft)] max-w-md">
-          注册即可免费试用选校匹配、院校数据库与备考工具，全流程透明可控。
+          注册后进入四个核心功能：入学考试、竞赛与专业实践、面试和文书。
         </p>
         <Photo
           src="/images/register-start.jpg"
-          alt="开始申请"
+          alt="开始四核心训练"
           className="mt-8 w-full max-w-md"
           imgClassName="h-auto w-full rounded-2xl object-cover aspect-[4/3]"
           fallback={<SceneGrowth className="w-full h-auto doodle-idle" />}
