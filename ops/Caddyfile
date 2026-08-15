@@ -15,3 +15,17 @@ www.{$APP_DOMAIN} {
     format json
   }
 }
+
+{$BETA_DOMAIN} {
+  encode zstd gzip
+  reverse_proxy qiaoshen-core-beta-app:3000
+
+  header {
+    -Server
+  }
+
+  log {
+    output stdout
+    format json
+  }
+}

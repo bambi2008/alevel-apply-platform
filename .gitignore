@@ -39,6 +39,7 @@ yarn-error.log*
 !.env.production.example
 !.env.preproduction.example
 !.env.core-beta.example
+!.env.core-beta.same-host.example
 
 # local file storage (dev storage adapter)
 /.storage
