@@ -36,7 +36,8 @@
     "drill:preproduction": "node scripts/preproduction-drill.mjs",
     "monitor:production": "node scripts/monitor-production.mjs",
     "check:beta-capacity": "node scripts/beta-capacity-check.mjs",
-    "check:beta-data-capacity": "node scripts/beta-data-capacity-check.mjs"
+    "check:beta-data-capacity": "node scripts/beta-data-capacity-check.mjs",
+    "smoke:core-beta": "node scripts/smoke-core-beta.mjs"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"

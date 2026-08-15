@@ -1,0 +1,120 @@
+name: qiaoshen-core-beta
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - qiaoshen_core_beta_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - backend
+
+  app:
+    image: ${APP_IMAGE:-qiaoshen-core-beta:local}
+    build:
+      context: .
+      target: production
+    restart: unless-stopped
+    env_file:
+      - ${APP_ENV_FILE:-.env.core-beta}
+    environment:
+      APP_RELEASE: ${APP_RELEASE:-core-beta-local}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - qiaoshen_core_beta_app_storage:/app/.storage
+      - ./backups-core-beta:/backups
+    expose:
+      - "3000"
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))",
+        ]
+      interval: 30s
+      timeout: 5s
+      start_period: 45s
+      retries: 3
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      - frontend
+      - backend
+
+  backup:
+    image: ${APP_IMAGE:-qiaoshen-core-beta:local}
+    build:
+      context: .
+      target: production
+    restart: unless-stopped
+    env_file:
+      - ${APP_ENV_FILE:-.env.core-beta}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command:
+      [
+        "sh",
+        "-c",
+        "while true; do node scripts/backup-production.mjs; sleep 86400; done",
+      ]
+    volumes:
+      - qiaoshen_core_beta_app_storage:/app/.storage:ro
+      - ./backups-core-beta:/backups
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    networks:
+      - backend
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    environment:
+      APP_DOMAIN: ${APP_DOMAIN}
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./ops/Caddyfile.core-beta:/etc/caddy/Caddyfile:ro
+      - qiaoshen_core_beta_caddy_data:/data
+      - qiaoshen_core_beta_caddy_config:/config
+    networks:
+      - frontend
+
+volumes:
+  qiaoshen_core_beta_postgres_data:
+    name: qiaoshen_core_beta_postgres_data
+  qiaoshen_core_beta_app_storage:
+    name: qiaoshen_core_beta_app_storage
+  qiaoshen_core_beta_caddy_data:
+    name: qiaoshen_core_beta_caddy_data
+  qiaoshen_core_beta_caddy_config:
+    name: qiaoshen_core_beta_caddy_config
+
+networks:
+  frontend:
+    name: qiaoshen_core_beta_frontend
+  backend:
+    name: qiaoshen_core_beta_backend
+    internal: true
