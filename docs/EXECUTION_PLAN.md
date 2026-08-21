@@ -53,6 +53,7 @@ The experience must be direct and clear: after sign-in, students choose one of t
 - CAIE 9709 P3 expanded from 44 to 88 original questions and from four to eight fixed 11-question papers. Each paper remains 110 minutes and 75 marks. New work was checked against the official Cambridge 2026–2027 P3 syllabus and passed five focused suites covering IDs and whole-question fingerprints, the nine-topic P3 allowlist, per-part answer completeness, difficulty marks, topic/paper balance, and independent recomputation of all four new iterative answers; `pnpm typecheck` and `git diff --check` passed.
 - Mathematics and physics interview banks each expanded from two to six prompts. Each subject now has four explicitly marked challenge prompts with a timebox, format, at least four assessed skills, a full reasoning path, and three staged follow-ups. Five content/difficulty audits and five existing quantitative-interview regression tests passed; `pnpm typecheck` and `git diff --check` passed.
 - Final local acceptance passed: all 260 Vitest tests, full TypeScript checking, Prisma schema validation, a production build, and ESLint across 524 tracked JavaScript/TypeScript files completed successfully. Desktop (1440×900) and mobile (390×844) browser checks verified the interview entry points, intent-filtered exam list, registration intent fields, zero horizontal overflow, and zero browser console errors. The registration hero was corrected to use an existing production asset after the HTTP resource check identified the stale image path.
+- The verified implementation was committed as `4fe431e` and pushed to `origin/codex/core-four-redesign`; logs, caches, temporary files, build output, secrets, and the pre-existing `tsconfig.json` line-ending-only state were excluded.
 
 ## Current Milestone
 
@@ -74,7 +75,8 @@ Deploy and verify the Beta without modifying production.
 ## Current Blockers
 
 - No code blocker is known.
-- Real API keys, server environment values, DNS, and deployment access are external operational dependencies and must never be committed.
+- Beta DNS and the existing deployment are healthy, but this workstation has no SSH configuration or authenticated server deployment entry. Pulling `4fe431e` and rebuilding `/opt/qiaoshen-core-beta` is blocked on external server access; production must remain untouched.
+- Real API keys and server environment values are external operational dependencies and must never be committed.
 
 ## Latest Verification Snapshot
 
@@ -90,3 +92,5 @@ Deploy and verify the Beta without modifying production.
 - Production build: passed using an isolated local Next.js output directory to avoid a lock held by an unrelated existing process.
 - Desktop/mobile browser acceptance: passed at 1440×900 and 390×844; intent filtering retained CAIE 9709 and excluded LNAT/CSAT for Cambridge aerospace intent, registration fields rendered, no horizontal overflow occurred, and browser console errors remained at zero.
 - Local HTTP resource checks: interview, tests, and registration pages returned HTTP 200 with all page resources available after correcting the registration hero path.
+- Git delivery: `4fe431e` pushed successfully to `origin/codex/core-four-redesign` on 2026-08-22.
+- Pre-deployment Beta baseline: `https://beta.qiaoshenedu.com/api/health` returned HTTP 200 with `status: ok`; database and storage checks both reported `ok` before the pending server pull/rebuild.
