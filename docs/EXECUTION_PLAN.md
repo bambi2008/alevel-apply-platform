@@ -94,3 +94,4 @@ Deploy and verify the Beta without modifying production.
 - Local HTTP resource checks: interview, tests, and registration pages returned HTTP 200 with all page resources available after correcting the registration hero path.
 - Git delivery: `4fe431e` pushed successfully to `origin/codex/core-four-redesign` on 2026-08-22.
 - Pre-deployment Beta baseline: `https://beta.qiaoshenedu.com/api/health` returned HTTP 200 with `status: ok`; database and storage checks both reported `ok` before the pending server pull/rebuild.
+- Pre-deployment public smoke: health, home, tests, background, interview, and statements all returned HTTP 200; `scripts/smoke-core-beta.mjs` reported `smoke passed` on 2026-08-22.
