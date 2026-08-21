@@ -30,6 +30,12 @@ export async function getProfileAction(): Promise<{
     include: { subjects: true, testScores: true },
   });
   if (!sp) return { authed: true, profile: null };
+  const universityIntent = await db.$queryRaw<Array<{ intendedUniversities: string[] }>>(
+    Prisma.sql`SELECT "intendedUniversities"
+      FROM "StudentProfile"
+      WHERE "id" = ${sp.id}
+      LIMIT 1`,
+  );
 
   const ielts = sp.testScores.find((t) => t.type === "IELTS");
   const profile: UserProfile = {
@@ -37,6 +43,7 @@ export async function getProfileAction(): Promise<{
     school: sp.school ?? undefined,
     intakeYear: sp.intakeYear ?? undefined,
     targetRegions: sp.targetRegions as Region[],
+    intendedUniversities: universityIntent[0]?.intendedUniversities ?? [],
     intendedMajors: sp.intendedMajors,
     subjects: sp.subjects.map((s) => ({
       subject: s.subject,
@@ -123,6 +130,16 @@ export async function saveProfileAction(
     update: profileComplete ? { onboardingCompletedAt: new Date(), lastActiveAt: new Date() } : { lastActiveAt: new Date() },
     create: { studentId: sp.id, onboardingCompletedAt: profileComplete ? new Date() : null },
   });
+
+  if (p.intendedUniversities) {
+    await db.$executeRaw(
+      Prisma.sql`UPDATE "StudentProfile"
+        SET "intendedUniversities" = ARRAY(
+          SELECT jsonb_array_elements_text(${JSON.stringify(p.intendedUniversities)}::jsonb)
+        )
+        WHERE "id" = ${sp.id}`,
+    );
+  }
   await recordLearningEvent({
     studentId: sp.id,
     type: "ACTIVE_DAY",

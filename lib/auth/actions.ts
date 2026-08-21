@@ -1,6 +1,7 @@
 "use server";
 
 import bcrypt from "bcryptjs";
+import { Prisma } from "@prisma/client";
 import { z } from "zod";
 import { headers } from "next/headers";
 import { db } from "@/lib/db";
@@ -18,11 +19,14 @@ import {
   hashInviteCode,
   normalizeInviteCode,
 } from "@/lib/beta/invites";
+import { parseRegistrationIntent, registrationIntentSchema } from "@/lib/auth/registration-intent";
 
 const schema = z.object({
   email: z.string().email(),
   password: z.string().refine(isStrongPassword),
   inviteCode: z.string().min(8).max(32),
+  intendedUniversities: registrationIntentSchema,
+  intendedMajors: registrationIntentSchema,
 });
 
 export type AuthState = {
@@ -33,13 +37,15 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
   const email = normalizeEmail(formData.get("email"));
   const password = String(formData.get("password") ?? "");
   const inviteCode = normalizeInviteCode(formData.get("inviteCode"));
+  const intendedUniversities = parseRegistrationIntent(formData.get("intendedUniversities"));
+  const intendedMajors = parseRegistrationIntent(formData.get("intendedMajors"));
   const privacyConsent = formData.get("privacyConsent") === "on";
   const termsConsent = formData.get("termsConsent") === "on";
   const crossBorderConsent = formData.get("crossBorderConsent") === "on";
   const guardian = formData.get("guardian") === "on";
 
   if (!privacyConsent || !termsConsent) return { error: "CONSENT_REQUIRED" };
-  const parsed = schema.safeParse({ email, password, inviteCode });
+  const parsed = schema.safeParse({ email, password, inviteCode, intendedUniversities, intendedMajors });
   if (!parsed.success) return { error: "INVALID" };
   const requestHeaders = await headers();
   const limit = await consumePersistentRateLimit(
@@ -85,11 +91,22 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
         passwordHash,
         role: "STUDENT",
         consents: { create: consents },
-        profile: { create: {} },
+        profile: {
+          create: {
+            intendedMajors: parsed.data.intendedMajors,
+          },
+        },
       },
       select: { id: true, profile: { select: { id: true } } },
     });
     if (!user.profile) throw new Error("Student profile was not created");
+    await tx.$executeRaw(
+      Prisma.sql`UPDATE "StudentProfile"
+        SET "intendedUniversities" = ARRAY(
+          SELECT jsonb_array_elements_text(${JSON.stringify(parsed.data.intendedUniversities)}::jsonb)
+        )
+        WHERE "id" = ${user.profile.id}`,
+    );
     await tx.betaParticipant.create({
       data: { studentId: user.profile.id, cohort: BETA_COHORT, source: "EMAIL_INVITE" },
     });

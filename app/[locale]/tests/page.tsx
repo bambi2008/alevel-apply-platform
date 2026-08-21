@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { PageHeader } from "@/components/page-header";
 import { Photo } from "@/components/photo";
@@ -12,6 +12,8 @@ import {
   type TestCategory,
   type TestPurpose,
 } from "@/lib/tests";
+import { filterTestsForIntent, hasTestIntent } from "@/lib/tests/intent-filter";
+import { loadProfile, type UserProfile } from "@/lib/profile/store";
 
 const CATEGORY_TABS: { id: TestCategory | "all"; label: string; labelEn: string }[] = [
   { id: "all", label: "全部", labelEn: "All" },
@@ -48,7 +50,22 @@ const PURPOSE_BADGES: Record<TestPurpose, string> = {
 
 export default function TestsPage() {
   const [activeCategory, setActiveCategory] = useState<TestCategory | "all">("all");
-  const examTests = ADMISSIONS_TESTS.filter((test) => getTestPurpose(test) !== "competition");
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profileLoaded, setProfileLoaded] = useState(false);
+
+  useEffect(() => {
+    loadProfile()
+      .then(setProfile)
+      .finally(() => setProfileLoaded(true));
+  }, []);
+
+  const examTests = profileLoaded
+    ? filterTestsForIntent(
+        ADMISSIONS_TESTS.filter((test) => getTestPurpose(test) !== "competition"),
+        profile,
+      )
+    : [];
+  const availableCategories = new Set(examTests.map((test) => test.category));
   const filtered = activeCategory === "all"
     ? examTests
     : examTests.filter((test) => test.category === activeCategory);
@@ -77,8 +94,14 @@ export default function TestsPage() {
         当前考试要求会随申请周期和课程变化，请同时核对院校与考试机构官网。
       </div>
 
+      {profileLoaded && hasTestIntent(profile) && (
+        <p className="mb-5 text-sm text-[var(--ink-soft)]">
+          已根据你的意向院校、意向专业和在读科目筛选当前相关考试。
+        </p>
+      )}
+
       <div className="flex gap-2 mb-8 overflow-x-auto pb-1" aria-label="按学科筛选">
-        {CATEGORY_TABS.map((tab) => (
+        {CATEGORY_TABS.filter((tab) => tab.id === "all" || availableCategories.has(tab.id)).map((tab) => (
           <button
             key={tab.id}
             type="button"
@@ -94,7 +117,9 @@ export default function TestsPage() {
         ))}
       </div>
 
-      <div className="space-y-10">
+      {!profileLoaded ? (
+        <p className="py-12 text-center text-sm text-[var(--ink-faint)]">正在读取你的训练档案…</p>
+      ) : <div className="space-y-10">
         {PURPOSES.map((purpose) => {
           const tests = filtered.filter((test) => getTestPurpose(test) === purpose.id);
           if (tests.length === 0) return null;
@@ -110,7 +135,7 @@ export default function TestsPage() {
             </section>
           );
         })}
-      </div>
+      </div>}
 
       <p className="mt-10 text-xs text-[var(--ink-faint)] text-center">
         考试用途、学院安排和英语门槛以当前申请周期的院校官网、考试机构官网及个人 Offer 为准。

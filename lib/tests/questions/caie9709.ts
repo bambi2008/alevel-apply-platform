@@ -1,4 +1,5 @@
 import type { LongPart, LongQuestion } from "./types";
+import { CAIE9709_P3_EXPANSION_QUESTIONS } from "./caie9709-expansion";
 
 type QuestionInput = {
   id: string;
@@ -341,4 +342,5 @@ export const CAIE9709_QUESTIONS: LongQuestion[] = [
   ...CAIE9709_P3_MOCK_2,
   ...CAIE9709_P3_MOCK_3,
   ...CAIE9709_P3_MOCK_4,
+  ...CAIE9709_P3_EXPANSION_QUESTIONS,
 ];

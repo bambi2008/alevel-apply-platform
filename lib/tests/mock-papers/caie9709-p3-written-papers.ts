@@ -5,12 +5,22 @@ import {
   CAIE9709_P3_MOCK_3,
   CAIE9709_P3_MOCK_4,
 } from "@/lib/tests/questions/caie9709";
+import {
+  CAIE9709_P3_MOCK_5,
+  CAIE9709_P3_MOCK_6,
+  CAIE9709_P3_MOCK_7,
+  CAIE9709_P3_MOCK_8,
+} from "@/lib/tests/questions/caie9709-expansion";
 
 const papers = [
   CAIE9709_P3_MOCK_1,
   CAIE9709_P3_MOCK_2,
   CAIE9709_P3_MOCK_3,
   CAIE9709_P3_MOCK_4,
+  CAIE9709_P3_MOCK_5,
+  CAIE9709_P3_MOCK_6,
+  CAIE9709_P3_MOCK_7,
+  CAIE9709_P3_MOCK_8,
 ];
 
 export const CAIE9709_P3_WRITTEN_PAPERS: MockPaper[] = papers.map((questions, index) => ({

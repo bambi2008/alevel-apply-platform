@@ -178,6 +178,7 @@ model StudentProfile {
   isMinor         Boolean             @default(false)
   intakeYear      Int?
   targetRegions   Region[]
+  intendedUniversities String[]          @default([])
   intendedMajors  String[]
   budgetNote      String?
   guideProgress   Json? // 申请指南清单进度：ModuleProgress[]

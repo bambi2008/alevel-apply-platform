@@ -25,6 +25,7 @@ export interface UserProfile {
   school?: string;
   intakeYear?: number;
   targetRegions: Region[];
+  intendedUniversities?: string[];
   intendedMajors: string[];
   subjects: ProfileSubject[];
   ielts?: number | null;
@@ -35,6 +36,7 @@ const KEY = "alevel:profile:v1";
 
 export const emptyProfile: UserProfile = {
   targetRegions: ["UK", "HK"],
+  intendedUniversities: [],
   intendedMajors: [],
   subjects: [
     { subject: "Mathematics", grade: "A*", kind: "PREDICTED" },

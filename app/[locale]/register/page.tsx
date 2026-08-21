@@ -23,7 +23,7 @@ export default function RegisterPage() {
           注册后进入四个核心功能：入学考试、竞赛与专业实践、面试和文书。
         </p>
         <Photo
-          src="/images/register-start.jpg"
+          src="/images/hero.jpg"
           alt="开始四核心训练"
           className="mt-8 w-full max-w-md"
           imgClassName="h-auto w-full rounded-2xl object-cover aspect-[4/3]"
@@ -36,6 +36,30 @@ export default function RegisterPage() {
         <h2 className="text-2xl font-bold text-[var(--ink)] mb-6">{t("registerTitle")}</h2>
         <form action={formAction} className="space-y-3">
           <input name="email" type="email" required placeholder={t("email")} className="input" />
+          <label className="block text-sm text-[var(--ink-soft)]">
+            <span>意向院校</span>
+            <input
+              name="intendedUniversities"
+              type="text"
+              required
+              maxLength={1000}
+              placeholder="例如：University of Cambridge，Imperial College London"
+              className="input mt-1"
+            />
+            <span className="mt-1 block text-xs text-[var(--ink-faint)]">可填写多所院校，请用逗号分隔。</span>
+          </label>
+          <label className="block text-sm text-[var(--ink-soft)]">
+            <span>意向专业</span>
+            <input
+              name="intendedMajors"
+              type="text"
+              required
+              maxLength={1000}
+              placeholder="例如：Aerospace Engineering，Mechanical Engineering"
+              className="input mt-1"
+            />
+            <span className="mt-1 block text-xs text-[var(--ink-faint)]">可填写多个专业方向，请用逗号分隔。</span>
+          </label>
           <input
             name="inviteCode"
             type="text"

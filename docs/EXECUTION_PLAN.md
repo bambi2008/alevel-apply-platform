@@ -1,6 +1,6 @@
 # Execution Plan
 
-Updated: 2026-08-21
+Updated: 2026-08-22
 Branch: `codex/core-four-redesign`
 
 ## Final Goal
@@ -47,19 +47,20 @@ The experience must be direct and clear: after sign-in, students choose one of t
 - Existing exam pages retain structure, knowledge, history, and pre-study analysis.
 - Beta domain and same-host containers have previously returned a healthy `/api/health` response; production and Beta use separate configuration and data.
 - AI interview configuration now distinguishes disabled and missing-key states; the example environment and same-host operations guide document the DeepSeek and cross-border-consent settings. `git diff --check` and `pnpm typecheck` passed; targeted ESLint remains pending because the local workspace does not expose the `eslint` executable.
+- Removed the interview training-method selector and its presentation-only metadata while preserving the direct subject interview list and all `/interview/[subject]` workflows. The entry copy now sends students directly to a training direction; `pnpm typecheck` passed.
+- Registration now requires intended universities and intended majors, normalizes and validates 1–10 entries for each, and persists both arrays to `StudentProfile` in the same server transaction as account creation. Added the `intendedUniversities` migration; Prisma schema validation, three focused unit tests, `pnpm typecheck`, and `git diff --check` passed.
+- Exam visibility now derives from saved university, major, and enrolled-subject intent. The tests center filters both cards and available subject tabs, keeps IELTS as the common UK/HK requirement, limits CSAT to Cambridge computer-science intent, and explicitly retains CAIE 9709 for engineering, aerospace, aeronautical, and mechanical intent in English and Chinese. Seven focused mapping tests passed alongside the three registration-intent tests; `pnpm typecheck` and `git diff --check` passed.
+- CAIE 9709 P3 expanded from 44 to 88 original questions and from four to eight fixed 11-question papers. Each paper remains 110 minutes and 75 marks. New work was checked against the official Cambridge 2026–2027 P3 syllabus and passed five focused suites covering IDs and whole-question fingerprints, the nine-topic P3 allowlist, per-part answer completeness, difficulty marks, topic/paper balance, and independent recomputation of all four new iterative answers; `pnpm typecheck` and `git diff --check` passed.
+- Mathematics and physics interview banks each expanded from two to six prompts. Each subject now has four explicitly marked challenge prompts with a timebox, format, at least four assessed skills, a full reasoning path, and three staged follow-ups. Five content/difficulty audits and five existing quantitative-interview regression tests passed; `pnpm typecheck` and `git diff --check` passed.
+- Final local acceptance passed: all 260 Vitest tests, full TypeScript checking, Prisma schema validation, a production build, and ESLint across 524 tracked JavaScript/TypeScript files completed successfully. Desktop (1440×900) and mobile (390×844) browser checks verified the interview entry points, intent-filtered exam list, registration intent fields, zero horizontal overflow, and zero browser console errors. The registration hero was corrected to use an existing production asset after the HTTP resource check identified the stale image path.
 
 ## Current Milestone
 
-Remove the interview training-method selector while preserving direct interview workflows, then continue four-core personalization and content expansion in dependency order.
+Deploy and verify the Beta without modifying production.
 
 ## Remaining Tasks
 
-1. Remove the interview training-method selection section while preserving direct interview workflows.
-2. Add intended-university and intended-major fields to account creation and persist them server-side.
-3. Implement intent-to-exam/subject mapping and filtering; explicitly test that engineering and aerospace retain CAIE 9709.
-4. Add 44 original CAIE 9709 questions as four fixed 11-question papers; run duplicate, structure, answer, difficulty, and paper-balance audits.
-5. Expand interview mathematics from 2 to 6 prompts and physics from 2 to 6 prompts; run content and difficulty audits.
-6. Run full typecheck, lint, focused tests, production build, desktop and mobile acceptance, then deploy and verify the Beta without modifying production.
+1. Deploy and verify the Beta without modifying production.
 
 ## Confirmed Decisions - Do Not Reopen
 
@@ -73,11 +74,19 @@ Remove the interview training-method selector while preserving direct interview 
 ## Current Blockers
 
 - No code blocker is known.
-- Targeted ESLint cannot currently run because the local workspace does not expose the `eslint` executable; repair or reinstall the local dependency link before the final lint gate.
 - Real API keys, server environment values, DNS, and deployment access are external operational dependencies and must never be committed.
 
 ## Latest Verification Snapshot
 
 - `git diff --check`: passed; only LF/CRLF conversion warnings were reported.
 - `pnpm typecheck`: passed (`tsc --noEmit --incremental false`).
-- Targeted ESLint: not run because the local `eslint` executable is unavailable.
+- Interview selector removal: passed targeted source check and `pnpm typecheck` on 2026-08-22.
+- Registration intent persistence: Prisma schema valid; 3 focused tests passed; `pnpm typecheck` and `git diff --check` passed on 2026-08-22.
+- Intent-driven exam filtering: 7 focused mapping tests (10 combined registration/filter tests) passed; engineering and aerospace retain CAIE 9709; `pnpm typecheck` and `git diff --check` passed on 2026-08-22.
+- CAIE 9709 expansion: 88 unique questions across 8 fixed papers; all 5 duplicate/structure/answer/difficulty/balance audit suites passed; `pnpm typecheck` and `git diff --check` passed on 2026-08-22.
+- Interview expansion: mathematics 6 prompts and physics 6 prompts; 5 content/difficulty audits plus 5 quantitative-interview regression tests passed; `pnpm typecheck` and `git diff --check` passed on 2026-08-22.
+- Full Vitest suite: 49 files and 260 tests passed on 2026-08-22.
+- Full tracked-source ESLint: 524 files passed with 0 errors and 2 pre-existing unused-variable warnings in `app/[locale]/tests/[testId]/page.tsx`.
+- Production build: passed using an isolated local Next.js output directory to avoid a lock held by an unrelated existing process.
+- Desktop/mobile browser acceptance: passed at 1440×900 and 390×844; intent filtering retained CAIE 9709 and excluded LNAT/CSAT for Cambridge aerospace intent, registration fields rendered, no horizontal overflow occurred, and browser console errors remained at zero.
+- Local HTTP resource checks: interview, tests, and registration pages returned HTTP 200 with all page resources available after correcting the registration hero path.
