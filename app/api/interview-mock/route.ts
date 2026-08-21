@@ -99,11 +99,21 @@ const HK_INTERVIEW_FEEDBACK_SYSTEM = `你是香港大学本科面试训练教练
 export async function POST(req: NextRequest) {
   const access = await requireAiAccess(req, "interview-mock");
   if (!access.ok) return access.response;
-  if (!process.env.DEEPSEEK_API_KEY) {
-    return NextResponse.json({ error: "AI 暂未配置" }, { status: 503 });
+  const aiEnabled = process.env.AI_ENABLED === "true";
+  const apiKey = process.env.DEEPSEEK_API_KEY?.trim();
+  if (!aiEnabled || !apiKey) {
+    return NextResponse.json(
+      {
+        error: !aiEnabled
+          ? "AI 模拟面试当前未启用，请联系管理员"
+          : "AI 模拟面试未配置 DeepSeek API 密钥，请联系管理员",
+        code: "AI_NOT_CONFIGURED",
+      },
+      { status: 503 },
+    );
   }
   const client = new OpenAI({
-    apiKey: process.env.DEEPSEEK_API_KEY,
+    apiKey,
     baseURL: "https://api.deepseek.com",
   });
   try {

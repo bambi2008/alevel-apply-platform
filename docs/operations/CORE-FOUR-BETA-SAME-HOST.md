@@ -54,6 +54,21 @@ chmod 700 backups-core-beta
 Replace `AUTH_SECRET`, `RESEND_API_KEY`, `POSTGRES_PASSWORD`, the matching
 password in `DATABASE_URL`, `BACKUP_ENCRYPTION_KEY`, and the privacy email.
 
+### Optional AI interviewer
+
+To enable the AI mock interviewer, set `AI_ENABLED=true` and add a DeepSeek
+API key in `.env.core-beta.same-host`:
+
+```dotenv
+AI_ENABLED=true
+DEEPSEEK_API_KEY=your-deepseek-api-key
+AI_REQUIRES_CROSS_BORDER_CONSENT=true
+```
+
+`DEEPSEEK_API_KEY` is a DeepSeek API key, not the Resend email key. Keep the
+real key only on the server and never commit it to GitHub. Students must accept
+the cross-border AI consent before using the AI interviewer.
+
 ## Check and start Beta
 
 ```bash
