@@ -58,14 +58,16 @@ The experience must be direct and clear: after sign-in, students choose one of t
 - Beta release `5034ab5` was built and started with `compose.core-beta.same-host.yml`. The production environment preflight passed; the only warning was that optional Sentry/webhook external alerting is not configured. Beta app and backup containers were recreated from the new image while the existing healthy Beta PostgreSQL container and all separately named production containers were left in place.
 - Post-deployment routing verification found and corrected a shared-network DNS collision: the production Caddy upstream `app:3000` could resolve the same-host Beta service's `app` alias. The production route now uses the unique `qiaoshen-app-1:3000` container name. Caddy validation and a graceful reload passed; production immediately returned its unchanged `367b7e2` release while Beta returned `5034ab5`, and neither application nor database container was restarted.
 - The quantitative interview practice bank now presents the five-step thinking framework once above the exercise list instead of repeating it inside every question card. Questions now begin directly with the prompt while retaining metadata and expandable thinking hints. Focused TypeScript checking and `git diff --check` passed; desktop and mobile browser checks confirmed one framework, six working hint controls, no horizontal overflow, and zero console errors. Isolated `.next*` build directories are now ignored so binary preview artifacts cannot pollute Tailwind source scanning.
+- The cleaner interview practice-bank layout was committed as `795f8ee`, pushed to `origin/codex/core-four-redesign`, and deployed only to the same-host Beta checkout. Beta rebuilt successfully and reports release `795f8ee`; its existing PostgreSQL container remained healthy.
+- The Beta container recreation exposed the previously loaded production Caddy config's stale `app:3000` route again. The persisted host config was already correct at `qiaoshen-app-1:3000`; that validated config was copied to a temporary container path and gracefully hot-reloaded. Public production and `www` remained on release `367b7e2`, Beta returned `795f8ee`, and the production app, database, and Caddy containers retained their existing uptimes.
 
 ## Current Milestone
 
-Verify and deploy the cleaner quantitative interview practice-bank layout while keeping the original production site unchanged.
+Completed — the cleaner quantitative interview practice-bank layout is verified and deployed only to Beta, while the original production site remains on release `367b7e2`.
 
 ## Remaining Tasks
 
-1. Deploy the verified practice-bank cleanup only to Beta and recheck production continuity.
+- None for this milestone.
 
 ## Confirmed Decisions - Do Not Reopen
 
@@ -104,3 +106,5 @@ Verify and deploy the cleaner quantitative interview practice-bank layout while 
 - Final public acceptance: DNS for production, `www`, and Beta resolves to `124.156.182.110`; direct HTTPS returned production release `367b7e2` and Beta release `5034ab5`, while `www` redirected to the production origin and retained release `367b7e2`. Beta home, tests, background, interview, and statements routes all returned HTTP 200. Database and storage health checks were `ok` for both deployments.
 - Interview practice-bank cleanup: `pnpm typecheck` and focused `git diff --check` passed on 2026-08-22. The workspace still does not expose a runnable ESLint executable, so the focused ESLint command could not start.
 - Interview practice-bank browser acceptance: at 1440×900 and 390×844, the five-step framework rendered exactly once, all six thinking-hint controls remained interactive, document width stayed within the viewport, and console errors remained at zero. The local page and 22 referenced resources returned HTTP 200. Visual comparison is recorded in `design-qa.md` with `final result: passed`.
+- Interview practice-bank delivery: commit `795f8ee` was pushed and deployed to `beta.qiaoshenedu.com` on 2026-08-22. The live page rendered exactly one five-step framework, restored all six hint controls after an expand/collapse check, and had no horizontal overflow at the public desktop viewport.
+- Post-deployment isolation: public HTTPS checks returned production and `www` release `367b7e2` and Beta release `795f8ee`; database and storage checks were `ok` for both. Production app and database containers were not restarted, and their 6–8 day uptimes were preserved.
