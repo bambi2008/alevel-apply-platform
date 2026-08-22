@@ -1,10 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
-import { PageHeader } from "@/components/page-header";
-import { Photo } from "@/components/photo";
-import { SceneGrowth } from "@/components/illustrations";
+import {
+  CoreList,
+  CorePageHeader,
+  CorePageShell,
+  CoreSectionHeader,
+  CoreTabBar,
+  coreTabClass,
+} from "@/components/core-page-layout";
 import {
   ADMISSIONS_TESTS,
   getTestPurpose,
@@ -71,24 +77,15 @@ export default function TestsPage() {
     : examTests.filter((test) => test.category === activeCategory);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-10">
-      <div className="grid gap-8 items-center mb-8 lg:grid-cols-[minmax(0,1fr)_300px]">
-        <div className="min-w-0 [&>div]:mb-0">
-          <PageHeader
-            title="考试训练中心"
-            subtitle="入学考试与 A-Level 学科考试：专项练习、完整模考、知识复习与学习分析。"
-            icon="A+"
-          />
-        </div>
-        <Photo
-          src="/images/hero.jpg"
-          alt="学生进行考试训练"
-          className="hidden h-[200px] w-full rounded-lg object-cover lg:block"
-          fallback={<SceneGrowth className="h-auto w-full rounded-lg" />}
-        />
-      </div>
+    <CorePageShell>
+      <CorePageHeader
+        step="1 / 4"
+        title="考试训练"
+        description="按申请方向选择入学考试与 A-Level 学科考试，进入专项练习、完整模考、知识复习与学习分析。"
+        meta={profileLoaded ? `${examTests.length} 个相关考试` : "正在读取训练档案"}
+      />
 
-      <div className="mb-8 border-l-4 border-[var(--indigo)] bg-[var(--info-bg)] px-4 py-3 text-sm text-[var(--ink-soft)]">
+      <div className="mt-5 border-l-2 border-[var(--indigo)] pl-4 text-sm leading-6 text-[var(--ink-soft)]">
         <span className="font-semibold text-[var(--indigo)]">用途提示：</span>
         MAT / PAT 已停用，标为“历史训练”；BMO / BPhO 已移至“竞赛与专业实践”；STEP 通常属于 Offer 条件。
         当前考试要求会随申请周期和课程变化，请同时核对院校与考试机构官网。
@@ -100,38 +97,32 @@ export default function TestsPage() {
         </p>
       )}
 
-      <div className="flex gap-2 mb-8 overflow-x-auto pb-1" aria-label="按学科筛选">
+      <CoreTabBar label="按学科筛选">
         {CATEGORY_TABS.filter((tab) => tab.id === "all" || availableCategories.has(tab.id)).map((tab) => (
           <button
             key={tab.id}
             type="button"
             onClick={() => setActiveCategory(tab.id)}
-            className={`shrink-0 px-3 py-1.5 rounded-full text-sm font-medium transition ${
-              activeCategory === tab.id
-                ? "bg-[var(--indigo)] text-white"
-                : "bg-[var(--surface-2)] text-[var(--ink-soft)] hover:text-[var(--ink)]"
-            }`}
+            className={coreTabClass(activeCategory === tab.id)}
           >
             {tab.label}<span className="ml-1 text-xs opacity-70">{tab.labelEn}</span>
           </button>
         ))}
-      </div>
+      </CoreTabBar>
 
       {!profileLoaded ? (
         <p className="py-12 text-center text-sm text-[var(--ink-faint)]">正在读取你的训练档案…</p>
-      ) : <div className="space-y-10">
+      ) : <div className="space-y-9 pt-7">
         {PURPOSES.map((purpose) => {
           const tests = filtered.filter((test) => getTestPurpose(test) === purpose.id);
           if (tests.length === 0) return null;
           return (
             <section key={purpose.id}>
-              <div className="mb-3 flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                <h2 className="text-lg font-bold text-[var(--ink)]">{purpose.label}</h2>
-                <span className="text-xs text-[var(--ink-faint)]">{purpose.labelEn} · {purpose.note}</span>
-              </div>
-              <div className="grid min-w-0 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {tests.map((test) => <TestCard key={test.id} test={test} />)}
-              </div>
+              <CoreSectionHeader title={purpose.label} meta={`${tests.length} 个考试`} />
+              <p className="mt-1 text-xs leading-5 text-[var(--ink-faint)]">{purpose.labelEn} · {purpose.note}</p>
+              <CoreList>
+                {tests.map((test) => <TestRow key={test.id} test={test} />)}
+              </CoreList>
             </section>
           );
         })}
@@ -140,45 +131,35 @@ export default function TestsPage() {
       <p className="mt-10 text-xs text-[var(--ink-faint)] text-center">
         考试用途、学院安排和英语门槛以当前申请周期的院校官网、考试机构官网及个人 Offer 为准。
       </p>
-    </div>
+    </CorePageShell>
   );
 }
 
-function TestCard({ test }: { test: AdmissionsTest }) {
+function TestRow({ test }: { test: AdmissionsTest }) {
   const purpose = getTestPurpose(test);
   return (
     <Link
       href={`/tests/${test.id}`}
-      className="group block min-w-0 rounded-lg border border-[var(--border)] bg-white p-5 transition hover:border-[color:var(--indigo)]/35 hover:shadow-sm"
+      className="group grid min-w-0 gap-3 py-4 sm:grid-cols-[minmax(160px,0.75fr)_minmax(0,1.7fr)_auto] sm:items-center sm:gap-5"
     >
-      <div className="mb-3 flex items-start justify-between gap-3">
-        <div className="flex min-w-0 items-center gap-2.5">
-          <span className="flex h-9 min-w-9 items-center justify-center text-lg font-bold text-[var(--indigo)]">{test.icon}</span>
-          <div className="min-w-0">
-            <div className="text-lg font-bold leading-tight">{test.abbr}</div>
-            <div className="truncate text-xs text-[var(--ink-faint)]">{test.nameZh}</div>
-          </div>
-        </div>
-        <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-semibold ${
-          purpose === "legacy" || purpose === "competition"
-            ? "bg-[var(--warning-bg)] text-[var(--warning)]"
-            : "bg-[var(--info-bg)] text-[var(--indigo)]"
-        }`}>
+      <div className="min-w-0">
+        <h3 className="font-medium text-[var(--ink)] group-hover:text-[var(--indigo)]">{test.abbr}</h3>
+        <p className="truncate text-xs text-[var(--ink-faint)]">{test.nameZh}</p>
+      </div>
+      <div className="min-w-0">
+        <p className="line-clamp-2 text-sm leading-6 text-[var(--ink-soft)]">{test.overview}</p>
+        <p className="mt-1 text-xs leading-5 text-[var(--ink-faint)]">
+          {test.duration} · {test.topics.length} 个知识点 · {test.programs.slice(0, 2).join(" / ")}
+        </p>
+      </div>
+      <div className="flex items-center justify-between gap-3 sm:justify-end">
+        <span className={`text-xs ${purpose === "legacy" ? "text-[var(--warning)]" : "text-[var(--ink-faint)]"}`}>
           {PURPOSE_BADGES[purpose]}
         </span>
-      </div>
-
-      <p className="mb-3 line-clamp-2 text-xs leading-relaxed text-[var(--ink-soft)]">{test.overview}</p>
-      <div className="space-y-1.5 text-xs text-[var(--ink-soft)]">
-        <p className="line-clamp-1"><span className="font-medium text-[var(--ink)]">适用：</span>{test.programs.slice(0, 3).join(" · ")}</p>
-        <p className="break-words"><span className="font-medium text-[var(--ink)]">时长：</span>{test.duration}</p>
-        <p><span className="font-medium text-[var(--ink)]">模块：</span>{test.topics.length} 个知识点</p>
-      </div>
-      <div className="mt-4 flex items-center justify-between text-xs">
-        <span className={test.hasQuestionBank ? "text-[var(--success)]" : "text-[var(--ink-faint)]"}>
-          {test.hasQuestionBank ? "题库与模考已接入" : "备考指南"}
+        <span className="inline-flex items-center gap-2 text-sm text-[var(--ink-faint)] group-hover:text-[var(--indigo)]">
+          {test.hasQuestionBank ? "进入" : "查看"}
+          <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </span>
-        <span className="font-medium text-[var(--indigo)] group-hover:underline">进入中心 →</span>
       </div>
     </Link>
   );

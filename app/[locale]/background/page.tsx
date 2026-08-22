@@ -1,8 +1,16 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, FlaskConical, FolderKanban, Trophy } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
+import {
+  CoreList,
+  CorePageHeader,
+  CorePageShell,
+  CoreSectionHeader,
+  CoreTabBar,
+  coreTabClass,
+} from "@/components/core-page-layout";
 import {
   BACKGROUND_CATALOG,
   BG_FIELDS,
@@ -75,34 +83,24 @@ export default function BackgroundPage() {
 
   // 专业实践块内的两个课题入口（在线课题 / 自提课题）
   const projectEntries = (
-    <div className="grid sm:grid-cols-2 gap-3 mb-4">
+    <CoreList className="mb-5">
       <Link
         href="/background/projects"
-        className="group block border border-[var(--border)] bg-white p-5 hover:border-[var(--indigo)]"
+        className="group grid gap-2 py-4 sm:grid-cols-[minmax(170px,0.8fr)_minmax(0,1.6fr)_auto] sm:items-center sm:gap-5"
       >
-        <div className="flex items-start gap-3">
-          <FlaskConical className="mt-0.5 h-5 w-5 shrink-0 text-[var(--indigo)]" aria-hidden="true" />
-          <div className="flex-1 min-w-0">
-            <p className="font-semibold text-[var(--ink)]">在线专业课题</p>
-            <p className="mt-1 text-sm leading-6 text-[var(--ink-soft)]">按阶段完成研究与工程任务，形成可验证的作品、报告或实验记录。</p>
-          </div>
-          <ArrowRight className="h-4 w-4 shrink-0 text-[var(--ink-faint)] group-hover:text-[var(--indigo)]" aria-hidden="true" />
-        </div>
+        <p className="font-medium text-[var(--ink)] group-hover:text-[var(--indigo)]">在线专业课题</p>
+        <p className="text-sm leading-6 text-[var(--ink-soft)]">按阶段完成研究与工程任务，形成可验证的作品、报告或实验记录。</p>
+        <ArrowRight className="h-4 w-4 text-[var(--ink-faint)] group-hover:text-[var(--indigo)]" aria-hidden="true" />
       </Link>
       <Link
         href="/background/my-projects"
-        className="group block border border-[var(--border)] bg-white p-5 hover:border-[var(--indigo)]"
+        className="group grid gap-2 py-4 sm:grid-cols-[minmax(170px,0.8fr)_minmax(0,1.6fr)_auto] sm:items-center sm:gap-5"
       >
-        <div className="flex items-start gap-3">
-          <FolderKanban className="mt-0.5 h-5 w-5 shrink-0 text-[var(--indigo)]" aria-hidden="true" />
-          <div className="flex-1 min-w-0">
-            <p className="font-semibold text-[var(--ink)]">我的专业实践</p>
-            <p className="mt-1 text-sm leading-6 text-[var(--ink-soft)]">记录自提研究、实践过程与产出，并沉淀为可用于文书的真实素材。</p>
-          </div>
-          <ArrowRight className="h-4 w-4 shrink-0 text-[var(--ink-faint)] group-hover:text-[var(--indigo)]" aria-hidden="true" />
-        </div>
+        <p className="font-medium text-[var(--ink)] group-hover:text-[var(--indigo)]">我的专业实践</p>
+        <p className="text-sm leading-6 text-[var(--ink-soft)]">记录自提研究、实践过程与产出，并沉淀为可用于文书的真实素材。</p>
+        <ArrowRight className="h-4 w-4 text-[var(--ink-faint)] group-hover:text-[var(--indigo)]" aria-hidden="true" />
       </Link>
-    </div>
+    </CoreList>
   );
 
   const onAdd = (c: CatalogItem) =>
@@ -119,40 +117,38 @@ export default function BackgroundPage() {
     addTask({ title: "背景提升：" + i.title, category: "OTHER" });
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
-      <header className="border-b border-[var(--border)] pb-6">
-        <p className="text-sm font-medium text-[var(--indigo)]">核心功能 2 / 4</p>
-        <h1 className="mt-2 text-3xl font-bold text-[var(--ink)] sm:text-4xl">竞赛与专业实践</h1>
-        <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--ink-soft)] sm:text-base">
-          竞赛用于系统训练与能力证明，专业实践用于完成真实研究、工程任务和可展示产出。两类经历分别规划，不再混入申请待办。
-        </p>
-      </header>
+    <CorePageShell>
+      <CorePageHeader
+        step="2 / 4"
+        title="竞赛与专业实践"
+        description="竞赛用于系统训练与能力证明，专业实践用于完成真实研究、工程任务和可展示产出。两类经历分别规划，不再混入申请待办。"
+        meta={`${shownByGroup.length} 个当前项目`}
+      />
 
-      <nav aria-label="背景提升分类" className="mb-8 grid grid-cols-3 border-b border-[var(--border)]">
+      <CoreTabBar label="背景提升分类">
         <button
           type="button"
           onClick={() => setActiveGroup("COMPETITION")}
-          className={`flex min-h-20 items-center justify-center gap-2 border-r border-[var(--border)] px-3 text-sm font-medium ${activeGroup === "COMPETITION" ? "border-b-2 border-b-[var(--indigo)] text-[var(--indigo)]" : "text-[var(--ink-soft)] hover:bg-[var(--surface-2)]"}`}
+          className={coreTabClass(activeGroup === "COMPETITION")}
         >
-          <Trophy className="h-4 w-4" aria-hidden="true" /> 竞赛提升
+          竞赛提升
         </button>
         <button
           type="button"
           onClick={() => setActiveGroup("PROFESSIONAL")}
-          className={`flex min-h-20 items-center justify-center gap-2 border-r border-[var(--border)] px-3 text-sm font-medium ${activeGroup === "PROFESSIONAL" ? "border-b-2 border-b-[var(--indigo)] text-[var(--indigo)]" : "text-[var(--ink-soft)] hover:bg-[var(--surface-2)]"}`}
+          className={coreTabClass(activeGroup === "PROFESSIONAL")}
         >
-          <FlaskConical className="h-4 w-4" aria-hidden="true" /> 专业实践
+          专业实践
         </button>
-        <a href="#background-plan" className="flex min-h-20 items-center justify-center gap-2 px-3 text-sm font-medium text-[var(--ink-soft)] hover:bg-[var(--surface-2)]">
-          <FolderKanban className="h-4 w-4" aria-hidden="true" /> 我的进度
+        <a href="#background-plan" className={coreTabClass(false)}>
+          我的进度
         </a>
-      </nav>
+      </CoreTabBar>
 
       {/* 进度提醒 */}
       {reminders.length > 0 && (
-        <section className="mb-8 rounded-xl border border-[color:var(--warning)]/25 bg-[var(--warning-bg)] p-4">
-          <div className="flex items-center gap-2 mb-2">
-            <span className="text-base">🔔</span>
+        <section className="mt-5 border-l-2 border-[var(--warning)] pl-4">
+          <div className="mb-2 flex items-center gap-2">
             <h2 className="text-sm font-semibold text-[var(--warning)]">进度提醒（{reminders.length}）</h2>
           </div>
           <ul className="space-y-1.5">
@@ -178,13 +174,12 @@ export default function BackgroundPage() {
       )}
 
       {/* 为你推荐 */}
-      <section className="mb-10">
-        <div className="flex items-center gap-2 flex-wrap mb-3">
-          <h2 className="text-lg font-semibold">为你推荐</h2>
-          <div className="flex gap-1 text-xs flex-wrap">
+      <section className="mt-8">
+        <CoreSectionHeader title="为你推荐" meta="按方向筛选" />
+        <CoreTabBar label="按专业方向筛选">
             <button
               onClick={() => setActiveField("AUTO")}
-              className={`px-2.5 py-1 rounded-full ${activeField === "AUTO" ? "bg-[var(--indigo)] text-white" : "bg-[var(--surface-2)] text-[var(--ink-soft)] hover:bg-[var(--border)]"}`}
+              className={coreTabClass(activeField === "AUTO")}
             >
               为我推荐
             </button>
@@ -192,13 +187,12 @@ export default function BackgroundPage() {
               <button
                 key={f.value}
                 onClick={() => setActiveField(f.value)}
-                className={`px-2.5 py-1 rounded-full ${activeField === f.value ? "bg-[var(--indigo)] text-white" : "bg-[var(--surface-2)] text-[var(--ink-soft)] hover:bg-[var(--border)]"}`}
+                className={coreTabClass(activeField === f.value)}
               >
                 {f.label}
               </button>
             ))}
-          </div>
-        </div>
+        </CoreTabBar>
 
         {activeGroup !== "ALL" && (
           <p className="text-sm text-[var(--ink-faint)] mb-3">
@@ -207,7 +201,7 @@ export default function BackgroundPage() {
         )}
 
         {activeField === "AUTO" && profile.intendedMajors.length === 0 && (
-          <p className="text-xs text-[var(--warning)] bg-[var(--warning-bg)] rounded px-3 py-2 mb-3">
+          <p className="mt-4 border-l-2 border-[var(--warning)] pl-3 text-xs leading-5 text-[var(--warning)]">
             提示：在「我的档案」里填写目标专业后，推荐会更贴合你的方向。当前按通用方向展示。
           </p>
         )}
@@ -221,56 +215,50 @@ export default function BackgroundPage() {
           : [{ key: activeGroup, label: "", items: shownByGroup }]
         ).map((sec) =>
           sec.items.length === 0 && sec.key !== "PROFESSIONAL" ? null : (
-            <div key={sec.key} className="mb-6">
+            <div key={sec.key} className="mt-7">
               {sec.label && (
-                <h3 className="text-sm font-semibold text-[var(--ink-soft)] mb-2">{sec.label}</h3>
+                <h3 className="text-sm font-semibold text-[var(--ink-soft)]">{sec.label}</h3>
               )}
               {sec.key === "PROFESSIONAL" && projectEntries}
-              <div className="grid sm:grid-cols-2 gap-3">
+              <CoreList>
                 {sec.items.map((c) => {
                   const added = planned.has(c.id);
                   const reasons = activeField === "AUTO" ? reasonOf(c.id) : [];
                   return (
-                    <div key={c.id} className="rounded-xl border border-neutral-200 bg-white p-4 flex flex-col">
-                      <div className="flex items-start gap-2">
-                        <span className="text-lg">{categoryEmoji(c.category)}</span>
-                        <div className="min-w-0 flex-1">
-                          <p className="text-sm font-medium text-neutral-900">{c.title}</p>
-                          <p className="text-xs text-neutral-400">
+                    <article key={c.id} className="grid gap-3 py-4 sm:grid-cols-[minmax(180px,0.9fr)_minmax(0,1.6fr)_auto] sm:items-center sm:gap-5">
+                        <div className="min-w-0">
+                          <p className="text-sm font-medium text-[var(--ink)]">{c.title}</p>
+                          <p className="mt-0.5 text-xs text-[var(--ink-faint)]">
                             {categoryLabel(c.category)} · {fieldLabel(c.field)} · 难度：{DIFF_LABEL[c.difficulty]}
                           </p>
                         </div>
-                      </div>
-                      <p className="text-xs text-neutral-600 mt-2 flex-1">{c.description}</p>
-                      <p className="text-xs text-neutral-400 mt-1">建议时间：{c.timing}</p>
-                      {reasons.length > 0 && (
-                        <div className="flex gap-1 flex-wrap mt-2">
-                          {reasons.map((r, i) => (
-                            <span key={i} className="text-[11px] text-[var(--indigo)] bg-[var(--info-bg)] rounded px-1.5 py-0.5">{r}</span>
-                          ))}
+                        <div className="min-w-0">
+                          <p className="text-sm leading-6 text-[var(--ink-soft)]">{c.description}</p>
+                          <p className="mt-1 text-xs text-[var(--ink-faint)]">
+                            建议时间：{c.timing}{reasons.length > 0 ? ` · ${reasons.join(" · ")}` : ""}
+                          </p>
                         </div>
-                      )}
-                      <div className="mt-3 flex gap-2">
+                      <div className="flex items-center gap-3 sm:justify-end">
                         <button
                           onClick={() => onAdd(c)}
                           disabled={added}
-                          className={`flex-1 text-sm rounded-lg py-1.5 ${added ? "bg-[var(--surface-2)] text-[var(--ink-faint)] cursor-default" : "bg-[var(--indigo)] text-white hover:bg-[var(--indigo-hover)]"}`}
+                          className={`text-sm font-medium ${added ? "cursor-default text-[var(--ink-faint)]" : "text-[var(--indigo)] hover:underline"}`}
                         >
                           {added ? "已加入规划" : "加入规划"}
                         </button>
                         {c.testId && (
                           <Link
                             href={`/tests/${c.testId}`}
-                            className="text-sm rounded-lg py-1.5 px-3 border border-[var(--indigo)] text-[var(--indigo)] font-medium hover:bg-[var(--info-bg)] whitespace-nowrap"
+                            className="whitespace-nowrap text-sm font-medium text-[var(--indigo)] hover:underline"
                           >
-                            进入竞赛题库
+                            进入题库 →
                           </Link>
                         )}
                       </div>
-                    </div>
+                    </article>
                   );
                 })}
-              </div>
+              </CoreList>
             </div>
           )
         )}
@@ -282,15 +270,15 @@ export default function BackgroundPage() {
       </section>
 
       {/* 我的规划 */}
-      <section id="background-plan" className="scroll-mt-24">
-        <h2 className="text-lg font-semibold mb-3">我的规划（{items.length}）</h2>
+      <section id="background-plan" className="mt-10 scroll-mt-24 border-t border-[var(--border)] pt-7">
+        <CoreSectionHeader title="我的规划" meta={`${items.length} 个项目`} />
 
         {/* 自定义添加 */}
-        <div className="flex gap-2 mb-4">
+        <div className="mt-4 flex gap-2 border-b border-[var(--border)] pb-4">
           <select
             value={customCat}
             onChange={(e) => setCustomCat(e.target.value)}
-            className="rounded-lg border border-neutral-300 px-2 py-2 text-sm bg-white"
+            className="border border-[var(--border)] bg-white px-2 py-2 text-sm"
           >
             <option value="COMPETITION">竞赛</option>
             <option value="RESEARCH">科研</option>
@@ -301,9 +289,9 @@ export default function BackgroundPage() {
             onChange={(e) => setCustomTitle(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && onAddCustom()}
             placeholder="自定义添加一个背景项目…"
-            className="flex-1 rounded-lg border border-neutral-300 px-3 py-2 text-sm"
+            className="min-w-0 flex-1 border border-[var(--border)] px-3 py-2 text-sm"
           />
-          <button onClick={onAddCustom} className="rounded-lg bg-neutral-800 text-white text-sm px-4 hover:bg-neutral-700">
+          <button onClick={onAddCustom} className="bg-[var(--ink)] px-4 text-sm text-white hover:opacity-90">
             添加
           </button>
         </div>
@@ -311,14 +299,13 @@ export default function BackgroundPage() {
         {!loaded ? (
           <div className="py-12 text-center text-neutral-400 text-sm">加载中…</div>
         ) : items.length === 0 ? (
-          <div className="rounded-xl border border-dashed border-neutral-300 py-12 text-center text-neutral-400 text-sm">
+          <div className="border-b border-[var(--border)] py-12 text-center text-sm text-[var(--ink-faint)]">
             还没有规划项目。从上方推荐中「加入规划」开始吧。
           </div>
         ) : (
-          <div className="space-y-2">
+          <div className="divide-y divide-[var(--border)] border-b border-[var(--border)]">
             {items.map((i) => (
-              <div key={i.id} className="flex items-center gap-3 rounded-xl border border-neutral-200 bg-white px-4 py-3">
-                <span className="text-lg shrink-0">{categoryEmoji(i.category as BgCategory)}</span>
+              <div key={i.id} className="flex flex-wrap items-center gap-3 py-3">
                 <div className="min-w-0 flex-1">
                   <p className={`text-sm ${i.status === "DONE" ? "text-neutral-400 line-through" : "text-neutral-800"}`}>{i.title}</p>
                   <p className="text-xs text-neutral-400">{categoryLabel(i.category as BgCategory)}</p>
@@ -350,6 +337,6 @@ export default function BackgroundPage() {
           </div>
         )}
       </section>
-    </div>
+    </CorePageShell>
   );
 }

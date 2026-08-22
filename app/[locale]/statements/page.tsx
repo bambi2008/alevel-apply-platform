@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BookOpen, CheckCircle2, FilePenLine, Library, Save } from "lucide-react";
+import { Save } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
+import { CorePageHeader, CorePageShell, CoreTabBar, coreTabClass } from "@/components/core-page-layout";
 import {
   UCAS_TOTAL_LIMIT,
   UCAS_PER_QUESTION_MIN,
@@ -100,65 +101,62 @@ export default function StatementsPage() {
     }
   };
 
-  if (!loaded) return <div className="mx-auto max-w-3xl px-4 py-10 text-neutral-400">{tc("loading")}</div>;
+  if (!loaded) return <div className="mx-auto max-w-6xl px-4 py-10 text-neutral-400">{tc("loading")}</div>;
 
   const questions = t.raw("questions") as { title: string; hint: string }[];
   const selfCheck = t.raw("selfCheck") as string[];
 
   return (
-    <div className="mx-auto max-w-3xl px-4 py-10">
-      <header className="border-b border-[var(--border)] pb-6">
-        <p className="text-sm font-medium text-[var(--indigo)]">核心功能 4 / 4</p>
-        <h1 className="mt-2 text-3xl font-bold text-[var(--ink)] sm:text-4xl">文书工作台</h1>
-        <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)] sm:text-base">
-          从真实经历中整理素材、搭建结构、完成草稿，再进行诊断与修改。平台提供方法和反馈，不代写申请文书。
-        </p>
-      </header>
+    <CorePageShell>
+      <CorePageHeader
+        step="4 / 4"
+        title="文书工作台"
+        description="从真实经历中整理素材、搭建结构、完成草稿，再进行诊断与修改。平台提供方法和反馈，不代写申请文书。"
+        meta={`${total} / ${UCAS_TOTAL_LIMIT} 字符`}
+      />
 
-      <nav aria-label="文书写作流程" className="grid grid-cols-2 border-b border-[var(--border)] sm:grid-cols-4">
-        <Link href="/background/my-projects" className="flex min-h-24 flex-col justify-center border-r border-[var(--border)] px-4 py-3 hover:bg-[var(--surface-2)]">
-          <Library className="h-5 w-5 text-[var(--indigo)]" aria-hidden="true" />
-          <span className="mt-2 text-sm font-medium text-[var(--ink)]">1. 素材库</span>
-          <span className="text-xs text-[var(--ink-faint)]">整理真实经历</span>
+      <nav aria-label="文书写作流程" className="grid grid-cols-2 divide-x divide-y divide-[var(--border)] border-b border-[var(--border)] sm:grid-cols-4 sm:divide-y-0">
+        <Link href="/background/my-projects" className="py-4 pr-4 hover:text-[var(--indigo)] sm:px-4 sm:first:pl-0">
+          <span className="text-sm font-medium text-[var(--ink)]">1. 素材库</span>
+          <span className="mt-0.5 block text-xs text-[var(--ink-faint)]">整理真实经历</span>
         </Link>
-        <a href="#statement-structure" className="flex min-h-24 flex-col justify-center border-r border-[var(--border)] px-4 py-3 hover:bg-[var(--surface-2)]">
-          <BookOpen className="h-5 w-5 text-[var(--indigo)]" aria-hidden="true" />
-          <span className="mt-2 text-sm font-medium text-[var(--ink)]">2. 结构规划</span>
-          <span className="text-xs text-[var(--ink-faint)]">对应申请问题</span>
+        <a href="#statement-structure" className="px-4 py-4 hover:text-[var(--indigo)]">
+          <span className="text-sm font-medium text-[var(--ink)]">2. 结构规划</span>
+          <span className="mt-0.5 block text-xs text-[var(--ink-faint)]">对应申请问题</span>
         </a>
-        <a href="#statement-draft" className="flex min-h-24 flex-col justify-center border-r border-[var(--border)] px-4 py-3 hover:bg-[var(--surface-2)]">
-          <FilePenLine className="h-5 w-5 text-[var(--indigo)]" aria-hidden="true" />
-          <span className="mt-2 text-sm font-medium text-[var(--ink)]">3. 完成草稿</span>
-          <span className="text-xs text-[var(--ink-faint)]">保留自己的表达</span>
+        <a href="#statement-draft" className="px-4 py-4 hover:text-[var(--indigo)]">
+          <span className="text-sm font-medium text-[var(--ink)]">3. 完成草稿</span>
+          <span className="mt-0.5 block text-xs text-[var(--ink-faint)]">保留自己的表达</span>
         </a>
-        <a href="#statement-review" className="flex min-h-24 flex-col justify-center px-4 py-3 hover:bg-[var(--surface-2)]">
-          <CheckCircle2 className="h-5 w-5 text-[var(--indigo)]" aria-hidden="true" />
-          <span className="mt-2 text-sm font-medium text-[var(--ink)]">4. 点评保存</span>
-          <span className="text-xs text-[var(--ink-faint)]">修改并保存最新版</span>
+        <a href="#statement-review" className="px-4 py-4 hover:text-[var(--indigo)] sm:pr-0">
+          <span className="text-sm font-medium text-[var(--ink)]">4. 点评保存</span>
+          <span className="mt-0.5 block text-xs text-[var(--ink-faint)]">修改并保存最新版</span>
         </a>
       </nav>
 
       {/* 英国 / 香港 切换 */}
-      <div id="statement-structure" className="mt-6 inline-flex rounded-lg border border-neutral-200 p-1 bg-neutral-50">
+      <div id="statement-structure" className="scroll-mt-24">
+      <CoreTabBar label="文书申请地区">
         <button
           type="button"
           onClick={() => setRegion("uk")}
-          className={`px-4 py-1.5 rounded-md text-sm font-medium ${region === "uk" ? "bg-white shadow text-neutral-900" : "text-neutral-500"}`}
+          className={coreTabClass(region === "uk")}
         >
-          🇬🇧 英国 UCAS（三问）
+          英国 UCAS（三问）
         </button>
         <button
           type="button"
           onClick={() => setRegion("hk")}
-          className={`px-4 py-1.5 rounded-md text-sm font-medium ${region === "hk" ? "bg-white shadow text-neutral-900" : "text-neutral-500"}`}
+          className={coreTabClass(region === "hk")}
         >
-          🇭🇰 香港（单篇）
+          香港（单篇）
         </button>
+      </CoreTabBar>
       </div>
 
       {/* 参考资源（学生自学，不代写） */}
-      <div className="mt-4 text-sm rounded-lg border border-neutral-200 bg-neutral-50 px-3 py-2 text-neutral-600">
-        📚 想看各专业优秀文书长什么样？可参考{" "}
+      <div className="mt-5 border-l-2 border-[var(--indigo)] pl-4 text-sm leading-6 text-[var(--ink-soft)]">
+        想看各专业优秀文书长什么样？可参考{" "}
         <a
           href="https://firstclasseducation.org.uk/guides/category/Personal+Statement"
           target="_blank"
@@ -174,7 +172,7 @@ export default function StatementsPage() {
 
       {region === "uk" && (
         <>
-      <div className="mt-3 text-sm bg-amber-50 text-amber-800 rounded-lg px-3 py-2">{t("aiNotice")}</div>
+      <div className="mt-4 border-l-2 border-[var(--warning)] pl-4 text-sm leading-6 text-[var(--warning)]">{t("aiNotice")}</div>
 
       {/* Total character progress */}
       <div className="mt-6 sticky top-14 bg-white/95 backdrop-blur py-2 z-[5]">
@@ -311,7 +309,7 @@ export default function StatementsPage() {
       </div>
         </>
       )}
-    </div>
+    </CorePageShell>
   );
 }
 

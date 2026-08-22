@@ -1,51 +1,56 @@
-# Design QA — Interview Practice Bank Cleanup
+# Design QA — Four-Core Entry-Page Unification
 
-- Source visual truth: `C:/Users/ss/AppData/Local/Temp/codex-clipboard-91a8a221-beaa-4ca3-a095-d046f1a3e467.png`
-- Desktop implementation: `C:/Users/ss/.codex/visualizations/2026/08/21/01a02572-dfd7-7b02-9c01-68a4797b18a9/interview-bank-clean-desktop-viewport.png`
-- Mobile implementation: `C:/Users/ss/.codex/visualizations/2026/08/21/01a02572-dfd7-7b02-9c01-68a4797b18a9/interview-bank-clean-mobile-viewport.png`
-- Side-by-side comparison: `C:/Users/ss/.codex/visualizations/2026/08/21/01a02572-dfd7-7b02-9c01-68a4797b18a9/interview-bank-comparison.png`
-- State: mathematics interview, practice-bank tab, all thinking hints collapsed
+- Source visual truth: `C:/Users/ss/AppData/Local/Temp/codex-clipboard-4ffc65a9-3b33-4a11-af22-d065b593aae9.png` (the supplied interview entry page)
+- Desktop implementations:
+  - `C:/Users/ss/.codex/visualizations/2026/08/21/01a02572-dfd7-7b02-9c01-68a4797b18a9/four-core-tests-viewport.jpg`
+  - `C:/Users/ss/.codex/visualizations/2026/08/21/01a02572-dfd7-7b02-9c01-68a4797b18a9/four-core-background-viewport.jpg`
+  - `C:/Users/ss/.codex/visualizations/2026/08/21/01a02572-dfd7-7b02-9c01-68a4797b18a9/four-core-interview-viewport.jpg`
+  - `C:/Users/ss/.codex/visualizations/2026/08/21/01a02572-dfd7-7b02-9c01-68a4797b18a9/four-core-statements-viewport.jpg`
+- Side-by-side comparisons: the four matching `four-core-*-comparison.jpg` files in the same directory.
+- Mobile evidence: the four matching `four-core-*-mobile.jpg` files in the same directory.
+- State: default entry state; tests and background use the initial recommended filters; statements uses UK UCAS.
 
 ## Capture Normalization
 
-- Source pixels: 1131 × 1485 at 72 dpi.
-- Desktop CSS viewport: 1440 × 900; captured pixels: 1425 × 891; device density: 1×.
-- Mobile CSS viewport: 390 × 844; captured pixels: 375 × 812; device density: 1×.
-- The side-by-side comparison scales both desktop regions to 1000 px width without changing aspect ratio. Browser chrome is excluded.
+- Source pixels: 2376 × 1605. Its top 2376 × 1337 region was normalized to 1265 × 712 for each desktop comparison.
+- Desktop browser viewport: 1280 × 720 CSS px; captured content pixels: 1265 × 712; screenshot density normalized to CSS pixels.
+- Mobile content frame: 390 × 844 CSS px inside the in-app browser; desktop browser chrome and gray QA canvas are excluded from fidelity judgment.
+- The source and implementation use different original browser aspect ratios, so the comparison intentionally judges the shared above-the-fold content region rather than the source's lower rows.
 
 ## Full-view Comparison Evidence
 
-The source shows the five-step framework repeated inside every question card. The implementation keeps the same typography, pale-blue framework panel, question cards, number markers, badges, and hint links, but moves the framework into one introduction above the list. The visible question cards now begin directly with their prompts and use materially less vertical space.
+All four implementations now use the interview page's visual hierarchy: the same 6xl content width, core-step eyebrow, 3xl/4xl title, restrained description and meta line, thin divider, compact text tabs, section labels, and border-separated rows. Tests no longer has a hero image or a three-column card wall. Background no longer uses oversized tabs, two-column cards, emoji-leading tiles, or full-width blue actions. Statements now shares the same shell and replaces the icon-heavy process strip and boxed region picker with compact linear navigation.
 
 ## Focused-region Evidence
 
-A separate focused crop was not required: the normalized side-by-side comparison keeps the framework heading, all five steps, and the first three question cards readable at once. The mobile capture separately verifies stacking and copy wrapping at 390 px.
+The side-by-side desktop comparisons keep the source header, first section, row spacing, secondary labels, and right-edge actions readable at once. Separate mobile captures verify the shared title block, collapsed global navigation, text wrapping, scrollable secondary tabs, and single-column stacking at 390 px. The statements mobile QA harness remains on its client loading state because server actions do not hydrate inside the isolated frame; its live desktop route fully loads and its mobile layout uses the same verified shared shell and base-first responsive classes.
 
 ## Required Fidelity Surfaces
 
-- Fonts and typography: existing product font families, weights, sizes, and line heights are unchanged; the new introduction uses existing text tokens.
-- Spacing and layout rhythm: the repeated large panels are removed; one framework panel is followed by consistently spaced question cards. Desktop and mobile have no horizontal overflow.
-- Colors and visual tokens: existing `--ink`, `--ink-soft`, `--indigo`, `--info-bg`, and border tokens are retained.
-- Image quality and asset fidelity: this screen has no new image assets; the existing interface iconography is unchanged.
-- Copy and content: all questions, metadata, five framework steps, and thinking hints are preserved. Only one short explanation was added to clarify that the framework applies to every exercise.
+- Fonts and typography: all pages use the existing product typefaces and the interview page's title, body, meta, and section weights. Long test/background descriptions keep the existing readable 1.5 line height and clamp only where needed.
+- Spacing and layout rhythm: the four pages now share identical outer padding, header spacing, section gaps, divider rhythm, and row padding. Intentional dense forms remain only inside the statement-writing workflow.
+- Colors and visual tokens: all shared UI uses the existing ink, muted ink, indigo, border, warning, and surface tokens. Filled blue controls remain only for true primary actions such as saving.
+- Image quality and asset fidelity: the selected interview target contains no page imagery. The tests hero image was intentionally removed to match that target; no generated or placeholder assets were introduced.
+- Copy and content: each workflow's original data, descriptions, legal notices, filters, planning controls, question-bank links, coaching actions, and editor content are preserved. Only the tests title was shortened from “考试训练中心” to the navigation-consistent “考试训练”.
 
 ## Findings
 
-- No actionable P0, P1, or P2 differences remain.
-- No P3 follow-up is required for the requested cleanup.
+- No actionable P0, P1, or P2 visual difference remains.
+- P3 test limitation: the isolated 390 px frame cannot complete the statements server-action hydration, so the fully loaded statement editor was interaction-tested at the live desktop viewport and its responsive shell was inspected from the same production component code.
 
 ## Interaction And Runtime Checks
 
-- Six exercise hint buttons render at desktop and mobile widths.
-- The first hint opens to “思路（不是标准答案）” and closes again.
-- The five-step framework renders exactly once.
-- Desktop and mobile console error counts are zero.
-- Desktop and mobile document widths stay within their viewports.
+- Tests: subject filter switched to Mathematics and back to All.
+- Background: switched to Professional Practice, verified both project entries, and returned to Competition.
+- Interview: mathematics entry and all category sections remained available.
+- Statements: switched to Hong Kong single-essay mode and back to UK UCAS.
+- All four direct local routes had no horizontal overflow at the desktop viewport and no direct-page browser console errors.
+- `pnpm typecheck` and `git diff --check` passed.
 
 ## Comparison History
 
-1. Initial finding: the five-step framework was repeated inside every quantitative interview question card, creating excessive visual height and delaying access to the exercises.
-2. Fix: moved the shared framework above the question list, added one concise explanation, and removed the per-card checklist instance.
-3. Post-fix evidence: the side-by-side comparison shows one framework followed immediately by compact question cards; desktop and mobile browser checks pass with working hint interactions and no console errors.
+1. Initial evidence: tests used a hero and card wall; background used large icon tabs, cards, and full-width actions; statements used a narrow shell, icon process tiles, and multiple boxed notices; interview used the desired quiet row-based hierarchy.
+2. Fix: introduced shared four-core layout primitives and converted every entry page to the interview shell, tabs, section headings, and divided rows while retaining workflow behavior.
+3. Post-fix evidence: the four side-by-side desktop comparisons show matching hierarchy and density; mobile captures show the shared shell and stacking behavior with no material layout mismatch.
 
 final result: passed
