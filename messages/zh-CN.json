@@ -27,7 +27,8 @@
   },
   "footer": {
     "rights": "桥申 · 仅供参考，院校要求以官方为准",
-    "disclaimer": "本平台不代写文书、不承诺录取结果"
+    "disclaimer": "本平台不代写文书、不承诺录取结果",
+    "feedback": "使用反馈"
   },
   "auth": {
     "loginTitle": "登录",

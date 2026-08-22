@@ -40,6 +40,12 @@ async function Footer() {
           <Link href="/privacy" className="hover:text-white">隐私政策</Link>
           <Link href="/terms" className="hover:text-white">服务条款</Link>
           <Link href="/account" className="hover:text-white">账号与隐私</Link>
+          <a
+            href="mailto:mao8teen@gmail.com?subject=%E6%A1%A5%E7%94%B3%20Beta%20%E4%BD%BF%E7%94%A8%E5%8F%8D%E9%A6%88"
+            className="hover:text-white"
+          >
+            {t("feedback")}：mao8teen@gmail.com
+          </a>
         </nav>
       </div>
     </footer>

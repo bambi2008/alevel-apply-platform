@@ -27,7 +27,8 @@
   },
   "footer": {
     "rights": "QiaoShen · For reference only; verify requirements with official sources",
-    "disclaimer": "We do not ghost-write statements or guarantee admission"
+    "disclaimer": "We do not ghost-write statements or guarantee admission",
+    "feedback": "Feedback"
   },
   "auth": {
     "loginTitle": "Sign in",
