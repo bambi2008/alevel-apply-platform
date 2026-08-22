@@ -65,14 +65,17 @@ The experience must be direct and clear: after sign-in, students choose one of t
 - Four-core entry-page browser acceptance passed. Direct desktop checks covered all four routes and their principal tabs/filters with zero console errors or horizontal overflow; local resource audits returned HTTP 200 with no failed assets. Mobile-width captures confirmed the shared responsive shell and stacked row treatment. Side-by-side comparisons against the supplied interview reference are recorded in `design-qa.md`; no material P0-P2 visual discrepancy remains.
 - The unified four-core entry pages were committed as `b5ec778`, pushed to `origin/codex/core-four-redesign`, and deployed only to the same-host Beta application. The Beta image completed Prisma generation, Next.js production compilation, TypeScript checking, and static-page generation before the app reached healthy status. Public Beta reports release `b5ec778`; production and `www` continue to report `367b7e2`, with production app/database/Caddy uptimes preserved.
 - A site-wide footer feedback contact now exposes `mao8teen@gmail.com` in both Chinese and English. The address is a direct `mailto:` link with a prefilled “桥申 Beta 使用反馈” subject so students can report issues without locating a separate form. Commit `6df5df5` passed TypeScript and rendered-link checks, was pushed to GitHub, and is healthy on Beta; production remains unchanged.
+- Homepage first-screen density audit completed from the supplied 1440-class desktop capture. The two-column card layout is appropriate, but the tall title block, 250 px minimum card height, and generous card padding push the second row below the viewport. The next revision will keep the same four links and content while reducing only vertical spacing and card height so the full 2×2 set is visible without scrolling.
+- The homepage dashboard now uses a compact title block and 190 px two-column cards. Each card groups its icon, title, and subtitle in one row, keeps the full description and tags, and places its action beside the tags to remove unused vertical space. All four destinations and focus/hover behavior remain unchanged; `pnpm typecheck` and `git diff --check` passed.
+- Homepage first-screen browser acceptance passed at 1280×720: both card rows are fully visible, with the second row ending at 649 px, and no horizontal overflow. The tests entry navigation/back path worked, browser console errors and warnings remained at zero, and 21 local page resources returned without failure. The normalized source/implementation comparison and measured bounds are recorded in `design-qa.md` with `final result: passed`.
 
 ## Current Milestone
 
-Completed — the owner feedback email is visible and clickable in the site-wide footer, saved to GitHub, and deployed only to Beta while production remains on `367b7e2`.
+Make all four homepage core-entry cards fully visible within a common 1440×720 desktop viewport while preserving mobile readability and every existing destination.
 
 ## Remaining Tasks
 
-- None for this milestone.
+1. Commit, push, and deploy only to Beta; recheck production continuity.
 
 ## Confirmed Decisions - Do Not Reopen
 
@@ -117,3 +120,4 @@ Completed — the owner feedback email is visible and clickable in the site-wide
 - Four-core deployment: commit `b5ec778` was pushed and deployed only to `beta.qiaoshenedu.com` on 2026-08-22. Public health checks returned Beta release `b5ec778` and production/`www` release `367b7e2`; database and storage checks were `ok` for both. The Beta app and backup containers were recreated, the existing healthy Beta PostgreSQL container was retained, and all production containers kept their prior uptimes. Live Beta interaction checks passed for tests subject filtering, background mode switching, interview mathematics entry, and statements UK/Hong Kong switching.
 - Footer feedback contact: `pnpm typecheck` and `git diff --check` passed on 2026-08-22. The local Chinese footer rendered exactly one `mailto:mao8teen@gmail.com` link with the encoded Beta-feedback subject.
 - Footer feedback deployment: commit `6df5df5` was pushed and deployed only to Beta on 2026-08-22. Public Beta health returned release `6df5df5`; the live footer exposed the expected email link and subject. Production health remained release `367b7e2`, with database and storage checks `ok` for both deployments.
+- Homepage first-screen verification: `pnpm typecheck`, `git diff --check`, direct browser interaction, console inspection, and local HTTP resource checking passed on 2026-08-22. At 1280×720, all four cards were fully visible and the document had no horizontal overflow. Source/implementation evidence is recorded in `design-qa.md` with `final result: passed`.

@@ -12,27 +12,33 @@ const CENTERS = [
 
 export function CoreDashboard({ email }: { email?: string | null }) {
   return (
-    <div className="mx-auto max-w-6xl px-5 py-10 sm:py-14">
-      <header className="mb-9 max-w-3xl">
+    <div className="mx-auto max-w-6xl px-5 py-6 sm:py-7">
+      <header className="mb-5 max-w-3xl">
         <p className="text-sm font-semibold text-[var(--indigo)]">桥申训练中心</p>
-        <h1 className="mt-2 text-3xl font-bold text-[var(--ink)] sm:text-4xl">今天要完成哪项训练？</h1>
-        <p className="mt-3 text-base leading-7 text-[var(--ink-soft)]">四个核心入口，直接开始。你的练习、模考、面试和文书记录会持续保留。</p>
-        {email && <p className="mt-2 text-xs text-[var(--ink-faint)]">当前账号：{email}</p>}
+        <h1 className="mt-1.5 text-2xl font-bold text-[var(--ink)] sm:text-3xl">今天要完成哪项训练？</h1>
+        <p className="mt-2 text-sm leading-6 text-[var(--ink-soft)] sm:text-base">四个核心入口，直接开始。你的练习、模考、面试和文书记录会持续保留。</p>
+        {email && <p className="mt-1.5 text-xs text-[var(--ink-faint)]">当前账号：{email}</p>}
       </header>
-      <section className="grid gap-4 sm:grid-cols-2" aria-label="四个核心训练中心">
+      <section className="grid gap-3 sm:grid-cols-2" aria-label="四个核心训练中心">
         {CENTERS.map((center) => {
           const Icon = center.icon;
           return (
-            <Link key={center.href} href={center.href} className="group flex min-h-[250px] flex-col rounded-lg border border-[var(--border)] bg-white p-6 transition hover:border-[color:var(--indigo)]/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--indigo)]">
+            <Link key={center.href} href={center.href} className="group flex min-h-[190px] flex-col rounded-lg border border-[var(--border)] bg-white p-5 transition hover:border-[color:var(--indigo)]/40 hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--indigo)]">
               <div className="flex items-start justify-between gap-4">
-                <span className={`flex size-11 items-center justify-center rounded-lg border ${center.tone}`}><Icon className="size-5" aria-hidden="true" /></span>
+                <div className="flex min-w-0 items-start gap-3">
+                  <span className={`flex size-10 shrink-0 items-center justify-center rounded-lg border ${center.tone}`}><Icon className="size-5" aria-hidden="true" /></span>
+                  <div className="min-w-0">
+                    <h2 className="text-lg font-bold text-[var(--ink)]">{center.title}</h2>
+                    <p className="mt-0.5 text-sm font-medium text-[var(--ink-soft)]">{center.subtitle}</p>
+                  </div>
+                </div>
                 <span className="text-xl text-[var(--ink-faint)] transition group-hover:translate-x-1 group-hover:text-[var(--indigo)]">→</span>
               </div>
-              <h2 className="mt-5 text-xl font-bold text-[var(--ink)]">{center.title}</h2>
-              <p className="mt-1 text-sm font-medium text-[var(--ink-soft)]">{center.subtitle}</p>
-              <p className="mt-3 text-sm leading-6 text-[var(--ink-soft)]">{center.description}</p>
-              <div className="mt-5 flex flex-wrap gap-2">{center.tags.map((tag) => <span key={tag} className="rounded-full bg-[var(--surface)] px-2.5 py-1 text-xs text-[var(--ink-soft)]">{tag}</span>)}</div>
-              <span className="mt-auto pt-6 text-sm font-semibold text-[var(--indigo)]">{center.action} →</span>
+              <p className="mt-3 text-sm leading-5 text-[var(--ink-soft)]">{center.description}</p>
+              <div className="mt-auto flex flex-col gap-3 pt-4 sm:flex-row sm:items-end sm:justify-between">
+                <div className="flex flex-wrap gap-1.5">{center.tags.map((tag) => <span key={tag} className="rounded-full bg-[var(--surface)] px-2.5 py-1 text-xs text-[var(--ink-soft)]">{tag}</span>)}</div>
+                <span className="shrink-0 text-sm font-semibold text-[var(--indigo)]">{center.action} →</span>
+              </div>
             </Link>
           );
         })}
