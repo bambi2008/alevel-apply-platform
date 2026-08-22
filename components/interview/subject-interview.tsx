@@ -75,6 +75,17 @@ export function SubjectInterview({
         <QuantitativeInterviewSimulator subjectName={subjectName} drills={quantitativeDrills} />
       ) : tab === "bank" ? (
         <div className="space-y-4">
+          {isQuantitativeInterviewSubject(subjectId) && (
+            <div className="space-y-3 pb-1">
+              <div>
+                <p className="text-sm font-semibold text-[var(--ink)]">统一答题框架</p>
+                <p className="mt-1 text-sm leading-relaxed text-[var(--ink-soft)]">
+                  下面所有练习题都按同一套五步推进。先熟悉框架，做题时直接把思考过程说出来，不必逐题重复阅读说明。
+                </p>
+              </div>
+              <InterviewThinkingChecklist />
+            </div>
+          )}
           {questions.map((q, i) => {
             const open = openId === q.id;
             return (
@@ -84,8 +95,7 @@ export function SubjectInterview({
                     {i + 1}
                   </span>
                   <div className="min-w-0 flex-1">
-                    {isQuantitativeInterviewSubject(subjectId) && <InterviewThinkingChecklist emphasis={["model", "method", "calculation", "check", "adapt"]} />}
-                    <p className="mt-4 font-medium text-[var(--ink)] leading-relaxed">{q.prompt}</p>
+                    <p className="font-medium text-[var(--ink)] leading-relaxed">{q.prompt}</p>
                     {(q.format || q.timebox || q.assessedSkills?.length) && (
                       <div className="mt-2 flex flex-wrap gap-1.5 text-[11px]">
                         {q.format && <span className="badge badge-neutral">{q.format}</span>}

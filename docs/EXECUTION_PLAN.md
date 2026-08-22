@@ -57,14 +57,15 @@ The experience must be direct and clear: after sign-in, students choose one of t
 - The same-host Beta checkout at `/opt/qiaoshen-core-beta` was safely fast-forwarded from `471e9e6` to `df4a61e` through Tencent Cloud Automation Assistant. The server-only `.dockerignore` addition for `backups-core-beta/` was verified non-conflicting and preserved; no production container was changed.
 - Beta release `5034ab5` was built and started with `compose.core-beta.same-host.yml`. The production environment preflight passed; the only warning was that optional Sentry/webhook external alerting is not configured. Beta app and backup containers were recreated from the new image while the existing healthy Beta PostgreSQL container and all separately named production containers were left in place.
 - Post-deployment routing verification found and corrected a shared-network DNS collision: the production Caddy upstream `app:3000` could resolve the same-host Beta service's `app` alias. The production route now uses the unique `qiaoshen-app-1:3000` container name. Caddy validation and a graceful reload passed; production immediately returned its unchanged `367b7e2` release while Beta returned `5034ab5`, and neither application nor database container was restarted.
+- The quantitative interview practice bank now presents the five-step thinking framework once above the exercise list instead of repeating it inside every question card. Questions now begin directly with the prompt while retaining metadata and expandable thinking hints. Focused TypeScript checking and `git diff --check` passed; desktop and mobile browser checks confirmed one framework, six working hint controls, no horizontal overflow, and zero console errors. Isolated `.next*` build directories are now ignored so binary preview artifacts cannot pollute Tailwind source scanning.
 
 ## Current Milestone
 
-Complete. Beta `5034ab5` is deployed and healthy at `beta.qiaoshenedu.com`; the original production release `367b7e2` remains healthy at `qiaoshenedu.com`.
+Verify and deploy the cleaner quantitative interview practice-bank layout while keeping the original production site unchanged.
 
 ## Remaining Tasks
 
-None. All acceptance criteria are verified.
+1. Deploy the verified practice-bank cleanup only to Beta and recheck production continuity.
 
 ## Confirmed Decisions - Do Not Reopen
 
@@ -101,3 +102,5 @@ None. All acceptance criteria are verified.
 - Beta build/deploy: image `qiaoshen-core-beta:local` built successfully at release `5034ab5`; production environment preflight passed, Beta app/backup containers restarted, and the Beta PostgreSQL container remained healthy on 2026-08-22.
 - Same-host routing correction: Caddy config validation and graceful reload passed on 2026-08-22. Local TLS host checks returned production release `367b7e2` and Beta release `5034ab5`; production app, database, and Caddy containers retained their 6–8 day uptimes.
 - Final public acceptance: DNS for production, `www`, and Beta resolves to `124.156.182.110`; direct HTTPS returned production release `367b7e2` and Beta release `5034ab5`, while `www` redirected to the production origin and retained release `367b7e2`. Beta home, tests, background, interview, and statements routes all returned HTTP 200. Database and storage health checks were `ok` for both deployments.
+- Interview practice-bank cleanup: `pnpm typecheck` and focused `git diff --check` passed on 2026-08-22. The workspace still does not expose a runnable ESLint executable, so the focused ESLint command could not start.
+- Interview practice-bank browser acceptance: at 1440×900 and 390×844, the five-step framework rendered exactly once, all six thinking-hint controls remained interactive, document width stayed within the viewport, and console errors remained at zero. The local page and 22 referenced resources returned HTTP 200. Visual comparison is recorded in `design-qa.md` with `final result: passed`.

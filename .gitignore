@@ -17,7 +17,7 @@
 /.storage-e2e/
 
 # next.js
-/.next/
+/.next*/
 /out/
 
 # production
