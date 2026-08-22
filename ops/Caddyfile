@@ -4,7 +4,9 @@ www.{$APP_DOMAIN} {
 
 {$APP_DOMAIN} {
   encode zstd gzip
-  reverse_proxy app:3000
+  # Use the production container's unique DNS name. The same-host Beta
+  # Compose project also has a service named "app" on this network.
+  reverse_proxy qiaoshen-app-1:3000
 
   header {
     -Server

@@ -56,14 +56,15 @@ The experience must be direct and clear: after sign-in, students choose one of t
 - The verified implementation was committed as `4fe431e` and pushed to `origin/codex/core-four-redesign`; logs, caches, temporary files, build output, secrets, and the pre-existing `tsconfig.json` line-ending-only state were excluded.
 - The same-host Beta checkout at `/opt/qiaoshen-core-beta` was safely fast-forwarded from `471e9e6` to `df4a61e` through Tencent Cloud Automation Assistant. The server-only `.dockerignore` addition for `backups-core-beta/` was verified non-conflicting and preserved; no production container was changed.
 - Beta release `5034ab5` was built and started with `compose.core-beta.same-host.yml`. The production environment preflight passed; the only warning was that optional Sentry/webhook external alerting is not configured. Beta app and backup containers were recreated from the new image while the existing healthy Beta PostgreSQL container and all separately named production containers were left in place.
+- Post-deployment routing verification found and corrected a shared-network DNS collision: the production Caddy upstream `app:3000` could resolve the same-host Beta service's `app` alias. The production route now uses the unique `qiaoshen-app-1:3000` container name. Caddy validation and a graceful reload passed; production immediately returned its unchanged `367b7e2` release while Beta returned `5034ab5`, and neither application nor database container was restarted.
 
 ## Current Milestone
 
-Verify the deployed Beta and confirm production remains unaffected.
+Complete. Beta `5034ab5` is deployed and healthy at `beta.qiaoshenedu.com`; the original production release `367b7e2` remains healthy at `qiaoshenedu.com`.
 
 ## Remaining Tasks
 
-1. Verify the deployed Beta health, public smoke routes, release identity, and production-container continuity.
+None. All acceptance criteria are verified.
 
 ## Confirmed Decisions - Do Not Reopen
 
@@ -76,8 +77,7 @@ Verify the deployed Beta and confirm production remains unaffected.
 
 ## Current Blockers
 
-- No code blocker is known.
-- No deployment access blocker is known; post-deployment verification is in progress through Tencent Cloud Automation Assistant and public HTTPS checks.
+- No code or deployment blocker is known.
 - Real API keys and server environment values are external operational dependencies and must never be committed.
 
 ## Latest Verification Snapshot
@@ -99,3 +99,5 @@ Verify the deployed Beta and confirm production remains unaffected.
 - Pre-deployment public smoke: health, home, tests, background, interview, and statements all returned HTTP 200; `scripts/smoke-core-beta.mjs` reported `smoke passed` on 2026-08-22.
 - Server checkout: `/opt/qiaoshen-core-beta` reached `df4a61e` by fast-forward on 2026-08-22; Beta Compose configuration validated, Beta app/database containers were healthy before rebuild, 33 GB disk space remained, and the separately named production containers stayed running.
 - Beta build/deploy: image `qiaoshen-core-beta:local` built successfully at release `5034ab5`; production environment preflight passed, Beta app/backup containers restarted, and the Beta PostgreSQL container remained healthy on 2026-08-22.
+- Same-host routing correction: Caddy config validation and graceful reload passed on 2026-08-22. Local TLS host checks returned production release `367b7e2` and Beta release `5034ab5`; production app, database, and Caddy containers retained their 6–8 day uptimes.
+- Final public acceptance: DNS for production, `www`, and Beta resolves to `124.156.182.110`; direct HTTPS returned production release `367b7e2` and Beta release `5034ab5`, while `www` redirected to the production origin and retained release `367b7e2`. Beta home, tests, background, interview, and statements routes all returned HTTP 200. Database and storage health checks were `ok` for both deployments.
