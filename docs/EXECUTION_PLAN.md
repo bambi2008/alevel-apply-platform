@@ -68,14 +68,15 @@ The experience must be direct and clear: after sign-in, students choose one of t
 - Homepage first-screen density audit completed from the supplied 1440-class desktop capture. The two-column card layout is appropriate, but the tall title block, 250 px minimum card height, and generous card padding push the second row below the viewport. The next revision will keep the same four links and content while reducing only vertical spacing and card height so the full 2×2 set is visible without scrolling.
 - The homepage dashboard now uses a compact title block and 190 px two-column cards. Each card groups its icon, title, and subtitle in one row, keeps the full description and tags, and places its action beside the tags to remove unused vertical space. All four destinations and focus/hover behavior remain unchanged; `pnpm typecheck` and `git diff --check` passed.
 - Homepage first-screen browser acceptance passed at 1280×720: both card rows are fully visible, with the second row ending at 649 px, and no horizontal overflow. The tests entry navigation/back path worked, browser console errors and warnings remained at zero, and 21 local page resources returned without failure. The normalized source/implementation comparison and measured bounds are recorded in `design-qa.md` with `final result: passed`.
+- The compact homepage was committed as `89bf914`, pushed to `origin/codex/core-four-redesign`, and deployed only to Beta. The Beta image completed Prisma generation, Next.js production compilation, TypeScript checking, and container health checks. Live Beta at 1280×720 shows all four card bottoms at or above 649 px; the tests navigation/back path worked with zero console errors or warnings. Beta reports release `89bf914`; production remains healthy on `367b7e2`.
 
 ## Current Milestone
 
-Make all four homepage core-entry cards fully visible within a common 1440×720 desktop viewport while preserving mobile readability and every existing destination.
+Completed: all four homepage core-entry cards are fully visible within the tested 1280×720 viewport while preserving mobile readability and every existing destination.
 
 ## Remaining Tasks
 
-1. Commit, push, and deploy only to Beta; recheck production continuity.
+None for this milestone.
 
 ## Confirmed Decisions - Do Not Reopen
 
@@ -108,6 +109,8 @@ Make all four homepage core-entry cards fully visible within a common 1440×720 
 - Git delivery: `4fe431e` pushed successfully to `origin/codex/core-four-redesign` on 2026-08-22.
 - Pre-deployment Beta baseline: `https://beta.qiaoshenedu.com/api/health` returned HTTP 200 with `status: ok`; database and storage checks both reported `ok` before the pending server pull/rebuild.
 - Pre-deployment public smoke: health, home, tests, background, interview, and statements all returned HTTP 200; `scripts/smoke-core-beta.mjs` reported `smoke passed` on 2026-08-22.
+- Homepage compact-layout delivery: commit `89bf914` pushed and deployed to Beta on 2026-08-22; live card bottoms were 440 px and 649 px at 1280×720, with no console errors or warnings and a working tests navigation/back path.
+- Post-deployment continuity: Beta health reports release `89bf914` with database and storage `ok`; production health remains release `367b7e2` with database and storage `ok`.
 - Server checkout: `/opt/qiaoshen-core-beta` reached `df4a61e` by fast-forward on 2026-08-22; Beta Compose configuration validated, Beta app/database containers were healthy before rebuild, 33 GB disk space remained, and the separately named production containers stayed running.
 - Beta build/deploy: image `qiaoshen-core-beta:local` built successfully at release `5034ab5`; production environment preflight passed, Beta app/backup containers restarted, and the Beta PostgreSQL container remained healthy on 2026-08-22.
 - Same-host routing correction: Caddy config validation and graceful reload passed on 2026-08-22. Local TLS host checks returned production release `367b7e2` and Beta release `5034ab5`; production app, database, and Caddy containers retained their 6–8 day uptimes.
