@@ -64,16 +64,15 @@ The experience must be direct and clear: after sign-in, students choose one of t
 - Shared four-core layout primitives now provide the same 6xl shell, title hierarchy, compact tab treatment, section heading, and border-separated list across tests, background, interview, and statements. Tests no longer uses a hero image or card grid; background recommendations and project entries are rows with text actions; statements uses the same shell and restrained process/region navigation. Existing filters, planning actions, question-bank links, editors, coaching, and saving behavior remain wired. `pnpm typecheck` and `git diff --check` passed.
 - Four-core entry-page browser acceptance passed. Direct desktop checks covered all four routes and their principal tabs/filters with zero console errors or horizontal overflow; local resource audits returned HTTP 200 with no failed assets. Mobile-width captures confirmed the shared responsive shell and stacked row treatment. Side-by-side comparisons against the supplied interview reference are recorded in `design-qa.md`; no material P0-P2 visual discrepancy remains.
 - The unified four-core entry pages were committed as `b5ec778`, pushed to `origin/codex/core-four-redesign`, and deployed only to the same-host Beta application. The Beta image completed Prisma generation, Next.js production compilation, TypeScript checking, and static-page generation before the app reached healthy status. Public Beta reports release `b5ec778`; production and `www` continue to report `367b7e2`, with production app/database/Caddy uptimes preserved.
-- A site-wide footer feedback contact now exposes `mao8teen@gmail.com` in both Chinese and English. The address is a direct `mailto:` link with a prefilled “桥申 Beta 使用反馈” subject so students can report issues without locating a separate form. TypeScript checking and a local rendered-link check passed.
+- A site-wide footer feedback contact now exposes `mao8teen@gmail.com` in both Chinese and English. The address is a direct `mailto:` link with a prefilled “桥申 Beta 使用反馈” subject so students can report issues without locating a separate form. Commit `6df5df5` passed TypeScript and rendered-link checks, was pushed to GitHub, and is healthy on Beta; production remains unchanged.
 
 ## Current Milestone
 
-Completed locally — the owner feedback email is visible and clickable in the site-wide footer; GitHub delivery and Beta deployment remain.
+Completed — the owner feedback email is visible and clickable in the site-wide footer, saved to GitHub, and deployed only to Beta while production remains on `367b7e2`.
 
 ## Remaining Tasks
 
-1. Commit and push the footer feedback contact.
-2. Deploy it only to Beta and recheck production continuity.
+- None for this milestone.
 
 ## Confirmed Decisions - Do Not Reopen
 
@@ -117,3 +116,4 @@ Completed locally — the owner feedback email is visible and clickable in the s
 - Four-core visual unification: `pnpm typecheck` and `git diff --check` passed on 2026-08-22. Desktop checks at 1280×720 exercised tests subject filters, background mode tabs, interview entry, and statements region switching; all four pages had zero console errors and no document overflow. Local HTTP checks found no failed resources, and responsive 390×844 captures plus source/implementation comparisons are documented in `design-qa.md` with `final result: passed`.
 - Four-core deployment: commit `b5ec778` was pushed and deployed only to `beta.qiaoshenedu.com` on 2026-08-22. Public health checks returned Beta release `b5ec778` and production/`www` release `367b7e2`; database and storage checks were `ok` for both. The Beta app and backup containers were recreated, the existing healthy Beta PostgreSQL container was retained, and all production containers kept their prior uptimes. Live Beta interaction checks passed for tests subject filtering, background mode switching, interview mathematics entry, and statements UK/Hong Kong switching.
 - Footer feedback contact: `pnpm typecheck` and `git diff --check` passed on 2026-08-22. The local Chinese footer rendered exactly one `mailto:mao8teen@gmail.com` link with the encoded Beta-feedback subject.
+- Footer feedback deployment: commit `6df5df5` was pushed and deployed only to Beta on 2026-08-22. Public Beta health returned release `6df5df5`; the live footer exposed the expected email link and subject. Production health remained release `367b7e2`, with database and storage checks `ok` for both deployments.
