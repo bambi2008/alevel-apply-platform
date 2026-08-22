@@ -55,14 +55,15 @@ The experience must be direct and clear: after sign-in, students choose one of t
 - Final local acceptance passed: all 260 Vitest tests, full TypeScript checking, Prisma schema validation, a production build, and ESLint across 524 tracked JavaScript/TypeScript files completed successfully. Desktop (1440×900) and mobile (390×844) browser checks verified the interview entry points, intent-filtered exam list, registration intent fields, zero horizontal overflow, and zero browser console errors. The registration hero was corrected to use an existing production asset after the HTTP resource check identified the stale image path.
 - The verified implementation was committed as `4fe431e` and pushed to `origin/codex/core-four-redesign`; logs, caches, temporary files, build output, secrets, and the pre-existing `tsconfig.json` line-ending-only state were excluded.
 - The same-host Beta checkout at `/opt/qiaoshen-core-beta` was safely fast-forwarded from `471e9e6` to `df4a61e` through Tencent Cloud Automation Assistant. The server-only `.dockerignore` addition for `backups-core-beta/` was verified non-conflicting and preserved; no production container was changed.
+- Beta release `5034ab5` was built and started with `compose.core-beta.same-host.yml`. The production environment preflight passed; the only warning was that optional Sentry/webhook external alerting is not configured. Beta app and backup containers were recreated from the new image while the existing healthy Beta PostgreSQL container and all separately named production containers were left in place.
 
 ## Current Milestone
 
-Deploy and verify the Beta without modifying production.
+Verify the deployed Beta and confirm production remains unaffected.
 
 ## Remaining Tasks
 
-1. Deploy and verify the Beta without modifying production.
+1. Verify the deployed Beta health, public smoke routes, release identity, and production-container continuity.
 
 ## Confirmed Decisions - Do Not Reopen
 
@@ -76,7 +77,7 @@ Deploy and verify the Beta without modifying production.
 ## Current Blockers
 
 - No code blocker is known.
-- Tencent Cloud console access is available through the authenticated in-app browser, and Beta deployment is in progress through Automation Assistant; production must remain untouched.
+- No deployment access blocker is known; post-deployment verification is in progress through Tencent Cloud Automation Assistant and public HTTPS checks.
 - Real API keys and server environment values are external operational dependencies and must never be committed.
 
 ## Latest Verification Snapshot
@@ -97,3 +98,4 @@ Deploy and verify the Beta without modifying production.
 - Pre-deployment Beta baseline: `https://beta.qiaoshenedu.com/api/health` returned HTTP 200 with `status: ok`; database and storage checks both reported `ok` before the pending server pull/rebuild.
 - Pre-deployment public smoke: health, home, tests, background, interview, and statements all returned HTTP 200; `scripts/smoke-core-beta.mjs` reported `smoke passed` on 2026-08-22.
 - Server checkout: `/opt/qiaoshen-core-beta` reached `df4a61e` by fast-forward on 2026-08-22; Beta Compose configuration validated, Beta app/database containers were healthy before rebuild, 33 GB disk space remained, and the separately named production containers stayed running.
+- Beta build/deploy: image `qiaoshen-core-beta:local` built successfully at release `5034ab5`; production environment preflight passed, Beta app/backup containers restarted, and the Beta PostgreSQL container remained healthy on 2026-08-22.
