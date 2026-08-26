@@ -78,15 +78,16 @@ The experience must be direct and clear: after sign-in, students choose one of t
 - The same-host Beta checkout at `/opt/qiaoshen-core-beta` was safely fast-forwarded from `89bf914` to `cfba810` while preserving its server-only `.dockerignore` modification. The first deployment command stopped before any container build or recreation because Tencent Automation Assistant's non-login `ubuntu` environment does not expose host `npm`; Beta therefore remained on `89bf914` and production on `367b7e2`. The retry will run the environment preflight inside the newly built Docker image instead of depending on host Node.js.
 - The Docker-only retry built release `cfba810`, passed the production-environment preflight inside the image, and recreated only the Beta app and backup containers. The existing Beta PostgreSQL container remained healthy. Public Beta health returned `cfba810` with database/storage checks `ok`; production remained continuously healthy on `367b7e2` without a container restart.
 - Live CAIE 9709 page acceptance found two stale pre-expansion statements: “current four papers” and a pending June-China-paper note. The page metadata now states 16 fixed papers and records the completed June 2026 China-region 9709/15, /35, /45, and /55 calibration with the exact 44/88 targeted ratio. A regression assertion prevents the obsolete India/pending wording from returning; all eight focused tests, TypeScript checking, and `git diff --check` pass.
+- The public metadata correction and deployment record were committed as `a809ed9` and pushed to `origin/codex/core-four-redesign`.
+- Beta release `a809ed9` was built and deployed successfully. Its in-image environment preflight passed with only the known optional external-alerting warning; only the Beta app and backup containers were recreated, while the existing Beta PostgreSQL container remained healthy. Public health reports Beta `a809ed9` and production `367b7e2`, both with database/storage checks `ok`; production uptime remained continuous. Browser acceptance on the public CAIE 9709 page confirms “current 16 papers,” the June 2026 China-region calibration note, and the 44/88 targeted ratio, with no obsolete India/pending text.
 
 ## Current Milestone
 
-Double the CAIE 9709 Pure Mathematics 3 bank from 88 to 176 original questions. Exactly 44 of the 88 new questions must target the June 2026 candidate's demonstrated error types, while the other 44 preserve broad P3 syllabus coverage; retain complete 75-mark fixed-paper structure and auditability.
+Completed: the CAIE 9709 Pure Mathematics 3 bank contains 176 original questions across 16 complete fixed papers; exactly 44 of the 88 additions target the verified June 2026 candidate error types, and the result is published on Beta with production unchanged.
 
 ## Remaining Tasks
 
-1. Commit and push the live-page metadata correction and deployment record.
-2. Redeploy only Beta, then verify the corrected public page and the unchanged production release.
+None for this milestone.
 
 ## Confirmed Decisions - Do Not Reopen
 
