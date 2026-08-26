@@ -73,6 +73,7 @@ The experience must be direct and clear: after sign-in, students choose one of t
 - Eight additional original Pure Mathematics 3 papers now expand the bank from 88 to 176 questions. Each new paper has 11 structured questions, 75 marks, all nine P3 topics, exactly 12 foundation marks and 37 high-difficulty marks. A code-level targeted-ID register identifies exactly 44 of the 88 additions as candidate-error practice covering binomial validity domains, converting transformed parameters to the requested answer, complete normal equations, graph/iteration discipline, exact trigonometric integration, and the four highest-priority vector questions. Focused structural, uniqueness, answer-completeness, balance, 44/88 ratio, and eight iterative-answer audits pass; TypeScript checking also passes.
 - The expanded CAIE 9709 bank now covers every difficulty level in every one of its nine topics. The repository-wide question audit reports 2,766 questions and 130 papers with CAIE 9709 at 176 questions, 16 written mocks, 9/9 topics, zero critical findings, and zero warnings. The strengthened CAIE-specific suite has seven passing audits, including exact 44/88 candidate-error coverage and fixed skill-slot checks.
 - Local acceptance is complete: all 49 Vitest files and 262 tests pass, TypeScript checking passes, `git diff --check` passes, and an isolated Next.js 16 production build completes compilation, type validation, page-data collection, and all 27 static pages. Full source lint completes with zero errors; its three warnings are pre-existing unused declarations outside this milestone, while every changed TypeScript file is clean. The isolated build output is ignored and its temporary `tsconfig.json` additions were removed, preserving the user's pre-existing line-ending-only state.
+- The verified 88-question expansion, fixed-paper wiring, audits, and inventory snapshot were committed as `d50c523`. The commit contains only the six planned source/test/plan files; logs, caches, temporary/build output, secrets, and the pre-existing `tsconfig.json` state remain excluded.
 
 ## Current Milestone
 
@@ -80,7 +81,7 @@ Double the CAIE 9709 Pure Mathematics 3 bank from 88 to 176 original questions. 
 
 ## Remaining Tasks
 
-1. Commit and push the verified question-bank expansion without logs, caches, temporary/build output, secrets, or the pre-existing `tsconfig.json` state.
+1. Push the verified commits to `origin/codex/core-four-redesign`.
 2. Deploy only to Beta and verify both Beta and the unchanged production release.
 
 ## Confirmed Decisions - Do Not Reopen
