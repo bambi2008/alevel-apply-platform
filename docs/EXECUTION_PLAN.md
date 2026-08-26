@@ -74,6 +74,10 @@ The experience must be direct and clear: after sign-in, students choose one of t
 - The expanded CAIE 9709 bank now covers every difficulty level in every one of its nine topics. The repository-wide question audit reports 2,766 questions and 130 papers with CAIE 9709 at 176 questions, 16 written mocks, 9/9 topics, zero critical findings, and zero warnings. The strengthened CAIE-specific suite has seven passing audits, including exact 44/88 candidate-error coverage and fixed skill-slot checks.
 - Local acceptance is complete: all 49 Vitest files and 262 tests pass, TypeScript checking passes, `git diff --check` passes, and an isolated Next.js 16 production build completes compilation, type validation, page-data collection, and all 27 static pages. Full source lint completes with zero errors; its three warnings are pre-existing unused declarations outside this milestone, while every changed TypeScript file is clean. The isolated build output is ignored and its temporary `tsconfig.json` additions were removed, preserving the user's pre-existing line-ending-only state.
 - The verified 88-question expansion, fixed-paper wiring, audits, and inventory snapshot were committed as `d50c523`. The commit contains only the six planned source/test/plan files; logs, caches, temporary/build output, secrets, and the pre-existing `tsconfig.json` state remain excluded.
+- Commits `d50c523` and `cfba810` were pushed to `origin/codex/core-four-redesign`; GitHub now contains the verified 176-question/16-paper bank and its acceptance record.
+- The same-host Beta checkout at `/opt/qiaoshen-core-beta` was safely fast-forwarded from `89bf914` to `cfba810` while preserving its server-only `.dockerignore` modification. The first deployment command stopped before any container build or recreation because Tencent Automation Assistant's non-login `ubuntu` environment does not expose host `npm`; Beta therefore remained on `89bf914` and production on `367b7e2`. The retry will run the environment preflight inside the newly built Docker image instead of depending on host Node.js.
+- The Docker-only retry built release `cfba810`, passed the production-environment preflight inside the image, and recreated only the Beta app and backup containers. The existing Beta PostgreSQL container remained healthy. Public Beta health returned `cfba810` with database/storage checks `ok`; production remained continuously healthy on `367b7e2` without a container restart.
+- Live CAIE 9709 page acceptance found two stale pre-expansion statements: “current four papers” and a pending June-China-paper note. The page metadata now states 16 fixed papers and records the completed June 2026 China-region 9709/15, /35, /45, and /55 calibration with the exact 44/88 targeted ratio. A regression assertion prevents the obsolete India/pending wording from returning; all eight focused tests, TypeScript checking, and `git diff --check` pass.
 
 ## Current Milestone
 
@@ -81,8 +85,8 @@ Double the CAIE 9709 Pure Mathematics 3 bank from 88 to 176 original questions. 
 
 ## Remaining Tasks
 
-1. Push the verified commits to `origin/codex/core-four-redesign`.
-2. Deploy only to Beta and verify both Beta and the unchanged production release.
+1. Commit and push the live-page metadata correction and deployment record.
+2. Redeploy only Beta, then verify the corrected public page and the unchanged production release.
 
 ## Confirmed Decisions - Do Not Reopen
 

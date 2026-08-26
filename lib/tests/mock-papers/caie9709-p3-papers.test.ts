@@ -4,6 +4,7 @@ import { CAIE9709_P3_WRITTEN_PAPERS } from "./caie9709-p3-written-papers";
 import type { LongQuestion } from "@/lib/tests/questions/types";
 import { CAIE9709_QUESTIONS } from "@/lib/tests/questions/caie9709";
 import { CAIE9709_P3_CANDIDATE_TARGETED_IDS } from "@/lib/tests/questions/caie9709-candidate-targeted";
+import { CAIE9709_TEST } from "@/lib/tests/caie9709-test";
 
 const expectedTopics = new Set([
   "caie9709-algebra",
@@ -18,6 +19,13 @@ const expectedTopics = new Set([
 ]);
 
 describe("CAIE 9709 P3 fixed written papers", () => {
+  it("publishes the current 16-paper and June 2026 calibration status", () => {
+    expect(CAIE9709_TEST.formatZh).toContain("当前 16 套");
+    expect(CAIE9709_TEST.statusNote).toContain("9709/15");
+    expect(CAIE9709_TEST.statusNote).toContain("44/88");
+    expect(CAIE9709_TEST.statusNote).not.toMatch(/印度卷|待取得/);
+  });
+
   it("contains sixteen complete 110-minute, 75-mark papers", () => {
     expect(CAIE9709_P3_WRITTEN_PAPERS).toHaveLength(16);
 
