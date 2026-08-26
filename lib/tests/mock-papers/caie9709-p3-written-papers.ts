@@ -11,6 +11,16 @@ import {
   CAIE9709_P3_MOCK_7,
   CAIE9709_P3_MOCK_8,
 } from "@/lib/tests/questions/caie9709-expansion";
+import {
+  CAIE9709_P3_MOCK_9,
+  CAIE9709_P3_MOCK_10,
+  CAIE9709_P3_MOCK_11,
+  CAIE9709_P3_MOCK_12,
+  CAIE9709_P3_MOCK_13,
+  CAIE9709_P3_MOCK_14,
+  CAIE9709_P3_MOCK_15,
+  CAIE9709_P3_MOCK_16,
+} from "@/lib/tests/questions/caie9709-candidate-targeted";
 
 const papers = [
   CAIE9709_P3_MOCK_1,
@@ -21,6 +31,14 @@ const papers = [
   CAIE9709_P3_MOCK_6,
   CAIE9709_P3_MOCK_7,
   CAIE9709_P3_MOCK_8,
+  CAIE9709_P3_MOCK_9,
+  CAIE9709_P3_MOCK_10,
+  CAIE9709_P3_MOCK_11,
+  CAIE9709_P3_MOCK_12,
+  CAIE9709_P3_MOCK_13,
+  CAIE9709_P3_MOCK_14,
+  CAIE9709_P3_MOCK_15,
+  CAIE9709_P3_MOCK_16,
 ];
 
 export const CAIE9709_P3_WRITTEN_PAPERS: MockPaper[] = papers.map((questions, index) => ({

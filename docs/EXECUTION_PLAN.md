@@ -1,6 +1,6 @@
 # Execution Plan
 
-Updated: 2026-08-22
+Updated: 2026-08-27
 Branch: `codex/core-four-redesign`
 
 ## Final Goal
@@ -69,14 +69,19 @@ The experience must be direct and clear: after sign-in, students choose one of t
 - The homepage dashboard now uses a compact title block and 190 px two-column cards. Each card groups its icon, title, and subtitle in one row, keeps the full description and tags, and places its action beside the tags to remove unused vertical space. All four destinations and focus/hover behavior remain unchanged; `pnpm typecheck` and `git diff --check` passed.
 - Homepage first-screen browser acceptance passed at 1280×720: both card rows are fully visible, with the second row ending at 649 px, and no horizontal overflow. The tests entry navigation/back path worked, browser console errors and warnings remained at zero, and 21 local page resources returned without failure. The normalized source/implementation comparison and measured bounds are recorded in `design-qa.md` with `final result: passed`.
 - The compact homepage was committed as `89bf914`, pushed to `origin/codex/core-four-redesign`, and deployed only to Beta. The Beta image completed Prisma generation, Next.js production compilation, TypeScript checking, and container health checks. Live Beta at 1280×720 shows all four card bottoms at or above 649 px; the tests navigation/back path worked with zero console errors or warnings. Beta reports release `89bf914`; production remains healthy on `367b7e2`.
+- The four June 2026 China-region CAIE 9709 candidate reports were reviewed page by page. Scores were 72/75 for 9709/15, 51/75 for 9709/35, 49/50 for 9709/45, and 49/50 for 9709/55. Pure Mathematics 3 is the clear intervention priority: question 11 lost 11 of 12 marks across three-dimensional vector proof, point-to-line distance, and exact area; secondary gaps are convergence domains, completing a normal equation, graphical uniqueness, fixed-point iteration precision, exact trigonometric integration, and finishing requested answer forms.
+- Eight additional original Pure Mathematics 3 papers now expand the bank from 88 to 176 questions. Each new paper has 11 structured questions, 75 marks, all nine P3 topics, exactly 12 foundation marks and 37 high-difficulty marks. A code-level targeted-ID register identifies exactly 44 of the 88 additions as candidate-error practice covering binomial validity domains, converting transformed parameters to the requested answer, complete normal equations, graph/iteration discipline, exact trigonometric integration, and the four highest-priority vector questions. Focused structural, uniqueness, answer-completeness, balance, 44/88 ratio, and eight iterative-answer audits pass; TypeScript checking also passes.
+- The expanded CAIE 9709 bank now covers every difficulty level in every one of its nine topics. The repository-wide question audit reports 2,766 questions and 130 papers with CAIE 9709 at 176 questions, 16 written mocks, 9/9 topics, zero critical findings, and zero warnings. The strengthened CAIE-specific suite has seven passing audits, including exact 44/88 candidate-error coverage and fixed skill-slot checks.
+- Local acceptance is complete: all 49 Vitest files and 262 tests pass, TypeScript checking passes, `git diff --check` passes, and an isolated Next.js 16 production build completes compilation, type validation, page-data collection, and all 27 static pages. Full source lint completes with zero errors; its three warnings are pre-existing unused declarations outside this milestone, while every changed TypeScript file is clean. The isolated build output is ignored and its temporary `tsconfig.json` additions were removed, preserving the user's pre-existing line-ending-only state.
 
 ## Current Milestone
 
-Completed: all four homepage core-entry cards are fully visible within the tested 1280×720 viewport while preserving mobile readability and every existing destination.
+Double the CAIE 9709 Pure Mathematics 3 bank from 88 to 176 original questions. Exactly 44 of the 88 new questions must target the June 2026 candidate's demonstrated error types, while the other 44 preserve broad P3 syllabus coverage; retain complete 75-mark fixed-paper structure and auditability.
 
 ## Remaining Tasks
 
-None for this milestone.
+1. Commit and push the verified question-bank expansion without logs, caches, temporary/build output, secrets, or the pre-existing `tsconfig.json` state.
+2. Deploy only to Beta and verify both Beta and the unchanged production release.
 
 ## Confirmed Decisions - Do Not Reopen
 
@@ -124,3 +129,4 @@ None for this milestone.
 - Footer feedback contact: `pnpm typecheck` and `git diff --check` passed on 2026-08-22. The local Chinese footer rendered exactly one `mailto:mao8teen@gmail.com` link with the encoded Beta-feedback subject.
 - Footer feedback deployment: commit `6df5df5` was pushed and deployed only to Beta on 2026-08-22. Public Beta health returned release `6df5df5`; the live footer exposed the expected email link and subject. Production health remained release `367b7e2`, with database and storage checks `ok` for both deployments.
 - Homepage first-screen verification: `pnpm typecheck`, `git diff --check`, direct browser interaction, console inspection, and local HTTP resource checking passed on 2026-08-22. At 1280×720, all four cards were fully visible and the document had no horizontal overflow. Source/implementation evidence is recorded in `design-qa.md` with `final result: passed`.
+- June 2026 candidate diagnostic: all relevant pages of components 15, 35, 45, and 55 were rendered and inspected on 2026-08-27. The 9709/35 score table and script identify 11(b) and 11(c) as zero/unattempted, 11(a) as 1/4, and smaller losses in 1(b), 3, 4(b), 5(b), 8(a), 8(d), and 9(b); the other three components lost only five marks in total.

@@ -9,8 +9,8 @@ describe("question bank audit", () => {
   it("inventories every supported test without structural blockers", () => {
     const report = buildQuestionBankAudit();
     expect(report.totals.tests).toBe(13);
-    expect(report.totals.questions).toBe(2678);
-    expect(report.totals.mockPapers).toBe(122);
+    expect(report.totals.questions).toBe(2766);
+    expect(report.totals.mockPapers).toBe(130);
     expect(report.totals.topicsCovered).toBe(86);
     expect(report.totals.topicsTotal).toBe(86);
     expect(report.totals.critical).toBe(0);
