@@ -5,6 +5,28 @@ export const BETA_COHORT = "beta-2026-1";
 export const BETA_REGISTRATION_LIMIT = 20;
 export const BETA_INVITE_LOCK_ID = 2026080901;
 
+type RegistrationInvite = {
+  email: string;
+  cohort: string;
+  status: "AVAILABLE" | "USED" | "REVOKED";
+  expiresAt: Date | null;
+  usedByUserId: string | null;
+};
+
+export function classifyRegistrationInvite(
+  invite: RegistrationInvite | null,
+  email: string,
+  existingUserId: string | null,
+  now = new Date(),
+): "AVAILABLE" | "EXISTS" | "INVALID" {
+  if (!invite || invite.email !== email || invite.cohort !== BETA_COHORT) return "INVALID";
+  if (invite.status === "USED") {
+    return invite.usedByUserId && invite.usedByUserId === existingUserId ? "EXISTS" : "INVALID";
+  }
+  if (invite.status !== "AVAILABLE" || (invite.expiresAt && invite.expiresAt <= now)) return "INVALID";
+  return existingUserId ? "EXISTS" : "AVAILABLE";
+}
+
 const ALPHABET = "23456789ABCDEFGHJKLMNPQRSTUVWXYZ";
 
 export function normalizeInviteCode(value: unknown): string {

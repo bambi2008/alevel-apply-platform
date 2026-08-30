@@ -16,6 +16,7 @@ import {
   BETA_COHORT,
   BETA_INVITE_LOCK_ID,
   BETA_REGISTRATION_LIMIT,
+  classifyRegistrationInvite,
   hashInviteCode,
   normalizeInviteCode,
 } from "@/lib/beta/invites";
@@ -67,18 +68,20 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
 
     const invite = await tx.betaInvite.findUnique({
       where: { codeHash: hashInviteCode(inviteCode) },
-      select: { id: true, email: true, cohort: true, status: true, expiresAt: true },
+      select: {
+        id: true,
+        email: true,
+        cohort: true,
+        status: true,
+        expiresAt: true,
+        usedByUserId: true,
+      },
     });
-    if (
-      !invite
-      || invite.email !== email
-      || invite.cohort !== BETA_COHORT
-      || invite.status !== "AVAILABLE"
-      || (invite.expiresAt && invite.expiresAt <= new Date())
-    ) return "INVITE_INVALID" as const;
-
     const existing = await tx.user.findUnique({ where: { email }, select: { id: true } });
-    if (existing) return "EXISTS" as const;
+    const inviteState = classifyRegistrationInvite(invite, email, existing?.id ?? null);
+    if (inviteState === "EXISTS") return "EXISTS" as const;
+    if (inviteState === "INVALID") return "INVITE_INVALID" as const;
+    if (!invite) return "INVITE_INVALID" as const;
 
     const usedCount = await tx.betaInvite.count({
       where: { cohort: BETA_COHORT, status: "USED" },

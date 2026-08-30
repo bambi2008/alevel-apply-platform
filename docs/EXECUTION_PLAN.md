@@ -80,14 +80,16 @@ The experience must be direct and clear: after sign-in, students choose one of t
 - Live CAIE 9709 page acceptance found two stale pre-expansion statements: “current four papers” and a pending June-China-paper note. The page metadata now states 16 fixed papers and records the completed June 2026 China-region 9709/15, /35, /45, and /55 calibration with the exact 44/88 targeted ratio. A regression assertion prevents the obsolete India/pending wording from returning; all eight focused tests, TypeScript checking, and `git diff --check` pass.
 - The public metadata correction and deployment record were committed as `a809ed9` and pushed to `origin/codex/core-four-redesign`.
 - Beta release `a809ed9` was built and deployed successfully. Its in-image environment preflight passed with only the known optional external-alerting warning; only the Beta app and backup containers were recreated, while the existing Beta PostgreSQL container remained healthy. Public health reports Beta `a809ed9` and production `367b7e2`, both with database/storage checks `ok`; production uptime remained continuous. Browser acceptance on the public CAIE 9709 page confirms “current 16 papers,” the June 2026 China-region calibration note, and the 44/88 targeted ratio, with no obsolete India/pending text.
+- Used Beta invitations now resolve to the existing-account state when the bound email and consumed user match. Re-entering a successfully consumed code therefore shows “该邮箱已注册” and directs the student toward login/recovery instead of misleadingly reporting an invalid invite. Mismatched emails and unrelated users retain the generic invalid-invite response. Five focused invitation tests, TypeScript checking, and `git diff --check` pass.
 
 ## Current Milestone
 
-Completed: the CAIE 9709 Pure Mathematics 3 bank contains 176 original questions across 16 complete fixed papers; exactly 44 of the 88 additions target the verified June 2026 candidate error types, and the result is published on Beta with production unchanged.
+In progress: publish the verified consumed-invite guidance correction to Beta so already registered students can immediately distinguish login/recovery from registration; production remains unchanged.
 
 ## Remaining Tasks
 
-None for this milestone.
+- Commit and push the verified invitation-state correction.
+- Deploy it only to `beta.qiaoshenedu.com` and verify the public health release while keeping production on `367b7e2`.
 
 ## Confirmed Decisions - Do Not Reopen
 
@@ -136,3 +138,4 @@ None for this milestone.
 - Footer feedback deployment: commit `6df5df5` was pushed and deployed only to Beta on 2026-08-22. Public Beta health returned release `6df5df5`; the live footer exposed the expected email link and subject. Production health remained release `367b7e2`, with database and storage checks `ok` for both deployments.
 - Homepage first-screen verification: `pnpm typecheck`, `git diff --check`, direct browser interaction, console inspection, and local HTTP resource checking passed on 2026-08-22. At 1280×720, all four cards were fully visible and the document had no horizontal overflow. Source/implementation evidence is recorded in `design-qa.md` with `final result: passed`.
 - June 2026 candidate diagnostic: all relevant pages of components 15, 35, 45, and 55 were rendered and inspected on 2026-08-27. The 9709/35 score table and script identify 11(b) and 11(c) as zero/unattempted, 11(a) as 1/4, and smaller losses in 1(b), 3, 4(b), 5(b), 8(a), 8(d), and 9(b); the other three components lost only five marks in total.
+- Consumed-invite guidance: 5 focused invitation tests passed on 2026-08-30; `pnpm typecheck` and `git diff --check` also passed. A matching consumed invite and user now returns `EXISTS`, while mismatched-email and mismatched-user cases remain `INVITE_INVALID`.
