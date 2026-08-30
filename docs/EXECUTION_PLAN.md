@@ -82,14 +82,16 @@ The experience must be direct and clear: after sign-in, students choose one of t
 - Beta release `a809ed9` was built and deployed successfully. Its in-image environment preflight passed with only the known optional external-alerting warning; only the Beta app and backup containers were recreated, while the existing Beta PostgreSQL container remained healthy. Public health reports Beta `a809ed9` and production `367b7e2`, both with database/storage checks `ok`; production uptime remained continuous. Browser acceptance on the public CAIE 9709 page confirms “current 16 papers,” the June 2026 China-region calibration note, and the 44/88 targeted ratio, with no obsolete India/pending text.
 - Used Beta invitations now resolve to the existing-account state when the bound email and consumed user match. Re-entering a successfully consumed code therefore shows “该邮箱已注册” and directs the student toward login/recovery instead of misleadingly reporting an invalid invite. Mismatched emails and unrelated users retain the generic invalid-invite response. Five focused invitation tests, TypeScript checking, and `git diff --check` pass.
 - The verified invitation-state correction was committed as `43add33` and pushed to `origin/codex/core-four-redesign`; only the four planned source/test/plan files were included.
+- The 2026-08-30 same-host pre-deployment check found Beta healthy on `a809ed9` and production healthy on `367b7e2`, with database/storage checks `ok`. The expected server-only `.dockerignore` modification is the only checkout change; all Beta and production containers are running and no production service has been restarted.
+- Beta release `c20fa8f` was built and deployed successfully on 2026-08-30. The in-image production-environment preflight passed with only the known optional external-alerting warning; the Beta app and backup containers were recreated, the 13-day-old healthy Beta PostgreSQL container was retained, and public Beta health reports release `c20fa8f` with database/storage `ok`. Production remains healthy on `367b7e2`; its app, database, backup, and Caddy containers retained their existing uptimes.
 
 ## Current Milestone
 
-In progress: publish the verified consumed-invite guidance correction to Beta so already registered students can immediately distinguish login/recovery from registration; production remains unchanged.
+Completed: a consumed invitation that matches its registered student now resolves to the existing-account path instead of the invalid-invite path. The verified correction is published on Beta release `c20fa8f`, with production unchanged on `367b7e2`.
 
 ## Remaining Tasks
 
-- Deploy it only to `beta.qiaoshenedu.com` and verify the public health release while keeping production on `367b7e2`.
+None for this milestone.
 
 ## Confirmed Decisions - Do Not Reopen
 
@@ -139,3 +141,4 @@ In progress: publish the verified consumed-invite guidance correction to Beta so
 - Homepage first-screen verification: `pnpm typecheck`, `git diff --check`, direct browser interaction, console inspection, and local HTTP resource checking passed on 2026-08-22. At 1280×720, all four cards were fully visible and the document had no horizontal overflow. Source/implementation evidence is recorded in `design-qa.md` with `final result: passed`.
 - June 2026 candidate diagnostic: all relevant pages of components 15, 35, 45, and 55 were rendered and inspected on 2026-08-27. The 9709/35 score table and script identify 11(b) and 11(c) as zero/unattempted, 11(a) as 1/4, and smaller losses in 1(b), 3, 4(b), 5(b), 8(a), 8(d), and 9(b); the other three components lost only five marks in total.
 - Consumed-invite guidance: 5 focused invitation tests passed on 2026-08-30; `pnpm typecheck` and `git diff --check` also passed. A matching consumed invite and user now returns `EXISTS`, while mismatched-email and mismatched-user cases remain `INVITE_INVALID`.
+- Consumed-invite Beta deployment: checkout and public Beta health report `c20fa8f`; database/storage checks are `ok`, the Beta app is healthy, and the existing Beta PostgreSQL container was not recreated. Production health remains `367b7e2` with database/storage `ok` and uninterrupted container uptimes.
