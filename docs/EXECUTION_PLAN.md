@@ -81,6 +81,7 @@ The experience must be direct and clear: after sign-in, students choose one of t
 - The public metadata correction and deployment record were committed as `a809ed9` and pushed to `origin/codex/core-four-redesign`.
 - Beta release `a809ed9` was built and deployed successfully. Its in-image environment preflight passed with only the known optional external-alerting warning; only the Beta app and backup containers were recreated, while the existing Beta PostgreSQL container remained healthy. Public health reports Beta `a809ed9` and production `367b7e2`, both with database/storage checks `ok`; production uptime remained continuous. Browser acceptance on the public CAIE 9709 page confirms “current 16 papers,” the June 2026 China-region calibration note, and the 44/88 targeted ratio, with no obsolete India/pending text.
 - Used Beta invitations now resolve to the existing-account state when the bound email and consumed user match. Re-entering a successfully consumed code therefore shows “该邮箱已注册” and directs the student toward login/recovery instead of misleadingly reporting an invalid invite. Mismatched emails and unrelated users retain the generic invalid-invite response. Five focused invitation tests, TypeScript checking, and `git diff --check` pass.
+- The verified invitation-state correction was committed as `43add33` and pushed to `origin/codex/core-four-redesign`; only the four planned source/test/plan files were included.
 
 ## Current Milestone
 
@@ -88,7 +89,6 @@ In progress: publish the verified consumed-invite guidance correction to Beta so
 
 ## Remaining Tasks
 
-- Commit and push the verified invitation-state correction.
 - Deploy it only to `beta.qiaoshenedu.com` and verify the public health release while keeping production on `367b7e2`.
 
 ## Confirmed Decisions - Do Not Reopen
