@@ -31,7 +31,15 @@ export default function MockPaperPage({
 
   const hasWrittenQuestions = paper.modules.some((module) => module.questions.some((question) => question.type === "long"));
   return hasWrittenQuestions
-    ? <WrittenPaperRunner paper={paper} />
+    ? <>
+        {paper.testId === "caie9709" && paper.formatType === "legacy" && (
+          <aside className="mx-auto max-w-5xl px-4 pt-6 text-sm" role="note">
+            此链接是旧版卷，保留原题供历史作答回看。
+            <Link href={`/tests/caie9709/paper/${paper.id}-r2`} className="ml-2 text-[var(--brand)] underline">开始 R2 修订卷 →</Link>
+          </aside>
+        )}
+        <WrittenPaperRunner paper={paper} />
+      </>
     : paper.testId === "lnat"
       ? <LnatPaperRunner paper={paper as ObjectivePaper} />
       : <ObjectiveExamRunner paper={paper as ObjectivePaper} />;

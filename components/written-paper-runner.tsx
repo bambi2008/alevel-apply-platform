@@ -15,6 +15,7 @@ import { useExamReliability } from "@/hooks/use-exam-reliability";
 import { ExamReliabilityStatus } from "@/components/exam-reliability-status";
 import { GradingTrustPanel } from "@/components/grading-trust-panel";
 import { clearRemoteProgress, loadRemoteProgress, saveRemoteProgress } from "@/lib/learning/client";
+import { parseWrittenSubmission, writtenSubmissionKey, type WrittenSubmission } from "@/lib/tests/written-submission";
 
 type Phase = "briefing" | "running" | "grading" | "results";
 type WrittenWorks = Record<string, Record<string, string>>;
@@ -145,6 +146,9 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
   const [startedAtMs, setStartedAtMs] = useState(0);
   const [validationMessage, setValidationMessage] = useState<string | null>(null);
   const [savedAttempt, setSavedAttempt] = useState<ExamAttemptSnapshot<WrittenAttemptPayload> | null>(null);
+  const [interruptedSubmission, setInterruptedSubmission] = useState<WrittenSubmission | null>(null);
+  const [resubmitRequested, setResubmitRequested] = useState(false);
+  const recoveredTimeUsed = useRef<number | null>(null);
   const startedAt = useRef(0);
   const deadlineAt = useRef(0);
   const submittingRef = useRef(false);
@@ -155,6 +159,10 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
 
   useEffect(() => {
     let cancelled = false;
+    try {
+      setInterruptedSubmission(parseWrittenSubmission(window.localStorage.getItem(writtenSubmissionKey(paper.id)), paper.id,
+        paper.modules.flatMap(m => m.questions.map(q => q.id))));
+    } catch { /* Storage can be unavailable in private browsing. */ }
     const local = parseExamAttempt(
       window.localStorage.getItem(storageKey),
       { runner: "written", testId: paper.testId, scopeId: paper.id },
@@ -171,9 +179,12 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
       if (restored) setSavedAttempt(restored);
     });
     return () => { cancelled = true; };
-  }, [paper.id, paper.testId, storageKey]);
+  }, [paper.id, paper.testId, paper.modules, storageKey]);
 
   const begin = () => {
+    try { window.localStorage.removeItem(writtenSubmissionKey(paper.id)); } catch { /* Optional local backup. */ }
+    setInterruptedSubmission(null);
+    recoveredTimeUsed.current = null;
     window.localStorage.removeItem(storageKey);
     void clearRemoteProgress("WRITTEN_EXAM", paper.id);
     setWorks(Object.fromEntries(questions.map((question) => [question.id, {}])));
@@ -232,9 +243,11 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
     }
     submittingRef.current = true;
     if (timerRef.current) clearInterval(timerRef.current);
-    window.localStorage.removeItem(storageKey);
-    void clearRemoteProgress("WRITTEN_EXAM", paper.id);
-    setTimeUsedSec(Math.min(durationSec, Math.max(0, Math.round((Date.now() - startedAt.current) / 1000))));
+    const used = recoveredTimeUsed.current ?? Math.min(durationSec, Math.max(0, Math.round((Date.now() - startedAt.current) / 1000)));
+    const submission: WrittenSubmission = { version: 1, paperId: paper.id, startedAt: startedAt.current, timeUsedSec: used, works };
+    try { window.localStorage.setItem(writtenSubmissionKey(paper.id), JSON.stringify(submission)); } catch { /* Keep work in memory and existing remote progress. */ }
+    // Clear recovery data only after the server acknowledges the saved report.
+    setTimeUsedSec(used);
     setPhase("grading");
     const nextGrades: WrittenGrade[] = [];
 
@@ -357,6 +370,13 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
     }
   }, [currentIndex, paper.id, paper.testId, phase, storageKey, timeLeft, works]);
 
+  const resumeSubmission = useEffectEvent(() => { void submit(true); });
+  useEffect(() => {
+    if (!resubmitRequested) return;
+    setResubmitRequested(false);
+    resumeSubmission();
+  }, [resubmitRequested]);
+
   if (phase === "briefing") {
     return (
       <div className="mx-auto max-w-3xl px-4 py-10">
@@ -377,7 +397,20 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
         <ul className="mt-6 space-y-2 text-sm text-[var(--ink-soft)]">
           {instructions.map((instruction) => <li key={instruction}>{instruction}</li>)}
         </ul>
-        {savedAttempt && (
+        {interruptedSubmission && (
+          <div className="mt-5 border-l-2 border-[var(--indigo)] px-4 py-3">
+            <p className="text-sm font-semibold">上次交卷尚未确认保存，原作答已保留</p>
+            <button type="button" className="mt-3 rounded bg-[var(--indigo)] px-3 py-2 text-sm text-white" onClick={() => {
+              setWorks(interruptedSubmission.works);
+              startedAt.current = interruptedSubmission.startedAt;
+              setStartedAtMs(interruptedSubmission.startedAt);
+              recoveredTimeUsed.current = interruptedSubmission.timeUsedSec;
+              submittingRef.current = false;
+              setResubmitRequested(true);
+            }}>恢复作答并继续交卷</button>
+          </div>
+        )}
+        {savedAttempt && !interruptedSubmission && (
           <div className="mt-5 border-l-2 border-[var(--indigo)] bg-[var(--info-bg)] px-4 py-3">
             <p className="text-sm font-semibold">发现未完成的书面卷</p>
             <p className="mt-1 text-xs text-[var(--ink-soft)]">第 {savedAttempt.payload.currentIndex + 1} 题 · 剩余约 {Math.ceil(remainingAttemptSeconds(savedAttempt.deadlineAt) / 60)} 分钟</p>
@@ -388,7 +421,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
           </div>
         )}
         <button type="button" onClick={begin} className="mt-8 w-full rounded-md bg-[var(--indigo)] py-3 text-sm font-semibold text-white hover:bg-[var(--indigo-hover)]">
-          {savedAttempt ? "放弃进度并重新开始" : isEssayPaper ? "开始写作任务" : "开始书面考试"}
+          {savedAttempt || interruptedSubmission ? "放弃进度并重新开始" : isEssayPaper ? "开始写作任务" : "开始书面考试"}
         </button>
       </div>
     );
@@ -568,6 +601,7 @@ function WrittenPaperResults({
 }) {
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [savedSessionId, setSavedSessionId] = useState<string | null>(null);
+  const [saveState, setSaveState] = useState<"saving" | "failed" | "saved">("saving");
   const persistedRef = useRef(false);
   const graded = grades.filter((result) => result.grading);
   const scoredGrades = getCountedResults(grades, paper.bestQuestionCount);
@@ -598,9 +632,8 @@ function WrittenPaperResults({
     }] : [];
   }));
 
-  useEffect(() => {
-    if (persistedRef.current) return;
-    persistedRef.current = true;
+  const saveReport = async () => {
+    setSaveState("saving");
     const payload = {
       testId: paper.testId,
       mode: "paper",
@@ -625,7 +658,21 @@ function WrittenPaperResults({
         };
       }),
     };
-    void persistExamSession(payload).then((id) => setSavedSessionId(id));
+    const id = await persistExamSession(payload);
+    setSavedSessionId(id);
+    setSaveState(id ? "saved" : "failed");
+    if (id) {
+      try {
+        window.localStorage.removeItem(writtenSubmissionKey(paper.id));
+        window.localStorage.removeItem(examAttemptKey("written", paper.id));
+      } catch { /* The server record is already confirmed. */ }
+      void clearRemoteProgress("WRITTEN_EXAM", paper.id);
+    }
+  };
+  useEffect(() => {
+    if (persistedRef.current) return;
+    persistedRef.current = true;
+    void saveReport();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -633,6 +680,10 @@ function WrittenPaperResults({
     <div className="mx-auto max-w-4xl px-4 py-10">
       <p className="text-xs font-semibold uppercase text-[var(--ink-faint)]">Written paper report</p>
        <h1 className="mt-2 text-2xl font-bold">{paper.title} · {questions.some((question) => question.responseKind === "essay") ? "写作反馈" : "整卷报告"}</h1>
+      <p className="mt-3 text-sm" role="status">
+        {saveState === "saving" ? "正在保存考试记录……" : saveState === "saved" ? "考试记录已保存" : "考试记录尚未同步成功。请确认已登录并保持本页面；可重试保存，刷新后也可恢复上次交卷作答。"}
+        {saveState === "failed" && <button type="button" onClick={() => void saveReport()} className="ml-2 underline">重试保存</button>}
+      </p>
 
       <div className="mt-7 grid gap-px bg-[var(--border)] sm:grid-cols-4">
         <div className="bg-white p-4"><strong className="block text-2xl">{earned}/{max || "-"}</strong><span className="text-xs text-[var(--ink-faint)]">{questions.some((question) => question.responseKind === "essay") ? "训练量表得分" : paper.bestQuestionCount ? `最高 ${paper.bestQuestionCount} 题得分` : "已评分得分"}</span></div>

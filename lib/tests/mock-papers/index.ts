@@ -109,7 +109,7 @@ import { UCAT_M1_VR, UCAT_M1_DM, UCAT_M1_QR, UCAT_M1_SJT } from "./ucat-mock-1";
 import { UCAT_GENERATED_MOCKS } from "./ucat-mocks-2-5";
 import { IELTS_WRITTEN_DIAGNOSTIC, CSAT_WRITTEN_PAPERS } from "./ielts-csat-written-papers";
 import { IELTS_FULL_PAPERS_1 } from "./ielts-full-paper-1";
-import { CAIE9709_P3_WRITTEN_PAPERS } from "./caie9709-p3-written-papers";
+import { CAIE9709_P3_WRITTEN_PAPERS, CAIE9709_P3_ARCHIVED_PAPERS } from "./caie9709-p3-written-papers";
 
 export interface MockModule {
   id: string;
@@ -1328,10 +1328,11 @@ export function getMockPapersForTest(testId: string): MockPaper[] {
 }
 
 export function getMockPaper(paperId: string): MockPaper | undefined {
-  return ALL_MOCK_PAPERS.find((p) => p.id === paperId);
+  return ALL_MOCK_PAPERS.find((p) => p.id === paperId)
+    ?? CAIE9709_P3_ARCHIVED_PAPERS.find((p) => p.id === paperId);
 }
 
 /** 给 lookup 用：扁平化所有模拟卷题目，便于历史回看/学情分析按 id 反查 */
 export function getAllMockQuestions(): Question[] {
-  return ALL_MOCK_PAPERS.flatMap((p) => p.modules.flatMap((m) => m.questions));
+  return [...ALL_MOCK_PAPERS, ...CAIE9709_P3_ARCHIVED_PAPERS].flatMap((p) => p.modules.flatMap((m) => m.questions));
 }

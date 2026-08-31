@@ -357,7 +357,7 @@ function SessionSetup({
   const longCount = allQuestions.filter((q) => q.type === "long" && !q.id.startsWith("bmo-sp-")).length;
   const formatOptions: { id: PracticeFormat; label: string }[] = [
     { id: "all", label: "全部" },
-    { id: "mcq", label: "选择题" },
+    ...(mcqCount > 0 ? [{ id: "mcq" as const, label: "选择题" }] : []),
     ...(shortProofCount > 0 ? [{ id: "short-proof" as const, label: "短证明" }] : []),
     ...(longCount > 0 ? [{ id: "long" as const, label: "完整大题" }] : []),
   ];

@@ -20,7 +20,7 @@ export const CAIE9709_TEST: AdmissionsTest = {
   overview: "面向 CAIE 9709 学生的课程考试训练。首期聚焦 Pure Mathematics 3，训练在熟悉知识点被陌生包装、条件隐藏或计算路径不直观时，仍能稳定识别方法并写出得分过程。",
   structureDetails: "完整 A-Level 路线按考生组合涉及 Pure Mathematics 1、Pure Mathematics 3，以及 Mechanics 或 Probability & Statistics。本站首期仅开放 P3，覆盖代数、对数与指数、三角函数、微分、积分、数值方法、向量、微分方程和复数；P1、P4、P5、P6 待对应内容完成后再开放。",
   scoringNote: "P3 总分 75 分，结构题按步骤给分。学生应展示必要推导；非精确数值通常按题目要求给出有效数字。本站 AI 评分用于训练反馈，最终成绩与评分标准以 Cambridge 官方材料为准。",
-  statusNote: "已分析用户提供的 2026 年 6 月中国区 9709/15、9709/35、9709/45 与 9709/55 答卷；新增 8 套 P3 原创固定卷，其中 44/88 道新题针对答卷暴露的错题类型。",
+  statusNote: "参考用户提供的 2026 年 6 月中国区 9709/15、9709/35、9709/45 与 9709/55 答卷，优先补强 P3。8 套 R2 修订卷共 88 道题，44/88 针对已识别错题类型；基础卷与强化卷分开展示，不承诺与官方真卷等难。",
   topics: [
     { id: "caie9709-algebra", title: "代数", titleEn: "Algebra", description: "二项式展开、部分分式、因式与余式、参数条件。" },
     { id: "caie9709-log-exp", title: "对数与指数", titleEn: "Logarithms & Exponentials", description: "指数换元、对数方程、定义域与解的筛选。" },
