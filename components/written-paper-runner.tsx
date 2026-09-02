@@ -16,10 +16,13 @@ import { ExamReliabilityStatus } from "@/components/exam-reliability-status";
 import { GradingTrustPanel } from "@/components/grading-trust-panel";
 import { clearRemoteProgress, loadRemoteProgress, saveRemoteProgress } from "@/lib/learning/client";
 import { parseWrittenSubmission, writtenSubmissionKey, type WrittenSubmission } from "@/lib/tests/written-submission";
+import { HandwrittenAnswerInput } from "@/components/handwritten-answer-input";
+import { HandwritingRecognitionNote } from "@/components/handwriting-recognition-note";
+import { hasAnswerContent, type AnswerImagesByQuestion } from "@/lib/tests/answer-images";
 
 type Phase = "briefing" | "running" | "grading" | "results";
 type WrittenWorks = Record<string, Record<string, string>>;
-type WrittenAttemptPayload = { currentIndex: number; works: WrittenWorks };
+type WrittenAttemptPayload = { currentIndex: number; works: WrittenWorks; answerImages?: AnswerImagesByQuestion };
 
 interface WrittenGrade {
   questionId: string;
@@ -139,6 +142,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
   const [phase, setPhase] = useState<Phase>("briefing");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [works, setWorks] = useState<WrittenWorks>({});
+  const [answerImages, setAnswerImages] = useState<AnswerImagesByQuestion>({});
   const [timeLeft, setTimeLeft] = useState(durationSec);
   const [grades, setGrades] = useState<WrittenGrade[]>([]);
   const [gradingProgress, setGradingProgress] = useState(0);
@@ -188,6 +192,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
     window.localStorage.removeItem(storageKey);
     void clearRemoteProgress("WRITTEN_EXAM", paper.id);
     setWorks(Object.fromEntries(questions.map((question) => [question.id, {}])));
+    setAnswerImages({});
     setCurrentIndex(0);
     setTimeLeft(durationSec);
     setGrades([]);
@@ -205,6 +210,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
   const resume = () => {
     if (!savedAttempt) return;
     setWorks(savedAttempt.payload.works);
+    setAnswerImages(savedAttempt.payload.answerImages ?? {});
     setCurrentIndex(Math.min(savedAttempt.payload.currentIndex, questions.length - 1));
     setTimeLeft(remainingAttemptSeconds(savedAttempt.deadlineAt));
     startedAt.current = savedAttempt.startedAt;
@@ -222,8 +228,19 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
     }));
   };
 
+  const updateAnswerImages = (questionId: string, label: string, images: AnswerImagesByQuestion[string][string]) => {
+    setValidationMessage(null);
+    setAnswerImages((current) => ({
+      ...current,
+      [questionId]: { ...current[questionId], [label]: images },
+    }));
+  };
+
   const isAnswered = (question: LongQuestion) => question.parts.some(
-    (part) => (works[question.id]?.[part.label] ?? "").trim().length > 0
+    (part) => hasAnswerContent(
+      works[question.id]?.[part.label] ?? "",
+      answerImages[question.id]?.[part.label] ?? [],
+    )
   );
 
   const submit = async (force = false) => {
@@ -244,7 +261,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
     submittingRef.current = true;
     if (timerRef.current) clearInterval(timerRef.current);
     const used = recoveredTimeUsed.current ?? Math.min(durationSec, Math.max(0, Math.round((Date.now() - startedAt.current) / 1000)));
-    const submission: WrittenSubmission = { version: 1, paperId: paper.id, startedAt: startedAt.current, timeUsedSec: used, works };
+    const submission: WrittenSubmission = { version: 1, paperId: paper.id, startedAt: startedAt.current, timeUsedSec: used, works, answerImages };
     try { window.localStorage.setItem(writtenSubmissionKey(paper.id), JSON.stringify(submission)); } catch { /* Keep work in memory and existing remote progress. */ }
     // Clear recovery data only after the server acknowledges the saved report.
     setTimeUsedSec(used);
@@ -299,6 +316,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
             marks: part.marks,
             solutionOutline: part.solutionOutline,
             studentWork: works[question.id]?.[part.label] ?? "",
+            answerImageIds: (answerImages[question.id]?.[part.label] ?? []).map((image) => image.id),
           })),
           fullSolution: question.fullSolution,
           responseKind: question.responseKind,
@@ -354,7 +372,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
       startedAt: startedAt.current,
       deadlineAt: deadlineAt.current,
       savedAt: Date.now(),
-      payload: { currentIndex, works },
+      payload: { currentIndex, works, answerImages },
     };
     window.localStorage.setItem(storageKey, JSON.stringify(snapshot));
     if (Date.now() - lastRemoteSaveRef.current >= 10_000) {
@@ -368,7 +386,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
         mode: paper.id.toLowerCase().includes("diagnostic") ? "diagnostic" : "paper",
       });
     }
-  }, [currentIndex, paper.id, paper.testId, phase, storageKey, timeLeft, works]);
+  }, [answerImages, currentIndex, paper.id, paper.testId, phase, storageKey, timeLeft, works]);
 
   const resumeSubmission = useEffectEvent(() => { void submit(true); });
   useEffect(() => {
@@ -402,6 +420,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
             <p className="text-sm font-semibold">上次交卷尚未确认保存，原作答已保留</p>
             <button type="button" className="mt-3 rounded bg-[var(--indigo)] px-3 py-2 text-sm text-white" onClick={() => {
               setWorks(interruptedSubmission.works);
+              setAnswerImages(interruptedSubmission.answerImages ?? {});
               startedAt.current = interruptedSubmission.startedAt;
               setStartedAtMs(interruptedSubmission.startedAt);
               recoveredTimeUsed.current = interruptedSubmission.timeUsedSec;
@@ -444,6 +463,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
         paper={paper}
         questions={questions}
         works={works}
+        answerImages={answerImages}
         grades={grades}
         timeUsedSec={timeUsedSec}
         startedAtMs={startedAtMs}
@@ -547,13 +567,24 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
                   <MathRenderer text={`${part.label}. ${part.question}`} className="leading-6" />
                   <span className="shrink-0 text-xs text-[var(--ink-faint)]">{part.marks} 分</span>
                 </div>
-                <textarea
-                  value={works[current.id]?.[part.label] ?? ""}
-                  onChange={(event) => updateWork(current.id, part.label, event.target.value)}
-                  rows={current.responseKind === "essay" ? 22 : 7}
-                  placeholder={current.responseKind === "essay" ? "在此输入英文作文……" : "写出定义、关键推导与结论……"}
-                  className="w-full resize-y rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-3 text-sm leading-6 outline-none focus:border-[var(--indigo)] focus:ring-2 focus:ring-[color:var(--indigo)]/10"
-                />
+                {current.responseKind === "essay" ? (
+                  <textarea
+                    value={works[current.id]?.[part.label] ?? ""}
+                    onChange={(event) => updateWork(current.id, part.label, event.target.value)}
+                    rows={22}
+                    placeholder="在此输入英文作文……"
+                    className="w-full resize-y rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-3 text-sm leading-6 outline-none focus:border-[var(--indigo)] focus:ring-2 focus:ring-[color:var(--indigo)]/10"
+                  />
+                ) : (
+                  <HandwrittenAnswerInput
+                    value={works[current.id]?.[part.label] ?? ""}
+                    onChange={(value) => updateWork(current.id, part.label, value)}
+                    images={answerImages[current.id]?.[part.label] ?? []}
+                    onImagesChange={(images) => updateAnswerImages(current.id, part.label, images)}
+                    contextKey={`${paper.id}:${current.id}:${part.label}`}
+                    placeholder="如有必要，补充题号、无法拍清的符号或说明。"
+                  />
+                )}
                 {current.responseKind === "essay" && (
                   <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs">
                     <span className="text-[var(--ink-faint)]">
@@ -586,6 +617,7 @@ function WrittenPaperResults({
   paper,
   questions,
   works,
+  answerImages,
   grades,
   timeUsedSec,
   startedAtMs,
@@ -594,6 +626,7 @@ function WrittenPaperResults({
   paper: MockPaper;
   questions: LongQuestion[];
   works: WrittenWorks;
+  answerImages: AnswerImagesByQuestion;
   grades: WrittenGrade[];
   timeUsedSec: number;
   startedAtMs: number;
@@ -648,7 +681,12 @@ function WrittenPaperResults({
         return {
           questionId: question.id,
           type: "long" as const,
-          work: works[question.id] ?? {},
+          work: {
+            ...(works[question.id] ?? {}),
+            __answerImageIds: JSON.stringify(Object.fromEntries(
+              Object.entries(answerImages[question.id] ?? {}).map(([label, images]) => [label, images.map((image) => image.id)]),
+            )),
+          },
           earned: result?.grading?.totalEarned ?? 0,
           max: result?.grading?.totalMax ?? 0,
           feedback: result?.grading?.perPart.map((part) => ({
@@ -754,6 +792,7 @@ function WrittenPaperResults({
                     {result?.grading ? (
                       <div className="space-y-4">
                         <GradingTrustPanel assessment={result.grading.assessment} />
+                        <HandwritingRecognitionNote review={result.grading.imageReview} />
                         {result.grading.dimensions && result.grading.dimensions.length > 0 && (
                           <div className="divide-y divide-[var(--border)] border-y border-[var(--border)]">
                             {result.grading.dimensions.map((dimension) => (

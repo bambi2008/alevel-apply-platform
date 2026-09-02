@@ -32,6 +32,9 @@ import {
 import { useExamReliability } from "@/hooks/use-exam-reliability";
 import { ExamReliabilityStatus } from "@/components/exam-reliability-status";
 import { GradingTrustPanel } from "@/components/grading-trust-panel";
+import { HandwrittenAnswerInput } from "@/components/handwritten-answer-input";
+import { HandwritingRecognitionNote } from "@/components/handwriting-recognition-note";
+import { hasAnswerContent, type AnswerImagesByPart } from "@/lib/tests/answer-images";
 
 const QUESTION_BANKS: Record<string, Question[]> = {
   mat: MAT_QUESTIONS,
@@ -60,9 +63,17 @@ interface LongAnswer {
   questionId: string;
   type: "long";
   works: Record<string, string>;
+  answerImages?: AnswerImagesByPart;
 }
 
 type Answer = MCQAnswer | LongAnswer;
+
+function isLongAnswerComplete(answer: LongAnswer, question: LongQuestion) {
+  return question.parts.some((part) => hasAnswerContent(
+    answer.works[part.label] ?? "",
+    answer.answerImages?.[part.label] ?? [],
+  ));
+}
 
 interface MixedAttemptPayload {
   presetId: string;
@@ -277,7 +288,7 @@ export default function MixedMockRunner({ testId }: { testId: string }) {
       examQ.map((q) =>
         q.type === "mcq"
           ? { questionId: q.id, type: "mcq", selected: null }
-          : { questionId: q.id, type: "long", works: {} }
+          : { questionId: q.id, type: "long", works: {}, answerImages: {} }
       )
     );
     setTimeLeft(selectedPreset.durationSec);
@@ -348,6 +359,14 @@ export default function MixedMockRunner({ testId }: { testId: string }) {
     );
   };
 
+  const updateLongImages = (questionId: string, label: string, images: AnswerImagesByPart[string]) => {
+    setAnswers((prev) => prev.map((answer) =>
+      answer.questionId === questionId && answer.type === "long"
+        ? { ...answer, answerImages: { ...answer.answerImages, [label]: images } }
+        : answer
+    ));
+  };
+
   const handleSubmitAll = async () => {
     if (timerRef.current) clearInterval(timerRef.current);
     window.localStorage.removeItem(storageKey);
@@ -390,6 +409,7 @@ export default function MixedMockRunner({ testId }: { testId: string }) {
               marks: p.marks,
               solutionOutline: p.solutionOutline,
               studentWork: ans.works[p.label] ?? "",
+              answerImageIds: (ans.answerImages?.[p.label] ?? []).map((image) => image.id),
             })),
             fullSolution: lq.fullSolution,
           };
@@ -503,7 +523,7 @@ export default function MixedMockRunner({ testId }: { testId: string }) {
             style={{ width: `${(gradingProgress / Math.max(queue.length, 1)) * 100}%` }}
           />
         </div>
-        <p className="text-xs text-[var(--ink-faint)]">大题由 Claude AI 分步评分，请稍候</p>
+        <p className="text-xs text-[var(--ink-faint)]">系统正在识别手写内容并分步评分，请稍候</p>
       </div>
     );
   }
@@ -528,7 +548,11 @@ export default function MixedMockRunner({ testId }: { testId: string }) {
   const currentQ = queue[currentIdx];
   const currentAns = answers.find((a) => a.questionId === currentQ?.id);
   const answeredCount = answers.filter(
-    (a) => (a.type === "mcq" && a.selected !== null) || (a.type === "long" && Object.values(a.works).some((w) => w.trim()))
+    (answer) => {
+      if (answer.type === "mcq") return answer.selected !== null;
+      const question = queue.find((item): item is LongQuestion => item.id === answer.questionId && item.type === "long");
+      return question ? isLongAnswerComplete(answer, question) : false;
+    }
   ).length;
 
   const isUrgent = timeLeft < 300;
@@ -560,7 +584,7 @@ export default function MixedMockRunner({ testId }: { testId: string }) {
             const ans = answers.find((a) => a.questionId === q.id);
             const done =
               (ans?.type === "mcq" && ans.selected !== null) ||
-              (ans?.type === "long" && Object.values((ans as LongAnswer).works).some((w) => w.trim()));
+              (ans?.type === "long" && q.type === "long" && isLongAnswerComplete(ans, q));
             return (
               <button
                 key={q.id}
@@ -595,7 +619,9 @@ export default function MixedMockRunner({ testId }: { testId: string }) {
                   <MockLong
                     question={currentQ as LongQuestion}
                     works={(currentAns as LongAnswer)?.works ?? {}}
+                    answerImages={(currentAns as LongAnswer)?.answerImages ?? {}}
                     onWork={(label, text) => updateLongWork(currentQ.id, label, text)}
+                    onImages={(label, images) => updateLongImages(currentQ.id, label, images)}
                   />
                 )}
 
@@ -739,8 +765,8 @@ function MockBriefing({
         <ul className="list-disc ml-4 text-xs space-y-0.5">
           <li>考试期间计时不会暂停</li>
           <li>可随时跳题，通过左侧导航栏切换</li>
-          <li>大题作答区支持文字和数学符号输入</li>
-          <li>交卷后约 30 秒内完成 AI 评分</li>
+            <li>非作文大题支持手写后拍照上传，并可补充少量文字</li>
+            <li>交卷后系统会先识别手写内容，再按步骤完成 AI 评分</li>
           <li>AI 评分仅供参考，不代表真实考试成绩</li>
         </ul>
       </div>
@@ -806,11 +832,15 @@ function MockMCQ({
 function MockLong({
   question: q,
   works,
+  answerImages,
   onWork,
+  onImages,
 }: {
   question: LongQuestion;
   works: Record<string, string>;
+  answerImages: AnswerImagesByPart;
   onWork: (label: string, text: string) => void;
+  onImages: (label: string, images: AnswerImagesByPart[string]) => void;
 }) {
   return (
     <div className="space-y-5">
@@ -834,12 +864,12 @@ function MockLong({
               <span className="text-xs text-[var(--ink-faint)]">[{part.marks} 分]</span>
             </div>
             <MathRenderer text={part.question} className="text-sm text-[var(--ink)] leading-relaxed" block />
-            <textarea
-              className="w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-[color:var(--indigo)]/30"
-              rows={4}
-              placeholder={`${part.label} 解答…`}
+            <HandwrittenAnswerInput
               value={works[part.label] ?? ""}
-              onChange={(e) => onWork(part.label, e.target.value)}
+              onChange={(value) => onWork(part.label, value)}
+              images={answerImages[part.label] ?? []}
+              onImagesChange={(images) => onImages(part.label, images)}
+              contextKey={`mock:${q.testId}:${q.id}:${part.label}`}
             />
           </div>
         ))}
@@ -900,7 +930,12 @@ function MockResults({
           questionId: r.questionId,
           type: r.type,
           selected: ans?.type === "mcq" ? ans.selected ?? undefined : undefined,
-          work: ans?.type === "long" ? ans.works : undefined,
+          work: ans?.type === "long" ? {
+            ...ans.works,
+            __answerImageIds: JSON.stringify(Object.fromEntries(
+              Object.entries(ans.answerImages ?? {}).map(([label, images]) => [label, images.map((image) => image.id)]),
+            )),
+          } : undefined,
           earned: r.earned ?? 0,
           max: r.max ?? 0,
           feedback: r.grading?.perPart.map((part) => ({
@@ -998,6 +1033,7 @@ function MockResults({
                   {longQ && result?.grading && (
                     <div className="space-y-3">
                       <GradingTrustPanel assessment={result.grading.assessment} compact />
+                      <HandwritingRecognitionNote review={result.grading.imageReview} compact />
                       {result.grading.perPart.map((p) => (
                         <div key={p.label} className="bg-white rounded-lg border border-[var(--border)] p-3">
                           <div className="flex justify-between text-xs font-semibold mb-1">

@@ -6,6 +6,17 @@ describe("written submission recovery", () => {
   it("retains all work after the timed attempt has expired", () => {
     expect(parseWrittenSubmission(JSON.stringify(saved), saved.paperId, ["q1", "q11"])).toEqual(saved);
   });
+  it("retains private answer-image references for retrying a submitted paper", () => {
+    const withImages = {
+      ...saved,
+      answerImages: {
+        q1: {
+          "(a)": [{ id: "image-1", url: "/api/answer-images/image-1", fileName: "answer.jpg", width: 1200, height: 1600, size: 120000 }],
+        },
+      },
+    };
+    expect(parseWrittenSubmission(JSON.stringify(withImages), saved.paperId, ["q1", "q11"])).toEqual(withImages);
+  });
   it("does not restore an old revision into a new one", () => {
     expect(writtenSubmissionKey(saved.paperId)).not.toBe(writtenSubmissionKey("caie9709-p3-written-9"));
     expect(parseWrittenSubmission(JSON.stringify(saved), "caie9709-p3-written-9", ["q1", "q11"])).toBeNull();

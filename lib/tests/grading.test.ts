@@ -4,6 +4,7 @@ import {
   buildGradeResponse,
   needsAdjudication,
   normalizeGradePass,
+  isBlankSubmission,
   type GradeRequest,
 } from "./grading";
 import { GRADING_BENCHMARKS } from "./grading-benchmarks";
@@ -47,6 +48,17 @@ describe("trusted written grading", () => {
     });
     expect(blank.totalEarned).toBe(0);
     expect(blank.assessment).toMatchObject({ method: "deterministic-empty", confidence: "high" });
+  });
+
+  it("treats an uploaded answer image as submitted work", () => {
+    expect(isBlankSubmission({
+      ...request,
+      parts: request.parts.map((part, index) => ({
+        ...part,
+        studentWork: " ",
+        answerImageIds: index === 0 ? ["image-1"] : [],
+      })),
+    })).toBe(false);
   });
 
   it("accepts close independent scores and exposes agreement", () => {

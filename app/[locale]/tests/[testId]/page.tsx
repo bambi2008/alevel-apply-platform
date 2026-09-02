@@ -403,7 +403,7 @@ function PracticeTab({ test }: { test: AdmissionsTest }) {
       <div className="rounded-xl border border-[color:var(--success)]/25 bg-[var(--success-bg)] px-4 py-4">
         <h3 className="font-semibold text-[var(--success)] mb-1">✦ {test.abbr} AI 题库</h3>
         <p className="text-sm text-[var(--success)]">
-          题库由 Claude AI 生成初稿，经多 AI 组合审核。数学大题支持分步评分（按解题步骤给部分分）。
+          题库为原创训练内容并经过组合审核。非作文大题可手写后拍照上传，系统按解题步骤给部分分。
         </p>
       </div>
 

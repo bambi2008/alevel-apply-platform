@@ -8,6 +8,7 @@ export interface GradeRequest {
     marks: number;
     solutionOutline: string;
     studentWork: string;
+    answerImageIds?: string[];
   }[];
   fullSolution: string;
   responseKind?: "structured" | "essay";
@@ -70,6 +71,15 @@ export interface GradeResponse {
   modelSolution: string;
   dimensions?: GradeDimensionResult[];
   assessment: GradeAssessment;
+  imageReview?: {
+    parts: Array<{
+      label: string;
+      transcript: string;
+      confidence: "high" | "medium" | "low";
+      unclear: string[];
+      imageCount: number;
+    }>;
+  };
 }
 
 export interface RawGradePass {
@@ -171,7 +181,7 @@ export function gradeMax(request: GradeRequest) {
 }
 
 export function isBlankSubmission(request: GradeRequest) {
-  return request.parts.every((part) => !part.studentWork.trim());
+  return request.parts.every((part) => !part.studentWork.trim() && !(part.answerImageIds?.length));
 }
 
 function agreementRate(passes: GradePass[]) {
@@ -194,7 +204,7 @@ export function buildEmptyGradeResponse(request: GradeRequest): GradeResponse {
     dimensions: request.rubricDimensions?.map((dimension) => ({
       id: dimension.id,
       earned: 0,
-      feedback: "未提交可供评价的文本。",
+      feedback: "未提交可供评价的作答。",
     })),
   };
   const pass = normalizeGradePass(request, raw);

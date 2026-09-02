@@ -28,6 +28,9 @@ import { DiagnosisSummary, QuestionDiagnosis } from "@/components/exam-diagnosis
 import { persistExamSession } from "@/lib/tests/persist-session";
 import { GradingTrustPanel } from "@/components/grading-trust-panel";
 import { forceFullNavigation } from "@/lib/navigation";
+import { HandwrittenAnswerInput } from "@/components/handwritten-answer-input";
+import { HandwritingRecognitionNote } from "@/components/handwriting-recognition-note";
+import { hasAnswerContent, type AnswerImagesByPart } from "@/lib/tests/answer-images";
 
 const QUESTION_BANKS: Record<string, Question[]> = {
   mat: MAT_QUESTIONS,
@@ -474,8 +477,8 @@ function SessionSetup({
           <div className="rounded-xl bg-[var(--info-bg)] border border-[color:var(--indigo)]/15 p-4 text-sm text-[var(--indigo)]">
             <p className="font-medium mb-1">关于大题（长答案）评分</p>
             <p className="text-xs leading-relaxed">
-              大题由 AI 分步评分：系统分析你的解题过程，按关键步骤给部分分。
-              评分后可查看模型解答对比学习。约需 5–10 秒。
+              大题由 AI 分步评分：非作文题可手写后拍照上传，系统会先识别内容，再按关键步骤给部分分。
+              评分后可核对识别文字，并查看模型解答对比学习。
             </p>
           </div>
         )}
@@ -602,6 +605,7 @@ function LongAnswerCard({
   ) => void;
 }) {
   const [works, setWorks] = useState<Record<string, string>>({});
+  const [answerImages, setAnswerImages] = useState<AnswerImagesByPart>({});
   const [grading, setGrading] = useState(false);
   const [result, setResult] = useState<GradeResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -612,7 +616,7 @@ function LongAnswerCard({
   const selectedPrompt = q.essayPrompts?.find((prompt) => prompt.id === selectedPromptId);
   const essayText = works[q.parts[0]?.label ?? "Essay"] ?? "";
   const wordCount = essayText.trim() ? essayText.trim().split(/\s+/).length : 0;
-  const canSubmit = Object.values(works).some((w) => w.trim().length > 0)
+  const canSubmit = q.parts.some((part) => hasAnswerContent(works[part.label] ?? "", answerImages[part.label] ?? []))
     && (!isEssay || (!!selectedPrompt && wordCount <= (q.maxWords ?? Infinity)));
 
   const handleGrade = async (reviewMode: GradeRequest["reviewMode"] = "standard") => {
@@ -631,6 +635,7 @@ function LongAnswerCard({
           marks: p.marks,
           solutionOutline: p.solutionOutline,
           studentWork: works[p.label] ?? "",
+          answerImageIds: isEssay ? undefined : (answerImages[p.label] ?? []).map((image) => image.id),
         })),
         fullSolution: q.fullSolution,
         responseKind: q.responseKind,
@@ -707,14 +712,25 @@ function LongAnswerCard({
                   提示：<MathRenderer text={part.hint} />
                 </div>
               )}
-              <textarea
-                className={`w-full rounded-lg border border-[var(--border)] px-3 py-2 text-sm resize-y focus:outline-none focus:ring-2 focus:ring-[color:var(--indigo)]/30 ${isEssay ? "leading-7" : "font-mono"}`}
-                rows={isEssay ? 20 : 4}
-                placeholder={isEssay ? "在此输入英文作文……" : `在此输入 ${part.label} 的解答（支持文字和数学符号，如 x^2 + 3x = 0）`}
-                value={works[part.label] ?? ""}
-                onChange={(e) => setWorks((prev) => ({ ...prev, [part.label]: e.target.value }))}
-                disabled={!!result}
-              />
+              {isEssay ? (
+                <textarea
+                  className="w-full resize-y rounded-lg border border-[var(--border)] px-3 py-2 text-sm leading-7 focus:outline-none focus:ring-2 focus:ring-[color:var(--indigo)]/30"
+                  rows={20}
+                  placeholder="在此输入英文作文……"
+                  value={works[part.label] ?? ""}
+                  onChange={(e) => setWorks((prev) => ({ ...prev, [part.label]: e.target.value }))}
+                  disabled={!!result}
+                />
+              ) : (
+                <HandwrittenAnswerInput
+                  value={works[part.label] ?? ""}
+                  onChange={(value) => setWorks((prev) => ({ ...prev, [part.label]: value }))}
+                  images={answerImages[part.label] ?? []}
+                  onImagesChange={(images) => setAnswerImages((prev) => ({ ...prev, [part.label]: images }))}
+                  contextKey={`practice:${q.testId}:${q.id}:${part.label}`}
+                  disabled={!!result}
+                />
+              )}
               {isEssay && (
                 <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
                   <span className="text-[var(--ink-faint)]">建议 {q.recommendedWords?.[0]}–{q.recommendedWords?.[1]} 词 · 上限 {q.maxWords} 词</span>
@@ -763,6 +779,7 @@ function LongAnswerCard({
           </div>
 
           <GradingTrustPanel assessment={result.assessment} />
+          <HandwritingRecognitionNote review={result.imageReview} />
           {result.assessment.reviewStatus === "review-recommended" && (
             <button
               type="button"
@@ -855,7 +872,12 @@ function LongAnswerCard({
               onClick={() => onSubmit(
                 result.totalEarned,
                 result.totalMax,
-                works,
+                isEssay ? works : {
+                  ...works,
+                  __answerImageIds: JSON.stringify(Object.fromEntries(
+                    Object.entries(answerImages).map(([label, images]) => [label, images.map((image) => image.id)]),
+                  )),
+                },
                 result.perPart.map((part) => ({ ...part, assessment: result.assessment })),
               )}
               className="px-5 py-2.5 rounded-lg bg-[var(--indigo)] text-white text-sm font-medium hover:bg-[var(--indigo-hover)]"

@@ -29,6 +29,7 @@ model User {
   profile                StudentProfile?
   consents               Consent[]
   documents              Document[]
+  answerImages           AnswerImage[]
   studentProjects        StudentProject[]
   applicationPreps       ApplicationPrep[]
   auditLogs              AuditLog[]
@@ -630,6 +631,22 @@ model Document {
 
   @@index([ownerId])
   @@index([supersedesId])
+}
+
+model AnswerImage {
+  id         String   @id @default(cuid())
+  ownerId    String
+  owner      User     @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+  fileKey    String   @unique
+  fileName   String
+  mime       String
+  size       Int
+  width      Int
+  height     Int
+  contextKey String?
+  createdAt  DateTime @default(now())
+
+  @@index([ownerId, createdAt])
 }
 
 model ApplicationDocument {
