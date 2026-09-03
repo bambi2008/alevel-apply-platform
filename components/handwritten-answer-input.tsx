@@ -1,8 +1,9 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useRef, useState, useSyncExternalStore } from "react";
 import { Camera, ImagePlus, LoaderCircle, Trash2 } from "lucide-react";
+import { supportsDirectCameraCapture } from "@/lib/device-capabilities";
 import {
   MAX_ANSWER_IMAGE_BYTES,
   MAX_ANSWER_IMAGES_PER_PART,
@@ -23,6 +24,24 @@ const ERROR_MESSAGES: Record<string, string> = {
 function uploadMessage(status: number, error?: string) {
   if (status === 401) return ERROR_MESSAGES.unauthenticated;
   return ERROR_MESSAGES[error ?? ""] ?? "上传失败，请检查网络后重试。";
+}
+
+const subscribeToStaticDeviceCapability = () => () => {};
+
+function getDirectCameraCaptureSnapshot() {
+  return supportsDirectCameraCapture({
+    userAgent: navigator.userAgent,
+    platform: navigator.platform,
+    maxTouchPoints: navigator.maxTouchPoints,
+  });
+}
+
+function useDirectCameraCapture() {
+  return useSyncExternalStore(
+    subscribeToStaticDeviceCapability,
+    getDirectCameraCaptureSnapshot,
+    () => false,
+  );
 }
 
 export function HandwrittenAnswerInput({
@@ -49,6 +68,7 @@ export function HandwrittenAnswerInput({
   const [uploading, setUploading] = useState(false);
   const [removingId, setRemovingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const canCaptureDirectly = useDirectCameraCapture();
 
   const upload = async (files: FileList | null) => {
     if (!files?.length || disabled || uploading) return;
@@ -102,20 +122,26 @@ export function HandwrittenAnswerInput({
     <div className="rounded-md border border-[var(--border)] bg-[var(--surface)] p-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <p className="text-sm font-semibold text-[var(--ink)]">手写后拍照上传</p>
-          <p className="mt-0.5 text-xs text-[var(--ink-faint)]">每个小问单独拍，保证字迹清楚、页面完整。</p>
+          <p className="text-sm font-semibold text-[var(--ink)]">上传手写答案</p>
+          <p className="mt-0.5 text-xs text-[var(--ink-faint)]">
+            {canCaptureDirectly
+              ? "每个小问单独拍，保证字迹清楚、页面完整。"
+              : "请选择已有答题图片，保证字迹清楚、页面完整。"}
+          </p>
         </div>
         <div className="flex flex-wrap gap-2">
-          <input
-            ref={cameraRef}
-            type="file"
-            accept="image/jpeg,image/png,image/webp"
-            capture="environment"
-            className="sr-only"
-            aria-label="拍摄答题照片"
-            disabled={!canAdd}
-            onChange={(event) => void upload(event.target.files)}
-          />
+          {canCaptureDirectly && (
+            <input
+              ref={cameraRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              capture="environment"
+              className="sr-only"
+              aria-label="拍摄答题照片"
+              disabled={!canAdd}
+              onChange={(event) => void upload(event.target.files)}
+            />
+          )}
           <input
             ref={pickerRef}
             type="file"
@@ -126,15 +152,17 @@ export function HandwrittenAnswerInput({
             disabled={!canAdd}
             onChange={(event) => void upload(event.target.files)}
           />
-          <button
-            type="button"
-            onClick={() => cameraRef.current?.click()}
-            disabled={!canAdd}
-            className="inline-flex min-h-10 items-center gap-2 rounded-md bg-[var(--indigo)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50"
-          >
-            {uploading ? <LoaderCircle className="size-4 animate-spin" /> : <Camera className="size-4" />}
-            {uploading ? "上传中…" : "拍照"}
-          </button>
+          {canCaptureDirectly && (
+            <button
+              type="button"
+              onClick={() => cameraRef.current?.click()}
+              disabled={!canAdd}
+              className="inline-flex min-h-10 items-center gap-2 rounded-md bg-[var(--indigo)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50"
+            >
+              {uploading ? <LoaderCircle className="size-4 animate-spin" /> : <Camera className="size-4" />}
+              {uploading ? "上传中…" : "拍照"}
+            </button>
+          )}
           <button
             type="button"
             onClick={() => pickerRef.current?.click()}

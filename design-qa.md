@@ -56,3 +56,33 @@ A separate crop is unnecessary because the combined 2530 × 712 comparison keeps
 3. Post-fix evidence: the combined comparison and DOM bounds show all four complete cards above the 720 px viewport bottom, with preserved content and working navigation.
 
 final result: passed
+
+---
+
+# Design QA — Device-Specific Handwritten Answer Entry
+
+- Source visual truth: `C:/Users/ss/AppData/Local/Temp/codex-clipboard-6cd47b1d-a1ed-44a6-ad3c-6f6f97a8405e.png`
+- Browser-rendered implementation: `C:/Users/ss/.codex/visualizations/2026/08/21/01a02572-dfd7-7b02-9c01-68a4797b18a9/desktop-answer-upload-picker-only.jpg`
+- Route: `http://127.0.0.1:3100/zh-CN/tests/caie9709/paper/caie9709-p3-written-9-r2`
+- State: desktop, first written question, two answer parts visible.
+
+## Comparison Evidence
+
+The supplied capture identifies the unwanted desktop state: every answer part exposes both the blue direct-camera button and the neutral image picker. The implementation preserves the card, note field, supported-format copy, spacing, and image-picker styling while removing only the direct-camera button and its capture input on desktop. The heading is device-neutral (`上传手写答案`), and desktop guidance now asks the student to select an existing answer image.
+
+Measured browser evidence at 1265 × 720:
+
+- `拍照` buttons: 0.
+- file inputs carrying a `capture` attribute: 0.
+- `选图片` buttons: 2, one for each visible answer part.
+- ordinary image-picker inputs: 2.
+- horizontal overflow: false.
+
+The device classifier is independent of viewport width: iPhone, iPad, Android phone/tablet, and iPadOS desktop-mode signatures retain both controls; Windows and macOS desktop signatures, including touch-enabled Windows laptops, use the picker-only state.
+
+## Findings
+
+- No actionable P0, P1, or P2 discrepancy remains for the requested desktop control visibility.
+- Physical phone/iPad camera invocation remains a real-device acceptance item; deterministic device-signature tests cover the render decision locally.
+
+final result: passed
