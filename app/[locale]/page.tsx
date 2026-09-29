@@ -11,5 +11,5 @@ export default async function Home({
   setRequestLocale(locale);
   const session = await auth();
 
-  return <CoreDashboard email={session?.user?.email} />;
+  return <CoreDashboard email={session?.user?.email} locale={locale} />;
 }

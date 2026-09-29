@@ -86,3 +86,25 @@ The device classifier is independent of viewport width: iPhone, iPad, Android ph
 - Physical phone/iPad camera invocation remains a real-device acceptance item; deterministic device-signature tests cover the render decision locally.
 
 final result: passed
+
+---
+
+# Design QA — Purrl Waterlight Homepage Hero
+
+- Source visual truth: the original local Purrl Waterlight study at `C:/Users/ss/Documents/hk minijungle/waterlight-study`, viewed at `http://127.0.0.1:4180/`.
+- Browser-rendered implementation: the bridge homepage at `http://127.0.0.1:3100/zh-CN`.
+- Viewport/state: 1280×720-class in-app browser, signed-out homepage, default midnight water state followed by an actual pointer drag across the open water area.
+
+## Comparison Evidence
+
+The source and implementation use the same Three.js water simulation, riverbed texture, camera, shaders, ripple field, spray and pointer sampling rather than an approximate image or CSS effect. The bridge version intentionally removes the Purrl editorial controls and overlays the existing product heading plus four functional entry panels. The riverbed, reflective light path, water depth and dark midnight palette remain visibly consistent between the two captures.
+
+At the implementation viewport all four entry panels are fully visible in one row, their text remains readable over the moving surface, and open water remains available above and below the panels for pointer interaction. A pointer drag was delivered to the embedded surface, after which the water iframe became the focused interactive document. The exam-training panel still navigates to `/zh-CN/tests`, and browser back restores the Hero.
+
+## Findings
+
+- P0/P1: none.
+- P2 fixed during review: the global `frame-ancestors 'none'` and `X-Frame-Options: DENY` headers initially blocked the same-origin water document. The final implementation overrides only `/zh-CN/waterlight` and `/en/waterlight` to same-origin framing while leaving all other routes denied.
+- P3: the small black Next.js development indicator appears only in local development and is absent from production builds.
+
+final result: passed

@@ -51,9 +51,7 @@ const nextConfig: NextConfig = {
       "connect-src 'self' https://api.deepseek.com",
       "upgrade-insecure-requests",
     ].join("; ");
-    return [{
-      source: "/:path*",
-      headers: [
+    const securityHeaders = [
         { key: "Content-Security-Policy", value: contentSecurityPolicy },
         { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
         { key: "Permissions-Policy", value: "camera=(self), microphone=(), geolocation=(), payment=()" },
@@ -63,8 +61,20 @@ const nextConfig: NextConfig = {
         ...(isProduction
           ? [{ key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" }]
           : []),
-      ],
-    }];
+      ];
+    return [
+      { source: "/:path*", headers: securityHeaders },
+      {
+        source: "/:locale(zh-CN|en)/waterlight",
+        headers: securityHeaders.map((header) => {
+          if (header.key === "Content-Security-Policy") {
+            return { ...header, value: header.value.replace("frame-ancestors 'none'", "frame-ancestors 'self'") };
+          }
+          if (header.key === "X-Frame-Options") return { ...header, value: "SAMEORIGIN" };
+          return header;
+        }),
+      },
+    ];
   },
 };
 
