@@ -409,3 +409,20 @@ body {
   .doodle-idle, .doodle-idle-slow, .emoji-bounce { animation: none !important; }
   .spring-hover:hover { transform: translateY(-3px); }
 }
+
+/* Homepage Waterlight hero owns the first viewport; navigation resumes through the four-core section. */
+body:has(.core-dashboard-home) > header {
+  display: none;
+}
+
+body:has(.core-dashboard-home) footer {
+  margin-top: 0;
+}
+
+html:has(.core-dashboard-home) {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html:has(.core-dashboard-home) { scroll-behavior: auto; }
+}

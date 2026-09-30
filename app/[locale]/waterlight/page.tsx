@@ -11,9 +11,15 @@ export default function WaterlightPage() {
         <div className="center-copy"><span id="scene-eyebrow" /><span id="scene-title" /><span id="scene-caption" /></div>
         <div className="mood-wheel" tabIndex={-1}>{[0, 1, 2, 3].map((mood) => <button key={mood} type="button" data-mood={mood} />)}</div>
         <span id="light-name" /><span id="scene-clock" />
-        <button className="sound-toggle" type="button"><span className="sound-label" /></button>
-        <audio id="soundtrack" />
       </div>
+      <button className="sound-toggle" type="button" aria-pressed="false" aria-label="开启或关闭水声">
+        <span className="sound-bars" aria-hidden="true"><i /><i /><i /><i /></span>
+        <span className="sound-label">开启水声</span>
+      </button>
+      <audio id="soundtrack" loop preload="metadata">
+        <source src="/waterlight/waterlight-loop.ogg" type="audio/ogg" />
+        <source src="/waterlight/waterlight-loop.wav" type="audio/wav" />
+      </audio>
       <WaterlightRuntime />
     </main>
   );

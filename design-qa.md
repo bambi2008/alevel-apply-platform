@@ -59,6 +59,53 @@ final result: passed
 
 ---
 
+# Design QA — Minimal Waterlight Hero + Four-Core Scroll
+
+- Source visual truth: the original Purrl Waterlight study at `C:/Users/ss/Documents/hk minijungle/waterlight-study`, captured in the in-app browser from `http://127.0.0.1:4180/`.
+- Implementation visual: the isolated production build of the bridge homepage, captured in the in-app browser from `http://localhost:3112/zh-CN`.
+- Screenshot paths: the current Codex in-app browser exposes both captures as browser-rendered evidence but does not expose filesystem paths; the source and implementation were emitted together in one two-image comparison input.
+- Viewport/density: both desktop captures use a 1265×720 CSS viewport at device-pixel ratio 1. A separate responsive measurement used 390×844 (375 px document client width) at DPR 1.
+- State: signed-out Chinese homepage, midnight water state, sound initially off; focused checks include sound-on and the scrolled four-core section.
+
+## Full-view comparison evidence
+
+The implementation reuses the source Three.js water surface, riverbed texture, light path, shaders, pointer ripples, spray and reactive audio graph. The previous bridge overlay added a product heading and four cards to the same first screen; the revised implementation removes those competing layers. Above the fold now contains only the water field, a centered `桥申` wordmark, the compact sound control and one down-arrow affordance. This preserves the source's immersive, quiet composition while making the bridge identity the single focal point.
+
+The implementation desktop metrics report a 720 px Hero within a 720 px viewport, a hidden global top navigation and document width equal to viewport width. The 390×844 responsive check also reports no horizontal overflow. The four destination links appear only after the first viewport and retain the existing `/tests`, `/background`, `/interview` and `/statements` routes.
+
+## Focused-region comparison evidence
+
+- Sound control: the implementation retains the source's low-contrast pill treatment and animated four-bar state. A real click changes the label from `开启水声` to `关闭水声`; the audio element reports the local OGG source, `readyState=4` and `paused=false`. WAV is present as the Safari/iPad fallback.
+- Four-core section: the scrolled capture shows a restrained editorial grid with thin rules, numerical ordering, consistent line length and one directional affordance per destination. The exam route was opened successfully and the site brand link returned to a homepage containing all four entries.
+
+## Required fidelity surfaces
+
+- Fonts and typography: the wordmark uses the existing application sans family at a responsive display scale with one weight and no secondary Hero copy. The second screen uses the existing hierarchy and avoids oversized supporting text.
+- Spacing and layout rhythm: the Hero is exactly one viewport; the second screen begins cleanly below it. Desktop uses a 2×2 ruled grid; mobile collapses to one column without overflow.
+- Colors and tokens: the water remains source-accurate midnight blue/black; the second screen uses a low-contrast warm neutral and existing black opacity tokens rather than introducing a competing palette.
+- Image quality and asset fidelity: no substitute illustration, CSS water approximation or generated image is used. The original water shader, texture and audio assets are preserved.
+- Copy and content: Hero copy is reduced to `桥申`; all four destination names, purposes and routes remain clear below the fold.
+
+## Findings and comparison history
+
+- P0/P1: none.
+- P2 fixed: the earlier implementation placed the heading and all four cards over the water, weakening the requested single-focus Hero. They now begin in the next viewport.
+- P2 fixed: the earlier embedded route contained an audio element without media sources and hid its toggle. The final implementation packages OGG/WAV sources and exposes a keyboard-focusable, user-gesture sound control.
+- P3 diagnostic: the Codex automation browser reports one nested-iframe `MutationObserver` observer error on the homepage. The direct Waterlight route and an existing application route both have clean console logs, the page renders fully, and all tested interactions succeed, so this is classified as a browser-automation observer artifact rather than an application regression.
+- LATQ note: no LATQ-specific interaction is claimed here because an unambiguous official reference URL has not yet been supplied.
+
+## Implementation checklist
+
+- [x] Water-only first viewport with one bridge wordmark.
+- [x] User-controlled water sound with local cross-browser sources.
+- [x] Four existing functional destinations below the fold.
+- [x] Desktop and responsive layout checks with no horizontal overflow.
+- [x] Isolated production build and 59-file / 342-test regression.
+
+final result: passed
+
+---
+
 # Design QA — Device-Specific Handwritten Answer Entry
 
 - Source visual truth: `C:/Users/ss/AppData/Local/Temp/codex-clipboard-6cd47b1d-a1ed-44a6-ad3c-6f6f97a8405e.png`

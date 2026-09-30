@@ -56,6 +56,63 @@ body:has(.waterlight-experience) main {
   clip-path: inset(50%);
 }
 
+.sound-toggle {
+  position: absolute;
+  z-index: 4;
+  left: clamp(16px, 3vw, 34px);
+  bottom: clamp(16px, 3vw, 28px);
+  display: inline-flex;
+  min-height: 40px;
+  align-items: center;
+  gap: 9px;
+  padding: 6px 13px;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  border-radius: 999px;
+  background: rgba(4, 15, 17, 0.18);
+  color: rgba(255, 255, 255, 0.9);
+  font: inherit;
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  backdrop-filter: blur(12px);
+  transition: border-color 180ms ease, background 180ms ease, transform 180ms ease;
+}
+
+.sound-toggle:hover {
+  border-color: rgba(255, 255, 255, 0.7);
+  background: rgba(4, 15, 17, 0.28);
+  transform: translateY(-2px);
+}
+
+.sound-toggle:focus-visible {
+  outline: 2px solid white;
+  outline-offset: 3px;
+}
+
+.sound-bars {
+  display: flex;
+  height: 12px;
+  align-items: center;
+  gap: 2px;
+}
+
+.sound-bars i {
+  display: block;
+  width: 1px;
+  height: 3px;
+  background: currentColor;
+}
+
+.sound-toggle[aria-pressed="true"] .sound-bars i { animation: waterlight-sound-bar 900ms ease-in-out infinite alternate; }
+.sound-toggle[aria-pressed="true"] .sound-bars i:nth-child(2) { animation-delay: -500ms; }
+.sound-toggle[aria-pressed="true"] .sound-bars i:nth-child(3) { animation-delay: -250ms; }
+.sound-toggle[aria-pressed="true"] .sound-bars i:nth-child(4) { animation-delay: -700ms; }
+
+@keyframes waterlight-sound-bar { to { height: 12px; } }
+
 @media (prefers-reduced-motion: reduce) {
   .waterlight-experience { pointer-events: none; }
+  .sound-toggle { pointer-events: auto; }
+  .sound-toggle:hover { transform: none; }
+  .sound-bars i { animation: none !important; }
 }

@@ -1240,14 +1240,14 @@ soundToggle.addEventListener('click', async () => {
       if (context?.state === 'suspended') await context.resume()
       await soundtrack.play()
       soundToggle.setAttribute('aria-pressed', 'true')
-      soundLabel.textContent = 'sound off'
+      soundLabel.textContent = '关闭水声'
     } catch {
-      soundLabel.textContent = 'tap again'
+      soundLabel.textContent = '请再点一次'
     }
   } else {
     soundtrack.pause()
     soundToggle.setAttribute('aria-pressed', 'false')
-    soundLabel.textContent = 'sound on'
+    soundLabel.textContent = '开启水声'
   }
 })
 
