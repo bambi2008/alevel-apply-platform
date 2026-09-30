@@ -21,8 +21,8 @@ export function CoreDashboard({ locale }: { locale: string }) {
         <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(2,12,15,.16)_0%,rgba(2,12,15,.02)_48%,rgba(2,10,13,.32)_100%)]" />
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_46%,rgba(255,255,255,.08),transparent_48%)]" />
 
-        <div className="pointer-events-none relative z-10 flex min-h-svh items-center justify-center px-6">
-          <h1 id="home-wordmark" className="select-none text-[clamp(4.5rem,15vw,13rem)] font-semibold leading-none tracking-[-0.09em] text-white/95 drop-shadow-[0_10px_50px_rgba(0,0,0,.24)]">
+        <div className="pointer-events-none absolute left-6 top-6 z-10 sm:left-8 sm:top-8">
+          <h1 id="home-wordmark" className="select-none text-[clamp(2.25rem,4vw,4rem)] font-semibold leading-none tracking-[-0.08em] text-white/95 drop-shadow-[0_6px_28px_rgba(0,0,0,.28)]">
             桥申
           </h1>
         </div>

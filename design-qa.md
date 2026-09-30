@@ -59,6 +59,47 @@ final result: passed
 
 ---
 
+# Design QA — Compact Upper-Left Waterlight Wordmark
+
+- Source visual truth: `C:/Users/ss/AppData/Local/Temp/codex-clipboard-81168b05-ec5c-472c-b78d-e99e4b82c9b8.png` (2806×1454 source pixels), with the requested upper-left placement annotated in red.
+- Browser-rendered implementation: in-app Browser capture from `http://localhost:3114/zh-CN`; the current browser surface emitted the desktop and mobile captures in the same review but does not expose a filesystem path.
+- Comparison input: the annotated source and the browser-rendered desktop capture were inspected together in this design-QA turn.
+- Viewport/state: 1280×720 desktop and 390×844 mobile, Chinese signed-out homepage, Waterlight Hero, sound-on interaction state also tested.
+
+## Full-View Comparison Evidence
+
+The source asks for the oversized centered `桥申` wordmark to move into the annotated upper-left box. The implementation places the mark at approximately 38×38 px in the 1280×720 browser and measures 94.2×51.2 px, matching the annotated target's compact proportion while restoring the water surface as the dominant visual. At 390×844 it remains upper-left at approximately 28.5×28.5 px and measures 78.7×42.8 px without horizontal overflow.
+
+## Focused-Region Evidence
+
+The wordmark region is the only changed visual area, so a separate crop is unnecessary: the full-view browser capture clearly resolves the mark, its water contrast and its distance from both edges. The sound pill remains at bottom-left and the down-arrow remains centered at the bottom.
+
+## Required Fidelity Surfaces
+
+- Fonts and typography: the existing product typeface, semibold weight and tight bridge wordmark tracking are retained; only the responsive size changes from `clamp(4.5rem,15vw,13rem)` to `clamp(2.25rem,4vw,4rem)`.
+- Spacing and layout rhythm: the mark uses the target's upper-left composition with responsive 24/32 px offsets; rendered browser offsets include the page's existing outer alignment and remain visually within the annotation.
+- Colors and visual tokens: white at 95% opacity and the existing dark-water palette are retained; the reduced shadow is scaled to the smaller mark.
+- Image quality and asset fidelity: the original Three.js Waterlight surface and supplied riverbed texture are unchanged and remain sharp at both tested viewports.
+- Copy and content: `桥申`, the sound control and the four-core down-arrow are unchanged; no new copy is introduced.
+
+## Interaction And Runtime Checks
+
+- The sound control still changes state and plays `/waterlight/waterlight-loop.ogg`; the audio reports `readyState=4` and `paused=false`.
+- The down-arrow still scrolls to `#core-centers`.
+- Desktop and mobile report no horizontal overflow.
+- Browser console warnings/errors: 0.
+- `pnpm typecheck` and `git diff --check` pass.
+
+## Comparison History
+
+1. Initial P1 mismatch: the centered 15vw wordmark dominated the water and did not occupy the user's annotated upper-left target.
+2. Fix: changed the overlay to absolute upper-left positioning, reduced the responsive clamp and proportionally reduced its shadow.
+3. Post-fix evidence: the desktop and mobile browser captures place the compact mark in the upper-left, preserve all Hero controls and show no overflow or console errors.
+
+final result: passed
+
+---
+
 # Design QA — Minimal Waterlight Hero + Four-Core Scroll
 
 - Source visual truth: the original Purrl Waterlight study at `C:/Users/ss/Documents/hk minijungle/waterlight-study`, captured in the in-app browser from `http://127.0.0.1:4180/`.
