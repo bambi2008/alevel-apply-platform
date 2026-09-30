@@ -138,7 +138,8 @@ Device-specific handwritten-answer entry is implemented, verified, pushed to Git
 
 ## Current Blockers
 
-- No code or deployment blocker is known.
+- No code blocker is known. Beta deployment is waiting for the user to re-authenticate the Tencent Cloud console; the current session redirects to the WeChat/email login page.
+- The requested LATQ-specific interaction study is waiting for the exact official URL. Public search did not identify a unique site called LATQ, so no same-name candidate will be treated as the reference without confirmation.
 - The remaining local browser refresh/recovery check was interrupted by a stale connection-error document rejected by browser URL policy. No bypass was attempted; live read-only entry checks and independent local HTTP/database checks passed. Real AI-provider grading and student-based difficulty calibration are not part of the completed local persistence test.
 - Real API keys and server environment values are external operational dependencies and must never be committed.
 
