@@ -36,14 +36,14 @@ export function CoreDashboard({ locale }: { locale: string }) {
         </a>
       </section>
 
-      <section id="core-centers" className="scroll-mt-0 px-5 py-20 sm:px-8 sm:py-28" aria-labelledby="core-centers-title">
+      <section id="core-centers" className="scroll-mt-0 px-5 py-12 sm:px-8" aria-labelledby="core-centers-title">
         <div className="mx-auto max-w-6xl">
-          <div className="grid gap-6 border-b border-black/15 pb-8 md:grid-cols-[1fr_1.4fr] md:items-end">
+          <div className="grid gap-4 border-b border-black/15 pb-5 md:grid-cols-[1fr_1.4fr] md:items-end">
             <div>
               <p className="text-xs font-semibold tracking-[0.22em] text-black/45">CORE FOUR</p>
-              <h2 id="core-centers-title" className="mt-3 text-4xl font-semibold tracking-[-0.04em] sm:text-5xl">四个核心入口</h2>
+              <h2 id="core-centers-title" className="mt-2 text-4xl font-semibold tracking-[-0.04em]">四个核心入口</h2>
             </div>
-            <p className="max-w-xl text-base leading-7 text-black/55 md:justify-self-end">从训练到申请表达，选择当前要推进的一件事。</p>
+            <p className="max-w-xl text-sm leading-6 text-black/55 md:justify-self-end">从训练到申请表达，选择当前要推进的一件事。</p>
           </div>
 
           <div className="grid md:grid-cols-2">
@@ -53,7 +53,7 @@ export function CoreDashboard({ locale }: { locale: string }) {
                 <Link
                   key={center.href}
                   href={center.href}
-                  className="group relative min-h-72 border-b border-black/15 px-1 py-9 transition-colors hover:bg-white/55 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#101817] md:px-8 md:py-10 md:odd:border-r"
+                  className="group relative min-h-64 border-b border-black/15 px-1 py-7 transition-colors hover:bg-white/55 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#101817] md:h-[220px] md:min-h-0 md:px-8 md:py-6 md:odd:border-r"
                 >
                   <div className="flex items-start justify-between gap-6">
                     <span className="text-xs font-semibold tracking-[0.18em] text-black/35">{center.index}</span>
@@ -61,10 +61,14 @@ export function CoreDashboard({ locale }: { locale: string }) {
                       <ArrowUpRight className="size-4" aria-hidden="true" />
                     </span>
                   </div>
-                  <Icon className="mt-10 size-7 stroke-[1.5] text-black/55" aria-hidden="true" />
-                  <h3 className="mt-5 text-2xl font-semibold tracking-[-0.025em]">{center.title}</h3>
-                  <p className="mt-2 text-sm font-medium text-black/55">{center.subtitle}</p>
-                  <p className="mt-5 max-w-sm text-base leading-7 text-black/55">{center.description}</p>
+                  <div className="mt-4 grid grid-cols-[auto_1fr] items-start gap-4">
+                    <Icon className="mt-1 size-6 stroke-[1.5] text-black/55" aria-hidden="true" />
+                    <div>
+                      <h3 className="text-xl font-semibold tracking-[-0.025em]">{center.title}</h3>
+                      <p className="mt-1 text-sm font-medium text-black/55">{center.subtitle}</p>
+                      <p className="mt-3 max-w-sm text-sm leading-6 text-black/55">{center.description}</p>
+                    </div>
+                  </div>
                 </Link>
               );
             })}
