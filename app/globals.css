@@ -419,6 +419,52 @@ body:has(.core-dashboard-home) footer {
   margin-top: 0;
 }
 
+/* Nested pages inherit the Waterlight/four-core language without repeating the full Hero. */
+.core-route-frame {
+  --background: #f4f4f0;
+  --foreground: #101817;
+  --ink: #101817;
+  --ink-soft: rgba(16, 24, 23, 0.64);
+  --ink-faint: rgba(16, 24, 23, 0.42);
+  --indigo: #101817;
+  --indigo-hover: #273331;
+  --accent-bar: #101817;
+  --surface: #ecece7;
+  --surface-2: #e4e4de;
+  --border: rgba(16, 24, 23, 0.16);
+  --border-soft: rgba(16, 24, 23, 0.1);
+  --info: #315f59;
+  --info-bg: #e5eeea;
+  background: #f4f4f0;
+  color: #101817;
+}
+
+.core-route-frame .card-hover:hover,
+.core-route-frame .card-interactive:hover,
+.core-route-frame .bento-card:hover {
+  transform: none;
+  border-color: rgba(16, 24, 23, 0.24);
+  background: rgba(255, 255, 255, 0.58);
+  box-shadow: none;
+}
+
+.core-route-frame .bento-card,
+.core-route-frame .btn-glow,
+.core-route-frame .btn-primary {
+  box-shadow: none;
+}
+
+.core-route-frame .text-gradient {
+  background: none;
+  color: #101817;
+}
+
+.core-route-masthead {
+  background:
+    radial-gradient(44rem 18rem at 50% -12rem, rgba(45, 74, 71, 0.09), transparent 70%),
+    #f4f4f0;
+}
+
 html:has(.core-dashboard-home) {
   scroll-behavior: smooth;
 }

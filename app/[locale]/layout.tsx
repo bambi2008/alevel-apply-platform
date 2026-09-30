@@ -5,6 +5,7 @@ import { NextIntlClientProvider } from "next-intl";
 import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { routing, type AppLocale } from "@/i18n/routing";
 import { CoreTopNav } from "@/components/core-top-nav";
+import { CoreRouteFrame } from "@/components/core-route-frame";
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
 import "../globals.css";
@@ -22,17 +23,13 @@ export async function generateMetadata({
 async function Footer() {
   const t = await getTranslations("footer");
   return (
-    <footer className="mt-20 bg-[var(--ink-950)] text-white/70">
+    <footer className="mt-20 bg-[#101817] text-white/65">
       <div className="mx-auto max-w-6xl px-6 py-10">
-        <div className="flex items-center gap-2 mb-5">
-          <span className="inline-flex items-center justify-center w-7 h-7 rounded-lg bg-white/10">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" strokeWidth="2" strokeLinecap="round">
-              <path d="M4 15 A 8 8 0 0 1 20 15" />
-            </svg>
-          </span>
-          <span className="font-extrabold text-white tracking-tight">桥申</span>
+        <div className="mb-6 flex items-baseline justify-between gap-4 border-b border-white/15 pb-5">
+          <span className="text-xl font-semibold tracking-[-0.06em] text-white">桥申</span>
+          <span className="text-[0.65rem] font-semibold tracking-[0.2em] text-white/35">CORE FOUR</span>
         </div>
-        <div className="flex flex-col sm:flex-row justify-between gap-3 text-sm">
+        <div className="flex flex-col justify-between gap-3 text-sm sm:flex-row">
           <span>© {new Date().getFullYear()} {t("rights")}</span>
           <span className="text-white/50">{t("disclaimer")}</span>
         </div>
@@ -70,15 +67,15 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} className="h-full antialiased">
-      <body className="min-h-full flex flex-col bg-white text-neutral-900">
+      <body className="min-h-full flex flex-col bg-[var(--background)] text-neutral-900">
         <NextIntlClientProvider messages={messages}>
           <CoreTopNav
             userEmail={user?.email ?? null}
             isAdmin={user?.role === "ADMIN"}
             isLoggedIn={isLoggedIn}
           />
-          <div className="bg-white min-h-screen">
-            <main className="flex-1">{children}</main>
+          <div className="min-h-screen bg-[var(--background)]">
+            <main className="flex-1"><CoreRouteFrame>{children}</CoreRouteFrame></main>
             {await Footer()}
           </div>
         </NextIntlClientProvider>

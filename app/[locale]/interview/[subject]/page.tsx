@@ -23,7 +23,6 @@ export default async function SubjectPage({
       <PageHeader
         title={`${subject.name} 面试`}
         subtitle={subject.blurb}
-        icon="🎙️"
       />
       <SubjectInterview subjectId={subject.id} subjectName={subject.name} questions={questions} />
     </div>

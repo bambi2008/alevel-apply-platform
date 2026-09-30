@@ -1,3 +1,54 @@
+# Design QA — Core Experience Through Nested Route Levels
+
+- Source visual truth: `C:/Users/ss/AppData/Local/Temp/codex-clipboard-5b394952-a0de-44a3-ae0d-e20978a8ae99.png` (2802×1254), the accepted homepage four-core language; `C:/Users/ss/AppData/Local/Temp/codex-clipboard-092fb0e8-721d-4fc6-a5c5-145444b304e6.png` (2880×1462), the supplied nested-page before-state.
+- Browser-rendered implementation: current-run in-app Browser captures from `http://127.0.0.1:3116/zh-CN/tests/caie9709`, `/tests/caie9709/mock`, `/interview/maths`, and `/background/projects`. The browser emitted desktop and mobile captures during this QA turn but does not expose filesystem paths.
+- Comparison input: both source captures and the current-run implementation captures were opened and reviewed in this design-QA turn. The homepage reference establishes the target system; the nested before-state establishes the hierarchy break rather than a pixel-identical route.
+- Viewport/state: 1280×720 desktop and 390×844 mobile, Chinese signed-out state; representative second- and third-level routes.
+- Density normalization: source screenshots are approximately 2× desktop captures and are judged for hierarchy, palette, rules, numbering and surface response. Implementation captures are DPR 1; no pixel-identical content geometry is claimed because route content differs by design.
+
+## Full-View Comparison Evidence
+
+The previous nested experience changed back to a white-and-blue application shell with a custom bridge mark and no visible relationship to the four numbered core destinations. The implementation now retains the homepage's compact `桥申` wordmark, warm-neutral canvas, ink-first active state, tracked order labels and thin ruled grid before every nested core route. Second-level CAIE 9709 and mathematics interview pages identify themselves as `LEVEL 02`; the fixed-paper catalogue identifies itself as `LEVEL 03`. Online projects carries `CORE 02 / 04`, and its active route is consistent in both global navigation and the local four-path grid.
+
+At 1280 px, the route frame and existing work content remain visible together without turning the nested screen into another full Hero. At 390×844, the top navigation collapses to the existing menu control and the four core links form a readable 2×2 grid before task content. Browser measurements report four local path links, the expected `aria-current`, and document width within the viewport at both sizes.
+
+## Focused-Region Comparison Evidence
+
+Focused checks covered the compact wordmark/global navigation, the local `CORE nn / 04` and `LEVEL nn` line, the four-path active state, and the first task-content region below it. The local links remain real anchors, the active link exposes `aria-current="page"`, and a cross-core click from online projects reached `/zh-CN/statements`. The interview page's generic emoji icon block was removed so its task title follows the restrained text hierarchy directly.
+
+## Required Fidelity Surfaces
+
+- Fonts and typography: the existing system sans is retained, while the homepage's tight wordmark tracking, small uppercase/tracked metadata and semibold ink hierarchy now persist through deeper pages. Existing task copy and form typography remain untouched to protect dense exam readability.
+- Spacing and layout rhythm: nested pages gain one compact orientation band rather than a repeated full-screen Hero. The band reuses the six-column-width shell, thin rules and four equal desktop tracks; mobile becomes 2×2 with practical 44 px minimum targets and no horizontal overflow.
+- Colors and visual tokens: `#f4f4f0`, `#101817`, black-opacity rules and white/55 hover surfaces extend the homepage system. Semantic success, warning and danger tokens remain distinct; task feedback is not forced into monochrome.
+- Image quality and asset fidelity: the full Waterlight shader and its riverbed texture remain exclusive to the homepage, preserving their impact and avoiding repeated GPU work. Nested route orientation uses no replacement illustration, custom SVG, CSS drawing, emoji or fake image asset.
+- Copy and content: no exam, paper, question, project, interview, editor, upload or grading copy was removed. The only new copy is concise route orientation (`CORE`, `LEVEL` and existing core names).
+- Icons and controls: global branding no longer substitutes a custom inline bridge SVG for the accepted text wordmark. Existing functional Lucide and status icons remain in the work area where they carry meaning.
+
+## Findings
+
+- No actionable P0, P1 or P2 discrepancy remains for hierarchy continuity across the representative second- and third-level routes.
+- P3: older task modules still contain a small number of blue text links and rounded information cards. They remain readable and semantically useful; scoped tokens already reduce their visual dominance, and rewriting every task component would add regression risk without improving route recognition.
+- P3 test gap: authenticated upload, grading and saved-progress states were not mutated during this visual pass. Their code paths are unchanged and will be covered by the existing automated regression suite.
+
+## Interaction And Runtime Checks
+
+- Primary interactions: four-path navigation is present on every nested core route; online projects → statements navigation passed.
+- Accessibility: active core exposes `aria-current`; links remain keyboard-native; focus rings use the ink token; reduced-motion handling remains global.
+- Responsive checks: 1280×720 and 390×844 have no horizontal overflow; mobile shows all four path links before task content.
+- Console check: 0 errors and 0 warnings on the representative desktop and mobile routes.
+- Static and regression verification: TypeScript, `git diff --check`, all 59 Vitest files / 342 tests, and an isolated Next.js 16 production build pass. The local workspace does not expose an ESLint executable, so the targeted lint command could not start; no lint result is claimed.
+
+## Comparison History
+
+1. Initial P1 mismatch: after the accepted homepage and second-level redesign, deeper routes returned to a separate white/blue/card language and gave no persistent core or depth identity.
+2. Fix: introduced one route-aware frame for every nested core route, extended warm/ink/rule/hover tokens, simplified the global wordmark/navigation/footer, and removed the interview emoji header block.
+3. Post-fix evidence: current-run desktop/mobile captures show consistent numbering and active states on exam detail, fixed-paper catalogue, mathematics interview and online projects; a cross-core navigation check succeeds with no overflow or console messages.
+
+final result: passed
+
+---
+
 # Design QA — Homepage Four-Core First Screen
 
 - Source visual truth: `C:/Users/ss/AppData/Local/Temp/codex-clipboard-d38682ce-76f1-4d77-8b4f-ca3b8d0e2f55.png`
