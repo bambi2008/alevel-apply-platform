@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ArrowRight } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import {
   CoreList,
@@ -85,80 +85,87 @@ export default function TestsPage() {
         meta={profileLoaded ? `${examTests.length} 个相关考试` : "正在读取训练档案"}
       />
 
-      <div className="mt-5 border-l-2 border-[var(--indigo)] pl-4 text-sm leading-6 text-[var(--ink-soft)]">
-        <span className="font-semibold text-[var(--indigo)]">用途提示：</span>
-        MAT / PAT 已停用，标为“历史训练”；BMO / BPhO 已移至“竞赛与专业实践”；STEP 通常属于 Offer 条件。
-        当前考试要求会随申请周期和课程变化，请同时核对院校与考试机构官网。
+      <div className="mt-8 grid gap-2 border-b border-black/15 pb-6 md:grid-cols-[7rem_minmax(0,1fr)]">
+        <p className="text-xs font-semibold tracking-[0.18em] text-black/35">USE NOTE</p>
+        <p className="max-w-4xl text-sm leading-6 text-black/55">
+          <span className="font-semibold text-[#101817]">用途提示：</span>
+          MAT / PAT 已停用，标为“历史训练”；BMO / BPhO 已移至“竞赛与专业实践”；STEP 通常属于 Offer 条件。
+          当前考试要求会随申请周期和课程变化，请同时核对院校与考试机构官网。
+        </p>
       </div>
 
       {profileLoaded && hasTestIntent(profile) && (
-        <p className="mb-5 text-sm text-[var(--ink-soft)]">
+        <p className="mt-5 text-sm text-black/55">
           已根据你的意向院校、意向专业和在读科目筛选当前相关考试。
         </p>
       )}
 
-      <CoreTabBar label="按学科筛选">
-        {CATEGORY_TABS.filter((tab) => tab.id === "all" || availableCategories.has(tab.id)).map((tab) => (
-          <button
-            key={tab.id}
-            type="button"
-            onClick={() => setActiveCategory(tab.id)}
-            className={coreTabClass(activeCategory === tab.id)}
-          >
-            {tab.label}<span className="ml-1 text-xs opacity-70">{tab.labelEn}</span>
-          </button>
-        ))}
-      </CoreTabBar>
+      <div className="mt-7">
+        <CoreTabBar label="按学科筛选">
+          {CATEGORY_TABS.filter((tab) => tab.id === "all" || availableCategories.has(tab.id)).map((tab) => (
+            <button
+              key={tab.id}
+              type="button"
+              aria-pressed={activeCategory === tab.id}
+              onClick={() => setActiveCategory(tab.id)}
+              className={coreTabClass(activeCategory === tab.id)}
+            >
+              {tab.label}<span className="ml-1 text-xs opacity-70">{tab.labelEn}</span>
+            </button>
+          ))}
+        </CoreTabBar>
+      </div>
 
       {!profileLoaded ? (
         <p className="py-12 text-center text-sm text-[var(--ink-faint)]">正在读取你的训练档案…</p>
-      ) : <div className="space-y-9 pt-7">
+      ) : <div className="space-y-12 pt-10">
         {PURPOSES.map((purpose) => {
           const tests = filtered.filter((test) => getTestPurpose(test) === purpose.id);
           if (tests.length === 0) return null;
           return (
             <section key={purpose.id}>
               <CoreSectionHeader title={purpose.label} meta={`${tests.length} 个考试`} />
-              <p className="mt-1 text-xs leading-5 text-[var(--ink-faint)]">{purpose.labelEn} · {purpose.note}</p>
+              <p className="mt-1 text-sm leading-6 text-black/45">{purpose.labelEn} · {purpose.note}</p>
               <CoreList>
-                {tests.map((test) => <TestRow key={test.id} test={test} />)}
+                {tests.map((test, index) => <TestRow key={test.id} test={test} index={index + 1} />)}
               </CoreList>
             </section>
           );
         })}
       </div>}
 
-      <p className="mt-10 text-xs text-[var(--ink-faint)] text-center">
+      <p className="mt-12 border-t border-black/15 pt-5 text-center text-xs leading-5 text-black/35">
         考试用途、学院安排和英语门槛以当前申请周期的院校官网、考试机构官网及个人 Offer 为准。
       </p>
     </CorePageShell>
   );
 }
 
-function TestRow({ test }: { test: AdmissionsTest }) {
+function TestRow({ test, index }: { test: AdmissionsTest; index: number }) {
   const purpose = getTestPurpose(test);
   return (
     <Link
       href={`/tests/${test.id}`}
-      className="group grid min-w-0 gap-3 py-4 sm:grid-cols-[minmax(160px,0.75fr)_minmax(0,1.7fr)_auto] sm:items-center sm:gap-5"
+      className="group grid min-w-0 grid-cols-[2.5rem_minmax(0,1fr)] gap-x-3 gap-y-4 px-3 py-6 transition-colors hover:bg-white/60 focus-visible:z-10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#101817] sm:grid-cols-[3rem_minmax(160px,0.75fr)_minmax(0,1.7fr)_auto] sm:items-center sm:gap-x-5 sm:px-5"
     >
+      <span className="pt-1 text-xs font-semibold tracking-[0.16em] text-black/30">{String(index).padStart(2, "0")}</span>
       <div className="min-w-0">
-        <h3 className="font-medium text-[var(--ink)] group-hover:text-[var(--indigo)]">{test.abbr}</h3>
-        <p className="truncate text-xs text-[var(--ink-faint)]">{test.nameZh}</p>
+        <h3 className="text-lg font-semibold tracking-[-0.025em] text-[#101817]">{test.abbr}</h3>
+        <p className="mt-1 truncate text-xs text-black/40">{test.nameZh}</p>
       </div>
-      <div className="min-w-0">
-        <p className="line-clamp-2 text-sm leading-6 text-[var(--ink-soft)]">{test.overview}</p>
-        <p className="mt-1 text-xs leading-5 text-[var(--ink-faint)]">
+      <div className="col-start-2 min-w-0 sm:col-start-auto">
+        <p className="line-clamp-2 text-sm leading-6 text-black/55">{test.overview}</p>
+        <p className="mt-1 text-xs leading-5 text-black/35">
           {test.duration} · {test.topics.length} 个知识点 · {test.programs.slice(0, 2).join(" / ")}
         </p>
       </div>
-      <div className="flex items-center justify-between gap-3 sm:justify-end">
-        <span className={`text-xs ${purpose === "legacy" ? "text-[var(--warning)]" : "text-[var(--ink-faint)]"}`}>
+      <div className="col-start-2 flex items-center justify-between gap-4 sm:col-start-auto sm:justify-end">
+        <span className={`text-xs ${purpose === "legacy" ? "text-[var(--warning)]" : "text-black/35"}`}>
           {PURPOSE_BADGES[purpose]}
         </span>
-        <span className="inline-flex items-center gap-2 text-sm text-[var(--ink-faint)] group-hover:text-[var(--indigo)]">
-          {test.hasQuestionBank ? "进入" : "查看"}
-          <ArrowRight className="h-4 w-4" aria-hidden="true" />
+        <span className="flex size-11 shrink-0 items-center justify-center rounded-full border border-black/15 text-black/45 transition duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:border-black/35 group-hover:text-black">
+          <span className="sr-only">{test.hasQuestionBank ? "进入" : "查看"}</span>
+          <ArrowUpRight className="size-4" aria-hidden="true" />
         </span>
       </div>
     </Link>

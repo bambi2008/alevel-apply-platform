@@ -1,7 +1,11 @@
 import type { ReactNode } from "react";
 
 export function CorePageShell({ children }: { children: ReactNode }) {
-  return <div className="mx-auto max-w-6xl px-4 py-8 sm:py-10">{children}</div>;
+  return (
+    <div className="min-h-[calc(100svh-4rem)] bg-[#f4f4f0] text-[#101817]">
+      <div className="mx-auto max-w-6xl px-5 py-10 sm:px-8 sm:py-14">{children}</div>
+    </div>
+  );
 }
 
 export function CorePageHeader({
@@ -16,17 +20,17 @@ export function CorePageHeader({
   meta?: ReactNode;
 }) {
   return (
-    <header className="border-b border-[var(--border)] pb-6">
-      <p className="text-sm font-medium text-[var(--indigo)]">核心功能 {step}</p>
-      <div className="mt-2 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div className="min-w-0">
-          <h1 className="text-3xl font-bold text-[var(--ink)] sm:text-4xl">{title}</h1>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--ink-soft)] sm:text-base">
-            {description}
-          </p>
-        </div>
-        {meta ? <div className="shrink-0 text-sm text-[var(--ink-faint)]">{meta}</div> : null}
+    <header className="grid gap-6 border-b border-black/15 pb-7 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
+      <div className="min-w-0">
+        <p className="text-xs font-semibold tracking-[0.22em] text-black/45">CORE {step}</p>
+        <h1 className="mt-3 text-[clamp(2.75rem,6vw,5.25rem)] font-semibold leading-[0.94] tracking-[-0.055em] text-[#101817]">
+          {title}
+        </h1>
+        <p className="mt-4 max-w-3xl text-sm leading-6 text-black/55 sm:text-base sm:leading-7">
+          {description}
+        </p>
       </div>
+      {meta ? <div className="shrink-0 text-xs font-semibold tracking-[0.16em] text-black/35">{meta}</div> : null}
     </header>
   );
 }
@@ -39,17 +43,17 @@ export function CoreTabBar({
   children: ReactNode;
 }) {
   return (
-    <nav aria-label={label} className="flex gap-6 overflow-x-auto border-b border-[var(--border)]">
+    <nav aria-label={label} className="flex overflow-x-auto border-y border-black/15">
       {children}
     </nav>
   );
 }
 
 export const coreTabClass = (active: boolean) =>
-  `shrink-0 border-b-2 px-0.5 py-3 text-sm font-medium transition ${
+  `shrink-0 px-4 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#101817] ${
     active
-      ? "border-[var(--indigo)] text-[var(--indigo)]"
-      : "border-transparent text-[var(--ink-soft)] hover:text-[var(--ink)]"
+      ? "bg-[#101817] text-white"
+      : "text-black/55 hover:bg-white/60 hover:text-black"
   }`;
 
 export function CoreSectionHeader({
@@ -61,15 +65,15 @@ export function CoreSectionHeader({
 }) {
   return (
     <div className="flex items-center justify-between gap-4">
-      <h2 className="text-lg font-semibold text-[var(--ink)]">{title}</h2>
-      {meta ? <span className="text-xs text-[var(--ink-faint)]">{meta}</span> : null}
+      <h2 className="text-2xl font-semibold tracking-[-0.035em] text-[#101817]">{title}</h2>
+      {meta ? <span className="text-xs font-semibold tracking-[0.12em] text-black/35">{meta}</span> : null}
     </div>
   );
 }
 
 export function CoreList({ children, className = "" }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`mt-3 divide-y divide-[var(--border)] border-y border-[var(--border)] ${className}`}>
+    <div className={`mt-4 divide-y divide-black/15 border-y border-black/15 ${className}`}>
       {children}
     </div>
   );

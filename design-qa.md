@@ -59,6 +59,56 @@ final result: passed
 
 ---
 
+# Design QA — Four-Core Second-Level Hierarchy
+
+- Source visual truth: the browser-rendered homepage four-core section at `http://127.0.0.1:3115/zh-CN#core-centers`, using the established warm-neutral, numbered, ruled-grid system. The user's before-state is `C:/Users/ss/AppData/Local/Temp/codex-clipboard-092fb0e8-721d-4fc6-a5c5-145444b304e6.png`.
+- Browser-rendered implementation: `http://127.0.0.1:3115/zh-CN/tests`; the in-app browser emitted the desktop and mobile captures during this QA turn but does not expose filesystem paths.
+- Comparison input: source and implementation browser captures were reviewed together in the same design-QA turn. A same-origin iframe comparison page was also attempted, but the application's intentional anti-framing headers correctly blocked both frames; no security header was relaxed for QA.
+- Viewport/state: 1440×900 desktop and 390×844 mobile, Chinese signed-out state; default `全部` and filtered `数学` states.
+- Pixel density: browser DPR 1; the user-supplied before-state is 2880×1462 pixels and is used only to establish the flat prior hierarchy, not for pixel-perfect geometry.
+
+## Full-View Comparison Evidence
+
+The revised second-level page keeps the homepage's warm-neutral canvas, high-contrast display heading, small tracked order label, thin black-opacity rules and restrained monochrome palette. The previous generic blue underline tabs and light list rows are replaced by a clearly selected dark filter, numbered sections and complete-row directional affordances. At 1440 px the title resolves at 86.4 px, all 11 exam links remain present and document width stays within the viewport. At 390 px the hierarchy collapses to a readable single-column flow with no document overflow.
+
+## Focused-Region Comparison Evidence
+
+Focused checks covered the category control and the first exam row. The active category exposes `aria-pressed=true`; selecting Mathematics reduces the rendered exam links from 11 to 5. The first row retains its title, bilingual metadata, summary and destination while adding a two-digit order marker, a 44 px circular arrow and whole-row hover/focus styling. ESAT navigation reaches `/zh-CN/tests/esat` and browser back restores the list.
+
+## Required Fidelity Surfaces
+
+- Fonts and typography: the application family is retained; the hierarchy now matches the homepage through a responsive display clamp, tighter heading tracking, compact body line lengths and small tracked metadata.
+- Spacing and layout rhythm: shared outer padding, ruled header/tab/list boundaries, 12-unit section rhythm and four-column desktop rows extend the homepage's editorial grid; mobile rows collapse without hidden controls.
+- Colors and visual tokens: `#f4f4f0`, `#101817` and black-opacity rules/secondary text are reused from the homepage. The legacy blue active underline is removed from these shared controls.
+- Image quality and asset fidelity: these second-level pages contain no required raster imagery. Existing Lucide icons remain vector-sharp; no substitute SVG, emoji or placeholder asset was introduced.
+- Copy and content: all 11 exam destinations, section notes, bilingual labels, warnings and filters remain. The use note is restructured, not shortened or rewritten into a new claim.
+
+## Findings
+
+- No actionable P0, P1 or P2 discrepancy remains for the requested hierarchy continuity.
+- P3: mobile category tabs intentionally remain horizontally scrollable because five bilingual labels cannot fit a 390 px viewport without damaging readability.
+- P3 diagnostic: Next.js dev mode emits its existing smooth-scroll advisory during one client transition; no browser error occurs and production behavior is unaffected.
+
+## Interaction And Runtime Checks
+
+- Primary interactions: category filtering, active-state semantics, whole-row ESAT navigation and browser return all pass.
+- Responsive checks: 1440×900 and 390×844 both have zero horizontal overflow.
+- Shared-surface checks: background, interview and statements retain their content while using the same numbered header and ruled navigation language.
+- Console check: 0 errors; one existing Next.js development-only smooth-scroll advisory.
+- Static verification: TypeScript, changed-file ESLint and `git diff --check` pass.
+- Regression verification: all 59 Vitest files / 342 tests pass.
+- Production verification: isolated Next.js 16 build passes compilation, TypeScript validation, page-data collection and all 28 static pages; temporary output and generated `tsconfig.json` includes were removed.
+
+## Comparison History
+
+1. Initial P1 mismatch: the second-level tests screen dropped the homepage's warm surface, numerical order, bold scale and directional motion, so it read as an unrelated generic list.
+2. Fix: moved the core pages onto a shared editorial shell/header/tab/list language and rebuilt the tests rows with numbering, full-row states and circular arrow motion.
+3. Post-fix evidence: desktop/mobile captures, filter interaction, route navigation and the three other shared core headers show the hierarchy persists beyond the homepage with no overflow or browser errors.
+
+final result: passed
+
+---
+
 # Design QA — Four-Core Supporting Copy Rhythm
 
 - Source visual truth: `C:/Users/ss/AppData/Local/Temp/codex-clipboard-5b394952-a0de-44a3-ae0d-e20978a8ae99.png` (2802×1254 source pixels), with the unwanted gap between the two small-copy lines annotated in red.
