@@ -9,7 +9,7 @@ import { getKnowledgeByTopicId } from "@/lib/tests/knowledge";
 import { REGISTRATION_INFO } from "@/lib/tests/registration";
 import { ExamTimer, getTimerPresets } from "@/components/exam-timer";
 import { getMockPapersForTest } from "@/lib/tests/mock-papers";
-import { ArrowRight, BookOpenCheck, FileText, Timer } from "lucide-react";
+import { ArrowRight, BookOpenCheck, ChartNoAxesColumnIncreasing, FileText, History, LayoutList, LibraryBig, Timer } from "lucide-react";
 import { AdaptiveLearningPanel } from "@/components/adaptive-learning-panel";
 import { ExamReadinessPanel } from "@/components/exam-readiness-panel";
 
@@ -27,6 +27,13 @@ export default function TestDetailPage({
 
 type TabId = "overview" | "topics" | "history" | "analysis";
 
+const MODULES = [
+  { id: "overview", label: "考试结构", labelEn: "Structure", description: "题型、评分与报名", icon: LayoutList },
+  { id: "topics", label: "知识点", labelEn: "Topics", description: "范围与学习讲解", icon: LibraryBig },
+  { id: "history", label: "历史记录", labelEn: "History", description: "作答与复盘", icon: History },
+  { id: "analysis", label: "学前分析", labelEn: "Analysis", description: "诊断与训练计划", icon: ChartNoAxesColumnIncreasing },
+] as const;
+
 function TestDetailContent({ test }: { test: AdmissionsTest }) {
   const searchParams = useSearchParams();
   const requestedTab = searchParams.get("tab");
@@ -35,136 +42,122 @@ function TestDetailContent({ test }: { test: AdmissionsTest }) {
     ? requestedReturnTo
     : null;
 
-  const tabs: { id: TabId; label: string; labelEn: string }[] = [
-    { id: "overview", label: "考试结构", labelEn: "Structure" },
-    { id: "topics", label: "知识点模块", labelEn: "Topics" },
-    { id: "history", label: "历史记录", labelEn: "History" },
-    { id: "analysis", label: "学前分析", labelEn: "Analysis" },
-  ];
   const normalizedTab = requestedTab === "plan" || requestedTab === "readiness"
     ? "analysis"
     : requestedTab === "practice"
       ? "overview"
       : requestedTab;
-  const tab = tabs.some((item) => item.id === normalizedTab) ? normalizedTab as TabId : "overview";
+  const tab = MODULES.some((item) => item.id === normalizedTab) ? normalizedTab as TabId : null;
+
+  if (tab) {
+    const activeModule = MODULES.find((item) => item.id === tab)!;
+    const ActiveIcon = activeModule.icon;
+    return (
+      <div className="mx-auto max-w-5xl px-4 py-10">
+        <Link
+          href={returnTo ?? `/tests/${test.id}`}
+          onClick={forceFullNavigation}
+          className="inline-flex items-center gap-1 text-sm text-[var(--ink-soft)] hover:text-[var(--ink)]"
+        >
+          ← {returnTo ? "返回本次复盘" : `返回 ${test.abbr}`}
+        </Link>
+
+        <header className="mt-10 flex items-end justify-between gap-6 border-b border-black/15 pb-7">
+          <div>
+            <p className="text-xs font-semibold tracking-[0.18em] text-black/35">{test.abbr}</p>
+            <h1 className="mt-3 text-4xl font-semibold tracking-[-0.045em] text-[#101817] sm:text-5xl">{activeModule.label}</h1>
+            <p className="mt-2 text-sm text-black/40">{activeModule.labelEn}</p>
+          </div>
+          <ActiveIcon className="size-8 stroke-[1.5] text-black/35" aria-hidden="true" />
+        </header>
+
+        <div className="pt-8">
+          {tab === "overview" && <OverviewTab test={test} />}
+          {tab === "topics" && <TopicsTab test={test} />}
+          {tab === "history" && <HistoryTab test={test} />}
+          {tab === "analysis" && <AnalysisTab test={test} />}
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-10">
-      {/* Back */}
-      <Link href={returnTo ?? "/tests"} onClick={forceFullNavigation} className="text-sm text-[var(--ink-soft)] hover:text-[var(--ink)] mb-6 inline-flex items-center gap-1">
-        ← {returnTo ? "返回本次复盘" : "返回考试列表"}
+      <Link href="/tests" onClick={forceFullNavigation} className="inline-flex items-center gap-1 text-sm text-[var(--ink-soft)] hover:text-[var(--ink)]">
+        ← 返回考试列表
       </Link>
 
-      {/* Header */}
-      <div className="mt-4 mb-8">
-        <div className="flex items-start gap-4 flex-wrap">
-          <div className="flex items-center gap-3">
-            <span className="text-4xl font-mono text-[var(--indigo)] font-bold">{test.icon}</span>
-            <div>
-              <h1 className="text-3xl font-bold">{test.abbr}</h1>
-              <p className="text-[var(--ink-soft)] text-sm">{test.name}</p>
-              <p className="text-[var(--ink-faint)] text-sm">{test.nameZh}</p>
-            </div>
+      <header className="mt-10 border-b border-black/15 pb-8">
+        <div className="flex flex-wrap items-start justify-between gap-5">
+          <div>
+            <p className="text-xs font-semibold tracking-[0.18em] text-black/35">{test.nameZh}</p>
+            <h1 className="mt-3 text-5xl font-semibold tracking-[-0.055em] text-[#101817] sm:text-6xl">{test.abbr}</h1>
           </div>
           {test.hasQuestionBank && (
-            <span className="mt-1 text-xs px-3 py-1.5 rounded-full bg-[var(--success-bg)] text-[var(--success)] font-medium">
-              ✦ AI 题库可用
-            </span>
+            <span className="rounded-full border border-black/10 bg-white/55 px-3 py-1.5 text-xs font-medium text-black/55">题库可用</span>
           )}
         </div>
 
-        {/* Key facts strip */}
-        <div className="mt-5 grid grid-cols-2 sm:grid-cols-4 gap-3">
-          {[
-            { label: "考试时长", value: test.duration },
-            { label: "知识点", value: `${test.topics.length} 个模块` },
-            { label: "备考周期", value: `${test.studyPlan.length} 阶段` },
-            {
-              label: "题库",
-              value: test.hasQuestionBank ? "AI 生成 + 人工审核" : "官方资料为主",
-            },
-          ].map((f) => (
-            <div key={f.label} className="rounded-xl bg-[var(--surface)] border border-[var(--border-soft)] p-3 text-center">
-              <div className="font-semibold text-sm text-[var(--ink)]">{f.value}</div>
-              <div className="text-xs text-[var(--ink-faint)] mt-0.5">{f.label}</div>
-            </div>
-          ))}
+        <div className="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm text-black/45">
+          <span>{test.duration}</span>
+          <span>{test.topics.length} 个知识点</span>
+          <span>{test.studyPlan.length} 个备考阶段</span>
         </div>
 
-        {/* Universities */}
-        <div className="mt-4 flex flex-wrap gap-2">
-          {test.universities.map((u) => (
-            <span key={u} className="text-xs bg-[var(--info-bg)] text-[var(--indigo)] rounded-full px-2.5 py-0.5">
-              {u}
-            </span>
-          ))}
-        </div>
-
-        {/* Programs */}
-        <div className="mt-2 flex flex-wrap gap-2">
-          {test.programs.map((p, i) => (
-            <span key={i} className="text-xs bg-[var(--surface-2)] text-[var(--ink-soft)] rounded-full px-2.5 py-0.5">
-              {p}
-              <span className="ml-1 text-[var(--ink-faint)]">· {test.programsEn[i]}</span>
-            </span>
-          ))}
-        </div>
-
-        {/* Status note */}
         {test.statusNote && (
-          <div className="mt-4 rounded-xl border border-[color:var(--warning)]/25 bg-[var(--warning-bg)] px-4 py-3 text-sm text-[var(--warning)] leading-relaxed">
+          <div className="mt-5 border-l-2 border-[var(--warning)] pl-3 text-sm leading-6 text-[var(--warning)]">
             {test.statusNote}
           </div>
         )}
-      </div>
+      </header>
 
       {test.hasQuestionBank ? (
-        <div className="mb-8 grid gap-3 sm:grid-cols-2">
+        <div className="mt-6 grid gap-3 sm:grid-cols-2">
           <Link
             href={`/tests/${test.id}/practice`}
-            className="flex min-h-16 items-center justify-between rounded-lg border border-[var(--border)] bg-white px-5 py-4 font-semibold text-[var(--ink)] transition hover:border-[color:var(--indigo)]/40 hover:bg-[var(--info-bg)]"
+            className="flex min-h-20 items-center justify-between rounded-2xl border border-black/15 bg-white/45 px-5 py-4 font-semibold text-[var(--ink)] transition hover:-translate-y-1 hover:border-black/30 hover:bg-white"
           >
-            <span className="flex items-center gap-3"><BookOpenCheck className="size-5 text-[var(--indigo)]" />专项练习</span>
-            <ArrowRight className="size-4 text-[var(--indigo)]" />
+            <span className="flex items-center gap-3"><BookOpenCheck className="size-5" />专项练习</span>
+            <ArrowRight className="size-4" />
           </Link>
           <Link
             href={`/tests/${test.id}/mock`}
-            className="flex min-h-16 items-center justify-between rounded-lg bg-[var(--indigo)] px-5 py-4 font-semibold text-white transition hover:opacity-90"
+            className="flex min-h-20 items-center justify-between rounded-2xl bg-[#101817] px-5 py-4 font-semibold text-white transition hover:-translate-y-1 hover:bg-black"
           >
             <span className="flex items-center gap-3"><Timer className="size-5" />完整模考</span>
             <ArrowRight className="size-4" />
           </Link>
         </div>
       ) : (
-        <a href={test.officialSampleUrl} target="_blank" rel="noopener noreferrer" className="mb-8 inline-flex items-center gap-2 rounded-lg border border-[var(--border)] px-4 py-3 text-sm font-semibold text-[var(--indigo)]">
+        <a href={test.officialSampleUrl} target="_blank" rel="noopener noreferrer" className="mt-6 inline-flex items-center gap-2 rounded-2xl border border-black/15 bg-white/45 px-5 py-4 text-sm font-semibold text-[#101817]">
           查看官方练习材料 <ArrowRight className="size-4" />
         </a>
       )}
 
-      {/* Tabs */}
-      <div className="flex gap-1 border-b border-[var(--border)] mb-6 overflow-x-auto">
-        {tabs.map((t) => (
+      <nav aria-label="考试信息" className="mt-10 grid gap-3 sm:grid-cols-2">
+        {MODULES.map((module, index) => {
+          const Icon = module.icon;
+          return (
           <Link
-            key={t.id}
-            href={`/tests/${test.id}?tab=${t.id}`}
-            aria-current={tab === t.id ? "page" : undefined}
-            className={`px-4 py-2.5 text-sm font-medium border-b-2 transition whitespace-nowrap ${
-              tab === t.id
-                ? "border-[var(--indigo)] text-[var(--indigo)]"
-                : "border-transparent text-[var(--ink-soft)] hover:text-[var(--ink)]"
-            }`}
+            key={module.id}
+            href={`/tests/${test.id}?tab=${module.id}`}
+            className="group flex min-h-36 flex-col rounded-2xl border border-black/15 bg-white/35 p-5 transition hover:-translate-y-1 hover:border-black/30 hover:bg-white/75 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#101817]"
           >
-            {t.label}
-            <span className="ml-1 text-xs opacity-60">{t.labelEn}</span>
+            <div className="flex items-start justify-between gap-4">
+              <span className="text-xs font-semibold tracking-[0.16em] text-black/30">{String(index + 1).padStart(2, "0")}</span>
+              <ArrowRight className="size-4 text-black/35 transition-transform group-hover:translate-x-1" aria-hidden="true" />
+            </div>
+            <div className="mt-auto flex items-end gap-3 pt-7">
+              <Icon className="size-5 stroke-[1.5] text-black/45" aria-hidden="true" />
+              <div>
+                <h2 className="font-semibold text-[#101817]">{module.label}</h2>
+                <p className="mt-1 text-xs text-black/40">{module.description}</p>
+              </div>
+            </div>
           </Link>
-        ))}
-      </div>
-
-      {/* Tab content */}
-      {tab === "overview" && <OverviewTab test={test} />}
-      {tab === "topics" && <TopicsTab test={test} />}
-      {tab === "history" && <HistoryTab test={test} />}
-      {tab === "analysis" && <AnalysisTab test={test} />}
+          );
+        })}
+      </nav>
     </div>
   );
 }

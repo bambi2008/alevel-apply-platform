@@ -1,3 +1,80 @@
+# Design QA — Native 100% Browser Density
+
+- Source visual truth: the student's direct comparison that the current site is most comfortable at 75% browser zoom; this is a density target rather than a screenshot reconstruction.
+- Browser-rendered implementation: current-run in-app Browser captures from `http://127.0.0.1:3100/zh-CN`, `/zh-CN/tests`, and `/zh-CN/tests/esat`.
+- Viewport/state: 1280×720 desktop and 390×844 mobile, Chinese signed-out state.
+- Implementation choice: replace the exceptional 19 px root with the browser-standard 16 px root. CSS `zoom`, transforms and a 14 px root were rejected because they would distort responsive breakpoints, reduce mobile legibility and interfere with browser accessibility zoom.
+
+## Comparison Evidence
+
+At 100% browser zoom, the desktop exam catalogue now has 88.5 px side margins and fits three 354.7×210 px cards across its first row. The simplified ESAT screen uses a 992 px content span rather than filling the viewport edge to edge. The Waterlight Hero remains exactly one 720 px viewport high, and its upper-left `桥申` wordmark plus reflection remains 94.2×51.2 px. At 390×844 the catalogue stays single-column at 335 px wide, keeps touch-sized cards and has no document-level horizontal overflow.
+
+## Findings
+
+- No actionable P0, P1 or P2 density regression remains.
+- The result intentionally moves toward the perceived 75%-zoom comfort level without forcing an exact 75% scale. Standard 16 px body sizing protects reading comfort and user-controlled browser zoom.
+
+## Verification
+
+- `pnpm typecheck`: passed.
+- Full regression: 59 Vitest files / 342 tests passed.
+- Browser checks: desktop catalogue, compact exam detail, Waterlight Hero and 390×844 mobile catalogue passed; no horizontal overflow.
+
+final result: passed
+
+---
+
+# Design QA — Low-Text Exam Navigation And Water Reflection
+
+- Source visual truth: `C:/Users/ss/AppData/Local/Temp/codex-clipboard-35e391f5-0ba3-49f5-a4b8-55c9bf0f257b.png` (2792×1384), `C:/Users/ss/AppData/Local/Temp/codex-clipboard-edc03952-61c0-4540-a8da-80bba46e9edb.png` (2354×1316), and `C:/Users/ss/AppData/Local/Temp/codex-clipboard-21944f7b-1f8d-4511-9d71-ae6cec7d7fee.png` (1984×1266).
+- Browser-rendered implementation: current-run in-app Browser captures from `http://127.0.0.1:3100/zh-CN`, `/zh-CN/tests`, `/zh-CN/tests/esat`, and `/zh-CN/tests/esat?tab=overview`. The browser emitted captures inline in this QA turn but does not expose persistent screenshot paths.
+- Comparison input: the three source screenshots and the current-run desktop/mobile implementation captures were opened together in the active visual context. The sources are annotated before-states, so the comparison checks the requested deletion, hierarchy and interaction outcome rather than reproducing their red markup.
+- Viewport/state: default in-app desktop viewport (1265×720 visible capture) and explicit 390×844 mobile viewport; Chinese signed-out state.
+- Density normalization: source captures are approximately 2× desktop density. Implementation captures are DPR 1. Geometry is evaluated at CSS scale; no pixel-identical red-annotation placement is claimed.
+
+## Full-View Comparison Evidence
+
+The homepage keeps the accepted upper-left wordmark position and Waterlight surface, adding a visibly mirrored, vertically faded reflection directly below the single semantic heading. The tests landing page removes the long overview/program column highlighted in the source and replaces each exam with a quiet bordered card containing only its name, duration, topic count, purpose and entry affordance. The ESAT detail base no longer opens with the long structure content highlighted in the source: it now ends its first information layer with two training actions and four compact module cards. Opening `考试结构` changes the URL to `?tab=overview`, presents a dedicated module heading and return path, and only then renders the preserved detailed content.
+
+At 390×844, the Waterlight surface and reflection remain legible, the exam catalogue becomes a single card column, and the four detail modules become four touch-sized cards without document-level horizontal overflow. The category filter intentionally remains an internal horizontal scroller.
+
+## Focused-Region Comparison Evidence
+
+Focused checks covered the mirrored wordmark against both the initial dark frame and the fully rendered water texture; the first desktop and mobile exam cards; the complete 2×2 desktop / one-column mobile module card set; and the selected `考试结构` state with its `返回 ESAT` path. A real keyboard activation of the first module reached `?tab=overview`, confirming that the card is not static decoration.
+
+## Required Fidelity Surfaces
+
+- Fonts and typography: the existing compact display hierarchy is retained. The catalogue removes paragraph-scale copy and elevates exam abbreviations; module cards use one short title plus one short descriptor. No new font dependency is introduced.
+- Spacing and layout rhythm: desktop exam rows become three-column cards; mobile becomes one column. The exam detail separates primary practice actions from a four-card information layer, while the selected module receives its own ruled header and breathing room.
+- Colors and visual tokens: the accepted warm `#f4f4f0` / ink `#101817` system, black-opacity rules and white hover surfaces remain unchanged. The reflection uses the existing white wordmark with a masked opacity fade rather than a new color.
+- Image quality and asset fidelity: the original Waterlight shader, texture and interaction remain untouched. The reflection is browser-native mirroring of the real text, so it stays sharp at responsive sizes and adds no raster placeholder or extra asset.
+- Copy and content: long exam overviews, program lists and purpose explanations are removed only from the catalogue surface. Structure, topics, history and analysis content is preserved behind explicit module cards. The base detail screen keeps only information needed to choose the next action.
+- Icons and controls: existing Lucide controls are reused. Every catalogue card and module card is a native link with visible hover/focus treatment; module navigation remains keyboard accessible.
+
+## Findings
+
+- No actionable P0, P1 or P2 mismatch remains for the requested low-text hierarchy.
+- P3: unusually long duration strings wrap to two lines on narrow exam cards. The wrap is readable and preferable to truncating factual timing.
+- P3: selected information modules remain intentionally detailed. The text now appears only after a deliberate click; further compression would risk removing exam rules the student explicitly asked to view.
+
+## Interaction And Runtime Checks
+
+- Primary interactions: exam catalogue entry, four information cards, selected-module return path, practice and mock links are exposed as native links. Keyboard activation of `考试结构` passed.
+- Responsive checks: desktop and 390×844 mobile passed; no document-level horizontal overflow was observed.
+- Console check: 0 errors. The only warning is Next.js's existing development-only smooth-scroll advisory.
+- Static and regression verification: TypeScript, `git diff --check`, all 59 Vitest files / 342 tests, five local route/resource HTTP checks and an isolated Next.js 16 production build pass. The workspace still does not expose a runnable ESLint executable, so no lint pass is claimed.
+
+## Comparison History
+
+1. Initial P1 mismatch: the tests catalogue put long overview and program prose in the primary scan path, while the exam detail rendered the default structure article immediately below the action buttons.
+2. Fix: replaced catalogue rows with compact cards, turned the four detail modules into the next selectable layer, and added a dedicated selected-module state with an explicit return path.
+3. Initial P2 polish issue: the first duplicated-text reflection was too faint to read against the moving water.
+4. Fix: replaced it with a browser-native masked box reflection. Post-fix desktop and mobile captures show the reflection clearly against the rendered water while preserving one accessible heading.
+
+final result: passed
+
+---
+
 # Design QA — Core Experience Through Nested Route Levels
 
 - Source visual truth: `C:/Users/ss/AppData/Local/Temp/codex-clipboard-5b394952-a0de-44a3-ae0d-e20978a8ae99.png` (2802×1254), the accepted homepage four-core language; `C:/Users/ss/AppData/Local/Temp/codex-clipboard-092fb0e8-721d-4fc6-a5c5-145444b304e6.png` (2880×1462), the supplied nested-page before-state.

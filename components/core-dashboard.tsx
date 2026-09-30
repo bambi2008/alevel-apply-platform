@@ -22,7 +22,13 @@ export function CoreDashboard({ locale }: { locale: string }) {
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_46%,rgba(255,255,255,.08),transparent_48%)]" />
 
         <div className="pointer-events-none absolute left-6 top-6 z-10 sm:left-8 sm:top-8">
-          <h1 id="home-wordmark" className="select-none text-[clamp(2.25rem,4vw,4rem)] font-semibold leading-none tracking-[-0.08em] text-white/95 drop-shadow-[0_6px_28px_rgba(0,0,0,.28)]">
+          <h1
+            id="home-wordmark"
+            className="select-none text-[clamp(2.25rem,4vw,4rem)] font-semibold leading-none tracking-[-0.08em] text-white/95 drop-shadow-[0_6px_28px_rgba(0,0,0,.28)]"
+            style={{
+              WebkitBoxReflect: "below 0.2rem linear-gradient(to bottom, rgba(0,0,0,.42), transparent 78%)",
+            }}
+          >
             桥申
           </h1>
         </div>
