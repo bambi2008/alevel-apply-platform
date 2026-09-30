@@ -59,6 +59,46 @@ final result: passed
 
 ---
 
+# Design QA — Four-Core Supporting Copy Rhythm
+
+- Source visual truth: `C:/Users/ss/AppData/Local/Temp/codex-clipboard-5b394952-a0de-44a3-ae0d-e20978a8ae99.png` (2802×1254 source pixels), with the unwanted gap between the two small-copy lines annotated in red.
+- Browser-rendered implementation: in-app Browser capture from `http://127.0.0.1:3114/zh-CN`; this browser surface emitted the capture during review but does not expose a filesystem path.
+- Comparison input: the annotated source and the browser-rendered implementation were opened and inspected in the same design-QA turn.
+- Viewport/state: 1400×720 desktop, Chinese signed-out homepage, scrolled to `#core-centers`.
+
+## Full-View Comparison Evidence
+
+The four-card grid, thin rules, numbering, icons and directional controls remain unchanged. The two supporting lines in every card now read as one compact copy block rather than two visually disconnected paragraphs. Browser measurement on the first card reports a 4.75 px rendered gap from title to subtitle and another 4.75 px gap from subtitle to description; all four cards share the same component classes.
+
+## Focused-Region Evidence
+
+The source annotation isolates the first card's subtitle/description spacing, and the implementation capture keeps that area readable at the tested viewport. The prior 12 px description margin is replaced by the same 4 px spacing token used below the title; both supporting lines share the compact `leading-5` token.
+
+## Required Fidelity Surfaces
+
+- Fonts and typography: existing family, weights, sizes, tracking and color hierarchy are retained; only the two small-copy line heights are normalized to `leading-5`.
+- Spacing and layout rhythm: the description margin changes from `mt-3` to `mt-1`, removing the annotated excess gap and creating an even title/subtitle/description rhythm.
+- Colors and visual tokens: no color, border, surface or opacity token changes.
+- Image quality and asset fidelity: no image assets are involved; the existing icon-library glyphs remain unchanged.
+- Copy and content: all four titles, subtitles and descriptions are preserved verbatim.
+
+## Interaction And Runtime Checks
+
+- All four localized destination links remain present.
+- Browser console warnings/errors: 0.
+- `pnpm typecheck` passes.
+- Full regression passes: 59 Vitest files / 342 tests.
+
+## Comparison History
+
+1. Initial P2 mismatch: `mt-3` separated the description from its subtitle enough to make the two small lines read as unrelated blocks.
+2. Fix: normalized both small lines to `leading-5` and reduced the description margin to `mt-1`.
+3. Post-fix evidence: the browser capture and measured 4.75 px rendered gap show a compact, consistent copy block across all four cards, with no console warning or error.
+
+final result: passed
+
+---
+
 # Design QA — Compact Upper-Left Waterlight Wordmark
 
 - Source visual truth: `C:/Users/ss/AppData/Local/Temp/codex-clipboard-81168b05-ec5c-472c-b78d-e99e4b82c9b8.png` (2806×1454 source pixels), with the requested upper-left placement annotated in red.

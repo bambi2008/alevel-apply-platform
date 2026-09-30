@@ -65,8 +65,8 @@ export function CoreDashboard({ locale }: { locale: string }) {
                     <Icon className="mt-1 size-6 stroke-[1.5] text-black/55" aria-hidden="true" />
                     <div>
                       <h3 className="text-xl font-semibold tracking-[-0.025em]">{center.title}</h3>
-                      <p className="mt-1 text-sm font-medium text-black/55">{center.subtitle}</p>
-                      <p className="mt-3 max-w-sm text-sm leading-6 text-black/55">{center.description}</p>
+                      <p className="mt-1 text-sm font-medium leading-5 text-black/55">{center.subtitle}</p>
+                      <p className="mt-1 max-w-sm text-sm leading-5 text-black/55">{center.description}</p>
                     </div>
                   </div>
                 </Link>
