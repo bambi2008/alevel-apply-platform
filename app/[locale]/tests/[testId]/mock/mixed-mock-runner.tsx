@@ -262,6 +262,13 @@ export default function MixedMockRunner({ testId }: { testId: string }) {
   const [savedAttempt, setSavedAttempt] = useState<ExamAttemptSnapshot<MixedAttemptPayload> | null>(null);
   const { online } = useExamReliability(examState === "running" || examState === "grading");
 
+  const enterRunningExam = () => {
+    setExamState("running");
+    window.requestAnimationFrame(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: "auto" });
+    });
+  };
+
   useEffect(() => {
     const saved = parseExamAttempt(
       window.localStorage.getItem(storageKey),
@@ -298,7 +305,7 @@ export default function MixedMockRunner({ testId }: { testId: string }) {
     telemetryRef.current = createQuestionTelemetry();
     window.localStorage.removeItem(storageKey);
     setSavedAttempt(null);
-    setExamState("running");
+    enterRunningExam();
   };
 
   const resumeExam = () => {
@@ -323,7 +330,7 @@ export default function MixedMockRunner({ testId }: { testId: string }) {
     deadlineAtRef.current = savedAttempt.deadlineAt;
     setStartedAtValue(savedAttempt.startedAt);
     telemetryRef.current = createQuestionTelemetry();
-    setExamState("running");
+    enterRunningExam();
   };
 
   const discardSavedExam = () => {
@@ -561,17 +568,17 @@ export default function MixedMockRunner({ testId }: { testId: string }) {
     <div className="min-h-screen flex flex-col">
       <ExamReliabilityStatus online={online} />
       {/* Top bar */}
-      <div className={`sticky top-16 z-20 border-b px-4 py-2 flex items-center gap-4 ${isUrgent ? "bg-[var(--danger-bg)] border-[color:var(--danger)]/25" : "bg-white border-[var(--border)]"}`}>
-        <span className="font-bold text-sm text-[var(--ink-soft)]">{test.abbr} 模拟考试</span>
+      <div className={`sticky top-16 z-20 border-b px-4 py-3 sm:px-6 flex items-center gap-4 sm:gap-5 ${isUrgent ? "bg-[var(--danger-bg)] border-[color:var(--danger)]/25" : "bg-white border-[var(--border)]"}`}>
+        <span className="font-bold text-sm sm:text-base text-[var(--ink-soft)]">{test.abbr} 模拟考试</span>
         <div className="flex-1" />
-        <span className="text-xs text-[var(--ink-faint)]">{answeredCount}/{queue.length} 已作答</span>
-        <span className={`font-mono font-bold text-lg tabular-nums ${isUrgent ? "text-[var(--danger)]" : "text-[var(--ink)]"}`}>
+        <span className="text-sm text-[var(--ink-faint)]">{answeredCount}/{queue.length} 已作答</span>
+        <span className={`font-mono font-bold text-xl sm:text-2xl tabular-nums ${isUrgent ? "text-[var(--danger)]" : "text-[var(--ink)]"}`}>
           {formatTime(timeLeft)}
         </span>
         <button
           type="button"
           onClick={handleSubmitAll}
-          className="px-3 py-1.5 rounded-lg bg-[var(--indigo)] text-white text-xs font-medium hover:bg-[var(--indigo-hover)]"
+          className="min-h-11 px-4 py-2 rounded-lg bg-[var(--indigo)] text-white text-sm font-medium hover:bg-[var(--indigo-hover)]"
         >
           交卷
         </button>
@@ -579,7 +586,7 @@ export default function MixedMockRunner({ testId }: { testId: string }) {
 
       <div className="flex flex-1 min-h-0">
         {/* Question nav sidebar */}
-        <div className="hidden md:flex flex-col gap-1 p-4 border-r border-[var(--border-soft)] w-16 bg-[var(--surface)]">
+        <div className="hidden md:flex flex-col gap-2 overflow-y-auto p-4 border-r border-[var(--border-soft)] w-20 bg-[var(--surface)]">
           {queue.map((q, i) => {
             const ans = answers.find((a) => a.questionId === q.id);
             const done =
@@ -590,7 +597,7 @@ export default function MixedMockRunner({ testId }: { testId: string }) {
                 key={q.id}
                 type="button"
                 onClick={() => setCurrentIdx(i)}
-                className={`w-8 h-8 rounded text-xs font-medium mx-auto transition ${
+                className={`w-10 h-10 rounded text-sm font-medium mx-auto shrink-0 transition ${
                   i === currentIdx
                     ? "bg-[var(--indigo)] text-white"
                     : done
@@ -605,8 +612,8 @@ export default function MixedMockRunner({ testId }: { testId: string }) {
         </div>
 
         {/* Main question area */}
-        <div className="flex-1 overflow-y-auto px-4 py-8">
-          <div className="mx-auto max-w-3xl">
+        <div className="flex-1 overflow-y-auto px-5 py-8 sm:px-8 sm:py-10">
+          <div className="mx-auto max-w-5xl">
             {currentQ && (
               <>
                 {currentQ.type === "mcq" ? (
@@ -625,12 +632,12 @@ export default function MixedMockRunner({ testId }: { testId: string }) {
                   />
                 )}
 
-                <div className="flex justify-between mt-8">
+                <div className="flex justify-between gap-4 mt-10">
                   <button
                     type="button"
                     disabled={currentIdx === 0}
                     onClick={() => setCurrentIdx((i) => i - 1)}
-                    className="px-4 py-2 rounded-lg border border-[var(--border)] text-sm text-[var(--ink-soft)] hover:bg-[var(--surface)] disabled:opacity-40"
+                    className="min-h-12 px-5 py-3 rounded-lg border border-[var(--border)] text-base text-[var(--ink-soft)] hover:bg-[var(--surface)] disabled:opacity-40"
                   >
                     ← 上一题
                   </button>
@@ -638,7 +645,7 @@ export default function MixedMockRunner({ testId }: { testId: string }) {
                     <button
                       type="button"
                       onClick={() => setCurrentIdx((i) => i + 1)}
-                      className="px-4 py-2 rounded-lg bg-neutral-800 text-white text-sm hover:bg-neutral-700"
+                      className="min-h-12 px-5 py-3 rounded-lg bg-neutral-800 text-white text-base hover:bg-neutral-700"
                     >
                       下一题 →
                     </button>
@@ -646,7 +653,7 @@ export default function MixedMockRunner({ testId }: { testId: string }) {
                     <button
                       type="button"
                       onClick={handleSubmitAll}
-                      className="px-4 py-2 rounded-lg bg-[var(--indigo)] text-white text-sm font-medium hover:bg-[var(--indigo-hover)]"
+                      className="min-h-12 px-5 py-3 rounded-lg bg-[var(--indigo)] text-white text-base font-medium hover:bg-[var(--indigo-hover)]"
                     >
                       完成作答，交卷 →
                     </button>
@@ -683,17 +690,17 @@ function MockBriefing({
   if (!test) return null;
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-10">
-      <Link href={`/tests/${test.id}`} className="text-sm text-[var(--ink-soft)] hover:text-[var(--ink)] mb-6 inline-block">
+    <div className="mx-auto max-w-3xl px-5 py-12 sm:px-8">
+      <Link href={`/tests/${test.id}`} className="text-base text-[var(--ink-soft)] hover:text-[var(--ink)] mb-8 inline-block">
         ← {test.abbr} 备考详情
       </Link>
-      <h1 className="text-2xl font-bold mt-4 mb-1">{test.abbr} 计时模拟考试</h1>
-      <p className="text-[var(--ink-soft)] text-sm mb-8">模拟真实考试环境，完成后 AI 逐题评分</p>
+      <h1 className="text-3xl sm:text-4xl font-bold mt-4 mb-2">{test.abbr} 计时模拟考试</h1>
+      <p className="text-[var(--ink-soft)] text-base sm:text-lg mb-10">模拟真实考试环境，完成后 AI 逐题评分</p>
 
       {savedAttempt && (
         <div className="mb-6 border border-[var(--border)] bg-[var(--surface)] p-4">
-          <p className="font-medium text-sm text-[var(--ink)]">检测到未完成的模拟考试</p>
-          <p className="mt-1 text-xs text-[var(--ink-soft)]">
+          <p className="font-medium text-base text-[var(--ink)]">检测到未完成的模拟考试</p>
+          <p className="mt-1 text-sm text-[var(--ink-soft)]">
             已保存 {savedAttempt.payload.answers.filter((answer) =>
               answer.type === "mcq"
                 ? answer.selected !== null
@@ -704,14 +711,14 @@ function MockBriefing({
             <button
               type="button"
               onClick={onResume}
-              className="px-3 py-2 bg-[var(--indigo)] text-white text-xs font-medium"
+              className="px-4 py-2.5 bg-[var(--indigo)] text-white text-sm font-medium"
             >
               继续考试
             </button>
             <button
               type="button"
               onClick={onDiscardSaved}
-              className="px-3 py-2 border border-[var(--border)] text-xs text-[var(--ink-soft)]"
+              className="px-4 py-2.5 border border-[var(--border)] text-sm text-[var(--ink-soft)]"
             >
               放弃旧进度
             </button>
@@ -728,7 +735,7 @@ function MockBriefing({
               role="tab"
               aria-selected={preset.id === selectedPreset.id}
               onClick={() => onPresetChange(preset.id)}
-              className={`px-3 py-2 text-sm font-medium rounded-md transition ${
+              className={`px-4 py-3 text-base font-medium rounded-md transition ${
                 preset.id === selectedPreset.id
                   ? "bg-white text-[var(--ink)] shadow-sm"
                   : "text-[var(--ink-soft)] hover:text-[var(--ink)]"
@@ -740,29 +747,29 @@ function MockBriefing({
         </div>
       )}
 
-      <div className="rounded-2xl border border-[var(--border)] p-6 space-y-4 mb-8">
-        <p className="text-sm text-[var(--ink-soft)] leading-relaxed">{selectedPreset.description}</p>
-        <div className="flex justify-between text-sm">
+      <div className="rounded-2xl border border-[var(--border)] p-6 sm:p-8 space-y-5 mb-8">
+        <p className="text-base text-[var(--ink-soft)] leading-relaxed">{selectedPreset.description}</p>
+        <div className="flex justify-between gap-6 text-base">
           <span className="text-[var(--ink-soft)]">考试时长</span>
           <span className="font-medium">{Math.round(selectedPreset.durationSec / 60)} 分钟</span>
         </div>
-        <div className="flex justify-between text-sm">
+        <div className="flex justify-between gap-6 text-base">
           <span className="text-[var(--ink-soft)]">选择题数量</span>
           <span className="font-medium">{selectedPreset.mcqCount} 题</span>
         </div>
-        <div className="flex justify-between text-sm">
+        <div className="flex justify-between gap-6 text-base">
           <span className="text-[var(--ink-soft)]">大题数量</span>
           <span className="font-medium">{selectedPreset.longCount} 题{selectedPreset.longCount > 0 ? "（AI 分步评分）" : ""}</span>
         </div>
-        <div className="flex justify-between text-sm">
+        <div className="flex justify-between gap-6 text-base">
           <span className="text-[var(--ink-soft)]">考试模式</span>
           <span className="font-medium">计时、交卷后显示答案</span>
         </div>
       </div>
 
-      <div className="rounded-xl bg-[var(--warning-bg)] border border-[color:var(--warning)]/25 p-4 text-sm text-[var(--warning)] mb-6 space-y-1">
+      <div className="rounded-xl bg-[var(--warning-bg)] border border-[color:var(--warning)]/25 p-5 text-base text-[var(--warning)] mb-6 space-y-2">
         <p className="font-medium">开始前请注意</p>
-        <ul className="list-disc ml-4 text-xs space-y-0.5">
+        <ul className="list-disc ml-5 text-sm leading-6 space-y-0.5">
           <li>考试期间计时不会暂停</li>
           <li>可随时跳题，通过左侧导航栏切换</li>
             <li>非作文大题支持手写后拍照上传，并可补充少量文字</li>
@@ -774,7 +781,7 @@ function MockBriefing({
       <button
         type="button"
         onClick={onStart}
-        className="w-full py-3 rounded-xl bg-[var(--indigo)] text-white font-medium text-sm hover:bg-[var(--indigo-hover)] transition"
+        className="w-full min-h-14 py-4 rounded-xl bg-[var(--indigo)] text-white font-medium text-base hover:bg-[var(--indigo-hover)] transition"
       >
         开始计时考试 →
       </button>
@@ -793,7 +800,7 @@ function MockMCQ({
 }) {
   return (
     <div className="space-y-5">
-      <div className="flex items-center gap-2 text-xs text-[var(--ink-faint)] mb-2">
+      <div className="flex items-center gap-2 text-sm text-[var(--ink-faint)] mb-3">
         <span>选择题</span>
         <span>·</span>
         <span>{q.marks} 分</span>
@@ -806,7 +813,7 @@ function MockMCQ({
         </span>
       </div>
 
-      <MathRenderer text={q.question} className="text-[var(--ink)] leading-relaxed" block />
+      <MathRenderer text={q.question} className="text-lg sm:text-xl text-[var(--ink)] leading-relaxed" block />
 
       <div className="space-y-2">
         {q.options.map((opt) => (
@@ -814,14 +821,14 @@ function MockMCQ({
             key={opt.key}
             type="button"
             onClick={() => onSelect(opt.key)}
-            className={`w-full text-left rounded-xl border-2 px-4 py-3 transition flex items-start gap-3 ${
+            className={`w-full min-h-14 text-left rounded-xl border-2 px-5 py-4 transition flex items-start gap-4 ${
               selected === opt.key
                 ? "border-[var(--indigo)] bg-[var(--info-bg)]"
                 : "border-[var(--border)] bg-white hover:bg-[var(--surface)]"
             }`}
           >
-            <span className="font-bold text-sm shrink-0 w-5">{opt.key}.</span>
-            <MathRenderer text={opt.text} className="flex-1" />
+            <span className="font-bold text-base sm:text-lg shrink-0 w-6">{opt.key}.</span>
+            <MathRenderer text={opt.text} className="flex-1 text-base sm:text-lg" />
           </button>
         ))}
       </div>
@@ -844,15 +851,15 @@ function MockLong({
 }) {
   return (
     <div className="space-y-5">
-      <div className="flex items-center gap-2 text-xs text-[var(--ink-faint)] mb-2">
+      <div className="flex items-center gap-2 text-sm text-[var(--ink-faint)] mb-3">
         <span>大题</span>
         <span>·</span>
         <span>共 {q.totalMarks} 分</span>
       </div>
 
       {q.context && (
-        <div className="p-3 bg-[var(--surface)] rounded-lg border border-[var(--border)]">
-          <MathRenderer text={q.context} className="text-sm text-[var(--ink)]" block />
+        <div className="p-4 bg-[var(--surface)] rounded-lg border border-[var(--border)]">
+          <MathRenderer text={q.context} className="text-base text-[var(--ink)]" block />
         </div>
       )}
 
@@ -860,10 +867,10 @@ function MockLong({
         {q.parts.map((part) => (
           <div key={part.label} className="space-y-2">
             <div className="flex items-baseline gap-2">
-              <span className="font-semibold">{part.label}</span>
-              <span className="text-xs text-[var(--ink-faint)]">[{part.marks} 分]</span>
+              <span className="text-lg font-semibold">{part.label}</span>
+              <span className="text-sm text-[var(--ink-faint)]">[{part.marks} 分]</span>
             </div>
-            <MathRenderer text={part.question} className="text-sm text-[var(--ink)] leading-relaxed" block />
+            <MathRenderer text={part.question} className="text-base sm:text-lg text-[var(--ink)] leading-relaxed" block />
             <HandwrittenAnswerInput
               value={works[part.label] ?? ""}
               onChange={(value) => onWork(part.label, value)}
