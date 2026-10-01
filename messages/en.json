@@ -32,6 +32,13 @@
   },
   "auth": {
     "loginTitle": "Sign in",
+    "loginLead": "Return to your training, mocks and application writing.",
+    "loginFormTitle": "Continue training",
+    "loginHint": "Sign in to return to your saved progress.",
+    "phoneTab": "Phone code",
+    "emailTab": "Email password",
+    "forgotPassword": "Forgot password?",
+    "loginPending": "Signing in…",
     "registerTitle": "Sign up",
     "email": "Email",
     "inviteCode": "One-time invite code",

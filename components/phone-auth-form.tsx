@@ -29,6 +29,7 @@ export function PhoneAuthForm() {
   }, [cooldown]);
 
   const validPhone = /^1[3-9]\d{9}$/.test(phone);
+  const fieldClass = "w-full border-0 border-b border-black/20 bg-transparent px-0 py-3 text-base text-[#101817] outline-none transition-colors placeholder:text-black/30 focus:border-[#101817]";
 
   const onGetCode = async () => {
     setReqError(null);
@@ -64,68 +65,76 @@ export function PhoneAuthForm() {
   };
 
   return (
-    <form action={formAction} className="space-y-3">
+    <form action={formAction} className="space-y-6">
       <input type="hidden" name="phone" value={phone} />
       <input type="hidden" name="code" value={code} />
 
-      <input
-        type="tel"
-        inputMode="numeric"
-        autoComplete="tel"
-        required
-        placeholder="手机号（中国大陆）"
-        value={phone}
-        onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 11))}
-        className="w-full rounded-md border border-neutral-300 px-3 py-2"
-      />
-
-      <div className="flex gap-2">
+      <label className="block text-xs font-semibold tracking-[0.12em] text-black/45">
+        手机号
         <input
-          type="text"
+          type="tel"
           inputMode="numeric"
+          autoComplete="tel"
           required
-          placeholder="6 位验证码"
-          value={code}
-          onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
-          className="flex-1 rounded-md border border-neutral-300 px-3 py-2"
+          placeholder="中国大陆手机号"
+          value={phone}
+          onChange={(e) => setPhone(e.target.value.replace(/\D/g, "").slice(0, 11))}
+          className={fieldClass}
         />
+      </label>
+
+      <label className="block text-xs font-semibold tracking-[0.12em] text-black/45">
+        验证码
+        <div className="flex items-end gap-3">
+          <input
+            type="text"
+            inputMode="numeric"
+            autoComplete="one-time-code"
+            required
+            placeholder="6 位验证码"
+            value={code}
+            onChange={(e) => setCode(e.target.value.replace(/\D/g, "").slice(0, 6))}
+            className={`${fieldClass} min-w-0 flex-1`}
+          />
         <button
           type="button"
           onClick={onGetCode}
           disabled={sending || cooldown > 0 || !validPhone}
-          className="whitespace-nowrap rounded-md border border-blue-600 text-blue-600 px-3 py-2 text-sm hover:bg-blue-50 disabled:opacity-40 disabled:cursor-not-allowed"
+          className="min-h-11 whitespace-nowrap border border-black/20 px-4 text-sm font-semibold text-[#101817] transition-colors hover:border-black/45 hover:bg-white/55 disabled:cursor-not-allowed disabled:opacity-40"
         >
           {cooldown > 0 ? `${cooldown}s` : sending ? "发送中…" : "获取验证码"}
         </button>
-      </div>
+        </div>
+      </label>
 
       {notice && (
-        <p className="text-sm text-green-700 bg-green-50 rounded px-3 py-2">
+        <p aria-live="polite" className="border-l-2 border-emerald-700 pl-3 text-sm text-emerald-800">
           {notice}
         </p>
       )}
-      {reqError && <p className="text-sm text-red-600">{reqError}</p>}
+      {reqError && <p role="alert" className="border-l-2 border-red-700 pl-3 text-sm text-red-800">{reqError}</p>}
       {state.error && (
-        <p className="text-sm text-red-600">验证码错误或已过期，请重新获取</p>
+        <p role="alert" className="border-l-2 border-red-700 pl-3 text-sm text-red-800">验证码错误或已过期，请重新获取</p>
       )}
 
-      <label className="flex items-start gap-2 text-xs leading-5 text-neutral-600">
-        <input name="privacyConsent" type="checkbox" required className="mt-1 accent-blue-600" />
-        <span>我已阅读并同意 <Link href="/privacy" className="text-blue-700 hover:underline">隐私政策</Link></span>
+      <label className="flex items-start gap-2 text-xs leading-5 text-black/55">
+        <input name="privacyConsent" type="checkbox" required className="mt-1 accent-[#101817]" />
+        <span>我已阅读并同意 <Link href="/privacy" className="font-semibold text-[#101817] underline underline-offset-4">隐私政策</Link></span>
       </label>
-      <label className="flex items-start gap-2 text-xs leading-5 text-neutral-600">
-        <input name="termsConsent" type="checkbox" required className="mt-1 accent-blue-600" />
-        <span>我已阅读并同意 <Link href="/terms" className="text-blue-700 hover:underline">用户条款</Link></span>
+      <label className="flex items-start gap-2 text-xs leading-5 text-black/55">
+        <input name="termsConsent" type="checkbox" required className="mt-1 accent-[#101817]" />
+        <span>我已阅读并同意 <Link href="/terms" className="font-semibold text-[#101817] underline underline-offset-4">用户条款</Link></span>
       </label>
 
       <button
         type="submit"
         disabled={pending || !validPhone || code.length !== 6}
-        className="w-full rounded-lg bg-blue-600 text-white py-2.5 font-medium hover:bg-blue-700 disabled:opacity-50"
+        className="flex min-h-12 w-full items-center justify-between bg-[#101817] px-5 text-sm font-semibold text-white transition-colors hover:bg-[#273331] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#101817] focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-40"
       >
-        {pending ? "登录中…" : "登录 / 注册"}
+        <span>{pending ? "登录中…" : "登录 / 注册"}</span>
+        <span aria-hidden="true">→</span>
       </button>
-      <p className="text-xs text-neutral-400">
+      <p className="text-xs text-black/40">
         未注册的手机号将自动创建账号。
       </p>
     </form>

@@ -32,6 +32,13 @@
   },
   "auth": {
     "loginTitle": "登录",
+    "loginLead": "回到你的训练、模考与申请表达。",
+    "loginFormTitle": "继续训练",
+    "loginHint": "登录后直接返回你的学习进度。",
+    "phoneTab": "手机验证码",
+    "emailTab": "邮箱密码",
+    "forgotPassword": "忘记密码？",
+    "loginPending": "正在登录…",
     "registerTitle": "注册",
     "email": "邮箱",
     "inviteCode": "一次性邀请码",
