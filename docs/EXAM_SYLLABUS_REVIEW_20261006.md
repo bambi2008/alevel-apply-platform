@@ -62,6 +62,8 @@ Final isolated optimized build and TypeScript checks pass with 28 generated stat
 
 ## Primary references
 
+Latest local follow-up (2026-10-06): all 68 regression files / 442 tests pass, including the real Prisma-config loader and patched dependency merger. The unchanged production dependency audit reports no known vulnerabilities after narrow Next 16.3.6, Sharp/PostCSS/KaTeX and transitive patches; Prisma stays 6.19.3, with no schema or migration change. Strict TypeScript, complete lint (zero errors / three existing warnings) and the isolated optimized Next 16.3.6 build pass. Fresh production-preview checks verify ESAT scope/briefing, P3's 184 written questions and 16 R3 papers, and mandatory training-only notices on all four limited products. Windows client regeneration is still blocked by an existing preview's locked DLL; clean Linux CI client generation and complete recovery/rollback/E2E gates remain mandatory before switching production. No security or question-audit check is waived.
+
 - [UAT official preparation and specifications](https://esat-tmua.ac.uk/prepare/)
 - [TMUA official past/specimen papers](https://esat-tmua.ac.uk/tmua-preparation-materials/)
 - [STEP 2026 specification](https://www.ocr.org.uk/Images/696329-step-specification-2026.pdf)
