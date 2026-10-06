@@ -1,7 +1,13 @@
-// @ts-nocheck -- This is the original Purrl Waterlight shader study, isolated in an iframe route.
+// Original Purrl Waterlight shader study, loaded only in the client-side iframe route.
 import * as THREE from 'three'
 
-const stage = document.querySelector('#water-stage')
+function requiredElement<T extends HTMLElement>(selector: string): T {
+  const element = document.querySelector<T>(selector)
+  if (!element) throw new Error('Waterlight is missing its required element: ' + selector)
+  return element
+}
+
+const stage = requiredElement<HTMLDivElement>('#water-stage')
 const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' })
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.65))
 renderer.setSize(window.innerWidth, window.innerHeight)
@@ -49,7 +55,6 @@ const SIMULATION_SUBSTEPS = 4
 const INTERACTION_PATCH_SIZE = 7.4
 const WATER_WIDTH = 120
 const WATER_LENGTH = 160
-const WATER_NEAR_Z = 15
 
 function createSimulationTarget() {
   return new THREE.WebGLRenderTarget(SIMULATION_SIZE, SIMULATION_SIZE, {
@@ -708,15 +713,35 @@ waterLips.frustumCulled = false
 waterLips.renderOrder = 2
 scene.add(waterLips)
 
-const waterLipSamples = []
+type WaterLipSample = {
+  position: THREE.Vector3
+  forward: THREE.Vector3
+  age: number
+  lifetime: number
+  width: number
+  lift: number
+  lateralOffset: number
+  leftWidth: number
+  rightWidth: number
+  leftLift: number
+  rightLift: number
+  collapseBias: number
+  drift: THREE.Vector3
+  landed: boolean
+  impactStrength: number
+  landingRadius: number
+  seed: number
+}
+
+const waterLipSamples: WaterLipSample[] = []
 let waterLipPhase = 0
 
-function waterLipRandom(seed, salt = 0) {
+function waterLipRandom(seed: number, salt = 0) {
   const value = Math.sin(seed * 12.9898 + salt * 78.233) * 43758.5453
   return value - Math.floor(value)
 }
 
-function emitWaterLip(hit, direction, shear, pressure, physicalRadius) {
+function emitWaterLip(hit: THREE.Vector3, direction: THREE.Vector2, shear: number, pressure: number, physicalRadius: number) {
   if (shear < .24 || direction.lengthSq() < .000001) return
   const activity = THREE.MathUtils.clamp(shear, 0, 1)
   const forward = new THREE.Vector3(direction.x, 0, -direction.y).normalize()
@@ -754,7 +779,7 @@ function emitWaterLip(hit, direction, shear, pressure, physicalRadius) {
   }
 }
 
-function writeWaterLipVertex(vertexIndex, point, life, profile, along, seed) {
+function writeWaterLipVertex(vertexIndex: number, point: THREE.Vector3, life: number, profile: number, along: number, seed: number) {
   const offset = vertexIndex * 3
   waterLipPositions[offset] = point.x
   waterLipPositions[offset + 1] = point.y
@@ -765,7 +790,7 @@ function writeWaterLipVertex(vertexIndex, point, life, profile, along, seed) {
   waterLipSeeds[vertexIndex] = seed
 }
 
-function updateWaterLips(deltaSeconds) {
+function updateWaterLips(deltaSeconds: number) {
   for (const sample of waterLipSamples) {
     sample.age += deltaSeconds
     sample.position.addScaledVector(sample.drift, deltaSeconds)
@@ -795,7 +820,7 @@ function updateWaterLips(deltaSeconds) {
   while (waterLipSamples.length && waterLipSamples[0].age >= waterLipSamples[0].lifetime) waterLipSamples.shift()
 
   let vertexIndex = 0
-  const crossSection = (sample, sideSign, trailEnvelope) => {
+  const crossSection = (sample: WaterLipSample, sideSign: number, trailEnvelope: number) => {
     const progress = THREE.MathUtils.clamp(sample.age / sample.lifetime, 0, 1)
     const life = 1 - progress
     const rise = Math.pow(Math.sin(progress * Math.PI), .72)
@@ -815,7 +840,7 @@ function updateWaterLips(deltaSeconds) {
     outer.y = .005 + lift * .16
     return { inner, crest, outer, life }
   }
-  const writeQuad = (a0, a1, b0, b1, lifeA, lifeB, profile0, profile1, alongA, alongB, seed) => {
+  const writeQuad = (a0: THREE.Vector3, a1: THREE.Vector3, b0: THREE.Vector3, b1: THREE.Vector3, lifeA: number, lifeB: number, profile0: number, profile1: number, alongA: number, alongB: number, seed: number) => {
     const vertices = [a0, b0, a1, a1, b0, b1]
     const lives = [lifeA, lifeA, lifeB, lifeB, lifeA, lifeB]
     const profiles = [profile0, profile1, profile0, profile0, profile1, profile1]
@@ -881,7 +906,7 @@ function updateWaterLips(deltaSeconds) {
 let nextSprayParticle = 0
 let lastSprayEmissionTime = 0
 
-function emitSpray(hit, direction, spray, force, physicalRadius) {
+function emitSpray(hit: THREE.Vector3, direction: THREE.Vector2, spray: number, force: number, physicalRadius: number) {
   const now = performance.now()
   if (spray < .34 || now - lastSprayEmissionTime < 34) return
   lastSprayEmissionTime = now
@@ -917,7 +942,7 @@ function emitSpray(hit, direction, spray, force, physicalRadius) {
   sprayGeometry.attributes.aSize.needsUpdate = true
 }
 
-function updateSpray(deltaSeconds) {
+function updateSpray(deltaSeconds: number) {
   let changed = false
   for (let index = 0; index < SPRAY_PARTICLE_COUNT; index += 1) {
     const particle = sprayParticles[index]
@@ -951,19 +976,27 @@ function updateSpray(deltaSeconds) {
 const raycaster = new THREE.Raycaster()
 const pointerNdc = new THREE.Vector2()
 const clock = new THREE.Clock()
-const cursor = document.querySelector('.cursor-orbit')
+const cursor = requiredElement<HTMLDivElement>('.cursor-orbit')
 let pointerX = window.innerWidth * .5
 let pointerY = window.innerHeight * .5
 let moodTarget = 0
-let cameraTargetX = 0
-let cameraTargetY = 1.28
+const cameraTargetX = 0
+const cameraTargetY = 1.28
 let pointerIsDown = false
 let hasPointerSample = false
 let lastPointerTimestamp = performance.now()
 let lastPointerClientX = pointerX
 let lastPointerClientY = pointerY
 let lastPointerSpeed = 0
-const pendingImpulses = []
+type WaterImpulse = {
+  previous: THREE.Vector2
+  pointer: THREE.Vector2
+  direction: THREE.Vector2
+  strength: number
+  spray: number
+  radius: number
+}
+const pendingImpulses: WaterImpulse[] = []
 let previousFrameTime = 0
 const lastWaterUv = new THREE.Vector2(.5, .5)
 const nextWaterUv = new THREE.Vector2(.5, .5)
@@ -971,14 +1004,14 @@ const pointerDirection = new THREE.Vector2(0, -1)
 const interactionCenter = uniforms.uInteractionCenter.value
 let interactionPatchInitialized = false
 
-function intersectWater(clientX, clientY) {
+function intersectWater(clientX: number, clientY: number) {
   pointerNdc.set(clientX / window.innerWidth * 2 - 1, -(clientY / window.innerHeight) * 2 + 1)
   raycaster.setFromCamera(pointerNdc, camera)
   const hit = raycaster.intersectObject(water, false)[0]
   return hit?.point ?? null
 }
 
-function interactionUvFromHit(hit, target) {
+function interactionUvFromHit(hit: THREE.Vector3, target: THREE.Vector2) {
   target.set(
     THREE.MathUtils.clamp((hit.x - interactionCenter.x) / INTERACTION_PATCH_SIZE + .5, 0, 1),
     THREE.MathUtils.clamp(.5 - (hit.z - interactionCenter.y) / INTERACTION_PATCH_SIZE, 0, 1),
@@ -986,7 +1019,7 @@ function interactionUvFromHit(hit, target) {
   return target
 }
 
-function resetInteractionPatch(hit) {
+function resetInteractionPatch(hit: THREE.Vector3) {
   const preserveImpact = interactionPatchInitialized
   interactionCenter.set(hit.x, hit.z)
   interactionWater.position.set(hit.x, .004, hit.z)
@@ -1010,12 +1043,12 @@ function resetInteractionPatch(hit) {
   interactionPatchInitialized = true
 }
 
-function normalizedRange(value, minimum, maximum) {
+function normalizedRange(value: number, minimum: number, maximum: number) {
   const normalized = THREE.MathUtils.clamp((value - minimum) / (maximum - minimum), 0, 1)
   return normalized * normalized * (3 - 2 * normalized)
 }
 
-function setPointer(clientX, clientY) {
+function setPointer(clientX: number, clientY: number) {
   pointerX = clientX
   pointerY = clientY
   const hit = intersectWater(clientX, clientY)
@@ -1100,30 +1133,30 @@ const moods = [
   { name: 'copper afterglow', time: '07:11 pm', eyebrow: 'last warmth', title: 'Stay until amber', caption: 'The day leaves slowly across the surface.' },
 ]
 
-const moodButtons = [...document.querySelectorAll('[data-mood]')]
-const moodWheel = document.querySelector('.mood-wheel')
-const centerCopy = document.querySelector('.center-copy')
+const moodButtons = [...document.querySelectorAll<HTMLButtonElement>('[data-mood]')]
+const moodWheel = requiredElement<HTMLDivElement>('.mood-wheel')
+const centerCopy = requiredElement<HTMLDivElement>('.center-copy')
 
-function updateMoodWheel(index) {
+function updateMoodWheel(index: number) {
   moodButtons.forEach((button, buttonIndex) => {
     let slot = (buttonIndex - index + moods.length) % moods.length
     if (slot >= moods.length / 2) slot -= moods.length
-    button.style.setProperty('--slot', slot)
+    button.style.setProperty('--slot', String(slot))
     button.dataset.distance = String(Math.abs(slot))
     button.setAttribute('aria-selected', String(buttonIndex === index))
     button.tabIndex = buttonIndex === index ? 0 : -1
   })
 }
 
-function selectMood(index) {
+function selectMood(index: number) {
   const mood = moods[index]
   moodTarget = index
   updateMoodWheel(index)
-  document.querySelector('#light-name').textContent = mood.name
-  document.querySelector('#scene-clock').textContent = mood.time
-  document.querySelector('#scene-eyebrow').textContent = mood.eyebrow
-  document.querySelector('#scene-title').textContent = mood.title
-  document.querySelector('#scene-caption').textContent = mood.caption
+  requiredElement<HTMLSpanElement>('#light-name').textContent = mood.name
+  requiredElement<HTMLSpanElement>('#scene-clock').textContent = mood.time
+  requiredElement<HTMLSpanElement>('#scene-eyebrow').textContent = mood.eyebrow
+  requiredElement<HTMLSpanElement>('#scene-title').textContent = mood.title
+  requiredElement<HTMLSpanElement>('#scene-caption').textContent = mood.caption
   centerCopy.classList.remove('is-changing')
   void centerCopy.offsetWidth
   centerCopy.classList.add('is-changing')
@@ -1149,17 +1182,17 @@ window.addEventListener('keydown', (event) => {
   if (index >= 0 && index < moods.length) selectMood(index)
 })
 
-const soundtrack = document.querySelector('#soundtrack')
-const soundToggle = document.querySelector('.sound-toggle')
-const soundLabel = document.querySelector('.sound-label')
+const soundtrack = requiredElement<HTMLAudioElement>('#soundtrack')
+const soundToggle = requiredElement<HTMLButtonElement>('.sound-toggle')
+const soundLabel = requiredElement<HTMLSpanElement>('.sound-label')
 soundtrack.volume = .58
 
-let audioContext = null
-let waterFilter = null
-let waterPanner = null
-let waterDirectGain = null
-let waterDelay = null
-let waterWetGain = null
+let audioContext: AudioContext | null = null
+let waterFilter: BiquadFilterNode | null = null
+let waterPanner: StereoPannerNode | null = null
+let waterDirectGain: GainNode | null = null
+let waterDelay: DelayNode | null = null
+let waterWetGain: GainNode | null = null
 let waterAudioEnergy = 0
 let waterAudioEnergyTarget = 0
 let waterAudioBurst = 0
@@ -1167,9 +1200,9 @@ let waterAudioBurstTarget = 0
 let waterAudioPan = 0
 let waterAudioPanTarget = 0
 
-function setupReactiveAudio() {
+function setupReactiveAudio(): AudioContext | null {
   if (audioContext) return audioContext
-  const AudioContextClass = window.AudioContext || window.webkitAudioContext
+  const AudioContextClass = window.AudioContext || (window as Window & { webkitAudioContext?: typeof AudioContext }).webkitAudioContext
   if (!AudioContextClass) return null
   audioContext = new AudioContextClass()
   const source = audioContext.createMediaElementSource(soundtrack)
@@ -1207,7 +1240,7 @@ function setupReactiveAudio() {
   return audioContext
 }
 
-function exciteReactiveAudio(pressure, shear, burst, clientX) {
+function exciteReactiveAudio(pressure: number, shear: number, burst: number, clientX: number) {
   const energy = THREE.MathUtils.clamp(pressure * .26 + shear * .46 + burst * .42 - .15, 0, 1)
   waterAudioEnergyTarget = Math.max(waterAudioEnergyTarget, energy)
   waterAudioBurstTarget = Math.max(waterAudioBurstTarget, burst)
@@ -1215,14 +1248,14 @@ function exciteReactiveAudio(pressure, shear, burst, clientX) {
   soundToggle.dataset.lastWaterEnergy = energy.toFixed(3)
 }
 
-function updateReactiveAudio(deltaSeconds) {
+function updateReactiveAudio(deltaSeconds: number) {
   waterAudioEnergyTarget *= Math.pow(.075, deltaSeconds)
   waterAudioBurstTarget *= Math.pow(.025, deltaSeconds)
   const response = 1 - Math.pow(.0008, deltaSeconds)
   waterAudioEnergy += (waterAudioEnergyTarget - waterAudioEnergy) * response
   waterAudioBurst += (waterAudioBurstTarget - waterAudioBurst) * response
   waterAudioPan += (waterAudioPanTarget - waterAudioPan) * (1 - Math.pow(.018, deltaSeconds))
-  if (!audioContext || !waterFilter) return
+  if (!audioContext || !waterFilter || !waterDirectGain || !waterWetGain || !waterDelay || !waterPanner) return
   const now = audioContext.currentTime
   const cutoff = 1250 + Math.pow(waterAudioEnergy, .68) * 4700
   waterFilter.frequency.setTargetAtTime(cutoff, now, .045)
