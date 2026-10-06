@@ -14,13 +14,14 @@ import { CAIE9709_QUESTIONS } from "./questions/caie9709";
 import type { Question } from "./questions/types";
 import { releasedPracticeBank } from "./syllabus-release";
 import { syllabusFingerprint } from "./syllabus-policy";
+import { P3_SYLLABUS_SUPPLEMENTS, ESAT_SYLLABUS_SUPPLEMENTS, BPHO_SYLLABUS_SUPPLEMENTS } from "./questions/syllabus-supplements";
 
 // Source inventory for the boundary review, not a claim that raw content passed.
 export const REVIEWED_PRACTICE_SOURCES:Record<string,Question[]> = {
-  mat:MAT_QUESTIONS,step:STEP_QUESTIONS,esat:ESAT_BOUNDARY_QUESTIONS,
+  mat:MAT_QUESTIONS,step:STEP_QUESTIONS,esat:[...ESAT_BOUNDARY_QUESTIONS,...ESAT_SYLLABUS_SUPPLEMENTS],
   tmua:TMUA_QUESTIONS,pat:PAT_QUESTIONS,lnat:LNAT_QUESTIONS,tara:TARA_QUESTIONS,
-  bpho:BPHO_QUESTIONS,bmo:BMO_QUESTIONS,ucat:UCAT_QUESTIONS,ielts:IELTS_QUESTIONS,
-  csat:CSAT_QUESTIONS,caie9709:CAIE9709_QUESTIONS,
+  bpho:[...BPHO_QUESTIONS,...BPHO_SYLLABUS_SUPPLEMENTS],bmo:BMO_QUESTIONS,ucat:UCAT_QUESTIONS,ielts:IELTS_QUESTIONS,
+  csat:CSAT_QUESTIONS,caie9709:[...CAIE9709_QUESTIONS,...P3_SYLLABUS_SUPPLEMENTS],
 };
 
 // Stable references avoid repeated hydration/session restore effects in the client.

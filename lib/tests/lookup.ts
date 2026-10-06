@@ -20,8 +20,12 @@ import { getHistoricalTestById } from "@/lib/tests";
 import { getAllMockQuestions } from "@/lib/tests/mock-papers";
 import { ESAT_BOUNDARY_QUESTIONS } from "./questions/esat-boundary";
 import { getReleasedPracticeQuestions } from "./practice-banks";
+import { P3_SYLLABUS_SUPPLEMENTS, ESAT_SYLLABUS_SUPPLEMENTS, BPHO_SYLLABUS_SUPPLEMENTS } from "./questions/syllabus-supplements";
 
 const PRACTICE_QUESTIONS: Question[] = [
+  ...P3_SYLLABUS_SUPPLEMENTS,
+  ...ESAT_SYLLABUS_SUPPLEMENTS,
+  ...BPHO_SYLLABUS_SUPPLEMENTS,
   ...MAT_QUESTIONS,
   ...STEP_QUESTIONS,
   ...ESAT_QUESTIONS,

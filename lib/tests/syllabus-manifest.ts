@@ -4,17 +4,17 @@
 export const PRACTICE_RELEASE_HASHES: Record<string, string> = {
   "mat": "c84354e4:b8d6f97c:123083",
   "step": "e8c745b3:dfa2c2e9:203912",
-  "esat": "cd009771:ed9bcfd1:66480",
+  "esat": "c28b296:f440dde4:69869",
   "tmua": "92dce693:89fd47f3:113818",
   "pat": "37c2309a:20c29b0a:118730",
   "lnat": "c76e53dc:ed02b430:40229",
   "tara": "3b706c32:636ef4d2:131908",
-  "bpho": "188d5892:c428689a:230129",
+  "bpho": "a394255c:b0d785d4:231565",
   "bmo": "f78abfa3:b585738d:267334",
   "ucat": "1edfdbd:f7d274b7:15898",
   "ielts": "586b620c:b283ac00:8694",
   "csat": "5f59afb9:f5ab47ef:16073",
-  "caie9709": "1648edbb:db383949:164957"
+  "caie9709": "cb20b823:34b2a823:173937"
 };
 export const PAPER_RELEASE_HASHES: Record<string, string> = {
   "mat-written-2": "d1d98e29:9c6a5355:5485",

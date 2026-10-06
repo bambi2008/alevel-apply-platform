@@ -24,7 +24,10 @@ describe("actual adaptive module boundary",()=>{
     expect(res.status).toBe(200);
     const selected=mocks.select.mock.calls[0][0].questions as {id:string}[];
     const prefixes:Record<string,string>={math1:"m1",math2:"m2",physics:"p",chemistry:"c",biology:"b"};
-    expect(selected).toHaveLength(27);
+    // This is the available practice inventory, not a fixed-paper module.
+    // Fixed-paper regressions separately retain exactly 27 questions/40 min.
+    const inventory:Record<string,number>={math1:29,math2:27,physics:28,chemistry:28,biology:28};
+    expect(selected).toHaveLength(inventory[module]);
     expect(selected.every(q=>q.id.startsWith("esat-boundary-"+prefixes[module]+"-"))).toBe(true);
   });
   it("rejects invalid/cross-exam module selection before reading student data",async()=>{

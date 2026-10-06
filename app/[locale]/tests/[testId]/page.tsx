@@ -12,7 +12,8 @@ import { getMockPapersForTest } from "@/lib/tests/mock-papers";
 import { ArrowRight, BookOpenCheck, ChartNoAxesColumnIncreasing, FileText, History, LayoutList, LibraryBig, Timer } from "lucide-react";
 import { AdaptiveLearningPanel } from "@/components/adaptive-learning-panel";
 import { ExamReadinessPanel } from "@/components/exam-readiness-panel";
-import { paperTrainingTitle } from "@/lib/tests/syllabus-release";
+import { paperTrainingTitle, examTrainingActionLabel } from "@/lib/tests/syllabus-release";
+import { ExamScopeNote } from "@/components/exam-scope-note";
 
 export default function TestDetailPage({
   params,
@@ -125,7 +126,7 @@ function TestDetailContent({ test }: { test: AdmissionsTest }) {
             href={`/tests/${test.id}/mock`}
             className="flex min-h-20 items-center justify-between rounded-2xl bg-[#101817] px-5 py-4 font-semibold text-white transition hover:-translate-y-1 hover:bg-black"
           >
-            <span className="flex items-center gap-3"><Timer className="size-5" />{["mat","pat","bpho","csat","ielts"].includes(test.id) ? "计时训练" : "选择训练卷"}</span>
+            <span className="flex items-center gap-3"><Timer className="size-5" />{examTrainingActionLabel(test.id)}</span>
             <ArrowRight className="size-4" />
           </Link>
         </div>
@@ -135,6 +136,7 @@ function TestDetailContent({ test }: { test: AdmissionsTest }) {
         </a>
       )}
 
+      <ExamScopeNote testId={test.id} />
       <nav aria-label="考试信息" className="mt-10 grid gap-3 sm:grid-cols-2">
         {MODULES.map((module, index) => {
           const Icon = module.icon;

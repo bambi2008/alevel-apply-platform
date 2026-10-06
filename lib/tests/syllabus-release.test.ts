@@ -30,11 +30,11 @@ describe("all-exam public syllabus gates",()=>{
     const esat=getMockPapersForTest("esat");
     expect(esat).toHaveLength(6);
     for(const p of esat) expect(p.modules.map(m=>[m.questions.length,m.durationSec])).toEqual([[27,2400],[27,2400],[27,2400]]);
-    expect(getReleasedPracticeQuestions("caie9709")).toHaveLength(176);
+    expect(getReleasedPracticeQuestions("caie9709")).toHaveLength(184);
     expect(getMockPapersForTest("caie9709")).toHaveLength(16);
   });
   it("does not re-display unverified current-format claims from historical descriptions",()=>{
-    for(const testId of ["mat","pat","bpho","csat","ielts"]) for(const p of getMockPapersForTest(testId)) {
+    for(const testId of ["mat","pat","esat","bpho","csat","ielts"]) for(const p of getMockPapersForTest(testId)) {
       const shown=paperPresentation(p);
       expect(shown.id).toBe(p.id);
       expect(shown.modules).toBe(p.modules);
@@ -45,8 +45,8 @@ describe("all-exam public syllabus gates",()=>{
   });
   it("keeps ESAT practice within one selected module, and STEP 2 free of STEP 3 methods",()=>{
     const bank=getReleasedPracticeQuestions("esat");
-    for(const examModule of ["math1","math2","physics","chemistry","biology"])
-      expect(bank.filter(q=>matchesExamModule(q,examModule))).toHaveLength(27);
+    for(const [examModule,count] of [["math1",29],["math2",27],["physics",28],["chemistry",28],["biology",28]] as const)
+      expect(bank.filter(q=>matchesExamModule(q,examModule))).toHaveLength(count);
     const m1=bank.filter(q=>matchesExamModule(q,"math1"));
     expect(m1.map(q=>q.type==="mcq"?q.question:"").join(" ")).not.toMatch(/differentiat|derivative|\\int/);
     const step2=getReleasedPracticeQuestions("step").filter(q=>matchesExamModule(q,"step2"));

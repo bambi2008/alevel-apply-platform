@@ -13,8 +13,8 @@ const CORE_ROUTES = [
 const ROUTE_LABELS: Record<string, string> = {
   learn: "知识学习",
   practice: "专项练习",
-  mock: "完整模考",
-  paper: "书面模考",
+  mock: "计时训练",
+  paper: "计时作答",
   review: "错题复测",
   history: "历史报告",
   projects: "在线课题",

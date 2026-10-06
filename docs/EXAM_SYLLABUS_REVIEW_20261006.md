@@ -20,18 +20,18 @@ All 13 supported exam IDs were inventoried. Current official requirements, histo
 | --- | ---: | ---: |
 | MAT | 207 | 7 |
 | STEP | 209 | 4 |
-| ESAT | 135 | 6 |
+| ESAT | 140 | 6 |
 | TMUA | 222 | 11 |
 | PAT | 244 | 8 |
 | LNAT | 34 | 8 |
 | TARA | 204 | 9 |
-| BPHO | 248 | 2 |
+| BPHO | 250 | 2 |
 | BMO | 329 | 3 |
 | UCAT | 32 | 5 |
 | IELTS | 10 | 4 |
 | CSAT | 16 | 2 |
-| CAIE9709 | 176 | 16 |
-| Total | 2066 | 85 |
+| CAIE9709 | 184 | 16 |
+| Total | 2081 | 85 |
 
 ESAT's six combinations reuse five module banks and the same questions in practice. They are not six unseen papers. Each combination begins with Mathematics 1 and two distinct course-dependent modules, with 27 questions and 40 minutes per module. Topic inventory coverage is not the same as complete official specification coverage.
 
@@ -50,9 +50,13 @@ The text classifier is conservative triage, not a proof that every method or ans
 
 Full regression after the final MAT spot review: 65 files / 423 tests passed, including eight actual adaptive-route cases. Focused tests check nonempty inventories for all exams, question ownership, all ESAT triples, module selection, STEP levels, P3 preservation, content mutations and history compatibility. Numerical spot checks and every ESAT formula's KaTeX rendering pass.
 
-The released-bank audit reports zero critical structural/semantic findings and 14 explicit coverage/difficulty warnings. ESAT retains a reuse warning and six hard-item calibration warnings; TMUA retains three difficulty/logic-template warnings. No difficulty labels were inflated to erase these warnings.
+The initial 14 warnings were eight missing difficulty bands, two topic-distribution skews and four unconditional limited-scope warnings. They were not fourteen identified out-of-syllabus questions; current TMUA had zero warnings. Fifteen original supplemental practice tasks now fill the real gaps: eight P3 written tasks, five selected-module ESAT items and two bounded school-physics BPhO items. Eight independent tests verify calculations, domains, iteration rounding, vector intersections, DE solutions, step marks, ownership and KaTeX. Existing fixed-paper content and difficulty labels remain unchanged; P3 still has 176 paper-linked questions across 16 fixed papers, plus eight separate practice tasks. The 44/88 candidate-error register is unchanged.
 
-Authenticated real-student saving and handwriting grading were not exercised. Source release f7db243 and its Waterlight CI follow-up 6d485f7 are committed and pushed to GitHub. The second Production check passes type/lint/tests/Compose checks but stops because all 14 scope/difficulty warnings are release blockers under the existing audit script. The remaining CI security/build/recovery/E2E checks are not claimed passed. Deployment requires resolution or explicitly limited acceptance of the reviewed warnings, completion of all remaining checks and account-holder Tencent Cloud login. Neither public deployment has changed; production is healthy on 3ed9afc and Beta on d644cda. Continuing release evidence is tracked in EXECUTION_PLAN.md.
+Distribution is compared within each separately selected ESAT module, using its unchanged factor-four threshold; a whole Mathematics 1 module is not compared against a finer physics subtopic. One thermal and one electrolysis task fill the actual thin science topics. BPhO's smallest topic grows from 31 to 33, bringing its 99/33 ratio to the unchanged factor-three threshold. Negative tests retain blocking skew cases.
+
+The four scope limits cannot honestly be eliminated by inventing complete official coverage. Their product is instead restricted to training-only mode: explicit action labels, no inherited full-mock title, extension presentation, visible scope notice, mandatory briefing limitations and no official-score/equivalence claim. Any presentation escape is critical, checked by mutation tests and actual-route wiring tests. The limits remain informational evidence only when that contract passes. The CLI still fails on every warning/critical issue; there is no warning-ID waiver or auto-approval. The current audit reports 2,081 practice questions / 85 papers / zero critical / zero warnings. Complete official coverage and empirical difficulty equivalence remain unclaimed.
+
+Authenticated real-student saving and handwriting grading were not exercised. Source release f7db243 and its Waterlight CI follow-up 6d485f7 are committed and pushed to GitHub. Their second Production check stopped on the original 14 warnings. The current remediation still requires full regression/build/browser verification, Git delivery and a fresh full Production check; remaining CI security/build/recovery/E2E steps are not claimed passed yet. Tencent login is confirmed. No public deployment has changed; production remains 3ed9afc and Beta d644cda. Continuing release evidence is tracked in EXECUTION_PLAN.md.
 
 Final isolated optimized build and TypeScript checks pass with 28 generated static pages. At the loopback-only final preview (127.0.0.1:3113), all 13 catalogue URLs and 13 JS/CSS resources return HTTP 200; the total paper link count is 85. A real anonymous browser confirms the quarantined MAT paper has an isolation notice, no exam-start button, no horizontal overflow and no KaTeX errors. Earlier browser acceptance also verifies ESAT's five module choices, 27-question module selection, three 27-question / 40-minute paper sections and obsolete lesson isolation at desktop and mobile sizes. The original formatting-only tsconfig changes are preserved. Subsequent Git delivery is complete at f7db243; production is still unchanged. CI identified legacy Waterlight lint blockers; the narrow typed follow-up now passes strict TypeScript, complete source lint, all 423 regression tests and real-browser water/sound/pointer checks. Continuing CI and deployment evidence is recorded in EXECUTION_PLAN.md.
 

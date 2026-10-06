@@ -9,24 +9,21 @@ describe("question bank audit", () => {
   it("inventories every supported test without structural blockers", () => {
     const report = buildQuestionBankAudit();
     expect(report.totals.tests).toBe(13);
-    expect(report.totals.questions).toBe(2066);
+    expect(report.totals.questions).toBe(2081);
     expect(report.totals.mockPapers).toBe(85);
     expect(report.totals.topicsCovered).toBe(84);
     expect(report.totals.topicsTotal).toBe(84);
     expect(report.totals.critical).toBe(0);
-    expect(report.totals.warning).toBe(14);
+    expect(report.totals.warning).toBe(0);
   });
 
-  it("keeps structural blockers at zero and explicitly records uncalibrated CAIE difficulty gaps", () => {
+  it("fills CAIE bands with independently checked supplemental tasks, not inflated labels", () => {
     const report = buildQuestionBankAudit();
-    // Do not relabel routine questions as hard just to force zero warnings.
-    // R3 moves mixed calculus tasks into Integration and replaces former gap-fill
-    // exercises with paper-linked tasks; report the resulting six gaps honestly.
+    // Fixed R3 tasks retain their original labels; eight new practice tasks fill
+    // the missing bands and are independently verified in supplements.test.ts.
     expect(report.issues.filter((issue) => issue.severity === "critical")).toEqual([]);
-    expect(report.issues.filter((issue) => issue.testId==="caie9709" && issue.severity==="warning").map(({ code, severity, testId, topicId }) => ({ code, severity, testId, topicId })))
-      .toEqual(["caie9709-log-exp", "caie9709-trig", "caie9709-differentiation", "caie9709-numerical", "caie9709-vectors", "caie9709-de"].map(topicId => ({
-        code: "MISSING_DIFFICULTY_LEVEL", severity: "warning", testId: "caie9709", topicId,
-      })));
+    expect(report.issues.filter(issue=>issue.testId==="caie9709" && issue.severity==="warning")).toEqual([]);
+    expect(report.tests.find(t=>t.id==="caie9709")?.topics.every(t=>Object.values(t.difficulty).every(n=>n>0))).toBe(true);
   });
 
   it("tracks reviewed ESAT topic inventory while explicitly withholding complete specification coverage", () => {
@@ -34,7 +31,7 @@ describe("question bank audit", () => {
     const esat = report.tests.find((test) => test.id === "esat");
     expect(esat?.topicsCovered).toBe(19);
     expect(esat?.topicsTotal).toBe(19);
-    expect(report.issues).toContainEqual(expect.objectContaining({code:"LIMITED_PREPARATION_SCOPE",testId:"esat",severity:"warning"}));
+    expect(report.issues).toContainEqual(expect.objectContaining({code:"LIMITED_PREPARATION_SCOPE",testId:"esat",severity:"info"}));
     expect(report.issues).not.toEqual(expect.arrayContaining([
       expect.objectContaining({ code: "EMPTY_TOPIC", testId: "esat" }),
     ]));

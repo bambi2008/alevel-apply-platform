@@ -19,6 +19,8 @@ import { findSemanticRisks } from "./semantic";
 import { findTeachingRisks } from "./teaching";
 import { getReleasedPracticeQuestions, REVIEWED_PRACTICE_SOURCES } from "../practice-banks";
 import { getRegisteredMockPapersForTest } from "../mock-papers";
+import { assessSyllabusCandidate } from "../syllabus-policy";
+import { isLimitedTrainingTest, paperPresentation, trainingPresentationViolations } from "../syllabus-release";
 
 export type AuditSeverity = "critical" | "warning" | "info";
 
@@ -216,6 +218,25 @@ export function getPrimaryQuestionIndex(): Map<string, Question> {
   return new Map(Object.values(QUESTION_BANKS).flat().map((question) => [question.id, question]));
 }
 
+export function topicDistributionIssues(testId:string,topicIds:string[],questions:Question[]):AuditIssue[] {
+  // A whole Math 1 module is one UI topic; science modules have 4–7 subtopics.
+  // Compare like granularity within the independently selected/timed module.
+  // Keep the existing ESAT ratio limit (4), and all other tests' limit (3).
+  const groups=new Map<string,Map<string,number>>();
+  for(const q of questions) {
+    if(!topicIds.includes(q.topicId) || q.type==="long" && q.responseKind==="essay") continue;
+    const group=testId==="esat" ? assessSyllabusCandidate(q).module : testId;
+    const counts=groups.get(group)??new Map<string,number>();
+    counts.set(q.topicId,(counts.get(q.topicId)??0)+1); groups.set(group,counts);
+  }
+  const limit=testId==="esat"?4:3;
+  return [...groups.entries()].flatMap(([group,counts])=>{
+    const ns=[...counts.values()];
+    return ns.length>1 && Math.max(...ns)/Math.min(...ns)>limit
+      ? [{code:"TOPIC_IMBALANCE",severity:"warning" as const,testId,message:`同一训练模块 ${group} 内最多与最少知识点题量相差超过 ${limit} 倍。`}] : [];
+  });
+}
+
 export function buildQuestionBankAudit(): QuestionBankAuditReport {
   const issues: AuditIssue[] = [];
   const seenIds = new Map<string, string>();
@@ -229,7 +250,15 @@ export function buildQuestionBankAudit(): QuestionBankAuditReport {
     const archived=(QUESTION_BANKS[test.id] ?? []).filter(q=>!released.some(r=>r.id===q.id)).length;
     if(archived || source.length>released.length) issues.push({code:"SYLLABUS_QUARANTINED",severity:"info",testId:test.id,message:`旧题/未通过范围检查的题目已与新训练分离（原题库隔离 ${archived} 题）。历史记录保留。`});
     if(getRegisteredMockPapersForTest(test.id).length>getMockPapersForTest(test.id).length) issues.push({code:"PAPER_QUARANTINED",severity:"info",testId:test.id,message:"旧版卷或未核验完整格式的卷不进入新开考目录。"});
-    if(["esat","csat","bpho","ielts"].includes(test.id)) issues.push({code:"LIMITED_PREPARATION_SCOPE",severity:"warning",testId:test.id,message:"当前仅提供范围受限训练，不能据此宣称完整考纲覆盖、官方难度或全真格式。"});
+    if(isLimitedTrainingTest(test.id)) {
+      const papers=getMockPapersForTest(test.id);
+      const violations=papers.flatMap(p=>trainingPresentationViolations(p,paperPresentation(p)));
+      // An enforced, visible training-only product is not a claim of complete
+      // official coverage. The limitation remains in the report; presentation
+      // escape is critical, not silently accepted as a known warning.
+      issues.push({code:"LIMITED_PREPARATION_SCOPE",severity:violations.length || !papers.length ? "critical":"info",testId:test.id,
+        message:violations.length ? violations.join("; ") : "仅提供范围受限训练：入口、标题、开考说明和格式均强制训练模式；不宣称完整考纲、官方难度或全真考试。"});
+    }
     for (const question of released) {
       issues.push(...auditQuestion(question, test.id, validTopics));
       const existingId = seenIds.get(question.id);
@@ -307,13 +336,7 @@ export function buildQuestionBankAudit(): QuestionBankAuditReport {
       };
     });
 
-    const comparableTopicCounts = test.topics
-      .map((topic) => questions.filter((question) => question.topicId === topic.id && (question.type !== "long" || question.responseKind !== "essay")).length)
-      .filter(Boolean);
-    const topicImbalanceLimit = test.id === "esat" ? 4 : 3;
-    if (comparableTopicCounts.length > 1 && Math.max(...comparableTopicCounts) / Math.min(...comparableTopicCounts) > topicImbalanceLimit) {
-      issues.push({ code: "TOPIC_IMBALANCE", severity: "warning", testId: test.id, message: "最多与最少知识点题量相差超过 3 倍。" });
-    }
+    issues.push(...topicDistributionIssues(test.id,test.topics.map(t=>t.id),questions));
 
     const format = FORMAT_RULES[test.id];
     if (format?.needsWrittenPractice && !questions.some((question) => question.type === "long")) {

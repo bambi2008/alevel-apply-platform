@@ -15,6 +15,7 @@ import { persistExamSession } from "@/lib/tests/persist-session";
 import { useExamReliability } from "@/hooks/use-exam-reliability";
 import { ExamReliabilityStatus } from "@/components/exam-reliability-status";
 import { clearRemoteProgress, loadRemoteProgress, saveRemoteProgress } from "@/lib/learning/client";
+import { isLimitedTrainingTest } from "@/lib/tests/syllabus-release";
 
 type ObjectivePaper = Omit<MockPaper, "modules"> & {
   modules: Array<Omit<MockPaper["modules"][number], "questions"> & { questions: MCQQuestion[] }>;
@@ -365,9 +366,12 @@ export function ObjectiveExamRunner({ paper }: { paper: ObjectivePaper }) {
       </section>}
       <section className="mt-6 rounded-lg border border-neutral-200 bg-white p-6">
         <p className="text-sm leading-6 text-neutral-700">{paper.description}</p>
+        {isLimitedTrainingTest(paper.testId) && <ul aria-label="训练限制" className="mt-3 space-y-1 text-xs leading-5 text-neutral-500">
+          {paper.instructions?.map((instruction,index)=><li key={index}>{instruction}</li>)}
+        </ul>}
         <div className="mt-5 divide-y divide-neutral-100 border-y border-neutral-100">{paper.modules.map((module, index) => <div key={module.id} className="flex items-center justify-between py-3"><div><p className="text-sm font-semibold">模块 {index + 1} · {module.title}</p><p className="text-xs text-neutral-500">{module.questions.length} 题</p></div><span className="text-sm font-semibold text-blue-600">{Math.round(module.durationSec / 60)} 分钟</span></div>)}</div>
         <p className="mt-4 text-xs leading-5 text-neutral-500">每个模块独立计时。交卷后不能返回上一模块；系统会自动保存当前进度，倒计时结束时自动提交。</p>
-        <button type="button" onClick={begin} className="mt-5 w-full rounded-md bg-blue-600 py-3 text-sm font-semibold text-white hover:bg-blue-700">{savedSession ? "放弃进度并重新开始" : "开始考试"}</button>
+        <button type="button" onClick={begin} className="mt-5 w-full rounded-md bg-blue-600 py-3 text-sm font-semibold text-white hover:bg-blue-700">{savedSession ? "放弃进度并重新开始" : isLimitedTrainingTest(paper.testId) ? "开始训练" : "开始考试"}</button>
       </section>
     </main>
   );
