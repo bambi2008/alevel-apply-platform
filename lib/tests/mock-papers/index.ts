@@ -110,6 +110,9 @@ import { UCAT_GENERATED_MOCKS } from "./ucat-mocks-2-5";
 import { IELTS_WRITTEN_DIAGNOSTIC, CSAT_WRITTEN_PAPERS } from "./ielts-csat-written-papers";
 import { IELTS_FULL_PAPERS_1 } from "./ielts-full-paper-1";
 import { CAIE9709_P3_WRITTEN_PAPERS, CAIE9709_P3_ARCHIVED_PAPERS } from "./caie9709-p3-written-papers";
+import { ESAT_BOUNDARY_PAPERS } from "./esat-boundary-papers";
+import { reviseStepPapers, reviseTmuaPapers } from "./boundary-revisions";
+import { isReleasedPaper } from "../syllabus-release";
 
 export interface MockModule {
   id: string;
@@ -1323,8 +1326,19 @@ ALL_MOCK_PAPERS.unshift(
   BMO1_WRITTEN_PAPER_1, BMO1_WRITTEN_PAPER_2, BMO1_WRITTEN_PAPER_3
 );
 
-export function getMockPapersForTest(testId: string): MockPaper[] {
+ALL_MOCK_PAPERS.push(
+  ...ESAT_BOUNDARY_PAPERS,
+  ...reviseStepPapers(STEP_WRITTEN_PAPERS),
+  ...reviseTmuaPapers(ALL_MOCK_PAPERS.filter(p=>p.testId==="tmua")),
+);
+
+/** Raw registry for historical lookup and audit, never a new-start catalogue. */
+export function getRegisteredMockPapersForTest(testId: string): MockPaper[] {
   return ALL_MOCK_PAPERS.filter((p) => p.testId === testId);
+}
+
+export function getMockPapersForTest(testId: string): MockPaper[] {
+  return getRegisteredMockPapersForTest(testId).filter(isReleasedPaper);
 }
 
 export function getMockPaper(paperId: string): MockPaper | undefined {

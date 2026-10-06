@@ -3,6 +3,7 @@ import "server-only";
 import { db } from "@/lib/db";
 import { questionDraftSchema } from "@/lib/tests/authoring";
 import type { Question } from "@/lib/tests/questions/types";
+import { isReleasedPublishedQuestion } from "./practice-banks";
 
 function publishedQuestion(record: {
   payload: unknown;
@@ -27,7 +28,7 @@ export async function getPublishedQuestionsForTest(testId: string): Promise<Ques
   const latest = new Map<string, Question>();
   for (const record of records) {
     const question = publishedQuestion(record);
-    if (question && !latest.has(question.id)) latest.set(question.id, question);
+    if (question && isReleasedPublishedQuestion(testId,question) && !latest.has(question.id)) latest.set(question.id, question);
   }
   return [...latest.values()];
 }

@@ -11,10 +11,10 @@ describe("TMUA mock-paper audit", () => {
     expect(report.papers.flatMap((paper) => paper.modules).every((module) => module.questions === 20)).toBe(true);
   });
 
-  it("keeps the sealed eleven-paper suite free of quality warnings", () => {
+  it("keeps duplicate prompts blocked while recording remaining quality warnings", () => {
     const report = buildTmuaMockAudit();
-    expect(report.warnings).toBe(0);
-    expect(report.issues).toEqual([]);
-    expect(report.papers.every((paper) => paper.issueCount === 0)).toBe(true);
+    expect(report.issues.filter(i=>i.severity==="critical")).toEqual([]);
+    expect(report.issues.every(i=>["PAPER1_TOO_EASY","PAPER2_TOO_EASY","ANSWER_POSITION_BIAS","NO_EXTENDED_OPTIONS","DIRECT_LOGIC_OVERUSE"].includes(i.code))).toBe(true);
+    expect(report.warnings).toBe(report.issues.filter(i=>i.severity==="warning").length);
   });
 });

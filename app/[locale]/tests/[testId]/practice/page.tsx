@@ -6,19 +6,9 @@ import { applyFreeLimit } from "@/lib/entitlements";
 import { notFound, useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { getTestById } from "@/lib/tests";
-import { MAT_QUESTIONS } from "@/lib/tests/questions/mat";
-import { STEP_QUESTIONS } from "@/lib/tests/questions/step";
-import { ESAT_QUESTIONS } from "@/lib/tests/questions/esat";
-import { TMUA_QUESTIONS } from "@/lib/tests/questions/tmua";
-import { PAT_QUESTIONS } from "@/lib/tests/questions/pat";
-import { LNAT_QUESTIONS } from "@/lib/tests/questions/lnat";
-import { TARA_QUESTIONS } from "@/lib/tests/questions/tara";
-import { BPHO_QUESTIONS } from "@/lib/tests/questions/bpho";
-import { BMO_QUESTIONS } from "@/lib/tests/questions/bmo";
-import { UCAT_QUESTIONS } from "@/lib/tests/questions/ucat";
-import { IELTS_QUESTIONS } from "@/lib/tests/questions/ielts";
-import { CSAT_QUESTIONS } from "@/lib/tests/questions/csat";
-import { CAIE9709_QUESTIONS } from "@/lib/tests/questions/caie9709";
+import { getReleasedPracticeQuestions, mergeReleasedPracticeQuestions } from "@/lib/tests/practice-banks";
+import { assessSyllabusCandidate, matchesExamModule } from "@/lib/tests/syllabus-policy";
+import { ExamScopeNote } from "@/components/exam-scope-note";
 import type { Question, MCQQuestion, LongQuestion } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
 import type { GradeRequest, GradeResponse } from "@/app/api/grade-answer/route";
@@ -32,22 +22,6 @@ import { HandwrittenAnswerInput } from "@/components/handwritten-answer-input";
 import { HandwritingRecognitionNote } from "@/components/handwriting-recognition-note";
 import { hasAnswerContent, type AnswerImagesByPart } from "@/lib/tests/answer-images";
 
-const QUESTION_BANKS: Record<string, Question[]> = {
-  mat: MAT_QUESTIONS,
-  step: STEP_QUESTIONS,
-  esat: ESAT_QUESTIONS,
-  tmua: TMUA_QUESTIONS,
-  pat: PAT_QUESTIONS,
-  lnat: LNAT_QUESTIONS,
-  tara: TARA_QUESTIONS,
-  bpho: BPHO_QUESTIONS,
-  bmo: BMO_QUESTIONS,
-  ucat: UCAT_QUESTIONS,
-  ielts: IELTS_QUESTIONS,
-  csat: CSAT_QUESTIONS,
-  caie9709: CAIE9709_QUESTIONS,
-};
-const EMPTY_QUESTIONS: Question[] = [];
 
 type PracticeMode = "topic" | "mixed" | "adaptive";
 type PracticeFormat = "all" | "mcq" | "short-proof" | "long";
@@ -98,7 +72,15 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
   const test = getTestById(testId);
   if (!test || !test.hasQuestionBank) notFound();
 
-  const staticQuestions = QUESTION_BANKS[testId] ?? EMPTY_QUESTIONS;
+  const [examModule,setExamModule]=useState(()=>{
+    const requested=searchParams.get("module");
+    if(testId==="esat") {
+      if(requested && ["math1","math2","physics","chemistry","biology"].includes(requested)) return requested;
+      const topicQuestion=getReleasedPracticeQuestions(testId).find(q=>q.topicId===searchParams.get("topic"));
+      return topicQuestion ? assessSyllabusCandidate(topicQuestion).module : "math1";
+    }
+    return requested==="step3" ? "step3" : "step2";
+  });
   const [publishedQuestions, setPublishedQuestions] = useState<Question[]>([]);
   useEffect(() => {
     const controller = new AbortController();
@@ -111,10 +93,8 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
     return () => controller.abort();
   }, [testId]);
   const allQuestions = useMemo(() => {
-    const merged = new Map(staticQuestions.map((question) => [question.id, question]));
-    for (const question of publishedQuestions) merged.set(question.id, question);
-    return [...merged.values()];
-  }, [publishedQuestions, staticQuestions]);
+    return mergeReleasedPracticeQuestions(testId,publishedQuestions).filter(q=>matchesExamModule(q,examModule));
+  }, [publishedQuestions, testId, examModule]);
 
   const initialTopic = searchParams.get("topic") ?? "all";
   const initialCount = Number(searchParams.get("count") ?? 10);
@@ -158,7 +138,11 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
       const restoredQueue = snapshot.queueIds
         .map((questionId) => byId.get(questionId))
         .filter((question): question is Question => !!question);
-      if (restoredQueue.length === 0) return;
+      if (restoredQueue.length !== snapshot.queueIds.length) {
+        restoredRef.current=true;
+        setStartError("这组旧题已隔离，或不属于所选模块。请重新选择训练；已保存的历史作答不受影响。");
+        return;
+      }
       restoredRef.current = true;
       setMode(snapshot.strategy);
       setQueue(restoredQueue);
@@ -187,6 +171,7 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
     if (mode === "adaptive") {
       try {
         const query = new URLSearchParams({ testId, count: String(effectiveQuestionCount) });
+        if(testId==="esat" || testId==="step") query.set("module",examModule);
         if (topicId !== "all") query.set("topicId", topicId);
         if (format !== "all") query.set("format", format);
         if (searchParams.get("review") === "1") query.set("review", "1");
@@ -225,7 +210,7 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
     questionStartedAt.current = Date.now();
     setSessionState("practicing");
     setStarting(false);
-  }, [allQuestions, format, mode, topicId, effectiveQuestionCount, tier, testId, searchParams]);
+  }, [allQuestions, format, mode, topicId, effectiveQuestionCount, tier, testId, searchParams, examModule]);
 
   const recordResult = useCallback((result: SessionResult) => {
     const enriched = { ...result, timeSpentSec: Math.max(1, Math.round((Date.now() - questionStartedAt.current) / 1000)), visits: 1 };
@@ -241,6 +226,18 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
 
   if (sessionState === "select") {
     return (
+      <>
+      <div className="mx-auto max-w-4xl px-4 pt-6">
+        <ExamScopeNote testId={testId} />
+        {(testId==="esat" || testId==="step") && <label className="block text-sm">
+          训练模块
+          <select value={examModule} onChange={e=>{setExamModule(e.target.value);setTopicId("all");}} className="ml-3 rounded border bg-transparent px-3 py-2">
+            {(testId==="esat"
+              ? [["math1","Mathematics 1（无微积分）"],["math2","Mathematics 2"],["physics","Physics"],["chemistry","Chemistry"],["biology","Biology"]]
+              : [["step2","STEP 2"],["step3","STEP 3（含 STEP 2 范围）"]]).map(([value,label])=><option key={value} value={value}>{label}</option>)}
+          </select>
+        </label>}
+      </div>
       <SessionSetup
         test={test}
         allQuestions={allQuestions}
@@ -262,6 +259,7 @@ export default function PracticePage({ params }: { params: Promise<{ testId: str
         onCountChange={setQuestionCount}
         onStart={startSession}
       />
+      </>
     );
   }
 
@@ -371,7 +369,7 @@ function SessionSetup({
   ].filter(Boolean).join(" · ");
   const topicOptions = format === "short-proof"
     ? test.topics.filter((topic) => ["bmo-number", "bmo-geometry"].includes(topic.id))
-    : test.topics;
+    : test.topics.filter(topic=>allQuestions.some(q=>q.topicId===topic.id));
   const availableCount = allQuestions.filter((question) =>
     (!["topic", "adaptive"].includes(mode) || topicId === "all" || question.topicId === topicId) && matchesFormat(question, format)
   ).length;

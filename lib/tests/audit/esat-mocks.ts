@@ -1,7 +1,7 @@
 import { getMockPapersForTest } from "@/lib/tests/mock-papers";
 import type { MCQQuestion } from "@/lib/tests/questions/types";
 
-export type EsatAuditSeverity = "critical" | "warning";
+export type EsatAuditSeverity = "critical" | "warning" | "info";
 
 export interface EsatAuditIssue {
   paperId: string;
@@ -40,186 +40,51 @@ export interface EsatMockAuditReport {
 
 type EsatSubject = "math" | "physics" | "chemistry" | "biology";
 
-const ANSWER_KEYS = ["A", "B", "C", "D", "E"];
-const EXPECTED_SUBJECT_MODULES: Record<EsatSubject, number> = {
-  math: 11,
-  physics: 8,
-  chemistry: 3,
-  biology: 3,
-};
 
-function normalizeText(value: string): string {
-  return value.toLowerCase().replace(/\s+/g, " ").trim();
-}
-
-function structuralSignature(question: MCQQuestion): string {
-  return `${question.topicId}|${normalizeText(question.question).replace(/\d+(?:\.\d+)?/g, "#")}`;
-}
-
-function subjectFor(moduleId: string): EsatSubject {
-  if (moduleId.includes("math")) return "math";
-  if (moduleId.includes("chem")) return "chemistry";
-  if (moduleId.includes("bio")) return "biology";
-  return "physics";
-}
-
-function difficultyCounts(questions: MCQQuestion[]): Record<1 | 2 | 3, number> {
-  return {
-    1: questions.filter((question) => question.difficulty === 1).length,
-    2: questions.filter((question) => question.difficulty === 2).length,
-    3: questions.filter((question) => question.difficulty === 3).length,
-  };
-}
-
-function countBy(values: string[]): Record<string, number> {
-  return values.reduce<Record<string, number>>((counts, value) => {
-    counts[value] = (counts[value] ?? 0) + 1;
-    return counts;
-  }, {});
-}
-
-function longestRun(values: string[]): number {
-  let longest = 0;
-  let current = 0;
-  let previous = "";
-  for (const value of values) {
-    current = value === previous ? current + 1 : 1;
-    previous = value;
-    longest = Math.max(longest, current);
-  }
-  return longest;
-}
-
-export function buildEsatMockAudit(): EsatMockAuditReport {
-  const papers = getMockPapersForTest("esat");
-  const completePapers = papers.filter((paper) => /^esat-mock-\d+$/.test(paper.id));
-  const gapPapers = papers.filter((paper) => paper.id.startsWith("esat-gap-"));
-  const intensificationPapers = papers.filter((paper) => paper.id.startsWith("esat-math-intensification-"));
-  const issues: EsatAuditIssue[] = [];
-  const seenIds = new Map<string, string>();
-  const seenPrompts = new Map<string, string>();
-  const seenStructures = new Map<string, string>();
-
-  if (papers.length !== 15 || completePapers.length !== 10 || gapPapers.length !== 3 || intensificationPapers.length !== 2) {
-    issues.push({ paperId: "suite", code: "PAPER_INVENTORY", severity: "critical", message: "ESAT must contain ten complete papers, three gap-module papers and two mathematics intensification papers." });
-  }
-
-  const modules = papers.flatMap((paper): EsatModuleAuditSummary[] => {
-    const expectedModules = paper.id.startsWith("esat-gap-") || paper.id.startsWith("esat-math-intensification-") ? 1 : 2;
-    if (paper.modules.length !== expectedModules) {
-      issues.push({ paperId: paper.id, code: "MODULE_COUNT", severity: "critical", message: `Paper must contain ${expectedModules} module(s).` });
-    }
-
-    return paper.modules.map((module) => {
-      const questions = module.questions.filter((question): question is MCQQuestion => question.type === "mcq");
-      if (questions.length !== 27 || questions.length !== module.questions.length) {
-        issues.push({ paperId: paper.id, moduleId: module.id, code: "QUESTION_COUNT", severity: "critical", message: "Each ESAT module must contain 27 MCQs." });
+const normalize=(text:string)=>text.toLowerCase().replace(/\s+/g," ").trim();
+export function buildEsatMockAudit():EsatMockAuditReport {
+  const papers=getMockPapersForTest("esat"),issues:EsatAuditIssue[]=[];
+  const add=(paperId:string,code:string,severity:EsatAuditSeverity,message:string,moduleId?:string,questionId?:string)=>issues.push({paperId,code,severity,message,moduleId,questionId});
+  if(papers.length!==6) add("suite","PAPER_INVENTORY","critical","Expected six course-dependent reviewed triples.");
+  add("suite","REUSED_MODULE_BANKS","warning","These combinations reuse five 27-question module banks and practice questions. They are not six unseen or officially calibrated mocks.");
+  const allIds=new Set<string>();
+  const modules=papers.flatMap(p=>{
+    if(p.modules.length!==3 || p.modules[0].id!=="math1" || new Set(p.modules.map(m=>m.id)).size!==3)
+      add(p.id,"MODULE_COUNT","critical","Each triple starts with Math 1 and two distinct course-dependent modules.");
+    return p.modules.map(m=>{
+      const qs=m.questions.filter((q):q is MCQQuestion=>q.type==="mcq");
+      if(qs.length!==27 || qs.length!==m.questions.length) add(p.id,"QUESTION_COUNT","critical","Each module requires 27 MCQs.",m.id);
+      if(m.durationSec!==2400) add(p.id,"DURATION","critical","Each module is independently timed for 40 minutes.",m.id);
+      const prompts=new Set<string>(),structures=new Set<string>();
+      for(const q of qs) {
+        if(q.testId!=="esat") add(p.id,"TEST_ID","critical","Cross-exam question.",m.id,q.id);
+        if(q.options.map(o=>o.key).join("")!=="ABCDE" || !q.options.some(o=>o.key===q.answer))
+          add(p.id,"OPTION_KEYS","critical","Five continuous options and a valid answer are required.",m.id,q.id);
+        if(new Set(q.options.map(o=>normalize(o.text))).size!==5) add(p.id,"DUPLICATE_DISTRACTOR","critical","Duplicate option text.",m.id,q.id);
+        if(allIds.has(q.id)) add(p.id,"DUPLICATE_ID","critical","Question ID collision.",m.id,q.id);
+        allIds.add(q.id);
+        const prompt=normalize(q.question);
+        if(prompts.has(prompt)) add(p.id,"DUPLICATE_PROMPT","critical","A prompt repeats within the same module.",m.id,q.id);
+        prompts.add(prompt);
+        const signature=prompt.replace(/\d+(?:\.\d+)?/g,"#");
+        if(structures.has(signature)) add(p.id,"DUPLICATE_STRUCTURE","warning","A numeric template repeats within this module.",m.id,q.id);
+        structures.add(signature);
       }
-      if (module.durationSec !== 40 * 60) {
-        issues.push({ paperId: paper.id, moduleId: module.id, code: "DURATION", severity: "critical", message: "Each ESAT module must last 40 minutes." });
+      const difficulty:Record<1|2|3,number>={1:0,2:0,3:0},answerCounts:Record<string,number>={},topicCounts:Record<string,number>={};
+      let last="",run=0,longestAnswerRun=0;
+      for(const q of qs) {
+        difficulty[q.difficulty]++;answerCounts[q.answer]=(answerCounts[q.answer]??0)+1;topicCounts[q.topicId]=(topicCounts[q.topicId]??0)+1;
+        run=q.answer===last?run+1:1;last=q.answer;longestAnswerRun=Math.max(run,longestAnswerRun);
       }
-
-      for (const question of questions) {
-        if (question.testId !== "esat") {
-          issues.push({ paperId: paper.id, moduleId: module.id, questionId: question.id, code: "TEST_ID", severity: "critical", message: "Question testId must be esat." });
-        }
-        const keys = question.options.map((option) => option.key).join("");
-        if (keys !== "ABCDE" || !keys.includes(question.answer)) {
-          issues.push({ paperId: paper.id, moduleId: module.id, questionId: question.id, code: "OPTION_KEYS", severity: "critical", message: "Every ESAT question must have continuous A-E options containing the answer." });
-        }
-        const optionTexts = question.options.map((option) => normalizeText(option.text));
-        if (new Set(optionTexts).size !== optionTexts.length) {
-          issues.push({ paperId: paper.id, moduleId: module.id, questionId: question.id, code: "DUPLICATE_DISTRACTOR", severity: "critical", message: "Question contains duplicate option text." });
-        }
-
-        const existingId = seenIds.get(question.id);
-        if (existingId) {
-          issues.push({ paperId: paper.id, moduleId: module.id, questionId: question.id, code: "DUPLICATE_ID", severity: "critical", message: `Question ID duplicates ${existingId}.` });
-        } else {
-          seenIds.set(question.id, `${paper.id}/${module.id}`);
-        }
-        const prompt = normalizeText(question.question);
-        const existingPrompt = seenPrompts.get(prompt);
-        if (existingPrompt) {
-          issues.push({ paperId: paper.id, moduleId: module.id, questionId: question.id, code: "DUPLICATE_PROMPT", severity: "critical", message: `Prompt duplicates ${existingPrompt}.` });
-        } else {
-          seenPrompts.set(prompt, `${paper.id}/${module.id}/${question.id}`);
-        }
-        const signature = structuralSignature(question);
-        const existingStructure = seenStructures.get(signature);
-        if (existingStructure && !existingPrompt) {
-          issues.push({ paperId: paper.id, moduleId: module.id, questionId: question.id, code: "DUPLICATE_STRUCTURE", severity: "warning", message: `Question repeats the numeric template of ${existingStructure}.` });
-        } else if (!existingStructure) {
-          seenStructures.set(signature, `${paper.id}/${module.id}/${question.id}`);
-        }
-      }
-
-      const difficulty = difficultyCounts(questions);
-      const answerCounts = countBy(questions.map((question) => question.answer));
-      const dominantAnswerShare = questions.length ? Math.max(0, ...Object.values(answerCounts)) / questions.length : 0;
-      const longestAnswerRun = longestRun(questions.map((question) => question.answer));
-      const topicCounts = countBy(questions.map((question) => question.topicId));
-
-      if (difficulty[3] < 4) {
-        issues.push({ paperId: paper.id, moduleId: module.id, code: "TOO_FEW_HARD", severity: "warning", message: `Module has only ${difficulty[3]} difficulty-3 questions; target is at least 4.` });
-      }
-      if (dominantAnswerShare > 0.25 || ANSWER_KEYS.some((key) => !answerCounts[key])) {
-        issues.push({ paperId: paper.id, moduleId: module.id, code: "ANSWER_POSITION_BIAS", severity: "warning", message: "Correct-answer positions must cover A-E with no position above 25%." });
-      }
-      if (longestAnswerRun > 2) {
-        issues.push({ paperId: paper.id, moduleId: module.id, code: "ANSWER_RUN", severity: "warning", message: `Module has a run of ${longestAnswerRun} identical answer positions.` });
-      }
-
-      return {
-        paperId: paper.id,
-        moduleId: module.id,
-        subject: subjectFor(module.id),
-        questions: questions.length,
-        difficulty,
-        answerCounts,
-        dominantAnswerShare,
-        longestAnswerRun,
-        topicCounts,
-      };
+      const dominantAnswerShare=Math.max(0,...Object.values(answerCounts))/Math.max(1,qs.length);
+      if(difficulty[3]<4) add(p.id,"TOO_FEW_HARD","warning","Difficulty is not calibrated to official challenging items; do not relabel routine items to suppress this warning.",m.id);
+      if(dominantAnswerShare>0.25 || "ABCDE".split("").some(k=>!answerCounts[k])) add(p.id,"ANSWER_POSITION_BIAS","warning","Answer position imbalance.",m.id);
+      if(longestAnswerRun>2) add(p.id,"ANSWER_RUN","warning","Repeated answer positions.",m.id);
+      const subject:EsatSubject=m.id.startsWith("math")?"math":m.id==="chemistry"?"chemistry":m.id==="biology"?"biology":"physics";
+      return {paperId:p.id,moduleId:m.id,subject,questions:qs.length,difficulty,answerCounts,topicCounts,dominantAnswerShare,longestAnswerRun};
     });
   });
-
-  const subjectModules = modules.reduce<Record<EsatSubject, number>>(
-    (counts, module) => ({ ...counts, [module.subject]: counts[module.subject] + 1 }),
-    { math: 0, physics: 0, chemistry: 0, biology: 0 },
-  );
-  for (const subject of Object.keys(EXPECTED_SUBJECT_MODULES) as EsatSubject[]) {
-    if (subjectModules[subject] !== EXPECTED_SUBJECT_MODULES[subject]) {
-      issues.push({ paperId: "suite", code: "SUBJECT_BALANCE", severity: "warning", message: `${subject} must have ${EXPECTED_SUBJECT_MODULES[subject]} modules; found ${subjectModules[subject]}.` });
-    }
-  }
-
-  const physicsGap = modules.find((module) => module.paperId === "esat-gap-physics-module");
-  const chemistryGap = modules.find((module) => module.paperId === "esat-gap-chemistry-module");
-  const biologyGap = modules.find((module) => module.paperId === "esat-gap-biology-module");
-  const expectedPhysicsTopics = { "esat-phys4": 7, "esat-phys5": 7, "esat-phys6": 7, "esat-phys7": 6 };
-  const expectedChemistryTopics = { "esat-chem4": 14, "esat-chem5": 13 };
-  if (!physicsGap || JSON.stringify(physicsGap.topicCounts) !== JSON.stringify(expectedPhysicsTopics)) {
-    issues.push({ paperId: "esat-gap-physics-module", code: "GAP_TOPIC_BALANCE", severity: "warning", message: "Physics gap module must use the calibrated 7/7/7/6 topic split." });
-  }
-  if (!chemistryGap || JSON.stringify(chemistryGap.topicCounts) !== JSON.stringify(expectedChemistryTopics)) {
-    issues.push({ paperId: "esat-gap-chemistry-module", code: "GAP_TOPIC_BALANCE", severity: "warning", message: "Chemistry gap module must use the calibrated 14/13 topic split." });
-  }
-  if (!biologyGap || biologyGap.topicCounts["esat-bio4"] !== 27 || Object.keys(biologyGap.topicCounts).length !== 1) {
-    issues.push({ paperId: "esat-gap-biology-module", code: "GAP_TOPIC_BALANCE", severity: "warning", message: "Biology gap module must contain 27 independent Biology 4 questions." });
-  }
-
-  return {
-    paperCount: papers.length,
-    completePaperCount: completePapers.length,
-    gapPaperCount: gapPapers.length,
-    intensificationPaperCount: intensificationPapers.length,
-    moduleCount: modules.length,
-    questionCount: modules.reduce((total, module) => total + module.questions, 0),
-    subjectModules,
-    critical: issues.filter((issue) => issue.severity === "critical").length,
-    warnings: issues.filter((issue) => issue.severity === "warning").length,
-    modules,
-    issues,
-  };
+  const subjectModules:Record<EsatSubject,number>={math:0,physics:0,chemistry:0,biology:0};
+  for(const m of modules) subjectModules[m.subject]++;
+  return {paperCount:papers.length,completePaperCount:papers.length,gapPaperCount:0,intensificationPaperCount:0,moduleCount:modules.length,questionCount:modules.reduce((n,m)=>n+m.questions,0),subjectModules,critical:issues.filter(i=>i.severity==="critical").length,warnings:issues.filter(i=>i.severity==="warning").length,modules,issues};
 }

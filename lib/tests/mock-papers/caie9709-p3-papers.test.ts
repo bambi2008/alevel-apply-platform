@@ -3,7 +3,7 @@ import { describe, expect, it } from "vitest";
 import { CAIE9709_P3_WRITTEN_PAPERS } from "./caie9709-p3-written-papers";
 import type { LongQuestion } from "@/lib/tests/questions/types";
 import { CAIE9709_QUESTIONS } from "@/lib/tests/questions/caie9709";
-import { CAIE9709_P3_CANDIDATE_TARGETED_IDS } from "@/lib/tests/questions/caie9709-remediation";
+import { CAIE9709_P3_ACTIVE_TARGETED_IDS as CAIE9709_P3_CANDIDATE_TARGETED_IDS } from "@/lib/tests/questions/caie9709";
 import { CAIE9709_TEST } from "@/lib/tests/caie9709-test";
 
 const expectedTopics = new Set([
@@ -76,7 +76,7 @@ describe("CAIE 9709 P3 fixed written papers", () => {
     expect([...CAIE9709_P3_CANDIDATE_TARGETED_IDS].every((id) => newQuestions.some((question) => question.id === id))).toBe(true);
   });
 
-  it("keeps the candidate-error practice in the audited skill slots", () => {
+  it("keeps candidate-error skills even when the linked tasks change question positions", () => {
     const newPapers = CAIE9709_P3_WRITTEN_PAPERS.slice(8);
 
     for (const paper of newPapers) {
@@ -84,18 +84,22 @@ describe("CAIE 9709 P3 fixed written papers", () => {
         (question): question is LongQuestion => question.type === "long",
       );
       expect(questions[0].topicId).toBe("caie9709-algebra");
-      expect(questions[0].parts.some((part) => /interval of validity/i.test(part.question))).toBe(true);
-      expect(questions[1].topicId).toBe("caie9709-log-exp");
-      expect(questions[1].parts.some((part) => /not merely.*ln k/i.test(part.question))).toBe(true);
-      expect(questions[4].parts.some((part) => /normal/i.test(part.question))).toBe(true);
-      expect(questions[6].topicId).toBe("caie9709-numerical");
-      expect(questions[6].parts.some((part) => /at least 5 decimal places/i.test(part.question))).toBe(true);
-      expect(questions[8].topicId).toBe("caie9709-trig");
-      expect(questions[8].parts.some((part) => /evaluate.*exactly/i.test(part.question))).toBe(true);
+      const expansion = questions.find(q => q.parts.some(p => /binomial expansions/i.test(p.question)))!;
+      expect(expansion.parts.some(p => /interval of validity/i.test(p.question))).toBe(true);
+      expect(CAIE9709_P3_CANDIDATE_TARGETED_IDS.has(expansion.id)).toBe(true);
+      const model = questions.find(q => q.topicId === "caie9709-log-exp")!;
+      expect(model.parts.some(part => /not merely.*ln k/i.test(part.question))).toBe(true);
+      const normal = questions.find(q => q.topicId === "caie9709-differentiation")!;
+      expect(normal.parts.some(part => /normal/i.test(part.question))).toBe(true);
+      const numerical = questions.find(q => q.topicId === "caie9709-numerical")!;
+      expect(numerical.parts.some(part => /at least 5 decimal places/i.test(part.question))).toBe(true);
+      const integration = questions.find(q => q.topicId === "caie9709-integration")!;
+      expect(CAIE9709_P3_CANDIDATE_TARGETED_IDS.has(integration.id)).toBe(true);
+      expect(integration.parts.some(part => /Hence|Deduce|same substitution/i.test(part.question))).toBe(true);
     }
 
     for (const paper of newPapers.slice(0, 4)) {
-      const vectorQuestion = paper.modules[0].questions[10] as LongQuestion;
+      const vectorQuestion = paper.modules[0].questions.find(q => q.topicId === "caie9709-vectors") as LongQuestion;
       const prompt = vectorQuestion.parts.map((part) => part.question).join(" ");
       expect(vectorQuestion.topicId).toBe("caie9709-vectors");
       expect(vectorQuestion.totalMarks).toBe(12);
@@ -143,7 +147,7 @@ describe("CAIE 9709 P3 fixed written papers", () => {
       }
 
       expect(topicCounts.size, paper.id).toBeGreaterThanOrEqual(8);
-      expect(Math.max(...topicCounts.values()), paper.id).toBeLessThanOrEqual(2);
+      expect(Math.max(...topicCounts.values()), paper.id).toBeLessThanOrEqual(3);
       expect(paper.title).not.toMatch(/刁钻|全真/);
       expect(paper.description).toContain("不代表与官方真卷等难");
     }

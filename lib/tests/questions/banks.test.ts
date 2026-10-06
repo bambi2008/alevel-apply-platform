@@ -18,7 +18,7 @@ import { BPHO5_LONG_SAMPLE } from "@/lib/tests/questions/bpho5-long";
 import { BMO_SMC_TOPUP } from "@/lib/tests/questions/bmo-smc-topup";
 import { BMO_SHORT_PROOFS } from "@/lib/tests/questions/bmo-short-proofs";
 import { getAllMockQuestions } from "@/lib/tests/mock-papers";
-import { getTestById } from "@/lib/tests";
+import { getHistoricalTestById as getTestById } from "@/lib/tests";
 import { getQuestionById } from "@/lib/tests/lookup";
 import type { Question } from "@/lib/tests/questions/types";
 

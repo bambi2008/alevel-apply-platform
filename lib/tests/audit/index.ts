@@ -17,6 +17,8 @@ import { CAIE9709_QUESTIONS } from "@/lib/tests/questions/caie9709";
 import type { Question } from "@/lib/tests/questions/types";
 import { findSemanticRisks } from "./semantic";
 import { findTeachingRisks } from "./teaching";
+import { getReleasedPracticeQuestions, REVIEWED_PRACTICE_SOURCES } from "../practice-banks";
+import { getRegisteredMockPapersForTest } from "../mock-papers";
 
 export type AuditSeverity = "critical" | "warning" | "info";
 
@@ -221,7 +223,14 @@ export function buildQuestionBankAudit(): QuestionBankAuditReport {
 
   for (const test of ADMISSIONS_TESTS) {
     const validTopics = new Set(test.topics.map((topic) => topic.id));
-    for (const question of QUESTION_BANKS[test.id] ?? []) {
+    const released=getReleasedPracticeQuestions(test.id);
+    if(!released.length) issues.push({code:"RELEASE_SNAPSHOT_MISMATCH",severity:"critical",testId:test.id,message:"发布快照不匹配或题组为空，须重新核验，不能自动放行。"});
+    const source=REVIEWED_PRACTICE_SOURCES[test.id] ?? [];
+    const archived=(QUESTION_BANKS[test.id] ?? []).filter(q=>!released.some(r=>r.id===q.id)).length;
+    if(archived || source.length>released.length) issues.push({code:"SYLLABUS_QUARANTINED",severity:"info",testId:test.id,message:`旧题/未通过范围检查的题目已与新训练分离（原题库隔离 ${archived} 题）。历史记录保留。`});
+    if(getRegisteredMockPapersForTest(test.id).length>getMockPapersForTest(test.id).length) issues.push({code:"PAPER_QUARANTINED",severity:"info",testId:test.id,message:"旧版卷或未核验完整格式的卷不进入新开考目录。"});
+    if(["esat","csat","bpho","ielts"].includes(test.id)) issues.push({code:"LIMITED_PREPARATION_SCOPE",severity:"warning",testId:test.id,message:"当前仅提供范围受限训练，不能据此宣称完整考纲覆盖、官方难度或全真格式。"});
+    for (const question of released) {
       issues.push(...auditQuestion(question, test.id, validTopics));
       const existingId = seenIds.get(question.id);
       if (existingId) {
@@ -272,7 +281,7 @@ export function buildQuestionBankAudit(): QuestionBankAuditReport {
   }
 
   const tests = ADMISSIONS_TESTS.map<TestAuditSummary>((test) => {
-    const questions = QUESTION_BANKS[test.id] ?? [];
+    const questions = getReleasedPracticeQuestions(test.id);
     const papers = getMockPapersForTest(test.id);
     const mockQuestions = papers.flatMap((paper) => paper.modules.flatMap((module) => module.questions));
     const topics = test.topics.map<TopicAuditSummary>((topic) => {

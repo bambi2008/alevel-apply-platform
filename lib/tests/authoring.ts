@@ -2,6 +2,8 @@ import { z } from "zod";
 import type { MCQOptionKey, Question, QuestionDifficulty } from "@/lib/tests/questions/types";
 import { findSemanticRisks } from "@/lib/tests/audit/semantic";
 import { findTeachingRisks } from "@/lib/tests/audit/teaching";
+import { isReleasedPublishedQuestion } from "./practice-banks";
+import { assessSyllabusCandidate } from "./syllabus-policy";
 
 export const WORKFLOW_STAGES = ["DRAFT", "SUBJECT_REVIEW", "TEACHING_REVIEW", "APPROVED"] as const;
 export type WorkflowStage = (typeof WORKFLOW_STAGES)[number];
@@ -249,6 +251,8 @@ export function validateDraft(input: unknown): { draft?: QuestionDraft; issues: 
     issues.push({ code: "MISSING_SOURCE_URL", severity: "warning", field: "source.url", message: "官方题应记录可核验的来源链接。" });
   }
   if (draft.review.stage === "APPROVED") {
+    const boundary=assessSyllabusCandidate(draft.question as Question);
+    if(!boundary.allowed) issues.push({code:"OUTSIDE_SYLLABUS",severity:"critical",field:"question",message:boundary.reason});
     if (!draft.review.subjectReviewer?.trim()) {
       issues.push({ code: "MISSING_SUBJECT_REVIEWER", severity: "critical", field: "review.subjectReviewer", message: "缺少学科审核人。" });
     }
@@ -295,6 +299,10 @@ export function createReleasePackage(drafts: QuestionDraft[]) {
     field: `${draft.draftId}:${issue.field ?? "draft"}`,
   })));
   for (const draft of drafts) {
+    if(!isReleasedPublishedQuestion(draft.question.testId,draft.question)) issues.push({
+      code:"SYLLABUS_RELEASE_REQUIRED",severity:"warning",field: draft.draftId+":question",
+      message:"双重审核不等于考纲发布核验。新增或修改题目须完成方法/模块核验并更新发布快照，才能进入学生新训练。",
+    });
     if (draft.review.stage !== "APPROVED") {
       issues.push({
         code: "DRAFT_NOT_APPROVED",

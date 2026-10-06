@@ -16,13 +16,16 @@ import { IELTS_QUESTIONS } from "@/lib/tests/questions/ielts";
 import { CSAT_QUESTIONS } from "@/lib/tests/questions/csat";
 import { CAIE9709_QUESTIONS } from "@/lib/tests/questions/caie9709";
 import type { Question } from "@/lib/tests/questions/types";
-import { getTestById } from "@/lib/tests";
+import { getHistoricalTestById } from "@/lib/tests";
 import { getAllMockQuestions } from "@/lib/tests/mock-papers";
+import { ESAT_BOUNDARY_QUESTIONS } from "./questions/esat-boundary";
+import { getReleasedPracticeQuestions } from "./practice-banks";
 
 const PRACTICE_QUESTIONS: Question[] = [
   ...MAT_QUESTIONS,
   ...STEP_QUESTIONS,
   ...ESAT_QUESTIONS,
+  ...ESAT_BOUNDARY_QUESTIONS,
   ...TMUA_QUESTIONS,
   ...PAT_QUESTIONS,
   ...LNAT_QUESTIONS,
@@ -54,7 +57,7 @@ export function getAllQuestionIds(): string[] {
 
 /** 只返回专项练习题库，不混入固定模拟卷。 */
 export function getPracticeQuestionsForTest(testId: string): Question[] {
-  return PRACTICE_QUESTIONS.filter((question) => question.testId === testId);
+  return getReleasedPracticeQuestions(testId);
 }
 
 /** 取该题所属知识点 id（从静态题库读取，作答记录里没有存 topicId）。 */
@@ -70,7 +73,7 @@ export interface TopicMeta {
 
 /** 取知识点的中文/英文标题（用于学情分析、回看页分组展示）。 */
 export function getTopicMeta(testId: string, topicId: string): TopicMeta | undefined {
-  const t = getTestById(testId)?.topics.find((tp) => tp.id === topicId);
+  const t = getHistoricalTestById(testId)?.topics.find((tp) => tp.id === topicId);
   if (!t) return undefined;
   return { id: t.id, title: t.title, titleEn: t.titleEn };
 }

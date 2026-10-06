@@ -12,6 +12,7 @@ import { getMockPapersForTest } from "@/lib/tests/mock-papers";
 import { ArrowRight, BookOpenCheck, ChartNoAxesColumnIncreasing, FileText, History, LayoutList, LibraryBig, Timer } from "lucide-react";
 import { AdaptiveLearningPanel } from "@/components/adaptive-learning-panel";
 import { ExamReadinessPanel } from "@/components/exam-readiness-panel";
+import { paperTrainingTitle } from "@/lib/tests/syllabus-release";
 
 export default function TestDetailPage({
   params,
@@ -124,7 +125,7 @@ function TestDetailContent({ test }: { test: AdmissionsTest }) {
             href={`/tests/${test.id}/mock`}
             className="flex min-h-20 items-center justify-between rounded-2xl bg-[#101817] px-5 py-4 font-semibold text-white transition hover:-translate-y-1 hover:bg-black"
           >
-            <span className="flex items-center gap-3"><Timer className="size-5" />完整模考</span>
+            <span className="flex items-center gap-3"><Timer className="size-5" />{["mat","pat","bpho","csat","ielts"].includes(test.id) ? "计时训练" : "选择训练卷"}</span>
             <ArrowRight className="size-4" />
           </Link>
         </div>
@@ -473,10 +474,10 @@ function PracticeTab({ test }: { test: AdmissionsTest }) {
               >
                 <div className="min-w-0 pr-3">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="text-sm font-medium text-indigo-900">{paper.title}</span>
+                    <span className="text-sm font-medium text-indigo-900">{paperTrainingTitle(paper)}</span>
                     {paper.formatType && (
                       <span className="rounded border border-indigo-200 bg-indigo-50 px-1.5 py-0.5 text-[11px] leading-none text-indigo-700">
-                        {paper.formatType === "current" ? "现行结构" : paper.formatType === "legacy" ? "历史格式" : "能力拓展"}
+                        {["bpho","csat","ielts"].includes(test.id) ? "范围受限训练" : paper.formatType === "current" ? "结构对应训练" : paper.formatType === "legacy" ? "历史格式训练" : "能力拓展"}
                       </span>
                     )}
                   </div>

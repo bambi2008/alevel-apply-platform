@@ -63,7 +63,8 @@ describe("question authoring workflow", () => {
     const teachingQueue = advanceDraft(subjectQueue, "Dr Subject").draft;
     const approved = advanceDraft(teachingQueue, "Ms Teacher").draft;
     const release = createReleasePackage([approved]);
-    expect(release.releasable).toBe(true);
+    expect(release.releasable).toBe(false);
+    expect(release.issues.map(i=>i.code)).toContain("SYLLABUS_RELEASE_REQUIRED");
     expect(release.questions[0].id).toBe("tmua-authored-001");
   });
 

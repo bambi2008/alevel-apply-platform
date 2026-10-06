@@ -18,9 +18,12 @@ describe("actual /tests/[testId]/mock route", () => {
     const links = [...markup.matchAll(/href="(\/tests\/caie9709\/paper\/[^"]+)"/g)].map((match) => match[1]);
     expect(links).toHaveLength(16);
     expect(new Set(links).size).toBe(16);
-    expect(links[0]).toBe("/tests/caie9709/paper/caie9709-p3-written-9-r2");
+    expect(links[0]).toBe("/tests/caie9709/paper/caie9709-p3-written-9-r3");
   });
-  it("keeps other exam routes on their existing runner", async () => {
-    expect(renderToStaticMarkup(await MockExamPage({ params: Promise.resolve({ testId: "esat" }) }))).toContain("mixed:esat");
+  it("routes ESAT to six scoped three-module papers, never the mixed 20+2 runner", async () => {
+    const markup=renderToStaticMarkup(await MockExamPage({ params: Promise.resolve({ testId: "esat" }) }));
+    expect(markup).not.toContain("mixed:esat");
+    expect([...markup.matchAll(/href="(\/tests\/esat\/paper\/[^"]+)"/g)]).toHaveLength(6);
+    expect(markup).toContain("Mathematics 1 · 27题 · 40分钟");
   });
 });

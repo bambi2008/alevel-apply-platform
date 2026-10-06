@@ -9,29 +9,32 @@ describe("question bank audit", () => {
   it("inventories every supported test without structural blockers", () => {
     const report = buildQuestionBankAudit();
     expect(report.totals.tests).toBe(13);
-    expect(report.totals.questions).toBe(2766);
-    expect(report.totals.mockPapers).toBe(130);
-    expect(report.totals.topicsCovered).toBe(86);
-    expect(report.totals.topicsTotal).toBe(86);
+    expect(report.totals.questions).toBe(2066);
+    expect(report.totals.mockPapers).toBe(85);
+    expect(report.totals.topicsCovered).toBe(84);
+    expect(report.totals.topicsTotal).toBe(84);
     expect(report.totals.critical).toBe(0);
-    expect(report.totals.warning).toBe(3);
+    expect(report.totals.warning).toBe(14);
   });
 
   it("keeps structural blockers at zero and explicitly records uncalibrated CAIE difficulty gaps", () => {
     const report = buildQuestionBankAudit();
     // Do not relabel routine questions as hard just to force zero warnings.
-    // R2 preserves these visible warnings until genuine difficulty calibration exists.
-    expect(report.issues.filter((issue) => issue.severity !== "info").map(({ code, severity, testId, topicId }) => ({ code, severity, testId, topicId })))
-      .toEqual(["caie9709-log-exp", "caie9709-numerical", "caie9709-vectors"].map(topicId => ({
+    // R3 moves mixed calculus tasks into Integration and replaces former gap-fill
+    // exercises with paper-linked tasks; report the resulting six gaps honestly.
+    expect(report.issues.filter((issue) => issue.severity === "critical")).toEqual([]);
+    expect(report.issues.filter((issue) => issue.testId==="caie9709" && issue.severity==="warning").map(({ code, severity, testId, topicId }) => ({ code, severity, testId, topicId })))
+      .toEqual(["caie9709-log-exp", "caie9709-trig", "caie9709-differentiation", "caie9709-numerical", "caie9709-vectors", "caie9709-de"].map(topicId => ({
         code: "MISSING_DIFFICULTY_LEVEL", severity: "warning", testId: "caie9709", topicId,
       })));
   });
 
-  it("tracks complete ESAT topic coverage without empty science modules", () => {
+  it("tracks reviewed ESAT topic inventory while explicitly withholding complete specification coverage", () => {
     const report = buildQuestionBankAudit();
     const esat = report.tests.find((test) => test.id === "esat");
-    expect(esat?.topicsCovered).toBe(21);
-    expect(esat?.topicsTotal).toBe(21);
+    expect(esat?.topicsCovered).toBe(19);
+    expect(esat?.topicsTotal).toBe(19);
+    expect(report.issues).toContainEqual(expect.objectContaining({code:"LIMITED_PREPARATION_SCOPE",testId:"esat",severity:"warning"}));
     expect(report.issues).not.toEqual(expect.arrayContaining([
       expect.objectContaining({ code: "EMPTY_TOPIC", testId: "esat" }),
     ]));

@@ -1,5 +1,6 @@
 // 英国大学申请考试与能力训练数据层
 import { ADDITIONAL_TESTS } from "./additional-tests";
+import { withSyllabusMetadata } from "./syllabus-metadata";
 
 export type TestCategory = "mathematics" | "science" | "law" | "thinking" | "competition" | "english";
 export type TestPurpose = "admissions" | "college-assessment" | "curriculum" | "offer-condition" | "language" | "legacy" | "competition";
@@ -489,7 +490,12 @@ const CORE_TESTS: AdmissionsTest[] = [
   },
 ];
 
-export const ADMISSIONS_TESTS: AdmissionsTest[] = [...CORE_TESTS, ...ADDITIONAL_TESTS];
+export const ADMISSIONS_TESTS: AdmissionsTest[] = [...CORE_TESTS, ...ADDITIONAL_TESTS].map(withSyllabusMetadata);
+
+/** Historical tags remain available for archived answers; not public teaching scope. */
+export function getHistoricalTestById(id:string):AdmissionsTest|undefined {
+  return [...CORE_TESTS,...ADDITIONAL_TESTS].find(t=>t.id===id);
+}
 
 export function getTestPurpose(test: AdmissionsTest): TestPurpose {
   if (test.purpose) return test.purpose;

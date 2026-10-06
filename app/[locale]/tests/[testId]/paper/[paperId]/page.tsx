@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback, use } from "react";
 import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { getMockPaper, type MockPaper } from "@/lib/tests/mock-papers";
+import { getCurrentP3PaperId } from "@/lib/tests/mock-papers/caie9709-p3-written-papers";
 import type { MCQQuestion } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
 import { WrittenPaperRunner } from "@/components/written-paper-runner";
@@ -14,6 +15,7 @@ import { persistExamSession } from "@/lib/tests/persist-session";
 import { examProgressKey, parseExamProgress, type ObjectiveExamProgress } from "@/lib/tests/exam-progress";
 import { useExamReliability } from "@/hooks/use-exam-reliability";
 import { ExamReliabilityStatus } from "@/components/exam-reliability-status";
+import { isReleasedPaper, paperPresentation } from "@/lib/tests/syllabus-release";
 
 type Phase = "briefing" | "running" | "results";
 type ObjectivePaper = Omit<MockPaper, "modules"> & {
@@ -28,6 +30,13 @@ export default function MockPaperPage({
   const { testId, paperId } = use(params);
   const paper = getMockPaper(paperId);
   if (!paper || paper.testId !== testId) notFound();
+  if(!isReleasedPaper(paper)) return <main className="mx-auto max-w-4xl px-4 py-10">
+    <h1 className="text-2xl font-bold">旧版训练卷已隔离</h1>
+    <p className="mt-4">此卷不再用于新考试。原题和历史作答保留在历史记录中，不会自动替换你的答案。</p>
+    {testId==="caie9709" && <Link href={`/tests/caie9709/paper/${getCurrentP3PaperId(paper.id)}`} className="mt-4 block underline">开始 R3 修订卷 →</Link>}
+    <Link href={`/tests/${testId}/mock`} className="mt-4 block underline">选择范围核验后的训练卷 →</Link>
+  </main>;
+  const presentation = paperPresentation(paper);
 
   const hasWrittenQuestions = paper.modules.some((module) => module.questions.some((question) => question.type === "long"));
   return hasWrittenQuestions
@@ -35,14 +44,14 @@ export default function MockPaperPage({
         {paper.testId === "caie9709" && paper.formatType === "legacy" && (
           <aside className="mx-auto max-w-5xl px-4 pt-6 text-sm" role="note">
             此链接是旧版卷，保留原题供历史作答回看。
-            <Link href={`/tests/caie9709/paper/${paper.id}-r2`} className="ml-2 text-[var(--brand)] underline">开始 R2 修订卷 →</Link>
+            <Link href={`/tests/caie9709/paper/${getCurrentP3PaperId(paper.id)}`} className="ml-2 text-[var(--brand)] underline">开始 R3 修订卷 →</Link>
           </aside>
         )}
-        <WrittenPaperRunner paper={paper} />
+        <WrittenPaperRunner paper={presentation} />
       </>
     : paper.testId === "lnat"
-      ? <LnatPaperRunner paper={paper as ObjectivePaper} />
-      : <ObjectiveExamRunner paper={paper as ObjectivePaper} />;
+      ? <LnatPaperRunner paper={presentation as ObjectivePaper} />
+      : <ObjectiveExamRunner paper={presentation as ObjectivePaper} />;
 }
 
 // Kept as a compatibility reference while all objective papers use the unified runner.

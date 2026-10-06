@@ -1,11 +1,16 @@
 import { describe, it, expect } from "vitest";
 import {
-  getMockPapersForTest,
+  getRegisteredMockPapersForTest,
   getMockPaper,
   getAllMockQuestions,
 } from "@/lib/tests/mock-papers";
 import type { MCQQuestion } from "@/lib/tests/questions/types";
 import { getCountedResults } from "./scoring";
+
+// Archived content retains its historical structural regressions. Public
+// catalogues are separately verified in syllabus-release.test.ts.
+const getMockPapersForTest=(testId:string)=>getRegisteredMockPapersForTest(testId)
+  .filter(p=>!p.id.endsWith("-boundary") && !p.id.startsWith("esat-boundary-"));
 
 describe("mock papers", () => {
   it("ESAT has ten general papers, three specification-completion modules and two mathematics intensification papers", () => {

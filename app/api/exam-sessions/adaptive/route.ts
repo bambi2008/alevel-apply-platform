@@ -5,11 +5,16 @@ import { selectAdaptiveQuestions } from "@/lib/tests/adaptive";
 import { getTestById } from "@/lib/tests";
 import { loadStudentAdaptiveData } from "@/lib/study/adaptive-server";
 import { buildRemediationProfile, selectRemediationQuestions } from "@/lib/tests/remediation";
+import { matchesExamModule } from "@/lib/tests/syllabus-policy";
+import { isReleasedPublishedQuestion } from "@/lib/tests/practice-banks";
 
 export async function GET(req: NextRequest) {
   const testId = req.nextUrl.searchParams.get("testId") ?? "";
   const test = getTestById(testId);
   if (!test?.hasQuestionBank) return NextResponse.json({ error: "Unknown test" }, { status: 404 });
+  const examModule=req.nextUrl.searchParams.get("module") ?? (testId==="esat" ? "math1" : "step2");
+  if(testId==="esat" && !["math1","math2","physics","chemistry","biology"].includes(examModule)
+    || testId==="step" && !["step2","step3"].includes(examModule)) return NextResponse.json({error:"Unknown exam module"},{status:400});
 
   const session = await auth();
   const userId = (session?.user as { id?: string })?.id;
@@ -30,6 +35,7 @@ export async function GET(req: NextRequest) {
   const remediationOnly = req.nextUrl.searchParams.get("remediation") === "1";
   const format = req.nextUrl.searchParams.get("format") ?? "all";
   const questions = practiceQuestions.filter((question) => {
+    if(!isReleasedPublishedQuestion(testId,question) || !matchesExamModule(question,examModule)) return false;
     if (format === "all") return true;
     if (format === "mcq") return question.type === "mcq";
     const shortProof = question.type === "long" && question.id.startsWith("bmo-sp-");

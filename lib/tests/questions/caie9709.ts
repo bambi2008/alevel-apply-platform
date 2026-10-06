@@ -1,6 +1,7 @@
 import type { LongPart, LongQuestion } from "./types";
 import { CAIE9709_P3_EXPANSION_QUESTIONS } from "./caie9709-expansion";
 import { CAIE9709_P3_CANDIDATE_TARGETED_QUESTIONS } from "./caie9709-remediation";
+import { buildP3R3 } from "./caie9709-p3-r3";
 
 type QuestionInput = {
   id: string;
@@ -338,7 +339,7 @@ export const CAIE9709_P3_MOCK_4: LongQuestion[] = [
   }),
 ];
 
-export const CAIE9709_QUESTIONS: LongQuestion[] = [
+export const CAIE9709_P3_PREVIOUS_QUESTIONS: LongQuestion[] = [
   ...CAIE9709_P3_MOCK_1,
   ...CAIE9709_P3_MOCK_2,
   ...CAIE9709_P3_MOCK_3,
@@ -346,3 +347,11 @@ export const CAIE9709_QUESTIONS: LongQuestion[] = [
   ...CAIE9709_P3_EXPANSION_QUESTIONS,
   ...CAIE9709_P3_CANDIDATE_TARGETED_QUESTIONS,
 ];
+
+const revision = buildP3R3(
+  Array.from({ length: 8 }, (_, i) => CAIE9709_P3_PREVIOUS_QUESTIONS.slice(i*11, (i+1)*11)),
+  Array.from({ length: 8 }, (_, i) => CAIE9709_P3_CANDIDATE_TARGETED_QUESTIONS.slice(i*11, (i+1)*11)),
+);
+export const CAIE9709_P3_ACTIVE_PAPERS = revision.papers;
+export const CAIE9709_P3_ACTIVE_TARGETED_IDS = revision.targetedIds;
+export const CAIE9709_QUESTIONS: LongQuestion[] = revision.papers.flat();

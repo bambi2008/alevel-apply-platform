@@ -1,4 +1,5 @@
 import type { MockPaper } from "./index";
+import { CAIE9709_P3_ACTIVE_PAPERS } from "@/lib/tests/questions/caie9709";
 import {
   CAIE9709_P3_MOCK_1,
   CAIE9709_P3_MOCK_2,
@@ -42,13 +43,13 @@ const papers = [
   CAIE9709_P3_MOCK_16,
 ];
 
-export const CAIE9709_P3_WRITTEN_PAPERS: MockPaper[] = papers.map((questions, index) => ({
-  id: `caie9709-p3-written-${index + 1}${index >= 8 ? "-r2" : ""}`,
+export const CAIE9709_P3_WRITTEN_PAPERS: MockPaper[] = CAIE9709_P3_ACTIVE_PAPERS.map((questions, index) => ({
+  id: `caie9709-p3-written-${index + 1}-r3`,
   testId: "caie9709",
-  title: `CAIE 9709 P3 ${index >= 8 ? "错题强化综合卷" : "基础与综合练习卷"} ${index + 1}${index >= 8 ? " · R2" : ""}`,
+  title: `CAIE 9709 P3 ${index >= 8 ? "错题强化综合卷" : "基础与综合练习卷"} ${index + 1} · R3`,
   titleEn: `CAIE 9709 P3 ${index >= 8 ? "Targeted Revision" : "Foundation Practice"} ${index + 1}`,
   description:
-    "非官方原创训练卷：110 分钟、75 分、11 道书面结构题。基础卷用于巩固；R2 强化卷增加条件判断与多步推导。难度标签是训练分层，不代表与官方真卷等难；AI 点评仅供参考。",
+    "非官方原创训练卷：110 分钟、75 分、11 道书面结构题。R3 强化卷按短题与连续小问组织，练习方法衔接和条件检查。难度标签不代表与官方真卷等难；AI 点评仅供参考。",
   modules: [{
     id: "pure-mathematics-3",
     title: "Pure Mathematics 3 完整书面卷（11 题）",
@@ -68,12 +69,28 @@ export const CAIE9709_P3_WRITTEN_PAPERS: MockPaper[] = papers.map((questions, in
 
 // Preserve old IDs and original question text for existing attempts and bookmarks.
 // These papers are intentionally absent from the active catalogue.
-export const CAIE9709_P3_ARCHIVED_PAPERS: MockPaper[] = Array.from({ length: 8 }, (_, i) => ({
+export const CAIE9709_P3_ARCHIVED_PAPERS: MockPaper[] = [
+  ...papers.map((questions, i): MockPaper => ({
+    ...CAIE9709_P3_WRITTEN_PAPERS[i],
+    id: `caie9709-p3-written-${i+1}${i >= 8 ? "-r2" : ""}`,
+    title: `CAIE 9709 P3 ${i >= 8 ? "R2 " : ""}旧版卷 ${i+1}（历史记录）`,
+    description: "旧版题目仅供原有作答回看和继续；新训练请选择 R3 修订卷。",
+    formatType: "legacy",
+    modules: [{ ...CAIE9709_P3_WRITTEN_PAPERS[i].modules[0], questions }],
+  })),
+  ...Array.from({ length: 8 }, (_, i) => ({
   ...CAIE9709_P3_WRITTEN_PAPERS[i + 8],
   id: `caie9709-p3-written-${i + 9}`,
   title: `CAIE 9709 P3 旧版卷 ${i + 9}（历史记录）`,
   titleEn: `CAIE 9709 P3 Archived Paper ${i + 9}`,
-  description: "旧版题目保留供历史作答回看和继续；新的训练请选择 R2 修订卷。旧版难度标签不作为正式校准依据。",
-  formatType: "legacy",
+  description: "旧版题目保留供历史作答回看和继续；新的训练请选择 R3 修订卷。旧版难度标签不作为正式校准依据。",
+  formatType: "legacy" as const,
   modules: [{ ...CAIE9709_P3_WRITTEN_PAPERS[i + 8].modules[0], questions: legacyQuestions.slice(i * 11, (i + 1) * 11) }],
-}));
+  })),
+];
+
+export function getCurrentP3PaperId(paperId: string): string | undefined {
+  const match = /^caie9709-p3-written-(\d+)(?:-r2)?$/.exec(paperId);
+  const number = match ? Number(match[1]) : 0;
+  return number >= 1 && number <= 16 ? `caie9709-p3-written-${number}-r3` : undefined;
+}

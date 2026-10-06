@@ -2,24 +2,26 @@ import { describe, expect, it } from "vitest";
 import { buildEsatMockAudit } from "./esat-mocks";
 
 describe("ESAT mock-paper audit", () => {
-  it("locks the ten complete papers, three gap modules and two maths intensification papers", () => {
+  it("locks six three-module combinations and removes former mixed/gap full-mock claims", () => {
     const report = buildEsatMockAudit();
-    expect(report.paperCount).toBe(15);
-    expect(report.completePaperCount).toBe(10);
-    expect(report.gapPaperCount).toBe(3);
-    expect(report.intensificationPaperCount).toBe(2);
-    expect(report.moduleCount).toBe(25);
-    expect(report.questionCount).toBe(675);
-    expect(report.subjectModules).toEqual({ math: 11, physics: 8, chemistry: 3, biology: 3 });
+    expect(report.paperCount).toBe(6);
+    expect(report.completePaperCount).toBe(6);
+    expect(report.gapPaperCount).toBe(0);
+    expect(report.intensificationPaperCount).toBe(0);
+    expect(report.moduleCount).toBe(18);
+    expect(report.questionCount).toBe(486);
+    expect(report.subjectModules).toEqual({ math: 9, physics: 3, chemistry: 3, biology: 3 });
   });
 
-  it("keeps every module structurally valid and calibrated", () => {
+  it("keeps structure valid and records limited reuse/difficulty without inflated labels", () => {
     const report = buildEsatMockAudit();
     expect(report.critical).toBe(0);
-    expect(report.warnings).toBe(0);
-    expect(report.issues).toEqual([]);
+    expect(report.warnings).toBeGreaterThan(0);
+    expect(report.issues.filter(i=>i.severity==="critical")).toEqual([]);
+    expect(report.issues.map(i=>i.code)).toContain("REUSED_MODULE_BANKS");
+    expect(report.issues.map(i=>i.code)).toContain("TOO_FEW_HARD");
+    expect(report.issues.map(i=>i.code)).not.toContain("ANSWER_POSITION_BIAS");
     expect(report.modules.every((module) => module.questions === 27)).toBe(true);
-    expect(report.modules.every((module) => module.difficulty[3] >= 4)).toBe(true);
     expect(report.modules.every((module) => Object.values(module.answerCounts).sort().join(",") === "5,5,5,6,6")).toBe(true);
   });
 });
