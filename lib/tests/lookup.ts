@@ -44,6 +44,7 @@ const PRACTICE_QUESTIONS: Question[] = [
 
 const ALL_QUESTIONS: Question[] = [
   ...PRACTICE_QUESTIONS,
+  ...["mat", "step", "tmua", "bmo", "lnat"].flatMap(getReleasedPracticeQuestions),
   ...getAllMockQuestions(), // 完整模拟卷题目（不进练习库，但回看/分析需可反查）
 ];
 

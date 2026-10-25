@@ -2,6 +2,9 @@ import { getTranslations, setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { StoryIllustration } from "@/components/story-illustration";
 import { Photo } from "@/components/photo";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 type Value = { icon: string; title: string; desc: string };
 
@@ -77,9 +80,6 @@ export default async function AboutPage({ params }: { params: Promise<{ locale: 
         <div className="bento-card text-center p-10 sm:p-12">
           <h2 className="text-2xl sm:text-3xl font-bold text-[var(--ink)]">和我们一起，自己掌控这场申请</h2>
           <div className="mt-7 flex items-center justify-center gap-3 flex-wrap">
-            <Link href="/match" className="btn-glow px-7 py-3.5 rounded-2xl font-semibold">
-              免费试用选校匹配
-            </Link>
             <Link
               href="/"
               className="px-7 py-3.5 rounded-2xl bg-white/70 backdrop-blur text-[var(--ink)] font-medium border border-[var(--border)] hover:border-indigo-200 hover:bg-white transition-colors"

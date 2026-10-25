@@ -21,8 +21,8 @@ const expectedTopics = new Set([
 describe("CAIE 9709 P3 fixed written papers", () => {
   it("publishes the current 16-paper and June 2026 calibration status", () => {
     expect(CAIE9709_TEST.formatZh).toContain("当前 16 套");
-    expect(CAIE9709_TEST.statusNote).toContain("9709/15");
-    expect(CAIE9709_TEST.statusNote).toContain("44/88");
+    expect(CAIE9709_TEST.statusNote).toContain("Pure 3");
+    expect(CAIE9709_TEST.statusNote).not.toMatch(/参考用户|中国区|9709\/15|44\/88/);
     expect(CAIE9709_TEST.statusNote).not.toMatch(/印度卷|待取得/);
   });
 

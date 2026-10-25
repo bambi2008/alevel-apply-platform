@@ -112,7 +112,8 @@ import { IELTS_FULL_PAPERS_1 } from "./ielts-full-paper-1";
 import { CAIE9709_P3_WRITTEN_PAPERS, CAIE9709_P3_ARCHIVED_PAPERS } from "./caie9709-p3-written-papers";
 import { ESAT_BOUNDARY_PAPERS } from "./esat-boundary-papers";
 import { reviseStepPapers, reviseTmuaPapers } from "./boundary-revisions";
-import { isReleasedPaper } from "../syllabus-release";
+import { isReleasedPaper, hasPaperReleaseApproval } from "../syllabus-release";
+import { reviewedPaper, verifyReviewCorrections } from "../review-corrections";
 
 export interface MockModule {
   id: string;
@@ -1333,6 +1334,10 @@ ALL_MOCK_PAPERS.push(
 );
 
 /** Raw registry for historical lookup and audit, never a new-start catalogue. */
+verifyReviewCorrections();
+ALL_MOCK_PAPERS.push(...ALL_MOCK_PAPERS.filter(hasPaperReleaseApproval)
+  .map(reviewedPaper).filter((paper) => !ALL_MOCK_PAPERS.some((old) => old.id === paper.id)));
+
 export function getRegisteredMockPapersForTest(testId: string): MockPaper[] {
   return ALL_MOCK_PAPERS.filter((p) => p.testId === testId);
 }

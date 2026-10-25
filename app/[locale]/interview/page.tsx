@@ -1,4 +1,5 @@
 import { ArrowRight } from "lucide-react";
+import { setRequestLocale } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { CoreList, CorePageHeader, CorePageShell, CoreSectionHeader } from "@/components/core-page-layout";
 import {
@@ -8,7 +9,9 @@ import {
   INTERVIEW_GUIDE,
 } from "@/lib/interview";
 
-export default function InterviewPage() {
+export default async function InterviewPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  setRequestLocale(locale);
   const totalQuestions = INTERVIEW_CATEGORIES.reduce(
     (sum, category) =>
       sum + getSubjectsByCategory(category.id).reduce((count, subject) => count + getQuestionsBySubject(subject.id).length, 0),

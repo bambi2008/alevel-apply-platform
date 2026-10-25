@@ -1,7 +1,7 @@
 import type { Question } from "./questions/types";
 import type { MockPaper } from "./mock-papers";
 import { assessSyllabusCandidate,syllabusFingerprint,syllabusText } from "./syllabus-policy";
-import { PAPER_RELEASE_HASHES, PRACTICE_RELEASE_HASHES } from "./syllabus-manifest";
+import { PAPER_RELEASE_HASHES, PRACTICE_RELEASE_HASHES, SUPERSEDED_REVIEW_PAPERS } from "./syllabus-manifest";
 
 export const EXAM_SCOPE_NOTES:Record<string,string> = {
   esat:"五模块分开核验。Math 1 无微积分；Math 2 不要求复数、矩阵或一般微分方程。各组合复用模块题，与专项练习共享；仅供范围受限训练，不代表未见题、完整覆盖或官方难度。请按申请课程选择模块。",
@@ -14,7 +14,7 @@ export const EXAM_SCOPE_NOTES:Record<string,string> = {
   bpho:"Round 1/2 不能混用。本站只提供范围受限的训练；未核实的大学级方法不进入新题组，不宣称官方完整卷。",
   bmo:"BMO1 是完整书面证明；短选择题仅供基础练习，不是 BMO1/BMO2 完整模考。",
   tara:"日常推理、基础算术、问题解决与写作；不要求先验专业学科知识。",
-  ucat:"四模块能力测试；不含 Abstract Reasoning，不要求医学知识或高阶数学。",
+  ucat:"四模块能力训练；不含 Abstract Reasoning，不要求医学知识或高阶数学。本站为范围受限的原创计时训练，不是官方试题或完整考试，平台分数不代表官方成绩。",
   lnat:"基于给定文章阅读和论证写作，不要求法律专业知识。",
   ielts:"语言技能训练，不要求先验学科知识；合成听力音频和平台评分不等于官方录音或官方 Band。",
 };
@@ -25,10 +25,13 @@ export function releasedPracticeBank(testId:string,bank:Question[]):Question[] {
   return bank.filter(q=>q.testId===testId && assessSyllabusCandidate(q).allowed);
 }
 export function isReleasedPaper(paper:MockPaper):boolean {
+  return !SUPERSEDED_REVIEW_PAPERS.has(paper.id) && hasPaperReleaseApproval(paper);
+}
+export function hasPaperReleaseApproval(paper:MockPaper):boolean {
   return PAPER_RELEASE_HASHES[paper.id]===paperReleaseFingerprint(paper) && paperMeetsBoundary(paper);
 }
 /** Display-only: original IDs/content remain immutable for historical grading. */
-export const LIMITED_TRAINING_TEST_IDS = ["esat","bpho","csat","ielts"] as const;
+export const LIMITED_TRAINING_TEST_IDS = ["esat","bpho","csat","ielts","ucat"] as const;
 export function isLimitedTrainingTest(testId:string):boolean {
   return (LIMITED_TRAINING_TEST_IDS as readonly string[]).includes(testId);
 }
@@ -40,7 +43,8 @@ export function paperTrainingTitle(paper:MockPaper):string {
     const identity=paper.testId==="esat" ? paper.modules.map(m=>m.titleEn).join(" + ") : paper.id;
     return `${paper.testId.toUpperCase()} · 范围训练 · ${identity}`;
   }
-  if(["mat","pat"].includes(paper.testId)) return paper.title+" · 历史训练";
+  if(["mat","pat"].includes(paper.testId)) return `${paper.testId.toUpperCase()} · 历史训练 · ${paper.id}`;
+  if(paper.testId==="tmua") return paper.title.replace("（真题结构基准）", "（按公开考试结构编写）");
   return paper.title;
 }
 export function limitedTrainingInstructions(paper:MockPaper):string[] {
@@ -53,6 +57,7 @@ export function limitedTrainingInstructions(paper:MockPaper):string[] {
 export function paperPresentation(paper:MockPaper):MockPaper {
   if(isLimitedTrainingTest(paper.testId)) return {...paper,title:paperTrainingTitle(paper),titleEn:`${paper.testId.toUpperCase()} · Limited timed practice · ${paper.id}`,
     description:EXAM_SCOPE_NOTES[paper.testId],formatType:"extension",instructions:limitedTrainingInstructions(paper)};
+  if(paper.testId==="tmua") return {...paper,title:paperTrainingTitle(paper),titleEn:`TMUA original timed practice · ${paper.id}`,description:"按公开考试结构编写的原创计时训练。训练分数不代表官方成绩，难度不保证与正式考试等值。"};
   if(!["mat","pat"].includes(paper.testId)) return paper;
   return {...paper,title:paperTrainingTitle(paper),description:EXAM_SCOPE_NOTES[paper.testId]};
 }

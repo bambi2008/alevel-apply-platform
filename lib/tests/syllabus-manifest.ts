@@ -17,6 +17,13 @@ export const PRACTICE_RELEASE_HASHES: Record<string, string> = {
   "caie9709": "cb20b823:34b2a823:173937"
 };
 export const PAPER_RELEASE_HASHES: Record<string, string> = {
+  "mat-written-3-rev20261025": "497c8cd3:6a603599:5119",
+  "mat-written-5-rev20261025": "8fdb228c:4ef72c58:5395",
+  "mat-mock-1-rev20261025": "83e3d24e:ec9a7216:12015",
+  "step2-written-1-boundary-rev20261025": "50cf6750:15fc674a:34115",
+  "step2-written-2-boundary-rev20261025": "20c29f1:27e86967:30763",
+  "step3-written-1-boundary-rev20261025": "c4f658cd:4f370467:25689",
+  "lnat-mock-2-rev20261025": "c73f8a9e:e0fade0c:45638",
   "mat-written-2": "d1d98e29:9c6a5355:5485",
   "mat-written-3": "de3bef1e:ec8c95bc:5233",
   "mat-written-4": "9bb0a4a2:a68c7838:6571",
@@ -104,3 +111,10 @@ export const PAPER_RELEASE_HASHES: Record<string, string> = {
   "caie9709-p3-written-15-r3": "d3908d5e:ab85e884:13177",
   "caie9709-p3-written-16-r3": "8128880f:32a60fb9:13380"
 };
+
+// Old versions stay resolvable for saved attempts, but cannot start new work.
+export const SUPERSEDED_REVIEW_PAPERS = new Set([
+  "mat-written-3", "mat-written-5", "mat-mock-1",
+  "step2-written-1-boundary", "step2-written-2-boundary",
+  "step3-written-1-boundary", "lnat-mock-2",
+]);

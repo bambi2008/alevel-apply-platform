@@ -8,6 +8,7 @@ import { CoreTopNav } from "@/components/core-top-nav";
 import { CoreRouteFrame } from "@/components/core-route-frame";
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
+import { clientMessages } from "@/i18n/client-messages";
 import "../globals.css";
 
 export async function generateMetadata({
@@ -68,7 +69,7 @@ export default async function LocaleLayout({
   return (
     <html lang={locale} className="h-full antialiased">
       <body className="min-h-full flex flex-col bg-[var(--background)] text-neutral-900">
-        <NextIntlClientProvider messages={messages}>
+        <NextIntlClientProvider messages={clientMessages(messages)}>
           <CoreTopNav
             userEmail={user?.email ?? null}
             isAdmin={user?.role === "ADMIN"}

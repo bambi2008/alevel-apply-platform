@@ -76,7 +76,7 @@ function isMcq(question: MCQQuestion | LongQuestion): question is MCQQuestion {
 
 export function buildLnatMockAudit(): LnatAuditReport {
   const allPapers = getMockPapersForTest("lnat");
-  const objective = allPapers.filter((paper) => /^lnat-mock-\d+$/.test(paper.id));
+  const objective = allPapers.filter((paper) => /^lnat-mock-\d+(?:-rev20261025)?$/.test(paper.id));
   const written = allPapers.filter((paper) => /^lnat-written-\d+$/.test(paper.id));
   const issues: LnatAuditIssue[] = [];
   const seenIds = new Map<string, string>();

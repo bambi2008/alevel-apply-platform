@@ -101,7 +101,10 @@ export default function StatementsPage() {
     }
   };
 
-  if (!loaded) return <div className="mx-auto max-w-6xl px-4 py-10 text-neutral-400">{tc("loading")}</div>;
+  if (!loaded) return <CorePageShell>
+    <CorePageHeader step="4 / 4" title="文书工作台" description="从真实经历整理素材、搭建结构与修改草稿。不代写，不编造经历。" />
+    <p className="py-8 text-sm text-[var(--ink-soft)]" role="status">{tc("loading")}</p>
+  </CorePageShell>;
 
   const questions = t.raw("questions") as { title: string; hint: string }[];
   const selfCheck = t.raw("selfCheck") as string[];

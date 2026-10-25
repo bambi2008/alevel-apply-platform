@@ -12,32 +12,23 @@ import {
   LEGAL_VERSION,
   normalizeEmail,
 } from "@/lib/auth/security";
-import {
-  BETA_COHORT,
-  BETA_INVITE_LOCK_ID,
-  BETA_REGISTRATION_LIMIT,
-  classifyRegistrationInvite,
-  hashInviteCode,
-  normalizeInviteCode,
-} from "@/lib/beta/invites";
 import { parseRegistrationIntent, registrationIntentSchema } from "@/lib/auth/registration-intent";
 
 const schema = z.object({
   email: z.string().email(),
   password: z.string().refine(isStrongPassword),
-  inviteCode: z.string().min(8).max(32),
   intendedUniversities: registrationIntentSchema,
   intendedMajors: registrationIntentSchema,
 });
 
 export type AuthState = {
-  error?: "INVALID" | "EXISTS" | "BADCREDS" | "CONSENT_REQUIRED" | "INVITE_INVALID" | "BETA_FULL";
+  error?: "INVALID" | "EXISTS" | "BADCREDS" | "CONSENT_REQUIRED" | "RATE_LIMITED";
 };
 
 export async function registerAction(_prev: AuthState, formData: FormData): Promise<AuthState> {
   const email = normalizeEmail(formData.get("email"));
   const password = String(formData.get("password") ?? "");
-  const inviteCode = normalizeInviteCode(formData.get("inviteCode"));
+  const locale = formData.get("locale") === "en" ? "en" : "zh-CN";
   const intendedUniversities = parseRegistrationIntent(formData.get("intendedUniversities"));
   const intendedMajors = parseRegistrationIntent(formData.get("intendedMajors"));
   const privacyConsent = formData.get("privacyConsent") === "on";
@@ -46,14 +37,20 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
   const guardian = formData.get("guardian") === "on";
 
   if (!privacyConsent || !termsConsent) return { error: "CONSENT_REQUIRED" };
-  const parsed = schema.safeParse({ email, password, inviteCode, intendedUniversities, intendedMajors });
+  const parsed = schema.safeParse({ email, password, intendedUniversities, intendedMajors });
   if (!parsed.success) return { error: "INVALID" };
   const requestHeaders = await headers();
+  const ip = clientIp(requestHeaders);
+  const ipLimit = await consumePersistentRateLimit(
+    rateLimitKey("registration-ip", ip),
+    { limit: 10, windowMs: 60 * 60_000 },
+  );
+  if (!ipLimit.allowed) return { error: "RATE_LIMITED" };
   const limit = await consumePersistentRateLimit(
-    rateLimitKey("registration", clientIp(requestHeaders), email),
+    rateLimitKey("registration", ip, email),
     { limit: 5, windowMs: 60 * 60_000 },
   );
-  if (!limit.allowed) return { error: "INVALID" };
+  if (!limit.allowed) return { error: "RATE_LIMITED" };
 
   const passwordHash = await bcrypt.hash(password, 12);
   const consents: { type: "PRIVACY_PIPL" | "TERMS" | "GUARDIAN" | "CROSS_BORDER"; version: string }[] = [
@@ -63,30 +60,11 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
   if (guardian) consents.push({ type: "GUARDIAN", version: LEGAL_VERSION });
   if (crossBorderConsent) consents.push({ type: "CROSS_BORDER", version: LEGAL_VERSION });
 
-  const registrationError = await db.$transaction(async (tx) => {
-    await tx.$queryRaw`SELECT pg_advisory_xact_lock(${BETA_INVITE_LOCK_ID})::text`;
-
-    const invite = await tx.betaInvite.findUnique({
-      where: { codeHash: hashInviteCode(inviteCode) },
-      select: {
-        id: true,
-        email: true,
-        cohort: true,
-        status: true,
-        expiresAt: true,
-        usedByUserId: true,
-      },
-    });
+  let registrationError: "EXISTS" | null;
+  try {
+    registrationError = await db.$transaction(async (tx) => {
     const existing = await tx.user.findUnique({ where: { email }, select: { id: true } });
-    const inviteState = classifyRegistrationInvite(invite, email, existing?.id ?? null);
-    if (inviteState === "EXISTS") return "EXISTS" as const;
-    if (inviteState === "INVALID") return "INVITE_INVALID" as const;
-    if (!invite) return "INVITE_INVALID" as const;
-
-    const usedCount = await tx.betaInvite.count({
-      where: { cohort: BETA_COHORT, status: "USED" },
-    });
-    if (usedCount >= BETA_REGISTRATION_LIMIT) return "BETA_FULL" as const;
+    if (existing) return "EXISTS" as const;
 
     const user = await tx.user.create({
       data: {
@@ -110,9 +88,6 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
         )
         WHERE "id" = ${user.profile.id}`,
     );
-    await tx.betaParticipant.create({
-      data: { studentId: user.profile.id, cohort: BETA_COHORT, source: "EMAIL_INVITE" },
-    });
     await tx.learningEvent.create({
       data: {
         studentId: user.profile.id,
@@ -120,17 +95,19 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
         eventKey: `registered:${user.id}`,
       },
     });
-    const consumed = await tx.betaInvite.updateMany({
-      where: { id: invite.id, status: "AVAILABLE", usedByUserId: null },
-      data: { status: "USED", usedByUserId: user.id, usedAt: new Date() },
-    });
-    if (consumed.count !== 1) throw new Error("Invite could not be consumed");
     return null;
-  });
+    });
+  } catch (error) {
+    // Concurrent requests can both pass the lookup. The database email unique
+    // constraint remains authoritative; do not mask unrelated write failures.
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002"
+      && String(error.meta?.target ?? "").includes("email")) return { error: "EXISTS" };
+    throw error;
+  }
   if (registrationError) return { error: registrationError };
 
   // 注册后自动登录（成功会抛出重定向）
-  await signIn("credentials", { email, password, redirectTo: "/" });
+  await signIn("credentials", { email, password, redirectTo: `/${locale}` });
   return {};
 }
 

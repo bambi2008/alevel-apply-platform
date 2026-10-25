@@ -1,7 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { registerAction, type AuthState } from "@/lib/auth/actions";
 import { SceneGrowth } from "@/components/illustrations";
@@ -9,6 +9,7 @@ import { Photo } from "@/components/photo";
 
 export default function RegisterPage() {
   const t = useTranslations("auth");
+  const locale = useLocale();
   const [state, formAction, pending] = useActionState<AuthState, FormData>(registerAction, {});
 
   return (
@@ -34,8 +35,13 @@ export default function RegisterPage() {
       {/* 右：注册表单 */}
       <div className="w-full max-w-sm mx-auto">
         <h2 className="text-2xl font-bold text-[var(--ink)] mb-6">{t("registerTitle")}</h2>
+        <p className="mb-5 text-sm text-[var(--ink-soft)]">{t("registrationHint")}</p>
         <form action={formAction} className="space-y-3">
-          <input name="email" type="email" required placeholder={t("email")} className="input" />
+          <input type="hidden" name="locale" value={locale} />
+          <label className="block text-sm text-[var(--ink-soft)]">
+            <span>{t("email")}</span>
+            <input name="email" type="email" autoComplete="email" required placeholder={t("email")} className="input mt-1" />
+          </label>
           <label className="block text-sm text-[var(--ink-soft)]">
             <span>意向院校</span>
             <input
@@ -60,16 +66,10 @@ export default function RegisterPage() {
             />
             <span className="mt-1 block text-xs text-[var(--ink-faint)]">可填写多个专业方向，请用逗号分隔。</span>
           </label>
-          <input
-            name="inviteCode"
-            type="text"
-            required
-            autoComplete="one-time-code"
-            placeholder={t("inviteCode")}
-            className="input font-mono uppercase"
-          />
-          <p className="text-xs text-[var(--ink-soft)]">{t("inviteHint")}</p>
-          <input name="password" type="password" required minLength={10} maxLength={128} placeholder={t("password")} className="input" />
+          <label className="block text-sm text-[var(--ink-soft)]">
+            <span>{t("password")}</span>
+            <input name="password" type="password" autoComplete="new-password" required minLength={10} maxLength={128} placeholder={t("password")} className="input mt-1" />
+          </label>
           <label className="flex items-start gap-2 text-sm text-[var(--ink-soft)]">
             <input name="privacyConsent" type="checkbox" required className="mt-1 accent-[var(--indigo)]" />
             <span>

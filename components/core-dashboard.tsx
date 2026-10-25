@@ -2,7 +2,7 @@ import { ArrowDown, ArrowUpRight, BookOpenCheck, FilePenLine, FlaskConical, Mess
 import { Link } from "@/i18n/navigation";
 
 const CENTERS = [
-  { href: "/tests", index: "01", title: "考试训练", subtitle: "入学考试与 A-Level", description: "专项练习、完整模考与学习分析。", icon: BookOpenCheck },
+  { href: "/tests", index: "01", title: "考试训练", subtitle: "入学考试与 A-Level", description: "专项练习、计时训练与学习分析。", icon: BookOpenCheck },
   { href: "/background", index: "02", title: "竞赛与专业实践", subtitle: "把学术兴趣做成成果", description: "竞赛训练、研究课题与专业实践。", icon: FlaskConical },
   { href: "/interview", index: "03", title: "面试训练", subtitle: "高质量计算与表达", description: "学科推理、口头表达与追问训练。", icon: MessagesSquare },
   { href: "/statements", index: "04", title: "文书", subtitle: "从素材到成稿", description: "整理经历证据，完成申请文书。", icon: FilePenLine },

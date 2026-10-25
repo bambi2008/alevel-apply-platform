@@ -41,8 +41,7 @@
     "loginPending": "Signing in…",
     "registerTitle": "Sign up",
     "email": "Email",
-    "inviteCode": "One-time invite code",
-    "inviteHint": "The code is bound to the invited email and expires immediately after registration.",
+    "registrationHint": "Create an account with your email. Add your intended universities and subjects to personalise your training.",
     "password": "Password",
     "guardian": "I am a minor and have guardian consent",
     "consent": "I have read and agree to the Privacy Policy (PIPL)",
@@ -57,8 +56,7 @@
       "EXISTS": "Email already registered",
       "BADCREDS": "Wrong email or password",
       "CONSENT_REQUIRED": "Please read and accept the Privacy Policy and Terms",
-      "INVITE_INVALID": "The invite code is invalid, already used, or does not match this email",
-      "BETA_FULL": "The first 20 beta places are full"
+      "RATE_LIMITED": "Too many registration attempts. Please try again later."
     }
   },
   "common": {
@@ -290,7 +288,7 @@
   "statements": {
     "title": "Statement Studio",
     "intro": "UCAS personal statement (three structured questions from 2026 entry). Structured guidance plus character / format self-checks to help you write a strong PS yourself.",
-    "aiNotice": "⚠️ This tool assists only and does not ghost-write. Your statement must be your own — UCAS runs similarity detection. AI feedback coming soon.",
+    "aiNotice": "This tool assists; it does not ghost-write. AI feedback requires sign-in and separate data-processing consent. It is for practice only, may be unavailable or inaccurate, and is not human or official assessment.",
     "totalChars": "Total characters",
     "minHint": "Aim for at least {min} characters",
     "chars": "{n} chars",
@@ -420,13 +418,10 @@
   "story": {
     "eyebrow": "A note at the end",
     "titleLine": "A father and son who turned the potholes they hit into your path",
-    "short": "Our child studies at SCIE (Shenzhen College of International Education) and is heading into A2 after this summer. Walking the application journey with him, we hit plenty of potholes and wasted plenty of money. So, with AI, the two of us built this platform: it doesn't apply for you — it helps you do it well yourself.",
     "cta": "Read our story",
     "aboutTitle": "About us",
     "aboutSubtitle": "A father and son on the study-abroad road — and the platform we wish we'd had.",
     "paras": [
-      "Our child studies at SCIE (Shenzhen College of International Education) and moves into A2 after this summer. Over the past few years we walked the whole application journey with him — subject choices, background building, admissions tests, personal statements, university choices, forms.",
-      "Honestly, there were a lot of potholes. Information was opaque; agencies were full of tactics and charged anywhere from ¥80,000 to ¥120,000 — yet much of what they 'did for you' was work the student could and should have done themselves. Worst of all, the abilities that actually decide outcomes were what no one really taught.",
       "After all that, our clearest conviction became this: the application should be something the student controls. The job of parents and tools is to help them learn, not to do it for them.",
       "So, with AI, the two of us built this platform. Our son understands what A-Level students actually face; I turned it into something dependable, transparent and usable.",
       "It doesn't apply for you — it helps you do it well yourself: how to build your background, prepare for tests, write a statement that's honest and strong, and fill in every field. Transparent, low-cost, like someone who's walked the road before you — because we have."
@@ -442,11 +437,6 @@
         "icon": "💡",
         "title": "Been there",
         "desc": "Every feature maps to a real pothole we hit ourselves."
-      },
-      {
-        "icon": "🔍",
-        "title": "Transparent and low-cost",
-        "desc": "Agency-level help, handed to you clearly for a few hundred RMB."
       },
       {
         "icon": "🤖",

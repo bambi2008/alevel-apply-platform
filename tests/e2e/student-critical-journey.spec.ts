@@ -2,7 +2,6 @@ import { readFile } from "node:fs/promises";
 import { expect, test } from "@playwright/test";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
-import { BETA_COHORT, createInviteCode, hashInviteCode } from "../../lib/beta/invites";
 
 const db = new PrismaClient();
 
@@ -12,7 +11,6 @@ function uniqueEmail(label: string) {
 
 async function removeTestUser(email: string) {
   await db.user.deleteMany({ where: { email } });
-  await db.betaInvite.deleteMany({ where: { email, cohort: BETA_COHORT } });
 }
 
 test.beforeAll(() => {
@@ -33,17 +31,17 @@ test("student can register, finish a TMUA mock, open history, export data, and d
   const email = uniqueEmail("journey");
   const password = "E2eStart!2026";
   const changedPassword = "E2eChanged!2026";
-  const inviteCode = createInviteCode();
+  const serverFailures: string[] = [];
+  page.on("response", (response) => {
+    if (response.status() >= 500) serverFailures.push(`${response.status()} ${new URL(response.url()).pathname}`);
+  });
 
   try {
-    await db.betaInvite.create({
-      data: { email, cohort: BETA_COHORT, codeHash: hashInviteCode(inviteCode) },
-    });
     await page.goto("/zh-CN/register");
     await page.locator('input[name="email"]').fill(email);
     await page.locator('input[name="intendedUniversities"]').fill("University of Cambridge");
     await page.locator('input[name="intendedMajors"]').fill("Mathematics");
-    await page.locator('input[name="inviteCode"]').fill(inviteCode);
+    await expect(page.locator('input[name="inviteCode"]')).toHaveCount(0);
     await page.locator('input[name="password"]').fill(password);
     await page.locator('input[name="privacyConsent"]').check();
     await page.locator('input[name="termsConsent"]').check();
@@ -53,8 +51,8 @@ test("student can register, finish a TMUA mock, open history, export data, and d
     const registered = await db.user.findUnique({ where: { email }, include: { profile: true } });
     expect(registered?.profile?.intendedUniversities).toEqual(["University of Cambridge"]);
     expect(registered?.profile?.intendedMajors).toEqual(["Mathematics"]);
-    const consumedInvite = await db.betaInvite.findUnique({ where: { codeHash: hashInviteCode(inviteCode) } });
-    expect(consumedInvite).toMatchObject({ status: "USED", usedByUserId: registered?.id });
+    expect(registered?.role).toBe("STUDENT");
+    expect(await db.betaParticipant.count({ where: { studentId: registered!.profile!.id } })).toBe(0);
 
     await page.goto("/zh-CN/tests/tmua/mock");
     await page.locator('a[href*="/tests/tmua/paper/"]').first().click();
@@ -108,6 +106,8 @@ test("student can register, finish a TMUA mock, open history, export data, and d
       testId: "tmua", mode: "paper", totalMax: 40,
     });
     expect(exported.user.profile?.examSessions[0].answers).toHaveLength(40);
+    expect(await db.betaParticipant.count({ where: { studentId: registered!.profile!.id } })).toBe(0);
+    expect(serverFailures).toEqual([]);
 
     await expect(page).toHaveURL(/\/zh-CN\/account$/);
     const passwordForm = page.locator('input[name="password"]').locator("..");
@@ -130,6 +130,7 @@ test("student can register, finish a TMUA mock, open history, export data, and d
     await deleteForm.locator('input[name="confirmation"]').fill("DELETE");
     await deleteForm.locator('button[type="submit"]').click();
     await expect.poll(() => db.user.count({ where: { email } })).toBe(0);
+    expect(serverFailures).toEqual([]);
   } finally {
     await removeTestUser(email);
   }

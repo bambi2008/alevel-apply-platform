@@ -13,6 +13,7 @@ import { CSAT_QUESTIONS } from "./questions/csat";
 import { CAIE9709_QUESTIONS } from "./questions/caie9709";
 import type { Question } from "./questions/types";
 import { releasedPracticeBank } from "./syllabus-release";
+import { reviewedQuestion, verifyReviewCorrections } from "./review-corrections";
 import { syllabusFingerprint } from "./syllabus-policy";
 import { P3_SYLLABUS_SUPPLEMENTS, ESAT_SYLLABUS_SUPPLEMENTS, BPHO_SYLLABUS_SUPPLEMENTS } from "./questions/syllabus-supplements";
 
@@ -25,8 +26,9 @@ export const REVIEWED_PRACTICE_SOURCES:Record<string,Question[]> = {
 };
 
 // Stable references avoid repeated hydration/session restore effects in the client.
+verifyReviewCorrections();
 const RELEASED_PRACTICE_BANKS = new Map(Object.entries(REVIEWED_PRACTICE_SOURCES)
-  .map(([testId,bank])=>[testId,releasedPracticeBank(testId,bank)]));
+  .map(([testId,bank])=>[testId,releasedPracticeBank(testId,bank).map(reviewedQuestion)]));
 const EMPTY:Question[]=[];
 export function getReleasedPracticeQuestions(testId:string):Question[] {
   return RELEASED_PRACTICE_BANKS.get(testId) ?? EMPTY;

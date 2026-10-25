@@ -128,7 +128,7 @@ export function ImportFromProjects({ content }: { content: UcasPsContent }) {
 
       {materials.length === 0 ? (
         <p className="mt-3 text-sm text-neutral-500">
-          还没有可用的课题素材。去「背景提升」做一个课题、写下反思后，这里就能一键参考。
+          还没有可用的课题素材。去「竞赛与专业实践」做一个课题、写下反思后，这里就能一键参考。
         </p>
       ) : (
         <div className="mt-4 space-y-3">

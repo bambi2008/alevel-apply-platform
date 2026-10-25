@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Menu, X } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Link, usePathname } from "@/i18n/navigation";
 import { LocaleSwitcher } from "@/components/locale-switcher";
 import { NotificationBell } from "@/components/notification-bell";
@@ -15,6 +16,7 @@ const NAV_ITEMS = [
 ] as const;
 
 export function CoreTopNav({ userEmail, isAdmin, isLoggedIn }: { userEmail?: string | null; isAdmin: boolean; isLoggedIn: boolean }) {
+  const authText = useTranslations("auth");
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
   const [userOpen, setUserOpen] = useState(false);
@@ -46,7 +48,10 @@ export function CoreTopNav({ userEmail, isAdmin, isLoggedIn }: { userEmail?: str
                 <form action={logoutAction}><button type="submit" className="w-full rounded px-3 py-2 text-left text-sm hover:bg-[var(--surface)]">退出</button></form>
               </div>}
             </div>
-          ) : <Link href="/login" className="text-sm font-semibold text-[#101817] hover:underline hover:underline-offset-4">登录</Link>}
+          ) : <>
+            <Link href="/login" className="inline-flex min-h-11 min-w-11 items-center justify-center text-sm font-semibold text-[#101817] hover:underline hover:underline-offset-4">{authText("login")}</Link>
+            <Link href="/register" className="inline-flex min-h-11 items-center justify-center border border-black/20 px-3 text-sm font-semibold text-[#101817] hover:bg-white">{authText("registerTitle")}</Link>
+          </>}
           <button type="button" onClick={() => setMenuOpen((value) => !value)} aria-label={menuOpen ? "关闭菜单" : "打开菜单"} className="flex size-9 items-center justify-center rounded-lg hover:bg-[var(--surface)] lg:hidden">{menuOpen ? <X className="size-5" /> : <Menu className="size-5" />}</button>
         </div>
       </div>

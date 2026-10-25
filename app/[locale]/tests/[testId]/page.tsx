@@ -4,7 +4,7 @@ import { useState, useEffect, use } from "react";
 import { notFound, useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { forceFullNavigation } from "@/lib/navigation";
-import { getTestById, type AdmissionsTest } from "@/lib/tests";
+import { getTestById, getTestPurpose, type AdmissionsTest } from "@/lib/tests";
 import { getKnowledgeByTopicId } from "@/lib/tests/knowledge";
 import { REGISTRATION_INFO } from "@/lib/tests/registration";
 import { ExamTimer, getTimerPresets } from "@/components/exam-timer";
@@ -204,7 +204,12 @@ function OverviewTab({ test }: { test: AdmissionsTest }) {
         </ul>
       </Section>
 
-      {REGISTRATION_INFO[test.id] && (
+      {getTestPurpose(test) === "legacy" ? (
+        <Section title="历史训练" titleEn="Historical practice">
+          <p className="text-sm leading-6">{test.id === "mat" ? "MAT 已停考，牛津数学与计算机相关专业自 2026 年起改用 TMUA。" : "PAT 已停考，牛津物理相关专业现使用 ESAT。"} 本页仅保留历史训练。</p>
+          <a href={test.registrationUrl} target="_blank" rel="noopener noreferrer" className="mt-3 inline-block text-sm underline">查看牛津官方说明 ↗</a>
+        </Section>
+      ) : REGISTRATION_INFO[test.id] && (
         <Section title="报名与出分" titleEn="Registration & Results">
           {(() => {
             const r = REGISTRATION_INFO[test.id];
@@ -258,14 +263,14 @@ function OverviewTab({ test }: { test: AdmissionsTest }) {
       )}
 
       <div className="flex gap-3">
-        <a
+        {getTestPurpose(test) !== "legacy" && <a
           href={test.registrationUrl}
           target="_blank"
           rel="noopener noreferrer"
           className="px-4 py-2 rounded-lg bg-[var(--indigo)] text-white text-sm font-medium hover:bg-[var(--indigo-hover)]"
         >
           报名官网 ↗
-        </a>
+        </a>}
         <a
           href={test.officialSampleUrl}
           target="_blank"
@@ -283,7 +288,7 @@ function TopicsTab({ test }: { test: AdmissionsTest }) {
   return (
     <div className="space-y-3">
       <p className="text-sm text-[var(--ink-soft)] mb-4">
-        以下知识点模块是 {test.abbr} 考试范围的核心分类。点击「学习讲解」查看知识点阐述与例题精讲。
+        以下知识点模块是 {test.id === "caie9709" ? "9709 Pure 3" : test.abbr} 训练范围的分类。点击「学习讲解」查看知识点阐述与例题精讲。
       </p>
       {test.topics.map((topic, i) => {
         const hasLearn = !!getKnowledgeByTopicId(topic.id);

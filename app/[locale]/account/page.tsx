@@ -4,10 +4,11 @@ import { db } from "@/lib/db";
 import { AiConsentForm, ChangePasswordForm, DeleteAccountForm } from "@/components/account-security-forms";
 import { PageHeader } from "@/components/page-header";
 
-export default async function AccountPage() {
+export default async function AccountPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
   const session = await auth();
   const userId = (session?.user as { id?: string } | undefined)?.id;
-  if (!userId) redirect("/login");
+  if (!userId) redirect(`/${locale}/login`);
 
   const user = await db.user.findUnique({
     where: { id: userId },
@@ -18,7 +19,7 @@ export default async function AccountPage() {
       consents: { select: { type: true, version: true, grantedAt: true } },
     },
   });
-  if (!user) redirect("/login");
+  if (!user) redirect(`/${locale}/login`);
 
   return (
     <main className="mx-auto max-w-3xl px-5 py-12">

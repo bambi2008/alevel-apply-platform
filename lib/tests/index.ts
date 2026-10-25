@@ -464,7 +464,7 @@ const CORE_TESTS: AdmissionsTest[] = [
     format: "Section A: 42 MCQ (12 passages × 3–4 questions, reading comprehension & inference); Section B: 1 essay from 3 prompts",
     formatZh: "第一节：42 道选择题（阅读 12 篇文章，每篇 3–4 道推断/理解题，95 分钟）；第二节：从 3 个话题中选 1 题写短文（40 分钟）。",
     registrationUrl: "https://lnat.ac.uk/",
-    officialSampleUrl: "https://lnat.ac.uk/lnat-preparation/free-test-resources/",
+    officialSampleUrl: "https://lnat.ac.uk/how-to-prepare/",
     hasQuestionBank: true,
     overview: "LNAT 是英国法学院最广泛使用的入学能力测试，不考法律知识，而是测试批判性阅读、推断分析和论证写作能力。无论背景如何，都可以通过系统训练显著提升成绩。",
     structureDetails: "Section A 是速度与准确度的双重考验：12 篇学术类文章，文章长度 500–700 词，共 42 题，平均每题 2.2 分钟。Section B 小论文由牛津等院校直接评阅（部分院校不使用 B 节）。",

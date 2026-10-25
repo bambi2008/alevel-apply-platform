@@ -6,7 +6,7 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
   const contact = process.env.PRIVACY_CONTACT_EMAIL || "请通过平台运营方公布的联系渠道联系我们";
   if (locale === "en") {
     return (
-      <LegalPage title="Privacy Policy" version={LEGAL_VERSION} intro="This policy explains how QiaoShen handles personal information when you use its application and exam-preparation services.">
+      <LegalPage title="Privacy Policy" versionLabel="Version" version={LEGAL_VERSION} intro="This policy explains how QiaoShen handles personal information when you use its application and exam-preparation services.">
         <section><h2>1. Who we are</h2><p>QiaoShen project team operates this service. Privacy contact: {contact}.</p></section>
         <section><h2>2. Information we process</h2><ul><li>Account identifiers, password hashes and consent records.</li><li>Profile, grades, target courses, applications and study plans that you enter.</li><li>Exam answers, timing and interaction telemetry used for marking and difficulty calibration.</li><li>Documents you choose to upload, plus technical logs needed for security and reliability.</li></ul></section>
         <section><h2>3. Why we use it</h2><p>We use information to provide account access, save progress, personalise study, grade work, secure the service, respond to requests and meet applicable obligations. We do not sell personal information.</p></section>

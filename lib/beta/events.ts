@@ -8,11 +8,7 @@ export async function ensureStudentContext(userId: string) {
     create: { userId },
     select: { id: true },
   });
-  await db.betaParticipant.upsert({
-    where: { studentId: profile.id },
-    update: {},
-    create: { studentId: profile.id },
-  });
+  // Public registration must not implicitly enrol users in a historical cohort.
   return profile;
 }
 
@@ -29,10 +25,6 @@ export async function recordLearningEvent(input: {
   occurredAt?: Date;
 }) {
   const occurredAt = input.occurredAt ?? new Date();
-  await db.betaParticipant.createMany({
-    data: [{ studentId: input.studentId, lastActiveAt: occurredAt }],
-    skipDuplicates: true,
-  });
   await db.$transaction([
     db.learningEvent.createMany({
       data: [{

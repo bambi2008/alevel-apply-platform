@@ -125,10 +125,10 @@ export async function saveProfileAction(
     && p.intendedMajors.length
     && subjects.length,
   );
-  await db.betaParticipant.upsert({
+  // Keep activity for existing beta participants without enrolling public users.
+  await db.betaParticipant.updateMany({
     where: { studentId: sp.id },
-    update: profileComplete ? { onboardingCompletedAt: new Date(), lastActiveAt: new Date() } : { lastActiveAt: new Date() },
-    create: { studentId: sp.id, onboardingCompletedAt: profileComplete ? new Date() : null },
+    data: profileComplete ? { onboardingCompletedAt: new Date(), lastActiveAt: new Date() } : { lastActiveAt: new Date() },
   });
 
   if (p.intendedUniversities) {
