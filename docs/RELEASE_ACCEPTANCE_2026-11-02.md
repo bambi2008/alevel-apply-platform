@@ -22,3 +22,7 @@ Authority: owner requests completion of categories 1, 2 and 4, then GitHub and p
 Fresh November 2 production audit: **0 findings**. Full audit now reports **2 moderate development-tool findings**, newly visible since October 29's zero report: minimatch `GHSA-g3hv-75wg-m249` and glob `GHSA-3g3m-2fjr-6pw4`, through ESLint's tool chain. Patched-major requirements are minimatch 11.0.1 and glob 14.0.2. No unsafe cross-major override, audit suppression or assertion removal is used to manufacture zero. The earlier dated zero report remains historical evidence only; this release does not claim a current zero full audit.
 
 Git hash and live deployment evidence are recorded in `EXECUTION_PLAN.md` after each step succeeds. This document is not evidence that an unperformed deployment succeeded.
+
+## Live deployment
+
+Release `a09c159` is now healthy at `https://qiaoshenedu.com`; image `sha256:26e57385c720a5924013fdf5f1d8304663bc5056547aa7579e9a2b86dc5152ba`. Runtime preflight, encrypted pre-switch backup `20261102T052312Z`, additive feedback migration and public database/storage checks pass. Both PostgreSQL containers retain their original starts and volumes. Beta remains `d644cda`. Seven mobile-width public routes return 200 with no checked horizontal overflow or runtime script exception; six public static-resource audits return no failed references. The operator confirms the fact-based retention disclosure scheme. Logs, build reports, temporary files, server environment and backup archives are excluded from Git.

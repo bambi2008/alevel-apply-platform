@@ -16,7 +16,7 @@ The experience must be direct and clear: after sign-in, students choose one of t
 
 ## Immutable Constraints
 
-- Preserve the existing production site and data. The redesigned Beta remains separate at `beta.qiaoshenedu.com`.
+- Preserve production data, a recoverable prior image and the separate `beta.qiaoshenedu.com` deployment. The owner subsequently authorised promoting the reviewed redesign to public production; current release authority and evidence are recorded in the latest milestone.
 - Do not restore application-management or unrelated tool features to the four-core Beta.
 - Keep the four exam subareas: structure, knowledge, history, and pre-study analysis.
 - Registration must capture intended universities and majors, and the site must expose only relevant exams and subjects.
@@ -36,7 +36,7 @@ The experience must be direct and clear: after sign-in, students choose one of t
 - Interview mathematics increases from 2 to 6 high-quality prompts and physics from 2 to 6, with passing audits.
 - AI interview configuration supports explicit enablement, a server-only DeepSeek key, cross-border consent, and actionable disabled/missing-key errors.
 - Relevant type checks, lint, focused tests, production build, desktop checks, and mobile checks pass.
-- Beta deployment is healthy and the original production deployment remains unaffected.
+- The authorised public production release is healthy, production data and rollback image are retained, and the separate Beta remains healthy.
 
 ## Completed Work And Evidence
 
@@ -88,6 +88,14 @@ The experience must be direct and clear: after sign-in, students choose one of t
 - Beta release `c20fa8f` was built and deployed successfully on 2026-08-30. The in-image production-environment preflight passed with only the known optional external-alerting warning; the Beta app and backup containers were recreated, the 13-day-old healthy Beta PostgreSQL container was retained, and public Beta health reports release `c20fa8f` with database/storage `ok`. Production remains healthy on `367b7e2`; its app, database, backup, and Caddy containers retained their existing uptimes.
 
 ## Current Milestone
+
+- 2026-11-02: Final live follow-up passes: scheduled study-retention worker is running; rollback image `qiaoshen-app:752766e` remains available; the Beta app retains its September 30 start time. A real nested `/zh-CN/interview/maths` page returns 200 and displays the inherited development notice without overflow. Requested release work is complete with the owner's physical-device/live-handwriting deferral and confirmed privacy scheme; provider-specific future AI enablement and two newly reported moderate development-tool advisories remain explicitly documented follow-ups. Current production is `a09c159`; deployment records are being saved to GitHub without runtime source changes.
+
+- 2026-11-02: Production deployment of pushed release `a09c159` succeeds. Immutable image is `sha256:26e57385c720a5924013fdf5f1d8304663bc5056547aa7579e9a2b86dc5152ba`; in-image environment preflight passes, encrypted pre-switch backup completes at `/backups/20261102T052312Z`, and additive migration `20261026090000_add_question_feedback` applies successfully. Deployment job reports `PUBLIC_HEALTH_OK=a09c159` and `RELEASE_HEALTHY=a09c159`. Only app/backup recreate; original production PostgreSQL retains its August 13 start time, Beta PostgreSQL its August 17 start time, and original app-storage/backup bindings are preserved. Caddy validates and gracefully reloads. Public production database/storage are ok; Beta stays healthy on `d644cda`. Seven live mobile-width pages return 200 without overflow or runtime script errors, interviews show development status and policy shows November 2. Six live static-resource audits pass with 14/15/17/19/13/13 references and no missing or MIME failures. A follow-up process query used a ps format without PID and failed after collecting successful deploy evidence; the query is corrected separately, not misreported as deployment failure.
+
+- 2026-11-02: Owner explicitly confirms the privacy closeout scheme: account information until account deletion, backups described as latest 14 sets rather than 14 days, and security logs disclosed according to verified runtime configuration, with no new account/backup/log deletion operation. This matches the already reviewed policy in the pushed release. Docker-only production job for `a09c159` is running; remote optimized compilation passes while production `752766e` and Beta remain healthy. Public cutover is not yet claimed.
+
+- 2026-11-02: GitHub push succeeds for `codex/oct25-consolidated-fixes` at `a09c159` (feature source `a3c968a` plus acceptance record). Server preflight confirms the retained production checkout `/opt/qiaoshen-release-3ed9afc` is clean, host Node is absent, original environment stays `/opt/qiaoshen/.env.production`, the original backup mount has 14 successful sets and ~14 GB disk remains. Deployment will use Docker-only commands, preserve that backup binding/Caddy configuration and both database volumes, and provide application-image rollback to `752766e`. No public traffic has switched yet.
 
 - 2026-11-02: Verified source/data/document changes committed as `a3c968a` on `codex/oct25-consolidated-fixes` (232 files). The candidate path and secret-pattern checks exclude logs, caches, temporary/build output, environment secrets and the owner's original tsconfig formatting difference; CRLF-aware staged whitespace check passes. This is a local source commit only so far; push and production deployment are next.
 
@@ -431,10 +439,10 @@ The verified all-level core experience is deployed to production at release `fd3
 
 ## Remaining Tasks
 
-- Completed: release `df44aac` is pushed and deployed only to Beta; desktop written-answer controls are picker-only, while deterministic device tests retain camera plus picker for phones/iPads. Follow-up: confirm the camera sheet on one physical phone and one physical iPad, then complete authenticated upload/preview/delete and real-handwriting grading calibration with student-owned test images.
-- Completed: `24b44dc` pushed and deployed only to Beta; the existing Beta database and original production release were retained.
-- Completed: live primary mock entry, R2-first catalogue, 11/75/110 briefing and legacy-paper upgrade link. Prior local browser checks exposed the 11-question navigation and working question 1/11 written inputs. Follow-up: complete the final browser refresh/recovery check when a working localhost browser preview is available; real API persistence, retry and checkpoint parser checks already pass. Do not describe this remaining UI check as passed.
-- Difficulty still needs real student performance calibration; do not claim official-equivalent difficulty. The authored 88-question revision and exact 44-target requirement are complete. Actual A/B/C/D questions were not reproduced; the demonstrated generic briefing/sampler defect and empty MCQ filter are fixed without inventing evidence.
+- Owner-deferred: physical phone/iPad camera sheets, authenticated real-device photo recovery and real-handwriting grading calibration. Interview entry and all nested interview routes show development status.
+- Future AI enablement requires verified provider-account processing/retention arrangements; production AI currently remains disabled. No live-provider grading, training opt-out or zero-retention claim is made.
+- Newly visible moderate development-tool advisories for minimatch/glob remain recorded in `RELEASE_ACCEPTANCE_2026-11-02.md`; current production dependency audit is zero. Do not force incompatible tool majors to suppress the audit.
+- Difficulty still needs real student-performance calibration; do not claim official-equivalent difficulty or fabricate a Grok/independent external review. Current versioned question corrections and practice-only additions retain their passing structural and historical-identity checks.
 
 ## Confirmed Decisions - Do Not Reopen
 
@@ -447,10 +455,9 @@ The verified all-level core experience is deployed to production at release `fd3
 
 ## Current Blockers
 
-- No code or deployment blocker is known. Beta release `d644cda` remains healthy; combined four-core release `14e518b` is pushed and ready for Beta-only deployment.
-- The requested LATQ-specific interaction study is waiting for the exact official URL. Public search did not identify a unique site called LATQ, so no same-name candidate will be treated as the reference without confirmation.
-- The remaining local browser refresh/recovery check was interrupted by a stale connection-error document rejected by browser URL policy. No bypass was attempted; live read-only entry checks and independent local HTTP/database checks passed. Real AI-provider grading and student-based difficulty calibration are not part of the completed local persistence test.
-- Real API keys and server environment values are external operational dependencies and must never be committed.
+- No active blocker remains for the owner-authorised November 2 release: production `a09c159` and separate Beta `d644cda` are healthy. Acceptance scope and deferred follow-ups are above; old dated preview/permission pauses are historical, not current blockers.
+- LATQ-specific research never acquired a uniquely verified official URL; no same-name site or completed reference study is invented. This is not represented as a precondition of the owner's current release request.
+- Real API keys and server environment values remain outside Git. Provider-specific future AI and physical-device work must not be marked complete based on mocked tests.
 
 ## Latest Verification Snapshot
 
