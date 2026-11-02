@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildExamPerformanceReport, type ReportSession } from "./report";
-import type { MCQQuestion } from "./questions/types";
+import type { MCQQuestion, LongQuestion } from "./questions/types";
 
 const questions: MCQQuestion[] = Array.from({ length: 20 }, (_, index) => ({
   id: `q-${index + 1}`,
@@ -44,6 +44,36 @@ function session(): ReportSession {
 }
 
 describe("exam performance report", () => {
+  it("diagnoses fixed-paper speed against the real module duration", () => {
+    const current = session();
+    current.answers = current.answers.map(answer => ({ ...answer, selected: "A", earned: 1, flagged: false, answerChanges: 0, timeSpentSec: 240 }));
+    current.totalEarned = 20;
+    const report = buildExamPerformanceReport({ session: current, history: [], questions, topicMeta: () => undefined,
+      modules: [{ id: "p1", title: "Paper 1", questionIds: questions.map(q => q.id), durationSec: 4500 }] });
+    expect(report.behavior.fragileCorrect).toBe(0);
+    expect(report.diagnosis.secureCount).toBe(20);
+  });
+  it.each([12, 8])("does not penalize unselected questions in a %s-choose-six paper", count => {
+    const written: LongQuestion[] = Array.from({ length: count }, (_, index) => ({ id: `long-${index}`, testId: "step", topicId: "step-pure1", type: "long", difficulty: 3, totalMarks: 20,
+      parts: [{ label: "a", marks: 20, question: "Q", solutionOutline: "A" }], fullSolution: "A" }));
+    const current = session();
+    current.testId = "step"; current.totalEarned = 120; current.totalMax = 120; current.timeUsedSec = 10800;
+    current.answers = written.map((q, i) => ({ ...current.answers[0], questionId: q.id, type: "long", selected: null,
+      work: { a: i < 6 ? "Complete work" : "", __answerImageIds: "{}" }, earned: i < 6 ? 20 : 0, max: 20, timeSpentSec: i < 6 ? 1800 : null, flagged: false, answerChanges: 0 }));
+    const args = { session: current, history: [], questions: written, topicMeta: () => undefined, bestQuestionCount: 6,
+      modules: [{ id: "written", title: "Written", questionIds: written.map(q => q.id), durationSec: 10800 }] };
+    const report = buildExamPerformanceReport(args);
+    expect(report.time).toMatchObject({ plannedSec: 10800, unanswered: 0, status: "balanced" });
+    expect(report.score.completionPercent).toBe(100);
+    expect(report.diagnosis.answers).toHaveLength(6);
+    expect(report.diagnosis.priorityCount).toBe(0);
+    expect(report.topics[0].percent).toBe(100);
+    expect(report.dataQuality.note).toContain("未选答题不作为错题");
+    // Only three attempted records must not silently reduce the six-answer target.
+    const partial = buildExamPerformanceReport({ ...args, session: { ...current, answers: current.answers.slice(0, 3) } });
+    expect(partial.time.unanswered).toBe(3);
+    expect(partial.score.completionPercent).toBe(50);
+  });
   it("builds score, topic, difficulty, time and diagnosis evidence", () => {
     const report = buildExamPerformanceReport({
       session: session(),

@@ -2,6 +2,12 @@ import type { Question } from "./questions/types";
 import type { MockPaper } from "./mock-papers";
 import { assessSyllabusCandidate,syllabusFingerprint,syllabusText } from "./syllabus-policy";
 import { PAPER_RELEASE_HASHES, PRACTICE_RELEASE_HASHES, SUPERSEDED_REVIEW_PAPERS } from "./syllabus-manifest";
+import contentManifest from "@/data/question-bank/content-manifest-20261026.json";
+import calibrationManifest from "@/data/question-bank/calibration-manifest-20261026.json";
+const calibrationPaperHashes: Record<string, string> = Object.assign({}, ...Object.values(calibrationManifest.exams).map(exam => exam.papers));
+const supersededCalibrationPapers = new Set<string>(Object.values(calibrationManifest.exams).flatMap(exam => exam.supersededPapers));
+const correctionPaperHashes: Record<string, string> = contentManifest.paperHashes;
+const supersededContentPapers = new Set<string>(contentManifest.supersededPapers);
 
 export const EXAM_SCOPE_NOTES:Record<string,string> = {
   esat:"五模块分开核验。Math 1 无微积分；Math 2 不要求复数、矩阵或一般微分方程。各组合复用模块题，与专项练习共享；仅供范围受限训练，不代表未见题、完整覆盖或官方难度。请按申请课程选择模块。",
@@ -25,10 +31,13 @@ export function releasedPracticeBank(testId:string,bank:Question[]):Question[] {
   return bank.filter(q=>q.testId===testId && assessSyllabusCandidate(q).allowed);
 }
 export function isReleasedPaper(paper:MockPaper):boolean {
-  return !SUPERSEDED_REVIEW_PAPERS.has(paper.id) && hasPaperReleaseApproval(paper);
+  return !supersededCalibrationPapers.has(paper.id) && isPreCalibrationReleasedPaper(paper);
+}
+export function isPreCalibrationReleasedPaper(paper:MockPaper):boolean {
+  return !SUPERSEDED_REVIEW_PAPERS.has(paper.id) && !supersededContentPapers.has(paper.id) && hasPaperReleaseApproval(paper);
 }
 export function hasPaperReleaseApproval(paper:MockPaper):boolean {
-  return PAPER_RELEASE_HASHES[paper.id]===paperReleaseFingerprint(paper) && paperMeetsBoundary(paper);
+  return (PAPER_RELEASE_HASHES[paper.id] ?? correctionPaperHashes[paper.id] ?? calibrationPaperHashes[paper.id])===paperReleaseFingerprint(paper) && paperMeetsBoundary(paper);
 }
 /** Display-only: original IDs/content remain immutable for historical grading. */
 export const LIMITED_TRAINING_TEST_IDS = ["esat","bpho","csat","ielts","ucat"] as const;

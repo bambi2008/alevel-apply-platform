@@ -1,4 +1,8 @@
 "use client";
+import { useUiCopy } from "@/components/use-ui-copy";
+import { useLocale } from "next-intl";
+import { localizeStaticContent } from "@/lib/content-language";
+import { MathRenderer } from "@/components/math-renderer";
 
 import { useState, useRef, useEffect } from "react";
 import type { InterviewQuestion } from "@/lib/interview/questions";
@@ -22,10 +26,12 @@ export function SubjectInterview({
   subjectName: string;
   questions: InterviewQuestion[];
 }) {
+  const ui = useUiCopy();
+  const locale = useLocale();
   const [tab, setTab] = useState<"bank" | "mock" | "quantitative" | "paper">("bank");
   const [openId, setOpenId] = useState<string | null>(null);
-  const quantitativeDrills = getQuantitativeDrills(subjectId);
-  const quantitativePapers = getQuantitativeInterviewPapers(subjectId);
+  const quantitativeDrills = localizeStaticContent(getQuantitativeDrills(subjectId), locale);
+  const quantitativePapers = localizeStaticContent(getQuantitativeInterviewPapers(subjectId), locale);
 
   return (
     <div>
@@ -35,37 +41,31 @@ export function SubjectInterview({
           type="button"
           onClick={() => setTab("bank")}
           className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === "bank" ? "bg-white shadow-[var(--shadow-sm)] text-[var(--ink)]" : "text-[var(--ink-soft)]"}`}
-        >
-          练习题库
-        </button>
+        >{ui("练习题库")}</button>
         <button
           type="button"
           onClick={() => setTab("mock")}
           className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === "mock" ? "bg-white shadow-[var(--shadow-sm)] text-[var(--ink)]" : "text-[var(--ink-soft)]"}`}
         >
           {subjectId === "ielts-speaking"
-            ? "全真模拟"
+            ? ui("全真模拟")
             : subjectId.startsWith("cambridge-") || subjectId.startsWith("hk-")
-              ? "固定 assessment"
-              : "AI 模拟面试"}
+              ? ui("固定 assessment")
+              : ui("AI 模拟面试")}
         </button>
         {isQuantitativeInterviewSubject(subjectId) && quantitativeDrills.length > 0 && (
           <button
             type="button"
             onClick={() => setTab("quantitative")}
             className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === "quantitative" ? "bg-white shadow-[var(--shadow-sm)] text-[var(--ink)]" : "text-[var(--ink-soft)]"}`}
-          >
-            高压计算面试
-          </button>
+          >{ui("高压计算面试")}</button>
         )}
         {quantitativePapers.length > 0 && (
           <button
             type="button"
             onClick={() => setTab("paper")}
             className={`px-4 py-1.5 rounded-md text-sm font-medium transition-colors ${tab === "paper" ? "bg-white shadow-[var(--shadow-sm)] text-[var(--ink)]" : "text-[var(--ink-soft)]"}`}
-          >
-            固定套卷
-          </button>
+          >{ui("固定套卷")}</button>
         )}
       </div>
 
@@ -78,10 +78,8 @@ export function SubjectInterview({
           {isQuantitativeInterviewSubject(subjectId) && (
             <div className="space-y-3 pb-1">
               <div>
-                <p className="text-sm font-semibold text-[var(--ink)]">统一答题框架</p>
-                <p className="mt-1 text-sm leading-relaxed text-[var(--ink-soft)]">
-                  下面所有练习题都按同一套五步推进。先熟悉框架，做题时直接把思考过程说出来，不必逐题重复阅读说明。
-                </p>
+                <p className="text-sm font-semibold text-[var(--ink)]">{ui("统一答题框架")}</p>
+                <p className="mt-1 text-sm leading-relaxed text-[var(--ink-soft)]">{ui("下面所有练习题都按同一套五步推进。先熟悉框架，做题时直接把思考过程说出来，不必逐题重复阅读说明。")}</p>
               </div>
               <InterviewThinkingChecklist />
             </div>
@@ -95,7 +93,7 @@ export function SubjectInterview({
                     {i + 1}
                   </span>
                   <div className="min-w-0 flex-1">
-                    <p className="font-medium text-[var(--ink)] leading-relaxed">{q.prompt}</p>
+                    <MathRenderer text={q.prompt} className="font-medium text-[var(--ink)] leading-relaxed" />
                     {(q.format || q.timebox || q.assessedSkills?.length) && (
                       <div className="mt-2 flex flex-wrap gap-1.5 text-[11px]">
                         {q.format && <span className="badge badge-neutral">{q.format}</span>}
@@ -108,22 +106,22 @@ export function SubjectInterview({
                       onClick={() => setOpenId(open ? null : q.id)}
                       className="mt-3 text-sm font-medium text-[var(--indigo)] hover:underline"
                     >
-                      {open ? "收起思路" : "看思路提示"}
+                      {open ? ui("收起思路") : ui("看思路提示")}
                     </button>
                     {open && (
                       <div className="mt-3 space-y-3">
                         <div className="rounded-lg bg-[var(--surface)] p-3.5">
-                          <p className="text-xs font-semibold text-[var(--indigo)] mb-1">思路（不是标准答案）</p>
-                          <p className="text-sm text-[var(--ink-soft)] leading-relaxed">{q.approach}</p>
+                          <p className="text-xs font-semibold text-[var(--indigo)] mb-1">{ui("思路（不是标准答案）")}</p>
+                          <MathRenderer text={q.approach} className="text-sm text-[var(--ink-soft)] leading-relaxed" />
                         </div>
                         {q.followUps && q.followUps.length > 0 && (
                           <div className="rounded-lg border border-[var(--border)] p-3.5">
-                            <p className="text-xs font-semibold text-[var(--ink-soft)] mb-1.5">面试官可能这样追问</p>
+                            <p className="text-xs font-semibold text-[var(--ink-soft)] mb-1.5">{ui("面试官可能这样追问")}</p>
                             <ul className="space-y-1">
                               {q.followUps.map((f, k) => (
                                 <li key={k} className="text-sm text-[var(--ink-soft)] flex gap-2">
                                   <span className="text-[var(--ink-faint)]">→</span>
-                                  {f}
+                                  <MathRenderer text={f} />
                                 </li>
                               ))}
                             </ul>
@@ -159,6 +157,7 @@ function MockInterview({
   seedQuestions: InterviewQuestion[];
   showThinkingChecklist: boolean;
 }) {
+  const ui = useUiCopy();
   const [msgs, setMsgs] = useState<Msg[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -176,16 +175,16 @@ function MockInterview({
     try {
       const res = await fetch("/api/interview-mock", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-qiaoshen-locale": document.documentElement.lang },
         body: JSON.stringify(payload),
       });
       const data = await res.json();
       if (!res.ok) {
-        return data?.error || "生成失败，请稍后再试";
+        return data?.error || ui("生成失败，请稍后再试");
       }
       return data.interviewer as string;
     } catch {
-      return "网络错误，请稍后再试";
+      return ui("网络错误，请稍后再试");
     } finally {
       setLoading(false);
     }
@@ -197,13 +196,13 @@ function MockInterview({
     try {
       const res = await fetch("/api/interview-mock", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-qiaoshen-locale": document.documentElement.lang },
         body: JSON.stringify({ mode: "feedback", subject: subjectName, history: msgs }),
       });
       const data = await res.json();
-      setFeedback(res.ok ? (data.feedback as string) : data?.error || "复盘生成失败");
+      setFeedback(res.ok ? (data.feedback as string) : data?.error || ui("复盘生成失败"));
     } catch {
-      setFeedback("网络错误，请稍后再试");
+      setFeedback(ui("网络错误，请稍后再试"));
     } finally {
       setFeedbackLoading(false);
     }
@@ -224,7 +223,7 @@ function MockInterview({
     const opening = await callApi({ subject: subjectName, question: seed, history: [] });
     if (opening) {
       // 题库开场题补上「第1个问题」标记，与 AI 后续换题保持一致的进度感
-      const marked = seed && !opening.includes("【第") ? `【第1个问题】${opening}` : opening;
+      const marked = seed && !opening.includes("【第") ? ui("【第1个问题】{0}", opening) : opening;
       setMsgs([{ role: "interviewer", content: marked }]);
     }
   }
@@ -258,19 +257,12 @@ function MockInterview({
     return (
       <div className="card p-6 text-center">
         <p className="text-4xl mb-3">🎙️</p>
-        <h3 className="font-semibold text-[var(--ink)] mb-1.5">AI 模拟面试 · {subjectName}</h3>
-        <p className="text-sm text-[var(--ink-soft)] max-w-md mx-auto leading-relaxed mb-5">
-          AI 会像牛剑面试官一样，抛给你一个陌生问题，并顺着你的回答不断追问。
-          目标是练习「把思路说出来 + 被追问时如何推进」。想不出来也没关系，试着出声地想。
-        </p>
+        <h3 className="font-semibold text-[var(--ink)] mb-1.5">{ui("AI 模拟面试 ·")}{subjectName}</h3>
+        <p className="text-sm text-[var(--ink-soft)] max-w-md mx-auto leading-relaxed mb-5">{ui("AI 会像牛剑面试官一样，抛给你一个陌生问题，并顺着你的回答不断追问。 目标是练习「把思路说出来 + 被追问时如何推进」。想不出来也没关系，试着出声地想。")}</p>
         {showThinkingChecklist && <div className="mx-auto mb-5 max-w-3xl text-left"><InterviewThinkingChecklist emphasis={["model", "method", "calculation", "check", "adapt"]} /></div>}
         <div className="flex items-center justify-center gap-3 flex-wrap">
-          <button type="button" onClick={() => start(true)} className="btn btn-primary">
-            从题库出题开始
-          </button>
-          <button type="button" onClick={() => start(false)} className="btn btn-secondary">
-            让 AI 随机出题
-          </button>
+          <button type="button" onClick={() => start(true)} className="btn btn-primary">{ui("从题库出题开始")}</button>
+          <button type="button" onClick={() => start(false)} className="btn btn-secondary">{ui("让 AI 随机出题")}</button>
         </div>
       </div>
     );
@@ -287,7 +279,7 @@ function MockInterview({
               className={`h-1.5 rounded-full transition-all ${n <= currentQ ? "w-6 bg-[var(--indigo)]" : "w-3 bg-[var(--border)]"}`}
             />
           ))}
-          <span className="ml-2 text-xs text-[var(--ink-faint)]">核心问题 {currentQ} / 3（真实一场约 25-30 分钟）</span>
+          <span className="ml-2 text-xs text-[var(--ink-faint)]">{ui("核心问题")}{currentQ}{ui("/ 3（真实一场约 25-30 分钟）")}</span>
         </div>
       </div>
       {showThinkingChecklist && <div className="mb-4"><InterviewThinkingChecklist compact emphasis={["model", "method", "calculation", "check", "adapt"]} /></div>}
@@ -301,14 +293,14 @@ function MockInterview({
                   : "bg-[var(--surface)] text-[var(--ink)]"
               }`}
             >
-              {m.role === "interviewer" && <span className="block text-xs font-semibold text-[var(--indigo)] mb-1">面试官</span>}
+              {m.role === "interviewer" && <span className="block text-xs font-semibold text-[var(--indigo)] mb-1">{ui("面试官")}</span>}
               {m.content}
             </div>
           </div>
         ))}
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-[var(--surface)] rounded-2xl px-4 py-2.5 text-sm text-[var(--ink-faint)]">思考中…</div>
+            <div className="bg-[var(--surface)] rounded-2xl px-4 py-2.5 text-sm text-[var(--ink-faint)]">{ui("思考中…")}</div>
           </div>
         )}
         <div ref={endRef} />
@@ -317,7 +309,7 @@ function MockInterview({
       {/* 复盘反馈面板 */}
       {feedback && (
         <div className="mt-4 rounded-xl border border-[var(--indigo)]/30 bg-[var(--info-bg)] p-4">
-          <p className="text-sm font-semibold text-[var(--indigo)] mb-2">📋 面试复盘</p>
+          <p className="text-sm font-semibold text-[var(--indigo)] mb-2">{ui("📋 面试复盘")}</p>
           <div className="text-sm text-[var(--ink)] leading-relaxed whitespace-pre-wrap">{feedback}</div>
         </div>
       )}
@@ -326,16 +318,14 @@ function MockInterview({
         <textarea
           className="input min-h-11 resize-none flex-1"
           rows={2}
-          placeholder="把你的思路打出来…（哪怕还没有答案）"
+          placeholder={ui("把你的思路打出来…（哪怕还没有答案）")}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={(e) => {
             if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) send();
           }}
         />
-        <button type="button" onClick={send} disabled={loading || !input.trim()} className="btn btn-primary">
-          回答
-        </button>
+        <button type="button" onClick={send} disabled={loading || !input.trim()} className="btn btn-primary">{ui("回答")}</button>
       </div>
 
       {/* 结束并复盘 / 重新开始 */}
@@ -346,13 +336,11 @@ function MockInterview({
           disabled={feedbackLoading || msgs.length < 2}
           className="btn btn-secondary text-sm"
         >
-          {feedbackLoading ? "生成复盘中…" : "结束并让 AI 复盘我的表现"}
+          {feedbackLoading ? ui("生成复盘中…") : ui("结束并让 AI 复盘我的表现")}
         </button>
-        <button type="button" onClick={restart} className="btn btn-ghost text-sm">
-          换一题重新开始
-        </button>
+        <button type="button" onClick={restart} className="btn btn-ghost text-sm">{ui("换一题重新开始")}</button>
       </div>
-      <p className="mt-2 text-xs text-[var(--ink-faint)]">Ctrl/⌘ + Enter 发送。答到你觉得差不多时，点"结束并复盘"看 AI 对你表现的诚实评价。真实面试风格因学院与导师而异。</p>
+      <p className="mt-2 text-xs text-[var(--ink-faint)]">{ui("Ctrl/⌘ + Enter 发送。答到你觉得差不多时，点\"结束并复盘\"看 AI 对你表现的诚实评价。真实面试风格因学院与导师而异。")}</p>
     </div>
   );
 }

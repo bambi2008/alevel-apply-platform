@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { aiSystemForRequest, aiMessageForRequest } from "@/lib/ai-response-language";
 import OpenAI from "openai";
 import { captureError } from "@/lib/monitoring";
 import { requireAiAccess } from "@/lib/security/ai-route";
@@ -56,7 +57,7 @@ export async function POST(req: NextRequest) {
   if (!access.ok) return access.response;
   if (!process.env.DEEPSEEK_API_KEY) {
     return NextResponse.json(
-      { error: "AI 暂未配置（缺少 DEEPSEEK_API_KEY）" },
+      { error: aiMessageForRequest("AI 暂未配置（缺少 DEEPSEEK_API_KEY）", req) },
       { status: 503 }
     );
   }
@@ -72,7 +73,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
   if (!body.question?.trim()) {
-    return NextResponse.json({ error: "请先填写研究问题" }, { status: 400 });
+    return NextResponse.json({ error: aiMessageForRequest("请先填写研究问题", req) }, { status: 400 });
   }
 
   try {
@@ -81,7 +82,7 @@ export async function POST(req: NextRequest) {
       max_tokens: 2500,
       response_format: { type: "json_object" },
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: aiSystemForRequest(SYSTEM_PROMPT, req) },
         { role: "user", content: buildPrompt(body) },
       ],
     });
@@ -116,7 +117,7 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     captureError(err, { route: "structure-project" });
     return NextResponse.json(
-      { error: "生成失败，请稍后重试。" },
+      { error: aiMessageForRequest("生成失败，请稍后重试。", req) },
       { status: 500 }
     );
   }

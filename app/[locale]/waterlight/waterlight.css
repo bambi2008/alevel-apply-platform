@@ -34,6 +34,8 @@ body:has(.waterlight-experience) main {
   inset: 0;
 }
 
+#water-stage { background: #061013 url('/waterlight/riverbed-albedo-v4.webp') center / cover no-repeat; }
+
 #water-stage canvas {
   display: block;
   width: 100%;
@@ -62,7 +64,7 @@ body:has(.waterlight-experience) main {
   left: clamp(16px, 3vw, 34px);
   bottom: clamp(16px, 3vw, 28px);
   display: inline-flex;
-  min-height: 40px;
+  min-height: 44px;
   align-items: center;
   gap: 9px;
   padding: 6px 13px;

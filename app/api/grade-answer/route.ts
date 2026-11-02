@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { aiResponseLanguage, aiSystemForRequest } from "@/lib/ai-response-language";
 import OpenAI from "openai";
 import { createHash } from "node:crypto";
 import { requireAiAccess } from "@/lib/security/ai-route";
@@ -265,8 +266,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid grading request" }, { status: 400 });
   }
   const request = body;
+  const locale = aiResponseLanguage(req);
   if (isBlankSubmission(request)) {
-    return NextResponse.json(buildEmptyGradeResponse(request));
+    return NextResponse.json(buildEmptyGradeResponse(request, locale));
   }
   const access = await requireAiAccess(req, "grading", 30);
   if (!access.ok) return access.response;
@@ -323,14 +325,14 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Handwriting recognition failed. Please retry or add a clearer photo." }, { status: 503 });
     }
   }
-  const system = gradingRequest.responseKind === "essay" ? ESSAY_SYSTEM : STRUCTURED_SYSTEM;
+  const system = aiSystemForRequest(gradingRequest.responseKind === "essay" ? ESSAY_SYSTEM : STRUCTURED_SYSTEM, req);
   const attempts = await Promise.allSettled([
     runExaminer(client, system, gradingPrompt(gradingRequest, "Act as independent examiner A. Apply the scheme directly.")),
     runExaminer(client, system, gradingPrompt(gradingRequest, "Act as independent examiner B. Be especially alert to unsupported jumps and valid alternative methods.")),
   ]);
   const successfulRuns = attempts.flatMap((attempt) => attempt.status === "fulfilled" ? [attempt.value] : []);
   const passes: GradePass[] = successfulRuns.map((run) =>
-    normalizeGradePass(gradingRequest, run.raw)
+    normalizeGradePass(gradingRequest, run.raw, locale)
   );
   if (passes.length === 0) {
     console.error("Both grading passes failed", attempts);
@@ -359,16 +361,16 @@ export async function POST(req: NextRequest) {
       })));
       adjudicatorRun = await runExaminer(
         client,
-        ADJUDICATOR_SYSTEM,
+        aiSystemForRequest(ADJUDICATOR_SYSTEM, req),
         `${gradingPrompt(gradingRequest, "Act as the senior adjudicator.")}\n\nPrior independent reports:\n${priorReports}`,
       );
-      adjudicated = normalizeGradePass(gradingRequest, adjudicatorRun.raw);
+      adjudicated = normalizeGradePass(gradingRequest, adjudicatorRun.raw, locale);
     } catch (error) {
       console.error("Grading adjudication failed", error);
     }
   }
 
-  const response: GradeResponse = buildGradeResponse(gradingRequest, passes, adjudicated);
+  const response: GradeResponse = buildGradeResponse(gradingRequest, passes, adjudicated, locale);
   if (imageReview) {
     response.imageReview = imageReview;
     if (imageReview.parts.some((part) => part.confidence === "low" || part.unclear.length > 0)) {

@@ -1,4 +1,5 @@
 "use client";
+import { useUiCopy } from "@/components/use-ui-copy";
 
 import { useEffect, useEffectEvent, useRef, useState } from "react";
 import { Link } from "@/i18n/navigation";
@@ -8,7 +9,9 @@ import type { MockPaper } from "@/lib/tests/mock-papers";
 import type { LongQuestion } from "@/lib/tests/questions/types";
 import { getCountedResults } from "@/lib/tests/mock-papers/scoring";
 import { DiagnosisSummary, QuestionDiagnosis } from "@/components/exam-diagnosis";
-import { buildSessionDiagnosis, diagnoseAnswer } from "@/lib/tests/diagnosis";
+import { QuestionFeedback } from "@/components/question-feedback";
+import { buildSessionDiagnosis } from "@/lib/tests/diagnosis";
+import { moduleAnswerTimeBudget } from "@/lib/tests/answer-time-budget";
 import { persistExamSession } from "@/lib/tests/persist-session";
 import { createAttemptId, examAttemptKey, parseExamAttempt, remainingAttemptSeconds, type ExamAttemptSnapshot } from "@/lib/tests/exam-progress";
 import { useExamReliability } from "@/hooks/use-exam-reliability";
@@ -18,7 +21,7 @@ import { clearRemoteProgress, loadRemoteProgress, saveRemoteProgress } from "@/l
 import { parseWrittenSubmission, writtenSubmissionKey, type WrittenSubmission } from "@/lib/tests/written-submission";
 import { HandwrittenAnswerInput } from "@/components/handwritten-answer-input";
 import { HandwritingRecognitionNote } from "@/components/handwriting-recognition-note";
-import { hasAnswerContent, type AnswerImagesByQuestion } from "@/lib/tests/answer-images";
+import { hasAnswerContent, hasWrittenResponse, type AnswerImagesByQuestion } from "@/lib/tests/answer-images";
 
 type Phase = "briefing" | "running" | "grading" | "results";
 type WrittenWorks = Record<string, Record<string, string>>;
@@ -122,6 +125,7 @@ function formatTime(seconds: number): string {
 }
 
 export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
+  const ui = useUiCopy();
   const questions = paper.modules.flatMap((module) => module.questions).filter(
     (question): question is LongQuestion => question.type === "long"
   );
@@ -135,9 +139,9 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
   const testLabel = TEST_LABELS[paper.testId] ?? paper.testId.toUpperCase();
   const isEssayPaper = questions.some((question) => question.responseKind === "essay");
   const instructions = paper.instructions ?? DEFAULT_INSTRUCTIONS[paper.testId] ?? [
-    "每题都应写出关键推导、必要说明和最终结论。",
-    "题目固定，不随机抽取，适合复盘和阶段比较。",
-    "AI 评分失败的题目会标记为待自评，不会按零分计入。",
+    ui("每题都应写出关键推导、必要说明和最终结论。"),
+    ui("题目固定，不随机抽取，适合复盘和阶段比较。"),
+    ui("AI 评分失败的题目会标记为待自评，不会按零分计入。"),
   ];
   const [phase, setPhase] = useState<Phase>("briefing");
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -248,12 +252,12 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
     if (!force) {
       for (const question of questions.filter((item) => item.responseKind === "essay" && isAnswered(item))) {
         if (!works[question.id]?.[ESSAY_PROMPT_KEY]) {
-          setValidationMessage("请先选择一道写作题目，再提交作答。");
+          setValidationMessage(ui("请先选择一道写作题目，再提交作答。"));
           return;
         }
         const overLimit = question.parts.some((part) => countWords(works[question.id]?.[part.label] ?? "") > (question.maxWords ?? Infinity));
-        if (overLimit) {
-          setValidationMessage(`作答超过 ${question.maxWords} 词上限，请精简后再提交。`);
+        if (overLimit && question.maxWords !== undefined) {
+          setValidationMessage(ui("作答超过 {0} 词上限，请精简后再提交。", question.maxWords));
           return;
         }
       }
@@ -281,12 +285,12 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
               label: part.label,
               earned: 0,
               max: part.marks,
-              feedback: "本小题未作答。",
+              feedback: ui("本小题未作答。"),
               keyStepsFound: [],
               keyStepsMissing: [],
               evidence: [],
             })),
-            overallFeedback: "本题未作答，计 0 分。",
+            overallFeedback: ui("本题未作答，计 0 分。"),
             modelSolution: question.fullSolution,
             assessment: {
               method: "deterministic-empty",
@@ -295,7 +299,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
               scoreDelta: 0,
               passScores: [0],
               agreementRate: 100,
-              rationale: "空白答案由确定性规则处理，未调用 AI。",
+              rationale: ui("空白答案由确定性规则处理，未调用 AI。"),
             },
           },
         });
@@ -324,16 +328,16 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
         };
         const response = await fetch("/api/grade-answer", {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
+          headers: { "Content-Type": "application/json", "x-qiaoshen-locale": document.documentElement.lang },
           body: JSON.stringify(payload),
         });
         if (!response.ok) {
-          nextGrades.push({ questionId: question.id, error: "AI 评分暂不可用" });
+          nextGrades.push({ questionId: question.id, error: ui("AI 评分暂不可用") });
         } else {
           nextGrades.push({ questionId: question.id, grading: await response.json() as GradeResponse });
         }
       } catch {
-        nextGrades.push({ questionId: question.id, error: "AI 评分连接失败" });
+        nextGrades.push({ questionId: question.id, error: ui("AI 评分连接失败") });
       }
       setGradingProgress(nextGrades.length);
     }
@@ -398,8 +402,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
   if (phase === "briefing") {
     return (
       <div className="mx-auto max-w-3xl px-4 py-10">
-        <Link href={`/tests/${paper.testId}`} className="text-sm text-[var(--indigo)] hover:underline">
-          ← 返回 {testLabel}
+        <Link href={`/tests/${paper.testId}`} className="text-sm text-[var(--indigo)] hover:underline">{ui("← 返回")}{testLabel}
         </Link>
         <p className="mt-8 text-xs font-semibold uppercase text-[var(--ink-faint)]">Fixed written paper</p>
         <h1 className="mt-2 text-2xl font-bold text-[var(--ink)]">{paper.title}</h1>
@@ -407,9 +410,9 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
         <p className="mt-5 text-sm leading-7 text-[var(--ink-soft)]">{paper.description}</p>
 
         <div className="mt-7 grid grid-cols-3 border-y border-[var(--border)] py-4 text-center">
-          <div><strong className="block text-xl">{Math.round(durationSec / 60)}</strong><span className="text-xs text-[var(--ink-faint)]">分钟</span></div>
-          <div><strong className="block text-xl">{questions.length}</strong><span className="text-xs text-[var(--ink-faint)]">{isEssayPaper ? "写作任务" : "书面题"}</span></div>
-          <div><strong className="block text-xl">{totalMarks}</strong><span className="text-xs text-[var(--ink-faint)]">{isEssayPaper ? "训练量表" : "计分上限"}</span></div>
+          <div><strong className="block text-xl">{Math.round(durationSec / 60)}</strong><span className="text-xs text-[var(--ink-faint)]">{ui("分钟")}</span></div>
+          <div><strong className="block text-xl">{questions.length}</strong><span className="text-xs text-[var(--ink-faint)]">{isEssayPaper ? ui("写作任务") : ui("书面题")}</span></div>
+          <div><strong className="block text-xl">{totalMarks}</strong><span className="text-xs text-[var(--ink-faint)]">{isEssayPaper ? ui("训练量表") : ui("计分上限")}</span></div>
         </div>
 
         <ul className="mt-6 space-y-2 text-sm text-[var(--ink-soft)]">
@@ -417,7 +420,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
         </ul>
         {interruptedSubmission && (
           <div className="mt-5 border-l-2 border-[var(--indigo)] px-4 py-3">
-            <p className="text-sm font-semibold">上次交卷尚未确认保存，原作答已保留</p>
+            <p className="text-sm font-semibold">{ui("上次交卷尚未确认保存，原作答已保留")}</p>
             <button type="button" className="mt-3 rounded bg-[var(--indigo)] px-3 py-2 text-sm text-white" onClick={() => {
               setWorks(interruptedSubmission.works);
               setAnswerImages(interruptedSubmission.answerImages ?? {});
@@ -426,21 +429,21 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
               recoveredTimeUsed.current = interruptedSubmission.timeUsedSec;
               submittingRef.current = false;
               setResubmitRequested(true);
-            }}>恢复作答并继续交卷</button>
+            }}>{ui("恢复作答并继续交卷")}</button>
           </div>
         )}
         {savedAttempt && !interruptedSubmission && (
           <div className="mt-5 border-l-2 border-[var(--indigo)] bg-[var(--info-bg)] px-4 py-3">
-            <p className="text-sm font-semibold">发现未完成的书面卷</p>
-            <p className="mt-1 text-xs text-[var(--ink-soft)]">第 {savedAttempt.payload.currentIndex + 1} 题 · 剩余约 {Math.ceil(remainingAttemptSeconds(savedAttempt.deadlineAt) / 60)} 分钟</p>
+            <p className="text-sm font-semibold">{ui("发现未完成的书面卷")}</p>
+            <p className="mt-1 text-xs text-[var(--ink-soft)]">{ui("第")}{savedAttempt.payload.currentIndex + 1}{ui("题 · 剩余约")}{Math.ceil(remainingAttemptSeconds(savedAttempt.deadlineAt) / 60)}{ui("分钟")}</p>
             <div className="mt-3 flex gap-2">
-              <button type="button" onClick={() => { window.localStorage.removeItem(storageKey); void clearRemoteProgress("WRITTEN_EXAM", paper.id); setSavedAttempt(null); }} className="rounded border border-[var(--border)] px-3 py-2 text-xs">放弃进度</button>
-              <button type="button" onClick={resume} className="rounded bg-[var(--indigo)] px-3 py-2 text-xs font-semibold text-white">继续作答</button>
+              <button type="button" onClick={() => { window.localStorage.removeItem(storageKey); void clearRemoteProgress("WRITTEN_EXAM", paper.id); setSavedAttempt(null); }} className="rounded border border-[var(--border)] px-3 py-2 text-xs">{ui("放弃进度")}</button>
+              <button type="button" onClick={resume} className="rounded bg-[var(--indigo)] px-3 py-2 text-xs font-semibold text-white">{ui("继续作答")}</button>
             </div>
           </div>
         )}
         <button type="button" onClick={begin} className="mt-8 w-full rounded-md bg-[var(--indigo)] py-3 text-sm font-semibold text-white hover:bg-[var(--indigo-hover)]">
-          {savedAttempt || interruptedSubmission ? "放弃进度并重新开始" : isEssayPaper ? "开始写作任务" : "开始书面考试"}
+          {savedAttempt || interruptedSubmission ? ui("放弃进度并重新开始") : isEssayPaper ? ui("开始写作任务") : ui("开始书面考试")}
         </button>
       </div>
     );
@@ -451,8 +454,8 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
       <div className="flex min-h-[70vh] flex-col items-center justify-center px-4 text-center">
         <ExamReliabilityStatus online={online} />
         <div className="h-9 w-9 animate-spin rounded-full border-2 border-[var(--border)] border-t-[var(--indigo)]" />
-        <h1 className="mt-5 text-xl font-bold">{isEssayPaper ? "正在按写作量表生成反馈" : "正在按证明步骤评分"}</h1>
-        <p className="mt-2 text-sm text-[var(--ink-soft)]">已完成 {gradingProgress} / {questions.length} 题</p>
+        <h1 className="mt-5 text-xl font-bold">{isEssayPaper ? ui("正在按写作量表生成反馈") : ui("正在按证明步骤评分")}</h1>
+        <p className="mt-2 text-sm text-[var(--ink-soft)]">{ui("已完成")}{gradingProgress} / {questions.length}{ui("题")}</p>
       </div>
     );
   }
@@ -489,19 +492,17 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
         <div className="mx-auto flex max-w-5xl items-center gap-4">
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-semibold">{paper.title}</p>
-            <p className="text-xs text-[var(--ink-faint)]">{answered}/{questions.length} 已作答</p>
+            <p className="text-xs text-[var(--ink-faint)]">{answered}/{questions.length}{ui("已作答")}</p>
           </div>
           <span className={`font-mono text-lg font-bold tabular-nums ${timeLeft < 600 ? "text-[var(--danger)]" : "text-[var(--ink)]"}`}>
             {formatTime(timeLeft)}
           </span>
-          <button type="button" onClick={() => void submit()} className="rounded-md bg-[var(--indigo)] px-3 py-2 text-xs font-semibold text-white">
-            交卷
-          </button>
+          <button type="button" onClick={() => void submit()} className="rounded-md bg-[var(--indigo)] px-3 py-2 text-xs font-semibold text-white">{ui("交卷")}</button>
         </div>
       </header>
 
       <div className="mx-auto grid max-w-5xl gap-8 px-4 py-7 md:grid-cols-[120px_1fr]">
-        <nav aria-label="题目导航" className="grid grid-cols-6 gap-2 md:block md:space-y-2">
+        <nav aria-label={ui("题目导航")} className="grid grid-cols-6 gap-2 md:block md:space-y-2">
           {questions.map((question, index) => {
             const done = Object.values(works[question.id] ?? {}).some((value) => value.trim());
             return (
@@ -525,10 +526,9 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
 
         <section className="min-w-0">
           <div className="flex items-center justify-between border-b border-[var(--border)] pb-3">
-            <span className="text-sm font-semibold">第 {currentIndex + 1} 题</span>
+            <span className="text-sm font-semibold">{ui("第")}{currentIndex + 1}{ui("题")}</span>
             <span className="text-right text-xs text-[var(--ink-faint)]">
-              {currentSectionLabel ? `${currentSectionLabel} · ` : ""}{TOPIC_LABELS[current.topicId] ?? current.topicId} · {current.totalMarks} 分
-            </span>
+              {currentSectionLabel ? `${currentSectionLabel} · ` : ""}{TOPIC_LABELS[current.topicId] ?? current.topicId} · {current.totalMarks}{ui("分")}</span>
           </div>
           {current.context && <MathRenderer text={current.context} className="mt-5 text-sm leading-7 text-[var(--ink)]" block />}
 
@@ -540,7 +540,7 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
 
           {current.responseKind === "essay" && current.essayPrompts && (
             <fieldset className="mt-6">
-              <legend className="text-sm font-semibold">选择一个题目</legend>
+              <legend className="text-sm font-semibold">{ui("选择一个题目")}</legend>
               <div className="mt-3 space-y-2">
                 {current.essayPrompts.map((prompt) => {
                   const selected = selectedPromptId === prompt.id;
@@ -565,14 +565,14 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
               <div key={part.label}>
                 <div className="mb-2 flex items-start justify-between gap-4 text-sm">
                   <MathRenderer text={`${part.label}. ${part.question}`} className="leading-6" />
-                  <span className="shrink-0 text-xs text-[var(--ink-faint)]">{part.marks} 分</span>
+                  <span className="shrink-0 text-xs text-[var(--ink-faint)]">{part.marks}{ui("分")}</span>
                 </div>
                 {current.responseKind === "essay" ? (
                   <textarea
                     value={works[current.id]?.[part.label] ?? ""}
                     onChange={(event) => updateWork(current.id, part.label, event.target.value)}
                     rows={22}
-                    placeholder="在此输入英文作文……"
+                    placeholder={ui("在此输入英文作文……")}
                     className="w-full resize-y rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-3 text-sm leading-6 outline-none focus:border-[var(--indigo)] focus:ring-2 focus:ring-[color:var(--indigo)]/10"
                   />
                 ) : (
@@ -582,17 +582,14 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
                     images={answerImages[current.id]?.[part.label] ?? []}
                     onImagesChange={(images) => updateAnswerImages(current.id, part.label, images)}
                     contextKey={`${paper.id}:${current.id}:${part.label}`}
-                    placeholder="如有必要，补充题号、无法拍清的符号或说明。"
+                    placeholder={ui("如有必要，补充题号、无法拍清的符号或说明。")}
                   />
                 )}
                 {current.responseKind === "essay" && (
                   <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs">
-                    <span className="text-[var(--ink-faint)]">
-                      建议 {current.recommendedWords?.[0]}–{current.recommendedWords?.[1]} 词 · 上限 {current.maxWords} 词
-                    </span>
+                    <span className="text-[var(--ink-faint)]">{ui("建议")}{current.recommendedWords?.[0]}–{current.recommendedWords?.[1]}{ui("词 · 上限")}{current.maxWords}{ui("词")}</span>
                     <span className={countWords(works[current.id]?.[part.label] ?? "") > (current.maxWords ?? Infinity) ? "font-semibold text-[var(--danger)]" : "font-semibold text-[var(--ink-soft)]"}>
-                      {countWords(works[current.id]?.[part.label] ?? "")} 词
-                    </span>
+                      {countWords(works[current.id]?.[part.label] ?? "")}{ui("词")}</span>
                   </div>
                 )}
               </div>
@@ -600,11 +597,11 @@ export function WrittenPaperRunner({ paper }: { paper: MockPaper }) {
           </div>
 
           <div className="mt-8 flex justify-between border-t border-[var(--border)] pt-5">
-            <button type="button" disabled={currentIndex === 0} onClick={() => setCurrentIndex((index) => index - 1)} className="text-sm text-[var(--ink-soft)] disabled:opacity-30">← 上一题</button>
+            <button type="button" disabled={currentIndex === 0} onClick={() => setCurrentIndex((index) => index - 1)} className="text-sm text-[var(--ink-soft)] disabled:opacity-30">{ui("← 上一题")}</button>
             {currentIndex < questions.length - 1 ? (
-              <button type="button" onClick={() => setCurrentIndex((index) => index + 1)} className="text-sm font-semibold text-[var(--indigo)]">下一题 →</button>
+              <button type="button" onClick={() => setCurrentIndex((index) => index + 1)} className="text-sm font-semibold text-[var(--indigo)]">{ui("下一题 →")}</button>
             ) : (
-              <button type="button" onClick={() => void submit()} className="text-sm font-semibold text-[var(--indigo)]">完成并交卷 →</button>
+              <button type="button" onClick={() => void submit()} className="text-sm font-semibold text-[var(--indigo)]">{ui("完成并交卷 →")}</button>
             )}
           </div>
         </section>
@@ -632,6 +629,7 @@ function WrittenPaperResults({
   startedAtMs: number;
   onRetry: () => void;
 }) {
+  const ui = useUiCopy();
   const [expandedId, setExpandedId] = useState<string | null>(null);
   const [savedSessionId, setSavedSessionId] = useState<string | null>(null);
   const [saveState, setSaveState] = useState<"saving" | "failed" | "saved">("saving");
@@ -654,14 +652,21 @@ function WrittenPaperResults({
     };
   });
   const missingSteps = graded.flatMap((result) => result.grading?.perPart.flatMap((part) => part.keyStepsMissing) ?? []).slice(0, 6);
+  const reviewWorks = Object.fromEntries(questions.map(question => [question.id, {
+    ...(works[question.id] ?? {}),
+    __answerImageIds: JSON.stringify(Object.fromEntries(Object.entries(answerImages[question.id] ?? {}).map(([label, images]) => [label, images.map(image => image.id)]))),
+  }]));
+  const expectedTimes = new Map(paper.modules.flatMap(module => [...moduleAnswerTimeBudget(module.questions, module.durationSec, paper.modules.length === 1 ? paper.bestQuestionCount : undefined)]));
   const diagnosis = buildSessionDiagnosis(questions.flatMap((question) => {
+    if (paper.bestQuestionCount && !hasWrittenResponse(reviewWorks[question.id])) return [];
     const result = grades.find((item) => item.questionId === question.id);
     return result?.grading ? [{
       question,
-      work: works[question.id],
+      work: reviewWorks[question.id],
       earned: result.grading.totalEarned,
       max: result.grading.totalMax,
       feedback: result.grading.perPart,
+      expectedTimeSec: expectedTimes.get(question.id),
     }] : [];
   }));
 
@@ -717,39 +722,36 @@ function WrittenPaperResults({
   return (
     <div className="mx-auto max-w-4xl px-4 py-10">
       <p className="text-xs font-semibold uppercase text-[var(--ink-faint)]">Written paper report</p>
-       <h1 className="mt-2 text-2xl font-bold">{paper.title} · {questions.some((question) => question.responseKind === "essay") ? "写作反馈" : "整卷报告"}</h1>
+       <h1 className="mt-2 text-2xl font-bold">{paper.title} · {questions.some((question) => question.responseKind === "essay") ? ui("写作反馈") : ui("整卷报告")}</h1>
       <p className="mt-3 text-sm" role="status">
-        {saveState === "saving" ? "正在保存考试记录……" : saveState === "saved" ? "考试记录已保存" : "考试记录尚未同步成功。请确认已登录并保持本页面；可重试保存，刷新后也可恢复上次交卷作答。"}
-        {saveState === "failed" && <button type="button" onClick={() => void saveReport()} className="ml-2 underline">重试保存</button>}
+        {saveState === "saving" ? ui("正在保存考试记录……") : saveState === "saved" ? ui("考试记录已保存") : ui("考试记录尚未同步成功。请确认已登录并保持本页面；可重试保存，刷新后也可恢复上次交卷作答。")}
+        {saveState === "failed" && <button type="button" onClick={() => void saveReport()} className="ml-2 underline">{ui("重试保存")}</button>}
       </p>
 
       <div className="mt-7 grid gap-px bg-[var(--border)] sm:grid-cols-4">
-        <div className="bg-white p-4"><strong className="block text-2xl">{earned}/{max || "-"}</strong><span className="text-xs text-[var(--ink-faint)]">{questions.some((question) => question.responseKind === "essay") ? "训练量表得分" : paper.bestQuestionCount ? `最高 ${paper.bestQuestionCount} 题得分` : "已评分得分"}</span></div>
-        <div className="bg-white p-4"><strong className="block text-2xl">{max ? Math.round(earned / max * 100) : 0}%</strong><span className="text-xs text-[var(--ink-faint)]">已评分得分率</span></div>
-        <div className="bg-white p-4"><strong className="block text-2xl">{Math.round(timeUsedSec / 60)}</strong><span className="text-xs text-[var(--ink-faint)]">用时（分钟）</span></div>
-        <div className="bg-white p-4"><strong className="block text-2xl">{pending + reviewRecommended}</strong><span className="text-xs text-[var(--ink-faint)]">待自评 / 复核</span></div>
+        <div className="bg-white p-4"><strong className="block text-2xl">{earned}/{max || "-"}</strong><span className="text-xs text-[var(--ink-faint)]">{questions.some((question) => question.responseKind === "essay") ? ui("训练量表得分") : paper.bestQuestionCount ? ui("最高 {0} 题得分", paper.bestQuestionCount) : ui("已评分得分")}</span></div>
+        <div className="bg-white p-4"><strong className="block text-2xl">{max ? Math.round(earned / max * 100) : 0}%</strong><span className="text-xs text-[var(--ink-faint)]">{ui("已评分得分率")}</span></div>
+        <div className="bg-white p-4"><strong className="block text-2xl">{Math.round(timeUsedSec / 60)}</strong><span className="text-xs text-[var(--ink-faint)]">{ui("用时（分钟）")}</span></div>
+        <div className="bg-white p-4"><strong className="block text-2xl">{pending + reviewRecommended}</strong><span className="text-xs text-[var(--ink-faint)]">{ui("待自评 / 复核")}</span></div>
       </div>
 
       {pending > 0 && (
-        <p className="mt-4 border-l-2 border-[var(--warning)] pl-3 text-sm text-[var(--warning)]">
-          待自评题目未按零分处理，也未计入得分率。
-        </p>
+        <p className="mt-4 border-l-2 border-[var(--warning)] pl-3 text-sm text-[var(--warning)]">{ui("待自评题目未按零分处理，也未计入得分率。")}</p>
       )}
       {reviewRecommended > 0 && (
         <p className="mt-4 border-l-2 border-[var(--warning)] pl-3 text-sm text-[var(--warning)]">
-          {reviewRecommended} 道题的独立阅卷分歧超过阈值，已完成自动裁决，但仍建议对照评分标准复核。
-        </p>
+          {reviewRecommended}{ui("道题的独立阅卷分歧超过阈值，已完成自动裁决，但仍建议对照评分标准复核。")}</p>
       )}
 
       <DiagnosisSummary diagnosis={diagnosis} />
 
       <section className="mt-9">
-        <h2 className="text-base font-bold">主题表现</h2>
+        <h2 className="text-base font-bold">{ui("主题表现")}</h2>
         <div className="mt-3 divide-y divide-[var(--border)] border-y border-[var(--border)]">
           {topicRows.map((row) => (
             <div key={row.topicId} className="flex items-center justify-between py-3 text-sm">
               <span>{TOPIC_LABELS[row.topicId] ?? row.topicId}</span>
-              <span className="font-semibold">{row.max ? `${row.earned}/${row.max}` : "待自评"}</span>
+              <span className="font-semibold">{row.max ? `${row.earned}/${row.max}` : ui("待自评")}</span>
             </div>
           ))}
         </div>
@@ -757,7 +759,7 @@ function WrittenPaperResults({
 
       {missingSteps.length > 0 && (
         <section className="mt-9">
-          <h2 className="text-base font-bold">高频失分点</h2>
+          <h2 className="text-base font-bold">{ui("高频失分点")}</h2>
           <ul className="mt-3 space-y-2 text-sm text-[var(--ink-soft)]">
             {missingSteps.map((step, index) => <li key={`${step}-${index}`}>• {step}</li>)}
           </ul>
@@ -765,27 +767,21 @@ function WrittenPaperResults({
       )}
 
       <section className="mt-9">
-        <h2 className="text-base font-bold">逐题评分</h2>
+        <h2 className="text-base font-bold">{ui("逐题评分")}</h2>
         <div className="mt-3 divide-y divide-[var(--border)] border-y border-[var(--border)]">
           {questions.map((question, index) => {
             const result = grades.find((item) => item.questionId === question.id);
             const open = expandedId === question.id;
-            const itemDiagnosis = result?.grading ? diagnoseAnswer({
-              question,
-              work: works[question.id],
-              earned: result.grading.totalEarned,
-              max: result.grading.totalMax,
-              feedback: result.grading.perPart,
-            }) : null;
+            const itemDiagnosis = diagnosis.answers.find(item => item.questionId === question.id);
             return (
               <div key={question.id}>
                 <button type="button" onClick={() => setExpandedId(open ? null : question.id)} className="flex w-full items-center gap-3 py-4 text-left">
                   <span className="text-xs text-[var(--ink-faint)]">Q{index + 1}</span>
                   <span className="flex-1 text-sm font-medium">{TOPIC_LABELS[question.topicId] ?? question.topicId}</span>
                   <strong className={result?.error ? "text-[var(--warning)]" : "text-[var(--ink)]"}>
-                    {result?.grading ? `${result.grading.totalEarned}/${result.grading.totalMax}` : "待自评"}
+                    {result?.grading ? `${result.grading.totalEarned}/${result.grading.totalMax}` : ui("待自评")}
                   </strong>
-                  <span className="text-xs text-[var(--ink-faint)]">{open ? "收起" : "展开"}</span>
+                  <span className="text-xs text-[var(--ink-faint)]">{open ? ui("收起") : ui("展开")}</span>
                 </button>
                 {open && (
                   <div className="pb-5 text-sm">
@@ -811,7 +807,7 @@ function WrittenPaperResults({
                               <ul className="mt-2 space-y-1 text-xs text-[var(--ink-soft)]">
                                 {part.evidence.map((item, evidenceIndex) => (
                                   <li key={`${item.criterion}-${evidenceIndex}`}>
-                                    <span className="font-semibold">{item.marksAwarded} 分 · {item.criterion}</span>
+                                    <span className="font-semibold">{item.marksAwarded}{ui("分 ·")}{item.criterion}</span>
                                     {item.quote && <span>：“{item.quote}”</span>}
                                   </li>
                                 ))}
@@ -824,11 +820,11 @@ function WrittenPaperResults({
                       </div>
                     ) : (
                       <div>
-                        <p className="text-[var(--warning)]">{result?.error}。请对照下方评分要点自评。</p>
+                        <p className="text-[var(--warning)]">{result?.error}{ui("。请对照下方评分要点自评。")}</p>
                         <div className="mt-4 space-y-3">
                           {question.parts.map((part) => (
                             <div key={part.label} className="border-l-2 border-[var(--border)] pl-3">
-                              <div className="font-semibold">{part.label} · {part.marks} 分</div>
+                              <div className="font-semibold">{part.label} · {part.marks}{ui("分")}</div>
                               <MathRenderer text={part.solutionOutline} className="mt-1 text-[var(--ink-soft)]" block />
                             </div>
                           ))}
@@ -836,9 +832,10 @@ function WrittenPaperResults({
                       </div>
                     )}
                     <details className="mt-4">
-                      <summary className="cursor-pointer font-semibold text-[var(--indigo)]">{question.responseKind === "essay" ? "查看评分标准说明" : "查看完整参考解答"}</summary>
+                      <summary className="cursor-pointer font-semibold text-[var(--indigo)]">{question.responseKind === "essay" ? ui("查看评分标准说明") : ui("查看完整参考解答")}</summary>
                       <MathRenderer text={question.fullSolution} className="mt-3 leading-7" block />
                     </details>
+                    <QuestionFeedback questionId={question.id} testId={question.testId} />
                   </div>
                 )}
               </div>
@@ -848,9 +845,9 @@ function WrittenPaperResults({
       </section>
 
       <div className="mt-8 grid gap-3 sm:grid-cols-3">
-        <Link href={`/tests/${paper.testId}`} className="rounded-md border border-[var(--border)] py-3 text-center text-sm">返回 {TEST_LABELS[paper.testId] ?? paper.testId.toUpperCase()}</Link>
-        {savedSessionId && <Link href={`/tests/${paper.testId}/history/${savedSessionId}`} className="rounded-md border border-[var(--indigo)] py-3 text-center text-sm font-semibold text-[var(--indigo)]">查看完整报告</Link>}
-        <button type="button" onClick={onRetry} className="rounded-md bg-[var(--indigo)] py-3 text-sm font-semibold text-white">重做本卷</button>
+        <Link href={`/tests/${paper.testId}`} className="rounded-md border border-[var(--border)] py-3 text-center text-sm">{ui("返回")}{TEST_LABELS[paper.testId] ?? paper.testId.toUpperCase()}</Link>
+        {savedSessionId && <Link href={`/tests/${paper.testId}/history/${savedSessionId}`} className="rounded-md border border-[var(--indigo)] py-3 text-center text-sm font-semibold text-[var(--indigo)]">{ui("查看完整报告")}</Link>}
+        <button type="button" onClick={onRetry} className="rounded-md bg-[var(--indigo)] py-3 text-sm font-semibold text-white">{ui("重做本卷")}</button>
       </div>
     </div>
   );

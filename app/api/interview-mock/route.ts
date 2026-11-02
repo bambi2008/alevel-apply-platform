@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { aiSystemForRequest, aiMessageForRequest } from "@/lib/ai-response-language";
 import OpenAI from "openai";
 import { captureError } from "@/lib/monitoring";
 import { requireAiAccess } from "@/lib/security/ai-route";
@@ -13,6 +14,7 @@ interface Msg {
 interface MockRequest {
   mode?: "interview" | "feedback"; // interview=正常面试；feedback=结束后复盘
   subject: string;
+  subjectId?: string;
   question?: string;
   history?: Msg[];
   studentReply?: string;
@@ -105,8 +107,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json(
       {
         error: !aiEnabled
-          ? "AI 模拟面试当前未启用，请联系管理员"
-          : "AI 模拟面试未配置 DeepSeek API 密钥，请联系管理员",
+          ? aiMessageForRequest("AI 模拟面试当前未启用，请联系管理员", req)
+          : aiMessageForRequest("AI 模拟面试未配置 DeepSeek API 密钥，请联系管理员", req),
         code: "AI_NOT_CONFIGURED",
       },
       { status: 503 },
@@ -130,11 +132,11 @@ export async function POST(req: NextRequest) {
         messages: [
           {
             role: "system",
-            content: subject === "IELTS Speaking"
+            content: `${aiSystemForRequest(subject === "IELTS Speaking"
               ? IELTS_FEEDBACK_SYSTEM
-              : subject.startsWith("港校")
-                ? `${HK_INTERVIEW_FEEDBACK_SYSTEM}\n\n本场类型：${subject}。`
-              : `${FEEDBACK_SYSTEM}\n\n本场学科：${subject || "综合"}。`,
+              : body.subjectId?.startsWith("hk-") || /^(?:港校|Hong Kong|HK\b)/.test(subject)
+                ? HK_INTERVIEW_FEEDBACK_SYSTEM
+              : FEEDBACK_SYSTEM, req)}\n\n本场学科：${subject || "综合"}。`,
           },
           { role: "user", content: `以下是完整面试记录，请复盘：\n\n${transcript}` },
         ],
@@ -147,7 +149,7 @@ export async function POST(req: NextRequest) {
 
     // —— 面试模式 ——
     const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
-      { role: "system", content: `${INTERVIEW_SYSTEM}\n\n本场面试学科：${subject || "综合"}。` },
+      { role: "system", content: `${aiSystemForRequest(INTERVIEW_SYSTEM, req)}\n\n本场面试学科：${subject || "综合"}。` },
     ];
 
     if (history.length === 0 && !studentReply) {
@@ -181,6 +183,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ interviewer });
   } catch (err) {
     captureError(err, { route: "interview-mock" });
-    return NextResponse.json({ error: "生成失败，请稍后再试" }, { status: 500 });
+    return NextResponse.json({ error: aiMessageForRequest("生成失败，请稍后再试", req) }, { status: 500 });
   }
 }

@@ -6,13 +6,13 @@ export const CAIE9709_KNOWLEDGE: TopicKnowledge[] = [
     overview: "P3 代数题常把二项展开、部分分式、因式与余式藏在参数条件中。先确认目标系数或恒等式，再决定展开到哪一项。",
     concepts: [{
       name: "广义二项式与代数约束",
-      body: "$$(1+x)^n=1+nx+\frac{n(n-1)}{2!}x^2+\cdots$$\n当 $n$ 不是正整数时，展开通常只在 $|x|<1$ 有效。若表达式先有常数倍或线性换元，要同时调整系数与收敛范围。",
+      body: "$$(1+x)^n=1+nx+\\frac{n(n-1)}{2!}x^2+\\cdots$$\n当 $n$ 不是正整数时，展开通常只在 $|x|<1$ 有效。若表达式先有常数倍或线性换元，要同时调整系数与收敛范围。",
       keyPoints: ["只展开到题目所需阶数", "把参数条件翻译成系数方程", "最后写出有效范围"],
     }],
     workedExamples: [{
       title: "系数反求参数",
       question: "$(1+kx)^{-1/2}$ 中 $x^2$ 的系数为 $3/2$，且 $k>0$，求 $k$。",
-      solution: "$x^2$ 系数是 $\frac{(-1/2)(-3/2)}{2}k^2=\frac38k^2$，故 $k^2=4$。由 $k>0$，得 $k=2$。",
+      solution: "$x^2$ 系数是 $\\frac{(-1/2)(-3/2)}{2}k^2=\\frac38k^2$，故 $k^2=4$。由 $k>0$，得 $k=2$。",
       tip: "正负限制往往是最后一分。",
     }],
   },
@@ -26,7 +26,7 @@ export const CAIE9709_KNOWLEDGE: TopicKnowledge[] = [
     }],
     workedExamples: [{
       title: "双向指数",
-      question: "解 $2^{x+1}+8\cdot2^{-x}=10$。",
+      question: "解 $2^{x+1}+8\\cdot2^{-x}=10$。",
       solution: "令 $u=2^x>0$，乘以 $u$ 得 $2u^2-10u+8=0$，所以 $u=1$ 或 $4$，故 $x=0$ 或 $2$。",
     }],
   },
@@ -35,13 +35,13 @@ export const CAIE9709_KNOWLEDGE: TopicKnowledge[] = [
     overview: "P3 三角题常要求在恒等变形、象限判断和规定区间之间来回切换。先统一函数或角，再处理解集。",
     concepts: [{
       name: "恒等式与区间解",
-      body: "常用工具包括积化和差、倍角公式与 $R\cos(x-\alpha)$。解方程后必须根据题目区间列全解，并检查原式中的分母限制。",
+      body: "常用工具包括积化和差、倍角公式与 $R\\cos(x-\\alpha)$。解方程后必须根据题目区间列全解，并检查原式中的分母限制。",
       keyPoints: ["先标出角度单位", "反三角函数只给主值", "用象限补齐解而不是盲按计算器"],
     }],
     workedExamples: [{
       title: "积化和差",
-      question: "求 $\int_0^{\pi/6}4\cos x\cos2x\,dx$。",
-      solution: "$4\cos x\cos2x=2(\cos3x+\cos x)$，积分得 $[\frac23\sin3x+2\sin x]_0^{\pi/6}=\frac53$。",
+      question: "求 $\\int_0^{\\pi/6}4\\cos x\\cos2x\\,dx$。",
+      solution: "$4\\cos x\\cos2x=2(\\cos3x+\\cos x)$，积分得 $[\\frac23\\sin3x+2\\sin x]_0^{\\pi/6}=\\frac53$。",
     }],
   },
   {
@@ -49,13 +49,13 @@ export const CAIE9709_KNOWLEDGE: TopicKnowledge[] = [
     overview: "微分高频失分来自没有先判断函数形式。隐函数、参数方程和切线角度都要先求正确的斜率表达式，再代点。",
     concepts: [{
       name: "隐函数与切线夹角",
-      body: "隐函数两边对 $x$ 求导时，每个含 $y$ 的项都带 $dy/dx$。两直线斜率为 $m_1,m_2$ 时，夹角满足 $$\tan\theta=\left|\frac{m_2-m_1}{1+m_1m_2}\right|.$$",
+      body: "隐函数两边对 $x$ 求导时，每个含 $y$ 的项都带 $dy/dx$。两直线斜率为 $m_1,m_2$ 时，夹角满足 $$\\tan\\theta=\\left|\\frac{m_2-m_1}{1+m_1m_2}\\right|.$$",
       keyPoints: ["先求导再代坐标", "乘积中的 $y$ 要用乘积法则", "夹角取锐角并检查垂直情形"],
     }],
     workedExamples: [{
       title: "隐函数斜率",
       question: "若 $x^2+xy+y^2=7$，求点 $(1,2)$ 处的斜率。",
-      solution: "$2x+y+x\frac{dy}{dx}+2y\frac{dy}{dx}=0$，所以 $dy/dx=-(2x+y)/(x+2y)$。代入得 $-4/5$。",
+      solution: "$2x+y+x\\frac{dy}{dx}+2y\\frac{dy}{dx}=0$，所以 $dy/dx=-(2x+y)/(x+2y)$。代入得 $-4/5$。",
     }],
   },
   {
@@ -68,8 +68,8 @@ export const CAIE9709_KNOWLEDGE: TopicKnowledge[] = [
     }],
     workedExamples: [{
       title: "隐藏的对数型",
-      question: "求 $\int \frac{2x+1}{x^2+x+3}\,dx$。",
-      solution: "分母导数恰为 $2x+1$，因此结果为 $\ln(x^2+x+3)+C$。",
+      question: "求 $\\int \\frac{2x+1}{x^2+x+3}\\,dx$。",
+      solution: "分母导数恰为 $2x+1$，因此结果为 $\\ln(x^2+x+3)+C$。",
       tip: "先看分母导数，能省下一整页运算。",
     }],
   },
@@ -83,7 +83,7 @@ export const CAIE9709_KNOWLEDGE: TopicKnowledge[] = [
     }],
     workedExamples: [{
       title: "证明唯一根",
-      question: "说明 $x+\ln x=3$ 在 $(2,3)$ 内有唯一根。",
+      question: "说明 $x+\\ln x=3$ 在 $(2,3)$ 内有唯一根。",
       solution: "$f(2)<0<f(3)$ 且 $f$ 连续，故有根；又 $f'(x)=1+1/x>0$，故严格递增，根唯一。",
     }],
   },
@@ -92,13 +92,13 @@ export const CAIE9709_KNOWLEDGE: TopicKnowledge[] = [
     overview: "向量长题往往把相交、垂直、距离和位置限制叠在一起。每个文字条件都应转换成一个独立方程。",
     concepts: [{
       name: "直线关系与距离",
-      body: "直线写成 $\mathbf r=\mathbf a+\lambda\mathbf d$。相交令三个坐标对应相等；垂直用点积为零；点到直线的最短向量与方向向量垂直。",
+      body: "直线写成 $\\mathbf r=\\mathbf a+\\lambda\\mathbf d$。相交令三个坐标对应相等；垂直用点积为零；点到直线的最短向量与方向向量垂直。",
       keyPoints: ["参数不要混用", "三个坐标方程要相容", "距离必须取向量模"],
     }],
     workedExamples: [{
       title: "垂足参数",
-      question: "点 $P$ 到直线 $\mathbf r=\mathbf a+\lambda\mathbf d$ 的垂足参数是什么？",
-      solution: "垂足 $H=\mathbf a+\lambda\mathbf d$ 满足 $(P-H)\cdot\mathbf d=0$，故 $\lambda=((P-\mathbf a)\cdot\mathbf d)/(\mathbf d\cdot\mathbf d)$。",
+      question: "点 $P$ 到直线 $\\mathbf r=\\mathbf a+\\lambda\\mathbf d$ 的垂足参数是什么？",
+      solution: "垂足 $H=\\mathbf a+\\lambda\\mathbf d$ 满足 $(P-H)\\cdot\\mathbf d=0$，故 $\\lambda=((P-\\mathbf a)\\cdot\\mathbf d)/(\\mathbf d\\cdot\\mathbf d)$。",
     }],
   },
   {
@@ -112,7 +112,7 @@ export const CAIE9709_KNOWLEDGE: TopicKnowledge[] = [
     workedExamples: [{
       title: "部分分式后分离",
       question: "解 $dy/dx=x(y+1)/y$。",
-      solution: "$y/(y+1)\,dy=x\,dx$，而 $y/(y+1)=1-1/(y+1)$，故 $y-\ln|y+1|=x^2/2+C$。",
+      solution: "$y/(y+1)\\,dy=x\\,dx$，而 $y/(y+1)=1-1/(y+1)$，故 $y-\\ln|y+1|=x^2/2+C$。",
     }],
   },
   {

@@ -1,25 +1,21 @@
 "use client";
 
 import { useActionState, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { loginAction, type AuthState } from "@/lib/auth/actions";
 import { PhoneAuthForm } from "@/components/phone-auth-form";
-
-const CORE_PATHS = [
-  { index: "01", title: "考试训练" },
-  { index: "02", title: "竞赛与专业实践" },
-  { index: "03", title: "面试训练" },
-  { index: "04", title: "文书" },
-] as const;
+import { CORE_AREAS } from "@/lib/core-navigation";
 
 export default function LoginPage() {
   const t = useTranslations("auth");
+  const locale = useLocale();
+  const english = locale === "en";
   const phoneEnabled = process.env.NEXT_PUBLIC_PHONE_AUTH_ENABLED === "true";
   const [tab, setTab] = useState<"phone" | "email">(phoneEnabled ? "phone" : "email");
   const [state, formAction, pending] = useActionState<AuthState, FormData>(loginAction, {});
 
-  const fieldClass = "w-full border-0 border-b border-black/20 bg-transparent px-0 py-3 text-base text-[#101817] outline-none transition-colors placeholder:text-black/30 focus:border-[#101817]";
+  const fieldClass = "w-full border-0 border-b border-black/20 bg-transparent px-0 py-3 text-base text-[#101817] outline-none transition-colors placeholder:text-black/65 focus:border-[#101817]";
 
   return (
     <div className="min-h-[calc(100svh-4rem)] bg-[#f4f4f0] text-[#101817]">
@@ -27,18 +23,18 @@ export default function LoginPage() {
         <div className="grid overflow-hidden border-y border-black/15 lg:min-h-[560px] lg:grid-cols-[1.15fr_0.85fr]">
           <section className="flex flex-col justify-between py-7 sm:py-10 lg:border-r lg:border-black/15 lg:px-8 lg:py-12" aria-labelledby="login-heading">
             <div>
-              <p className="text-xs font-semibold tracking-[0.22em] text-black/40">ACCOUNT · CORE FOUR</p>
+              <p className="text-xs font-semibold tracking-[0.22em] text-black/65">{english ? "YOUR ACCOUNT" : "学习账号"}</p>
               <h1 id="login-heading" className="mt-4 text-[clamp(3.25rem,8vw,6.75rem)] font-semibold leading-[0.88] tracking-[-0.075em]">
                 {t("loginTitle")}
               </h1>
-              <p className="mt-3 max-w-md text-base leading-6 text-black/55 sm:mt-5 sm:text-lg sm:leading-7">{t("loginLead")}</p>
+              <p className="mt-3 max-w-md text-base leading-6 text-black/65 sm:mt-5 sm:text-lg sm:leading-7">{t("loginLead")}</p>
             </div>
 
-            <div className="mt-12 hidden grid-cols-2 border-t border-black/15 sm:grid lg:mt-16" aria-label="四个核心入口">
-              {CORE_PATHS.map((path) => (
-                <div key={path.index} className="min-h-20 border-b border-black/15 py-4 odd:border-r odd:pr-4 even:pl-4">
-                  <span className="text-[0.65rem] font-semibold tracking-[0.18em] text-black/30">{path.index}</span>
-                  <p className="mt-2 text-sm font-semibold tracking-[-0.015em]">{path.title}</p>
+            <div className="mt-12 hidden grid-cols-2 border-t border-black/15 sm:grid lg:mt-16" aria-label={english ? "Study areas" : "训练入口"}>
+              {CORE_AREAS.map((path) => (
+                <div key={path.key} className="min-h-20 border-b border-black/15 py-4 odd:border-r odd:pr-4 even:pl-4">
+                  <span className="text-[0.65rem] font-semibold tracking-[0.18em] text-black/65">{path.index}</span>
+                  <p className="mt-2 text-sm font-semibold tracking-[-0.015em]">{english ? path.en : path.zh}</p>
                 </div>
               ))}
             </div>
@@ -46,17 +42,17 @@ export default function LoginPage() {
 
           <section className="flex items-center border-t border-black/15 py-8 sm:py-10 lg:border-l-0 lg:border-t-0 lg:px-10 lg:py-12" aria-labelledby="login-form-heading">
             <div className="mx-auto w-full max-w-sm">
-              <p className="text-xs font-semibold tracking-[0.2em] text-black/35">01 / SIGN IN</p>
+              <p className="text-xs font-semibold tracking-[0.2em] text-black/65">01 / SIGN IN</p>
               <h2 id="login-form-heading" className="mt-3 text-2xl font-semibold tracking-[-0.035em]">{t("loginFormTitle")}</h2>
-              <p className="mt-2 text-sm leading-6 text-black/50">{t("loginHint")}</p>
+              <p className="mt-2 text-sm leading-6 text-black/65">{t("loginHint")}</p>
 
               {phoneEnabled ? (
-                <div className="mt-8 grid grid-cols-2 border-y border-black/15 text-sm" aria-label="登录方式">
+                <div className="mt-8 grid grid-cols-2 border-y border-black/15 text-sm" aria-label={english ? "Sign-in method" : "登录方式"}>
                   <button
                     type="button"
                     onClick={() => setTab("phone")}
                     aria-pressed={tab === "phone"}
-                    className={`min-h-11 border-r border-black/15 px-3 transition-colors ${tab === "phone" ? "bg-[#101817] font-semibold text-white" : "text-black/45 hover:bg-white/55 hover:text-black"}`}
+                    className={`min-h-11 border-r border-black/15 px-3 transition-colors ${tab === "phone" ? "bg-[#101817] font-semibold text-white" : "text-black/65 hover:bg-white/55 hover:text-black"}`}
                   >
                     {t("phoneTab")}
                   </button>
@@ -64,7 +60,7 @@ export default function LoginPage() {
                     type="button"
                     onClick={() => setTab("email")}
                     aria-pressed={tab === "email"}
-                    className={`min-h-11 px-3 transition-colors ${tab === "email" ? "bg-[#101817] font-semibold text-white" : "text-black/45 hover:bg-white/55 hover:text-black"}`}
+                    className={`min-h-11 px-3 transition-colors ${tab === "email" ? "bg-[#101817] font-semibold text-white" : "text-black/65 hover:bg-white/55 hover:text-black"}`}
                   >
                     {t("emailTab")}
                   </button>
@@ -76,7 +72,8 @@ export default function LoginPage() {
                   <PhoneAuthForm />
                 ) : (
                   <form action={formAction} className="space-y-6">
-                    <label className="block text-xs font-semibold tracking-[0.12em] text-black/45">
+                    <input type="hidden" name="locale" value={locale} />
+                    <label className="block text-xs font-semibold tracking-[0.12em] text-black/65">
                       {t("email")}
                       <input
                         name="email"
@@ -87,7 +84,7 @@ export default function LoginPage() {
                         className={fieldClass}
                       />
                     </label>
-                    <label className="block text-xs font-semibold tracking-[0.12em] text-black/45">
+                    <label className="block text-xs font-semibold tracking-[0.12em] text-black/65">
                       {t("password")}
                       <input
                         name="password"
@@ -102,7 +99,7 @@ export default function LoginPage() {
                       <p role="alert" className="border-l-2 border-red-700 pl-3 text-sm text-red-800">{t(`errors.${state.error}`)}</p>
                     ) : null}
                     <div className="flex items-center justify-end">
-                      <Link href="/forgot-password" className="text-sm text-black/55 underline decoration-black/25 underline-offset-4 hover:text-black">
+                      <Link href="/forgot-password" className="text-sm text-black/65 underline decoration-black/25 underline-offset-4 hover:text-black">
                         {t("forgotPassword")}
                       </Link>
                     </div>
@@ -118,7 +115,7 @@ export default function LoginPage() {
                 )}
               </div>
 
-              <p className="mt-7 border-t border-black/15 pt-5 text-sm text-black/50">
+              <p className="mt-7 border-t border-black/15 pt-5 text-sm text-black/65">
                 <Link href="/register" className="font-semibold text-[#101817] underline decoration-black/25 underline-offset-4 hover:decoration-black">
                   {t("toRegister")}
                 </Link>

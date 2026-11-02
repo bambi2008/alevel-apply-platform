@@ -1,6 +1,8 @@
 import { buildSessionDiagnosis, expectedAnswerTimeSec, type DiagnosisObservation } from "@/lib/tests/diagnosis";
 import type { Question } from "@/lib/tests/questions/types";
 import type { GradeAssessment, GradeEvidence } from "@/lib/tests/grading";
+import { moduleAnswerTimeBudget } from "./answer-time-budget";
+import { hasWrittenResponse } from "./answer-images";
 
 export interface ReportAnswer {
   questionId: string;
@@ -144,6 +146,7 @@ export function buildExamPerformanceReport(args: {
   questions: Question[];
   topicMeta: (topicId: string) => { title: string; titleEn: string } | undefined;
   modules?: ReportModuleDefinition[];
+  bestQuestionCount?: number;
 }): ExamPerformanceReport {
   const questionById = new Map(args.questions.map((question) => [question.id, question]));
   const matched = args.session.answers.flatMap((answer) => {
@@ -159,11 +162,24 @@ export function buildExamPerformanceReport(args: {
   const scorePercent = percent(args.session.totalEarned, args.session.totalMax);
   const completedQuestions = args.session.answers.filter((answer) => (
     answer.type === "long"
-      ? Object.values(answer.work ?? {}).some((value) => value.trim())
+      ? hasWrittenResponse(answer.work)
       : Boolean(answer.selected)
   )).length;
 
-  const observations: DiagnosisObservation[] = matched.map(({ answer, question }) => ({
+  const hasAnswer = (answer: ReportAnswer) => answer.type === "long"
+    ? hasWrittenResponse(answer.work) : Boolean(answer.selected);
+  const optionalCount = Number.isInteger(args.bestQuestionCount) && args.bestQuestionCount! > 0 && args.bestQuestionCount! <= questionById.size
+    ? args.bestQuestionCount : undefined;
+  const diagnosticRows = optionalCount ? matched.filter(({ answer }) => hasAnswer(answer)) : matched;
+  const expectedTimes = new Map<string, number>();
+  for (const section of args.modules ?? []) {
+    const qs = section.questionIds.flatMap(id => { const q = questionById.get(id); return q ? [q] : []; });
+    // Incomplete historical source data must not produce an overconfident pace.
+    if (qs.length !== section.questionIds.length) continue;
+    const count = args.modules?.length === 1 ? optionalCount : undefined;
+    for (const [id, seconds] of moduleAnswerTimeBudget(qs, section.durationSec, count)) expectedTimes.set(id, seconds);
+  }
+  const observations: DiagnosisObservation[] = diagnosticRows.map(({ answer, question }) => ({
     question,
     selected: answer.selected,
     earned: answer.earned,
@@ -175,11 +191,12 @@ export function buildExamPerformanceReport(args: {
     visits: answer.visits,
     flagged: answer.flagged,
     firstSelected: answer.firstSelected,
+    expectedTimeSec: expectedTimes.get(question.id),
   }));
   const diagnosis = buildSessionDiagnosis(observations);
 
   const topicRows = new Map<string, { earned: number; max: number; questions: number; difficulty: number }>();
-  for (const { answer, question } of matched) {
+  for (const { answer, question } of diagnosticRows) {
     const current = topicRows.get(question.topicId) ?? { earned: 0, max: 0, questions: 0, difficulty: 0 };
     current.earned += answer.earned;
     current.max += answer.max;
@@ -203,7 +220,7 @@ export function buildExamPerformanceReport(args: {
   }).sort((a, b) => b.priority - a.priority || a.percent - b.percent);
 
   const difficulties = ([1, 2, 3] as const).map((difficulty) => {
-    const rows = matched.filter(({ question }) => question.difficulty === difficulty);
+    const rows = diagnosticRows.filter(({ question }) => question.difficulty === difficulty);
     const earned = rows.reduce((sum, row) => sum + row.answer.earned, 0);
     const max = rows.reduce((sum, row) => sum + row.answer.max, 0);
     return { difficulty, earned, max, percent: percent(earned, max), questions: rows.length };
@@ -214,7 +231,7 @@ export function buildExamPerformanceReport(args: {
     const rows = args.session.answers.filter((answer) => ids.has(answer.questionId));
     const earned = rows.reduce((sum, answer) => sum + answer.earned, 0);
     const max = rows.reduce((sum, answer) => sum + answer.max, 0);
-    const answered = rows.filter((answer) => answer.selected || Object.values(answer.work ?? {}).some(Boolean)).length;
+    const answered = rows.filter(hasAnswer).length;
     return { id: module.id, title: module.title, earned, max, percent: percent(earned, max), answered, total: module.questionIds.length };
   }).filter((module) => module.max > 0 || module.total > 0);
 
@@ -222,7 +239,8 @@ export function buildExamPerformanceReport(args: {
     ?? matched.reduce((sum, row) => sum + expectedAnswerTimeSec(row.question), 0);
   const telemetryAnswers = args.session.answers.filter((answer) => typeof answer.timeSpentSec === "number").length;
   const telemetryCoverage = args.session.answers.length ? Math.round((telemetryAnswers / args.session.answers.length) * 100) : 0;
-  const unanswered = Math.max(0, args.session.answers.length - completedQuestions);
+  const requiredQuestions = optionalCount ?? args.session.answers.length;
+  const unanswered = Math.max(0, requiredQuestions - completedQuestions);
   const timeRatio = args.session.timeUsedSec && plannedSec ? args.session.timeUsedSec / plannedSec : null;
   const timeStatus = timeRatio === null
     ? "unknown"
@@ -261,7 +279,7 @@ export function buildExamPerformanceReport(args: {
   const delta = previousPoint ? scorePercent - previousPoint.percent : null;
   const direction = delta === null ? "new" : delta >= 4 ? "up" : delta <= -4 ? "down" : "steady";
 
-  const sampleSize = Math.max(1, matched.length);
+  const sampleSize = Math.max(1, diagnosticRows.length);
   const rate = scorePercent / 100;
   const statisticalMargin = 1.64 * Math.sqrt(Math.max(0.02, rate * (1 - rate)) / sampleSize) * 100;
   const historySpread = standardDeviation(trendPoints.map((point) => point.percent));
@@ -301,6 +319,7 @@ export function buildExamPerformanceReport(args: {
     });
   }
 
+  const selectionNote = optionalCount ? `本卷按 ${optionalCount} 题选答口径判断完成度；未选答题不作为错题或知识缺口。` : "";
   return {
     sessionId: args.session.id,
     testId: args.session.testId,
@@ -310,7 +329,7 @@ export function buildExamPerformanceReport(args: {
       percent: scorePercent,
       completedQuestions,
       totalQuestions: args.session.answers.length,
-      completionPercent: args.session.answers.length ? Math.round((completedQuestions / args.session.answers.length) * 100) : 0,
+      completionPercent: requiredQuestions ? Math.min(100, Math.round((completedQuestions / requiredQuestions) * 100)) : 0,
     },
     performanceBand: {
       low: Math.round(clamp(scorePercent - margin)),
@@ -353,8 +372,8 @@ export function buildExamPerformanceReport(args: {
       totalQuestions: args.session.answers.length,
       missingQuestionIds,
       note: telemetryCoverage >= 80
-        ? `${usesSpecialScoring ? "本次含起始分、负分或选题计分规则；总分与逐题画像口径不同。" : ""}行为数据覆盖充分，可用于分析节奏、改答和回看。`
-        : `${usesSpecialScoring ? "本次含特殊计分规则；" : ""}逐题计时覆盖 ${telemetryCoverage}%，时间类判断应谨慎阅读。`,
+        ? `${selectionNote}${usesSpecialScoring ? "本次含起始分、负分或选题计分规则；总分与逐题画像口径不同。" : ""}行为数据覆盖充分，可用于分析节奏、改答和回看。`
+        : `${selectionNote}${usesSpecialScoring ? "本次含特殊计分规则；" : ""}逐题计时覆盖 ${telemetryCoverage}%，时间类判断应谨慎阅读。`,
     },
   };
 }

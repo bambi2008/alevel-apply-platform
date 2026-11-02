@@ -135,9 +135,10 @@ export async function GET(
   const report = buildExamPerformanceReport({
     session: reportSession,
     history,
-    questions,
+    questions: [...(paper?.modules.flatMap(module => module.questions) ?? []), ...questions],
     topicMeta: (topicId) => getTopicMeta(current.testId, topicId),
     modules,
+    bestQuestionCount: paper?.bestQuestionCount,
   });
 
   return NextResponse.json({

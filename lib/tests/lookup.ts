@@ -19,7 +19,7 @@ import type { Question } from "@/lib/tests/questions/types";
 import { getHistoricalTestById } from "@/lib/tests";
 import { getAllMockQuestions } from "@/lib/tests/mock-papers";
 import { ESAT_BOUNDARY_QUESTIONS } from "./questions/esat-boundary";
-import { getReleasedPracticeQuestions } from "./practice-banks";
+import { getReleasedPracticeQuestions, getPreCalibrationPracticeQuestions } from "./practice-banks";
 import { P3_SYLLABUS_SUPPLEMENTS, ESAT_SYLLABUS_SUPPLEMENTS, BPHO_SYLLABUS_SUPPLEMENTS } from "./questions/syllabus-supplements";
 
 const PRACTICE_QUESTIONS: Question[] = [
@@ -44,7 +44,8 @@ const PRACTICE_QUESTIONS: Question[] = [
 
 const ALL_QUESTIONS: Question[] = [
   ...PRACTICE_QUESTIONS,
-  ...["mat", "step", "tmua", "bmo", "lnat"].flatMap(getReleasedPracticeQuestions),
+  ...["mat", "step", "tmua", "bmo", "lnat", "esat", "pat", "tara", "bpho", "ucat", "ielts", "csat", "caie9709"].flatMap(getPreCalibrationPracticeQuestions),
+  ...["mat", "step", "tmua", "bmo", "lnat", "esat", "pat", "tara", "bpho", "ucat", "ielts", "csat", "caie9709"].flatMap(getReleasedPracticeQuestions),
   ...getAllMockQuestions(), // 完整模拟卷题目（不进练习库，但回看/分析需可反查）
 ];
 

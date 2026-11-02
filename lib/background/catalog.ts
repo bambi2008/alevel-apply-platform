@@ -67,20 +67,26 @@ export const BACKGROUND_CATALOG: CatalogItem[] = [
   {
     id: "bg-cse-bio", field: "CS_ENG", category: "COMPETITION",
     title: "英国信息学奥林匹克 (BIO)", titleEn: "British Informatics Olympiad",
-    description: "英国面向中学生的算法编程竞赛，考查算法设计与实现能力，是信息学方向含金量较高的学术竞赛，适合有编程基础、目标计算机专业的学生。",
+    description: "算法编程竞赛，练习算法设计、问题分析与程序实现。",
     difficulty: 3, timing: "高一至高二", officialUrl: "",
   },
   {
     id: "bg-cse-usaco", field: "CS_ENG", category: "COMPETITION",
     title: "美国计算机奥赛 (USACO)", titleEn: "USA Computing Olympiad",
-    description: "全球广泛参与的线上算法竞赛，分多个等级（铜/银/金/白金），可循序渐进提升算法能力，成绩国际认可度高。",
+    description: "分级算法竞赛，练习数据结构、算法设计与程序实现。",
     difficulty: 3, timing: "全年多场，建议尽早开始", officialUrl: "",
   },
   {
     id: "bg-cse-opensource", field: "CS_ENG", category: "RESEARCH",
-    title: "开源项目 / Kaggle 数据竞赛", titleEn: "Open Source & Kaggle",
-    description: "参与开源项目贡献代码，或在 Kaggle 上完成数据科学/机器学习竞赛，能体现真实工程与数据能力，是文书里有说服力的实践素材。",
+    title: "开源项目实践", titleEn: "Open-source Projects",
+    description: "参与开源项目，记录代码贡献、问题分析与协作过程。已有规划中的原始名称保持不变。",
     difficulty: 2, timing: "全年，适合长期投入", officialUrl: "",
+  },
+  {
+    id: "bg-cse-kaggle", field: "CS_ENG", category: "COMPETITION",
+    title: "Kaggle 数据竞赛", titleEn: "Kaggle Data Competitions",
+    description: "围绕数据集完成建模、验证和结果分析；参赛要求以各赛题规则为准。",
+    difficulty: 2, timing: "按各赛题安排", officialUrl: "",
   },
   {
     id: "bg-cse-summer", field: "CS_ENG", category: "SUMMER_SCHOOL",
@@ -93,7 +99,7 @@ export const BACKGROUND_CATALOG: CatalogItem[] = [
   {
     id: "bg-econ-johnlocke", field: "ECON", category: "COMPETITION",
     title: "John Locke 论文竞赛", titleEn: "John Locke Institute Essay Competition",
-    description: "面向全球中学生的学术论文竞赛，设经济、哲学、政治等多个赛道，重视独立思辨与论证能力，在文商社科方向认可度高。",
+    description: "学术论文竞赛，练习独立思辨、资料分析与论证写作。",
     difficulty: 3, timing: "通常暑期截稿，建议提前数月准备", officialUrl: "",
   },
   {
@@ -125,17 +131,17 @@ export const BACKGROUND_CATALOG: CatalogItem[] = [
   {
     id: "bg-math-ukmt", field: "MATH", category: "COMPETITION",
     title: "UKMT 数学挑战 → BMO", titleEn: "UKMT Senior Challenge → BMO",
-    description: "英国数学信托的系列竞赛，从 Senior Maths Challenge 晋级至英国数学奥林匹克 (BMO)，是数学方向权威度很高的学术竞赛。",
+    description: "数学挑战与奥林匹克训练，练习解题、推理和证明。参赛资格以当届规则为准。",
     difficulty: 3, timing: "秋季起逐轮晋级", officialUrl: "", testId: "bmo",
   },
   {
-    id: "bg-math-yau", field: "MATH", category: "RESEARCH",
+    id: "bg-math-yau", field: "MATH", category: "COMPETITION",
     title: "丘成桐中学科学奖（数学）", titleEn: "Yau Science Award (Mathematics)",
-    description: "以研究报告形式参赛的高水平学术奖项，要求完成一项数学研究课题，非常考验研究与写作能力，含金量高。",
+    description: "以研究报告形式参评，练习数学研究、论证与学术写作。",
     difficulty: 3, timing: "每年一届，需长期准备", officialUrl: "",
   },
   {
-    id: "bg-math-modeling", field: "MATH", category: "RESEARCH",
+    id: "bg-math-modeling", field: "MATH", category: "COMPETITION",
     title: "数学建模竞赛 (HiMCM)", titleEn: "Mathematical Modeling (HiMCM)",
     description: "团队在数天内针对真实问题建立数学模型并撰写论文，锻炼应用数学、编程与协作，是数学/工程方向的实践亮点。",
     difficulty: 2, timing: "每年秋季", officialUrl: "",
@@ -151,7 +157,7 @@ export const BACKGROUND_CATALOG: CatalogItem[] = [
   {
     id: "bg-sci-bpho", field: "SCIENCE", category: "COMPETITION",
     title: "英国物理奥赛 (BPhO)", titleEn: "British Physics Olympiad",
-    description: "英国权威的物理竞赛系列，题目富有挑战性，是物理及工程方向展示学术能力的重要竞赛。",
+    description: "物理竞赛训练，练习物理建模、数量估算与多步骤推理。",
     difficulty: 3, timing: "秋冬季", officialUrl: "", testId: "bpho",
   },
   {
@@ -163,7 +169,7 @@ export const BACKGROUND_CATALOG: CatalogItem[] = [
   {
     id: "bg-sci-bbo", field: "SCIENCE", category: "COMPETITION",
     title: "英国生物奥赛 (BBO)", titleEn: "British Biology Olympiad",
-    description: "英国生物学竞赛，覆盖广泛的生物学知识，是生物、生医、医学方向有价值的学术背景。",
+    description: "生物学竞赛训练，练习生命科学知识、数据分析与科学推理。",
     difficulty: 2, timing: "每年一届", officialUrl: "",
   },
   {
@@ -183,7 +189,7 @@ export const BACKGROUND_CATALOG: CatalogItem[] = [
   {
     id: "bg-med-bbo", field: "MED", category: "COMPETITION",
     title: "英国生物奥赛 (BBO)", titleEn: "British Biology Olympiad",
-    description: "生物学竞赛对医学申请有直接帮助，能体现扎实的生命科学基础，是医学方向常见的学术背景之一。",
+    description: "生物学竞赛训练，练习生命科学知识、数据分析与科学推理。",
     difficulty: 2, timing: "每年一届", officialUrl: "",
   },
   {
@@ -202,4 +208,19 @@ export const BACKGROUND_CATALOG: CatalogItem[] = [
 
 export function getCatalogItem(id: string): CatalogItem | undefined {
   return BACKGROUND_CATALOG.find((x) => x.id === id);
+}
+
+/** Preserve both historical IDs and field eligibility; deduplicate presentation only. */
+export function catalogEventKey(id: string): string {
+  return id === "bg-med-bbo" ? "bg-sci-bbo" : id;
+}
+
+export function uniqueCatalogEvents(items: CatalogItem[]): CatalogItem[] {
+  const seen = new Set<string>();
+  return items.filter((item) => {
+    const key = catalogEventKey(item.id);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }

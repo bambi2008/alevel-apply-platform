@@ -16,7 +16,9 @@ describe("public content review", () => {
       expect(picked.statements).toEqual(messages.statements);
     });
     it(`${locale}: removes student identifiers and agency-price comparisons at source`, () => {
-      expect(JSON.stringify(messages.story)).not.toMatch(/SCIE|深国交|升 A2|八万到十二万|80,000|120,000|a few hundred RMB/);
+      expect(messages).not.toHaveProperty("story");
+      expect(messages).not.toHaveProperty("home");
+      expect(JSON.stringify(messages)).not.toMatch(/SCIE|深国交|升 A2|八万到十二万|80,000|120,000|a few hundred RMB/);
     });
   }
   it("pins locale for server interview links and both account login redirects", () => {
@@ -42,12 +44,14 @@ describe("public content review", () => {
     }
   });
   it("uses visible auth labels and resolves historical status through the catalogue helper", () => {
-    const register = readFileSync("app/[locale]/register/page.tsx", "utf8");
+    const register = readFileSync("components/register-form.tsx", "utf8");
     for (const field of ["email", "password"]) {
       expect(register).toContain(`<span>{t("${field}")}</span>`);
     }
-    expect(register).not.toContain('name="inviteCode"');
-    const detail = readFileSync("app/[locale]/tests/[testId]/page.tsx", "utf8");
+    expect(register).toContain('mode === "invite"');
+    expect(register).toContain('name="inviteCode"');
+    expect(readFileSync("app/[locale]/register/page.tsx", "utf8")).toContain("getRegistrationMode()");
+    const detail = readFileSync("components/test-detail.tsx", "utf8");
     expect(detail).toContain('getTestPurpose(test) === "legacy"');
     expect(detail).toContain('getTestPurpose(test) !== "legacy"');
     expect(zh.meta.description).not.toContain("模考");

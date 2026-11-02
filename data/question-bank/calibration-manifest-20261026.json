@@ -1,0 +1,236 @@
+{
+  "schemaVersion": 1,
+  "exams": {
+    "mat": {
+      "releasedCount": 207,
+      "releasedFingerprint": "ae12bfb9:828643d9:116387",
+      "papers": {
+        "mat-written-2": "d1d98e29:9c6a5355:5485",
+        "mat-mock-2-cal20261026": "f35f4522:93cc5cf2:11133",
+        "mat-mock-3-cal20261026": "e5d6f678:7344cb74:11519",
+        "mat-mock-4-cal20261026": "3d84ae82:6dfb460e:11375",
+        "mat-written-3-rev20261025": "497c8cd3:6a603599:5119",
+        "mat-written-5-rev20261025": "8fdb228c:4ef72c58:5395",
+        "mat-mock-1-rev20261025-cal20261026": "847d5ff3:495c482d:12373"
+      },
+      "supersededPapers": [
+        "mat-mock-2",
+        "mat-mock-3",
+        "mat-mock-4",
+        "mat-mock-1-rev20261025"
+      ]
+    },
+    "step": {
+      "releasedCount": 209,
+      "releasedFingerprint": "211cad98:5c07bfc:197351",
+      "papers": {
+        "step3-written-2-boundary": "4e8a756a:53669b06:29034",
+        "step3-written-1-boundary-rev20261025": "c4f658cd:4f370467:25689",
+        "step2-written-1-boundary-rev20261025-rev20261026": "ff7288a:c04ab8bc:34318",
+        "step2-written-2-boundary-rev20261025-rev20261026": "43e9bc4a:547d1fa8:30578"
+      },
+      "supersededPapers": []
+    },
+    "esat": {
+      "releasedCount": 140,
+      "releasedFingerprint": "28109888:f5c141fe:70162",
+      "papers": {
+        "esat-boundary-math2-physics-rev20261026-cal20261026": "973b1306:ef9a4398:41574",
+        "esat-boundary-math2-chemistry-rev20261026-cal20261026": "ece9dcf4:e58f7b6c:41527",
+        "esat-boundary-math2-biology-rev20261026-cal20261026": "5b70e783:c354bbd1:42082",
+        "esat-boundary-physics-chemistry-rev20261026-cal20261026": "af80b9de:3493d840:43948",
+        "esat-boundary-physics-biology-rev20261026-cal20261026": "2dcc8941:abbd61bd:44503",
+        "esat-boundary-chemistry-biology-rev20261026-cal20261026": "2c4ad075:dbf4a9:44456"
+      },
+      "supersededPapers": [
+        "esat-boundary-math2-physics-rev20261026",
+        "esat-boundary-math2-chemistry-rev20261026",
+        "esat-boundary-math2-biology-rev20261026",
+        "esat-boundary-physics-chemistry-rev20261026",
+        "esat-boundary-physics-biology-rev20261026",
+        "esat-boundary-chemistry-biology-rev20261026"
+      ]
+    },
+    "tmua": {
+      "releasedCount": 222,
+      "releasedFingerprint": "e7880abd:9faccfa5:105945",
+      "papers": {
+        "tmua-mock-1-boundary": "a3083927:c8863b0d:22589",
+        "tmua-mock-2-boundary": "a4bedac1:8764efe7:21912",
+        "tmua-mock-3-boundary": "70e578b2:246ccc2a:21345",
+        "tmua-mock-4-boundary": "bb190289:63aac831:20978",
+        "tmua-mock-5-boundary": "84a80c99:aaf699c7:20742",
+        "tmua-mock-6-boundary": "9ca4535e:ab612bcc:21713",
+        "tmua-mock-7-boundary": "438bd733:2f4f34af:20841",
+        "tmua-mock-8-boundary": "e4452f2a:247f5b12:21219",
+        "tmua-mock-9-boundary": "c463ac4a:254f195a:21474",
+        "tmua-mock-10-boundary": "f0089c74:1946d90:21554",
+        "tmua-calibration-1-boundary-rev20261026": "34bbf094:558e2b34:29979"
+      },
+      "supersededPapers": []
+    },
+    "pat": {
+      "releasedCount": 244,
+      "releasedFingerprint": "f75ddd90:14777870:119299",
+      "papers": {
+        "pat-written-extension-1": "4e222c97:7b932c5:6296",
+        "pat-written-extension-2": "69d2d141:5861fa0b:6204",
+        "pat-written-extension-3": "bdb08a62:a4decda2:6139",
+        "pat-mock-1-cal20261026": "e64ff832:d3177952:12932",
+        "pat-mock-2-cal20261026": "bc2ba50a:826aa714:13008",
+        "pat-mock-3-cal20261026": "558b1368:22626d6a:12662",
+        "pat-mock-4-cal20261026": "32268792:464b56ba:12538",
+        "pat-mock-5-cal20261026": "139f8bd8:5cce7ea0:12456"
+      },
+      "supersededPapers": [
+        "pat-mock-1",
+        "pat-mock-2",
+        "pat-mock-3",
+        "pat-mock-4",
+        "pat-mock-5"
+      ]
+    },
+    "lnat": {
+      "releasedCount": 34,
+      "releasedFingerprint": "cd9fc9a9:ac1cfa4b:40306",
+      "papers": {
+        "lnat-written-1": "8e09005f:31bfd53b:2320",
+        "lnat-written-2": "cff162e0:e5356466:2346",
+        "lnat-written-3": "a346d4c5:25299be9:2390",
+        "lnat-mock-1-cal20261026": "80d9c09a:5d47d32a:67584",
+        "lnat-mock-3-cal20261026": "5daad95:290b1993:43141",
+        "lnat-mock-4-cal20261026": "eba7cff3:a4fdb967:44293",
+        "lnat-mock-5-cal20261026": "2c6841b1:5a2f7967:45410",
+        "lnat-mock-2-rev20261025-cal20261026": "f42b349f:a3f6f64f:46154"
+      },
+      "supersededPapers": [
+        "lnat-mock-1",
+        "lnat-mock-3",
+        "lnat-mock-4",
+        "lnat-mock-5",
+        "lnat-mock-2-rev20261025"
+      ]
+    },
+    "tara": {
+      "releasedCount": 204,
+      "releasedFingerprint": "21fa1e17:cd01dda9:132897",
+      "papers": {
+        "tara-written-1": "82dce014:e63b09ec:2369",
+        "tara-written-2": "24844ae8:64846904:2344",
+        "tara-written-3": "506a0e00:cb219d60:2295",
+        "tara-mock-1-cal20261026": "1a50dc37:3ff831c7:31889",
+        "tara-mock-2-cal20261026": "8b0a9b14:f5a815e0:30433",
+        "tara-mock-3-cal20261026": "363860fe:7769cb44:29217",
+        "tara-mock-4-cal20261026": "b60fa9b7:5612ff5d:30873",
+        "tara-mock-5-cal20261026": "499e9ee7:8102ae21:31202",
+        "tara-mock-6-cal20261026": "398d2999:94e5d1f:30529"
+      },
+      "supersededPapers": [
+        "tara-mock-1",
+        "tara-mock-2",
+        "tara-mock-3",
+        "tara-mock-4",
+        "tara-mock-5",
+        "tara-mock-6"
+      ]
+    },
+    "bpho": {
+      "releasedCount": 250,
+      "releasedFingerprint": "8060c520:65711124:231336",
+      "papers": {
+        "bpho-written-1-cal20261026": "158448d6:b82b3c5e:12179",
+        "bpho-written-2-cal20261026": "95396e97:9a9c2def:12476"
+      },
+      "supersededPapers": [
+        "bpho-written-1",
+        "bpho-written-2"
+      ]
+    },
+    "bmo": {
+      "releasedCount": 329,
+      "releasedFingerprint": "793179c:4f2b0ef4:268965",
+      "papers": {
+        "bmo1-written-1-cal20261026": "59b368a3:be636f0d:12094",
+        "bmo1-written-2-cal20261026": "ab881e7d:f739065f:11171",
+        "bmo1-written-3-cal20261026": "ca18aef8:129478d2:12360"
+      },
+      "supersededPapers": [
+        "bmo1-written-1",
+        "bmo1-written-2",
+        "bmo1-written-3"
+      ]
+    },
+    "ucat": {
+      "releasedCount": 32,
+      "releasedFingerprint": "d4d694b2:5b96c76c:15903",
+      "papers": {
+        "ucat-mock-1-cal20261026": "c3135bbb:e603412f:113038",
+        "ucat-mock-2-cal20261026": "9c3facb5:8634f5e1:115791",
+        "ucat-mock-3-cal20261026": "1fc29415:115eee6f:115686",
+        "ucat-mock-4-cal20261026": "be7b64fc:b9e0fa60:115280",
+        "ucat-mock-5-cal20261026": "9c126d93:cf8d0267:115969"
+      },
+      "supersededPapers": [
+        "ucat-mock-1",
+        "ucat-mock-2",
+        "ucat-mock-3",
+        "ucat-mock-4",
+        "ucat-mock-5"
+      ]
+    },
+    "ielts": {
+      "releasedCount": 10,
+      "releasedFingerprint": "bb567537:bbd7b979:8723",
+      "papers": {
+        "ielts-listening-full-1-cal20261026": "77c9861:b5e484d3:64584",
+        "ielts-reading-full-1-cal20261026": "67e186bd:cedaae49:74112",
+        "ielts-written-full-1": "e1cb0323:7207eccb:3185",
+        "ielts-written-diagnostic-1": "f512bf7c:72517fac:3215"
+      },
+      "supersededPapers": [
+        "ielts-listening-full-1",
+        "ielts-reading-full-1"
+      ]
+    },
+    "csat": {
+      "releasedCount": 16,
+      "releasedFingerprint": "ec254995:67907835:16174",
+      "papers": {
+        "csat-written-1": "72dedce8:448f88cc:7916",
+        "csat-written-2": "aa9780f7:d43fedb5:9236"
+      },
+      "supersededPapers": []
+    },
+    "caie9709": {
+      "releasedCount": 184,
+      "releasedFingerprint": "9561b3a2:89d79898:174062",
+      "papers": {
+        "caie9709-p3-written-1-r3": "e77fa1d3:fb19cef5:10084",
+        "caie9709-p3-written-2-r3": "273c831c:500af59e:8815",
+        "caie9709-p3-written-3-r3": "5bee7f3b:71cb7811:8932",
+        "caie9709-p3-written-4-r3": "14b58bd3:87d5b993:8334",
+        "caie9709-p3-written-5-r3": "f42770b6:caa94438:8021",
+        "caie9709-p3-written-6-r3": "e432b270:28381e34:7666",
+        "caie9709-p3-written-7-r3": "f97c1536:b5df4da8:7585",
+        "caie9709-p3-written-8-r3": "977724d3:b46c84dd:7760",
+        "caie9709-p3-written-9-r3": "78782826:5a4d660a:13895",
+        "caie9709-p3-written-10-r3-cal20261026": "f9ab33cf:aafd11eb:13314",
+        "caie9709-p3-written-11-r3-cal20261026": "672556b7:95739dbb:14025",
+        "caie9709-p3-written-12-r3-cal20261026": "4bcf272:e4df6992:13523",
+        "caie9709-p3-written-13-r3-cal20261026": "efc20525:7011b511:13923",
+        "caie9709-p3-written-14-r3-cal20261026": "4f016a06:d61b851c:13278",
+        "caie9709-p3-written-15-r3-cal20261026": "63f617e2:ee7d6666:13321",
+        "caie9709-p3-written-16-r3-cal20261026": "4e4517d6:6800b998:13524"
+      },
+      "supersededPapers": [
+        "caie9709-p3-written-10-r3",
+        "caie9709-p3-written-11-r3",
+        "caie9709-p3-written-12-r3",
+        "caie9709-p3-written-13-r3",
+        "caie9709-p3-written-14-r3",
+        "caie9709-p3-written-15-r3",
+        "caie9709-p3-written-16-r3"
+      ]
+    }
+  }
+}

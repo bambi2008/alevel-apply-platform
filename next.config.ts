@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1", "localhost"],
   poweredByHeader: false,
   compress: true,
+  // The application has a dynamic locale root. The framework's global 404
+  // convention bypasses streamed layouts and preserves a genuine 404 status.
+  experimental: { globalNotFound: true },
   async redirects() {
     const retiredSections = [
       "applications",
@@ -64,6 +67,7 @@ const nextConfig: NextConfig = {
       ];
     return [
       { source: "/:path*", headers: securityHeaders },
+      { source: "/waterlight/riverbed-albedo-v4.webp", headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }] },
       {
         source: "/:locale(zh-CN|en)/waterlight",
         headers: securityHeaders.map((header) => {

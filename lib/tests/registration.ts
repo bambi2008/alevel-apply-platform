@@ -14,7 +14,7 @@ export interface RegInfo {
 export const REGISTRATION_INFO: Record<string, RegInfo> = {
   bmo: {
     registerWindow: "SMC（Senior Maths Challenge，晋级入口）通常 9 月开放报名、10 月上旬开考；BMO1 报名随后开放，约在 11 月中旬考试（均以当年 UKMT 官网为准）。",
-    registerHow: "由学校统一在 UKMT 平台报名，个人无法直接报名。晋级路径：SMC 达到分数线可获邀参加 BMO1；未达线的学生，学校亦可付费直接为其报名 BMO1（每人约 £40）。国际学校/国际部可与英国同步开考。",
+    registerHow: "通常由学校或教师通过 UKMT 报名；SMC 与 BMO1 的晋级、直接报名资格、国际考点和费用，以当年主办方说明为准。",
     testDate: "SMC：10 月上旬，90 分钟 25 题（22 选择 + 3 道 000–999 数字作答，机考或纸笔）；BMO1：11 月中旬，3.5 小时 6 道证明题（每题 10 分，需写完整过程）。",
     resultsWhen: "SMC 成绩通常数周内返回学校并公布晋级名单；BMO1 评阅后于次年 1 月前后公布成绩与奖项。",
     resultsHow: "成绩发至报名学校/教师；SMC 按比例授予 Gold/Silver/Bronze 并据分数线发出 BMO1 邀请；BMO1 按成绩授予奖项并选拔进入 BMO2。",
@@ -22,8 +22,8 @@ export const REGISTRATION_INFO: Record<string, RegInfo> = {
   },
   bpho: {
     registerWindow: "通常 9 月起开放，Round 1 报名截止约在 11 月考前 48 小时（以当年官网为准）",
-    registerHow: "由学校物理老师在 BPhO 竞赛平台注册（每校一个教师账号）并统一为学生报名，个人无法直接报名。国际学校（含中国的国际部/国际学校）可与英国学校同日开考。付费学校每人约 £15，后续轮次免费。",
-    testDate: "Round 1 通常在 11 月上中旬（在校内进行，两节各 80 分钟，可连堂或分两次）",
+    registerHow: "通常由学校或物理教师通过 BPhO 报名；个人报名资格、国际考点和费用，以当年主办方说明为准。",
+    testDate: "本站 Round 1 训练分为两节，每节 60 分钟；正式比赛日期与时长，以当年主办方安排为准。",
     resultsWhen: "答卷扫描上传后由 BPhO 统一评阅，成绩与证书通常在 1 月初学期开始时发回学校",
     resultsHow: "成绩发送至报名教师邮箱；按比例授予 Top Gold / Gold / Silver / Bronze 证书，Top Gold 获邀参加次年 1 月底的 Round 2",
     resultsUrl: "https://www.bpho.org.uk/",

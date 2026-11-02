@@ -38,4 +38,12 @@ describe("grade answer API", () => {
     expect(response.status).toBe(400);
     await expect(response.json()).resolves.toMatchObject({ error: "Invalid grading request" });
   });
+  it("returns English deterministic blank feedback without calling a model", async () => {
+    const req=request({questionId:"blank-en",testId:"bmo",parts:[{label:"(i)",question:"Prove it.",marks:4,solutionOutline:"State the invariant.",studentWork:" "}],fullSolution:"Use the invariant."});
+    req.headers.set("x-qiaoshen-locale","en");
+    const response=await POST(req),body=await response.json();
+    expect(response.status).toBe(200);
+    expect(body).toMatchObject({totalEarned:0,totalMax:4,assessment:{method:"deterministic-empty"}});
+    expect(JSON.stringify(body)).not.toMatch(/[\u3400-\u9fff]/);
+  });
 });

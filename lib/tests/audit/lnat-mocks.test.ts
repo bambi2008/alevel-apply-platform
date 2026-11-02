@@ -4,9 +4,10 @@ import { getMockPapersForTest } from "../mock-papers";
 import { LNAT_QUESTIONS } from "../questions/lnat";
 import { buildLnatMockAudit } from "./lnat-mocks";
 import type { MCQQuestion } from "../questions/types";
+import { calibrationSourceId } from "../difficulty-calibration";
 
 describe("LNAT fixed-paper audit", () => {
-  it("locks Mock 1 as a complete official-structure Section A paper", () => {
+  it("locks original and released Section A structure with separate difficulty versions", () => {
     const paper = getMockPaper("lnat-mock-1");
     expect(paper).toBeTruthy();
     expect(paper!.modules).toHaveLength(1);
@@ -14,19 +15,20 @@ describe("LNAT fixed-paper audit", () => {
     expect(paper!.modules[0].questions).toHaveLength(42);
 
     const report = buildLnatMockAudit();
-    const summary = report.papers.find((item) => item.paperId === "lnat-mock-1");
+    const summary = report.papers.find((item) => calibrationSourceId(item.paperId) === "lnat-mock-1");
+    expect([1,2,3].map(level => paper!.modules[0].questions.filter(q=>q.difficulty===level).length)).toEqual([8,24,10]);
     expect(summary).toEqual({
-      paperId: "lnat-mock-1",
+      paperId: "lnat-mock-1-cal20261026",
       questions: 42,
       passages: 12,
       passageSplit: "3/3/3/3/3/3/4/4/4/4/4/4",
-      difficulty: { 1: 8, 2: 24, 3: 10 },
+      difficulty: { 1: 5, 2: 28, 3: 9 },
       answerCounts: { A: 11, B: 11, C: 10, D: 10 },
       passageWords: { min: 55, average: 134, max: 178 },
       questionTypes: { core: 4, interpretation: 26, evaluation: 12 },
     });
     expect(paper!.modules[0].questions.every((question) => question.type !== "mcq" || question.options.map((option) => option.key).join("") === "ABCD")).toBe(true);
-    expect(report.issues.filter((issue) => issue.paperId === "lnat-mock-1")).toEqual([]);
+    expect(report.issues.filter((issue) => issue.paperId === summary!.paperId)).toEqual([]);
   });
 
   it("keeps three current-format Section B writing papers", () => {

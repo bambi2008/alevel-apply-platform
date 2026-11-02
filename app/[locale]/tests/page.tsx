@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { ArrowUpRight } from "lucide-react";
+import { useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import {
   CorePageHeader,
@@ -32,13 +33,13 @@ const CATEGORY_TABS: { id: TestCategory | "all"; label: string; labelEn: string 
 const PURPOSES: Array<{
   id: TestPurpose;
   label: string;
+  labelEn: string;
 }> = [
-  { id: "admissions", label: "现行入学考试" },
-  { id: "college-assessment", label: "学院附加评估" },
-  { id: "curriculum", label: "A-Level 学科考试" },
-  { id: "language", label: "英语要求" },
-  { id: "offer-condition", label: "Offer 条件考试" },
-  { id: "legacy", label: "历史训练" },
+  { id: "admissions", label: "现行入学考试", labelEn: "Admissions tests" },
+  { id: "college-assessment", label: "学院附加评估", labelEn: "College assessments" },
+  { id: "language", label: "英语要求", labelEn: "English language" },
+  { id: "offer-condition", label: "Offer 条件考试", labelEn: "Offer conditions" },
+  { id: "legacy", label: "历史训练", labelEn: "Historical practice" },
 ];
 
 const PURPOSE_BADGES: Record<TestPurpose, string> = {
@@ -51,7 +52,18 @@ const PURPOSE_BADGES: Record<TestPurpose, string> = {
   competition: "竞赛提升",
 };
 
+const PURPOSE_BADGES_EN: Record<TestPurpose, string> = {
+  admissions: "Admissions test",
+  "college-assessment": "College assessment",
+  curriculum: "A Level",
+  language: "English language",
+  "offer-condition": "Offer condition",
+  legacy: "Historical practice",
+  competition: "Competition",
+};
+
 export default function TestsPage() {
+  const english = useLocale() === "en";
   const [activeCategory, setActiveCategory] = useState<TestCategory | "all">("all");
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [profileLoaded, setProfileLoaded] = useState(false);
@@ -59,15 +71,16 @@ export default function TestsPage() {
   useEffect(() => {
     loadProfile()
       .then(setProfile)
+      .catch(() => setProfile(null))
       .finally(() => setProfileLoaded(true));
   }, []);
 
-  const examTests = profileLoaded
-    ? filterTestsForIntent(
-        ADMISSIONS_TESTS.filter((test) => getTestPurpose(test) !== "competition"),
-        profile,
-      )
-    : [];
+  // Render the public catalogue on the server; personalisation only narrows it
+  // after the saved profile arrives. A Level and competitions have their own entries.
+  const examTests = filterTestsForIntent(
+    ADMISSIONS_TESTS.filter((test) => !["competition", "curriculum"].includes(getTestPurpose(test))),
+    profile,
+  );
   const availableCategories = new Set(examTests.map((test) => test.category));
   const filtered = activeCategory === "all"
     ? examTests
@@ -76,18 +89,18 @@ export default function TestsPage() {
   return (
     <CorePageShell>
       <CorePageHeader
-        step="1 / 4"
-        title="考试训练"
-        description="选一门考试，直接开始。"
-        meta={profileLoaded ? `${examTests.length} 个相关考试` : "正在读取训练档案"}
+        step="3 / 5"
+        title={english ? "University admissions tests" : "大学入学考试"}
+        description={english ? "Choose a test and start practising." : "选一门考试，直接开始。"}
+        meta={english ? `${examTests.length} tests` : `${examTests.length} 个考试`}
       />
 
       {profileLoaded && hasTestIntent(profile) && (
-        <p className="mt-5 inline-flex rounded-full border border-black/10 bg-white/55 px-3 py-1.5 text-xs text-black/55">已按你的档案筛选</p>
+        <p className="mt-5 inline-flex rounded-full border border-black/10 bg-white/55 px-3 py-1.5 text-xs text-black/65">{english ? "Filtered for your study goals" : "已按你的档案筛选"}</p>
       )}
 
       <div className="mt-7">
-        <CoreTabBar label="按学科筛选">
+        <CoreTabBar label={english ? "Filter by subject" : "按学科筛选"}>
           {CATEGORY_TABS.filter((tab) => tab.id === "all" || availableCategories.has(tab.id)).map((tab) => (
             <button
               key={tab.id}
@@ -96,35 +109,33 @@ export default function TestsPage() {
               onClick={() => setActiveCategory(tab.id)}
               className={coreTabClass(activeCategory === tab.id)}
             >
-              {tab.label}<span className="ml-1 text-xs opacity-70">{tab.labelEn}</span>
+              {english ? tab.labelEn : tab.label}
             </button>
           ))}
         </CoreTabBar>
       </div>
 
-      {!profileLoaded ? (
-        <p className="py-12 text-center text-sm text-[var(--ink-faint)]">正在读取你的训练档案…</p>
-      ) : <div className="space-y-10 pt-9">
+      <div className="space-y-10 pt-9">
         {PURPOSES.map((purpose) => {
           const tests = filtered.filter((test) => getTestPurpose(test) === purpose.id);
           if (tests.length === 0) return null;
           return (
             <section key={purpose.id}>
-              <CoreSectionHeader title={purpose.label} meta={`${tests.length} 个考试`} />
+              <CoreSectionHeader title={english ? purpose.labelEn : purpose.label} meta={english ? `${tests.length} tests` : `${tests.length} 个考试`} />
               <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                {tests.map((test, index) => <TestRow key={test.id} test={test} index={index + 1} />)}
+                {tests.map((test, index) => <TestRow key={test.id} test={test} index={index + 1} english={english} />)}
               </div>
             </section>
           );
         })}
-      </div>}
+      </div>
 
-      <p className="mt-12 border-t border-black/15 pt-5 text-center text-xs text-black/35">具体要求以院校与考试机构官网为准。</p>
+      <p className="mt-12 border-t border-black/15 pt-5 text-center text-xs text-black/65">{english ? "Check the university and test provider for current requirements." : "具体要求以院校与考试机构官网为准。"}</p>
     </CorePageShell>
   );
 }
 
-function TestRow({ test, index }: { test: AdmissionsTest; index: number }) {
+function TestRow({ test, index, english }: { test: AdmissionsTest; index: number; english: boolean }) {
   const purpose = getTestPurpose(test);
   return (
     <Link
@@ -134,18 +145,18 @@ function TestRow({ test, index }: { test: AdmissionsTest; index: number }) {
       <div className="flex items-start justify-between gap-4">
         <span className="text-xs font-semibold tracking-[0.16em] text-black/30">{String(index).padStart(2, "0")}</span>
         <span className="flex size-9 shrink-0 items-center justify-center rounded-full border border-black/15 text-black/45 transition duration-300 group-hover:-translate-y-1 group-hover:translate-x-1 group-hover:border-black/35 group-hover:text-black">
-          <span className="sr-only">{test.hasQuestionBank ? "进入" : "查看"}</span>
+          <span className="sr-only">{english ? "Open test" : test.hasQuestionBank ? "进入" : "查看"}</span>
           <ArrowUpRight className="size-4" aria-hidden="true" />
         </span>
       </div>
       <div className="mt-6 min-w-0">
         <h3 className="text-2xl font-semibold tracking-[-0.035em] text-[#101817]">{test.abbr}</h3>
-        <p className="mt-1 truncate text-sm text-black/45">{test.nameZh}</p>
+        <p className="mt-1 text-sm text-black/65">{english ? test.name : test.nameZh}</p>
       </div>
       <div className="mt-auto flex items-end justify-between gap-4 pt-5">
-        <p className="text-xs text-black/35">{test.duration} · {test.topics.length} 个知识点</p>
-        <span className={`text-xs ${purpose === "legacy" ? "text-[var(--warning)]" : "text-black/35"}`}>
-          {PURPOSE_BADGES[purpose]}
+        <p className="text-xs text-black/65">{english ? `${test.topics.length} topics` : `${test.topics.length} 个知识点`}</p>
+        <span className={`text-xs ${purpose === "legacy" ? "text-[var(--warning)]" : "text-black/65"}`}>
+          {english ? PURPOSE_BADGES_EN[purpose] : PURPOSE_BADGES[purpose]}
         </span>
       </div>
     </Link>

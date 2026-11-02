@@ -1,18 +1,35 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
+import { preferredPublicLocale, unpublishedPageHtml } from "@/lib/public-routing";
 
 export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
-  if (pathname.startsWith("/zh-CN") || pathname.startsWith("/en")) {
-    return NextResponse.next();
+  const localePath = /^\/(zh-CN|en)(?:\/|$)/.exec(pathname);
+  if (/^\/(?:zh-CN|en)\/about\/?$/.test(pathname)) {
+    const locale = localePath?.[1] === "en" ? "en" : "zh-CN";
+    return new NextResponse(unpublishedPageHtml(locale), {
+      status: 404,
+      headers: { "Content-Type": "text/html; charset=utf-8", "X-Robots-Tag": "noindex, nofollow", "Cache-Control": "no-store" },
+    });
+  }
+  if (localePath) {
+    const forwarded = new Headers(request.headers);
+    // Never trust an incoming locale header; derive it from the verified route.
+    forwarded.set("x-qiaoshen-locale", localePath[1]);
+    forwarded.set("x-qiaoshen-pathname", pathname);
+    return NextResponse.next({ request: { headers: forwarded } });
   }
 
   const url = request.nextUrl.clone();
-  url.pathname = `/zh-CN${pathname}`;
-  return NextResponse.redirect(url);
+  const locale = preferredPublicLocale(request.headers.get("accept-language") ?? "", request.cookies.get("NEXT_LOCALE")?.value);
+  url.pathname = `/${locale}${pathname === "/" ? "" : pathname}`;
+  const response = NextResponse.redirect(url, 308);
+  response.headers.set("Vary", "Accept-Language, Cookie");
+  response.headers.set("Cache-Control", "private, no-store");
+  return response;
 }
 
 export const config = {
-  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)"],
+  matcher: ["/((?!api|_next|_vercel|.*\\..*).*)", "/:locale(zh-CN|en)/:path*"],
 };

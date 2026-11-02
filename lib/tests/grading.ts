@@ -125,7 +125,8 @@ function normalizeEvidence(value: unknown, max: number): GradeEvidence[] {
   });
 }
 
-export function normalizeGradePass(request: GradeRequest, raw: RawGradePass): GradePass {
+export function normalizeGradePass(request: GradeRequest, raw: RawGradePass, locale = "zh-CN"): GradePass {
+  const en = locale === "en";
   const rawParts = new Map((raw.perPart ?? []).map((part) => [String(part.label ?? ""), part]));
   const rawDimensions = new Map((raw.dimensions ?? []).map((dimension) => [String(dimension.id ?? ""), dimension]));
   const dimensions = (request.rubricDimensions ?? []).map((dimension) => {
@@ -137,7 +138,7 @@ export function normalizeGradePass(request: GradeRequest, raw: RawGradePass): Gr
       max: dimension.maxMarks,
       feedback: typeof graded?.feedback === "string" && graded.feedback.trim()
         ? graded.feedback
-        : "该维度没有获得有效反馈。",
+        : en ? "No valid feedback was returned for this dimension." : "该维度没有获得有效反馈。",
     };
   });
   let perPart = request.parts.map((part) => {
@@ -148,7 +149,7 @@ export function normalizeGradePass(request: GradeRequest, raw: RawGradePass): Gr
       max: part.marks,
       feedback: typeof graded?.feedback === "string" && graded.feedback.trim()
         ? graded.feedback
-        : "未识别到足够的评分依据，请对照评分要点复核。",
+        : en ? "Insufficient marking evidence was identified. Please check against the rubric." : "未识别到足够的评分依据，请对照评分要点复核。",
       keyStepsFound: strings(graded?.keyStepsFound),
       keyStepsMissing: strings(graded?.keyStepsMissing),
       evidence: normalizeEvidence(graded?.evidence, part.marks),
@@ -165,7 +166,7 @@ export function normalizeGradePass(request: GradeRequest, raw: RawGradePass): Gr
     perPart,
     overallFeedback: typeof raw.overallFeedback === "string" && raw.overallFeedback.trim()
       ? raw.overallFeedback
-      : "评分完成，但未获得有效的整体反馈。",
+      : en ? "Marking completed, but no valid overall feedback was returned." : "评分完成，但未获得有效的整体反馈。",
     dimensions: dimensions.length > 0 ? dimensions : undefined,
   };
 }
@@ -190,24 +191,25 @@ function agreementRate(passes: GradePass[]) {
   return Math.round((exact / passes[0].perPart.length) * 100);
 }
 
-export function buildEmptyGradeResponse(request: GradeRequest): GradeResponse {
+export function buildEmptyGradeResponse(request: GradeRequest, locale = "zh-CN"): GradeResponse {
+  const en = locale === "en";
   const raw: RawGradePass = {
     perPart: request.parts.map((part) => ({
       label: part.label,
       earned: 0,
-      feedback: "本小问未作答。",
+      feedback: en ? "This part was not answered." : "本小问未作答。",
       keyStepsFound: [],
       keyStepsMissing: [part.solutionOutline],
-      evidence: [{ criterion: "提交有效作答", status: "missing", marksAwarded: 0 }],
+      evidence: [{ criterion: en ? "Submit a valid response" : "提交有效作答", status: "missing", marksAwarded: 0 }],
     })),
-    overallFeedback: "本题未作答，因此按评分标准确定性记为 0 分。",
+    overallFeedback: en ? "No answer was submitted. The rubric deterministically awards 0 marks." : "本题未作答，因此按评分标准确定性记为 0 分。",
     dimensions: request.rubricDimensions?.map((dimension) => ({
       id: dimension.id,
       earned: 0,
-      feedback: "未提交可供评价的作答。",
+      feedback: en ? "No assessable response was submitted." : "未提交可供评价的作答。",
     })),
   };
-  const pass = normalizeGradePass(request, raw);
+  const pass = normalizeGradePass(request, raw, locale);
   return {
     questionId: request.questionId,
     totalEarned: 0,
@@ -223,7 +225,7 @@ export function buildEmptyGradeResponse(request: GradeRequest): GradeResponse {
       scoreDelta: 0,
       passScores: [0],
       agreementRate: 100,
-      rationale: "空白答案由确定性规则处理，未调用 AI。",
+      rationale: en ? "Blank work was handled by deterministic rules without calling AI." : "空白答案由确定性规则处理，未调用 AI。",
     },
   };
 }
@@ -240,7 +242,9 @@ export function buildGradeResponse(
   request: GradeRequest,
   passes: GradePass[],
   adjudicated?: GradePass,
+  locale = "zh-CN",
 ): GradeResponse {
+  const en = locale === "en";
   if (passes.length === 0) throw new Error("At least one grading pass is required");
   const scores = passes.map(gradePassScore);
   const delta = scores.length > 1 ? Math.max(...scores) - Math.min(...scores) : 0;
@@ -275,7 +279,16 @@ export function buildGradeResponse(
       scoreDelta: delta,
       passScores: scores,
       agreementRate: agreementRate(passes),
-      rationale: passes.length === 1
+      rationale: en ? passes.length === 1
+        ? "Only one AI examiner returned successfully. Check the work against the rubric."
+        : disputed
+          ? adjudicated
+            ? "Examiner disagreement exceeded the threshold. Adjudication completed; the low-confidence warning remains."
+            : "Examiner disagreement exceeded the threshold and adjudication was not completed. Review is recommended."
+          : delta === 0
+            ? "Both independent examiners awarded the same total."
+            : "The examiners' mark difference is within the permitted threshold."
+        : passes.length === 1
         ? "仅一名 AI 阅卷员成功返回，建议人工或学生对照评分标准复核。"
         : disputed
           ? adjudicated

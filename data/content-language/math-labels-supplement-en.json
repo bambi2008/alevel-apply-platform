@@ -1,0 +1,7 @@
+{
+  "$=\\frac{新-旧}{旧}\\times100$": "$=\\frac{\\text{new}-\\text{old}}{\\text{old}}\\times100$",
+  "$$\\text{垂心}\\ H=\\mathbf a+\\mathbf b+\\mathbf c,\\quad \\text{重心}\\ G=\\tfrac13(\\mathbf a+\\mathbf b+\\mathbf c),\\quad A\\ \\text{的对径点}=-\\mathbf a.$$": "$$\\text{orthocentre}\\ H=\\mathbf a+\\mathbf b+\\mathbf c,\\quad \\text{centroid}\\ G=\\tfrac13(\\mathbf a+\\mathbf b+\\mathbf c),\\quad A\\ \\text{antipode}=-\\mathbf a.$$",
+  "$[\\triangle]=\\tfrac12\\,\\text{底}\\times\\text{高}=\\tfrac12ab\\sin C=rs$": "$[\\triangle]=\\tfrac12\\,\\text{base}\\times\\text{height}=\\tfrac12ab\\sin C=rs$",
+  "$m=2^a\\cdot(\\text{奇})$": "$m=2^a\\cdot(\\text{odd})$",
+  "$\\text{(平方平均)}\\ge\\text{(算术)}\\ge\\text{(几何)}\\ge\\text{(调和)}$": "$\\text{(root mean square)}\\ge\\text{(arithmetic)}\\ge\\text{(geometric)}\\ge\\text{(harmonic)}$"
+}

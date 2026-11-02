@@ -19,9 +19,9 @@ vi.mock("@/lib/db", () => ({
 }));
 vi.mock("@/lib/storage", () => ({ getStorage: () => ({ get: mocks.storageGet }) }));
 vi.mock("openai", () => ({
-  default: vi.fn().mockImplementation(() => ({
+  default: vi.fn().mockImplementation(function () { return {
     chat: { completions: { create: mocks.createCompletion } },
-  })),
+  }; }),
 }));
 
 import { POST } from "@/app/api/grade-answer/route";
@@ -119,5 +119,19 @@ describe("grade answer image flow", () => {
     await expect(response.json()).resolves.toEqual({ error: "Answer image is missing or inaccessible" });
     expect(mocks.createCompletion).not.toHaveBeenCalled();
     expect(mocks.evaluationCreate).not.toHaveBeenCalled();
+  });
+  it("requests English feedback while preserving the original image transcription", async () => {
+    const req=request();
+    req.headers.set("x-qiaoshen-locale","en");
+    const response=await POST(req);
+    expect(response.status).toBe(200);
+    const calls=mocks.createCompletion.mock.calls.map(call=>call[0]);
+    const grading=calls.filter(call=>call.model==="deepseek-chat");
+    expect(grading).toHaveLength(2);
+    for(const call of grading){
+      expect(call.messages[0].content).toContain("OUTPUT LANGUAGE: Use English");
+      expect(call.messages[1].content).toContain("2x = 4, so x = 2");
+    }
+    expect((await response.json()).imageReview.parts[0].transcript).toBe("2x = 4, so x = 2");
   });
 });

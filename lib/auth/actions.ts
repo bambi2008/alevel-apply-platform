@@ -13,6 +13,10 @@ import {
   normalizeEmail,
 } from "@/lib/auth/security";
 import { parseRegistrationIntent, registrationIntentSchema } from "@/lib/auth/registration-intent";
+import { getRegistrationMode } from "@/lib/auth/registration-mode";
+import { classifyRegistrationInvite, hashInviteCode, normalizeInviteCode } from "@/lib/beta/invites";
+
+class InviteUnavailable extends Error {}
 
 const schema = z.object({
   email: z.string().email(),
@@ -22,7 +26,7 @@ const schema = z.object({
 });
 
 export type AuthState = {
-  error?: "INVALID" | "EXISTS" | "BADCREDS" | "CONSENT_REQUIRED" | "RATE_LIMITED";
+  error?: "INVALID" | "EXISTS" | "BADCREDS" | "CONSENT_REQUIRED" | "RATE_LIMITED" | "INVITE_INVALID";
 };
 
 export async function registerAction(_prev: AuthState, formData: FormData): Promise<AuthState> {
@@ -52,6 +56,10 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
   );
   if (!limit.allowed) return { error: "RATE_LIMITED" };
 
+  const inviteRequired = getRegistrationMode() === "invite";
+  const inviteCode = normalizeInviteCode(formData.get("inviteCode"));
+  if (inviteRequired && (!inviteCode || inviteCode.length > 64)) return { error: "INVITE_INVALID" };
+
   const passwordHash = await bcrypt.hash(password, 12);
   const consents: { type: "PRIVACY_PIPL" | "TERMS" | "GUARDIAN" | "CROSS_BORDER"; version: string }[] = [
     { type: "PRIVACY_PIPL", version: LEGAL_VERSION },
@@ -60,10 +68,13 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
   if (guardian) consents.push({ type: "GUARDIAN", version: LEGAL_VERSION });
   if (crossBorderConsent) consents.push({ type: "CROSS_BORDER", version: LEGAL_VERSION });
 
-  let registrationError: "EXISTS" | null;
+  let registrationError: "EXISTS" | "INVITE_INVALID" | null;
   try {
     registrationError = await db.$transaction(async (tx) => {
     const existing = await tx.user.findUnique({ where: { email }, select: { id: true } });
+    const now = new Date();
+    const invite = inviteRequired ? await tx.betaInvite.findUnique({ where: { codeHash: hashInviteCode(inviteCode) } }) : null;
+    if (inviteRequired && classifyRegistrationInvite(invite, email, existing?.id ?? null, now) === "INVALID") return "INVITE_INVALID" as const;
     if (existing) return "EXISTS" as const;
 
     const user = await tx.user.create({
@@ -81,6 +92,15 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
       select: { id: true, profile: { select: { id: true } } },
     });
     if (!user.profile) throw new Error("Student profile was not created");
+    if (inviteRequired && invite) {
+      const claimed = await tx.betaInvite.updateMany({
+        where: { id: invite.id, email, status: "AVAILABLE", usedByUserId: null,
+          OR: [{ expiresAt: null }, { expiresAt: { gt: now } }] },
+        data: { status: "USED", usedByUserId: user.id, usedAt: now },
+      });
+      // The transaction rolls back a concurrently revoked/consumed invitation.
+      if (claimed.count !== 1) throw new InviteUnavailable();
+    }
     await tx.$executeRaw(
       Prisma.sql`UPDATE "StudentProfile"
         SET "intendedUniversities" = ARRAY(
@@ -98,6 +118,7 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
     return null;
     });
   } catch (error) {
+    if (error instanceof InviteUnavailable) return { error: "INVITE_INVALID" };
     // Concurrent requests can both pass the lookup. The database email unique
     // constraint remains authoritative; do not mask unrelated write failures.
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002"
@@ -114,10 +135,11 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
 export async function loginAction(_prev: AuthState, formData: FormData): Promise<AuthState> {
   const email = normalizeEmail(formData.get("email"));
   const password = String(formData.get("password") ?? "");
+  const locale = formData.get("locale") === "en" ? "en" : "zh-CN";
   try {
     // 注册完成后的首次进入由 registerAction 引导填写档案；已有账号再次登录直接进入工作台。
     // 档案是否完整由工作台展示待办，不应阻断登录，也不应因历史数据差异反复把用户送回档案页。
-    await signIn("credentials", { email, password, redirectTo: "/" });
+    await signIn("credentials", { email, password, redirectTo: `/${locale}` });
     return {};
   } catch (e) {
     if (e instanceof AuthError) return { error: "BADCREDS" };

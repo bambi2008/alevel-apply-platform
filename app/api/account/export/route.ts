@@ -21,6 +21,7 @@ export async function GET() {
       createdAt: true,
       updatedAt: true,
       consents: true,
+      questionFeedback: { select: { testId: true, topicId: true, questionKey: true, kind: true, createdAt: true } },
       documents: {
         select: {
           id: true,

@@ -7,8 +7,9 @@ import { getQuestionById } from "@/lib/tests/lookup";
 import type { MCQQuestion, LongQuestion, Question } from "@/lib/tests/questions/types";
 import { MathRenderer } from "@/components/math-renderer";
 import { QuestionDiagnosis } from "@/components/exam-diagnosis";
-import { diagnoseAnswer, optionReview } from "@/lib/tests/diagnosis";
+import { optionReview, type AnswerDiagnosis } from "@/lib/tests/diagnosis";
 import { ExamPerformanceReportView } from "@/components/exam-performance-report";
+import { QuestionFeedback } from "@/components/question-feedback";
 import type { ExamPerformanceReport } from "@/lib/tests/report";
 import type { GradeAssessment, GradeEvidence } from "@/lib/tests/grading";
 import { GradingTrustPanel } from "@/components/grading-trust-panel";
@@ -147,6 +148,7 @@ export default function SessionReviewPage({
             answer={a}
             question={questionBank.find((question) => question.id === a.questionId) ?? getQuestionById(a.questionId)}
             returnTo={returnTo}
+            diagnosis={report.diagnosis.answers.find(item => item.questionId === a.questionId)}
           />
         ))}
       </div>
@@ -154,21 +156,8 @@ export default function SessionReviewPage({
   );
 }
 
-function ReviewCard({ index, answer, question: q, returnTo }: { index: number; answer: SessionAnswer; question?: Question; returnTo?: string }) {
+function ReviewCard({ index, answer, question: q, returnTo, diagnosis: itemDiagnosis }: { index: number; answer: SessionAnswer; question?: Question; returnTo?: string; diagnosis?: AnswerDiagnosis }) {
   const correctish = answer.max > 0 && answer.earned >= answer.max;
-  const itemDiagnosis = q ? diagnoseAnswer({
-    question: q,
-    selected: answer.selected,
-    earned: answer.earned,
-    max: answer.max,
-    work: answer.work,
-    feedback: answer.feedback,
-    timeSpentSec: answer.timeSpentSec,
-    answerChanges: answer.answerChanges,
-    visits: answer.visits,
-    flagged: answer.flagged,
-    firstSelected: answer.firstSelected,
-  }) : null;
 
   return (
     <div className="rounded-2xl border border-neutral-200 bg-white p-6">
@@ -195,6 +184,7 @@ function ReviewCard({ index, answer, question: q, returnTo }: { index: number; a
         <LongReview q={q as LongQuestion} work={answer.work} feedback={answer.feedback} />
       )}
       {q && itemDiagnosis && <QuestionDiagnosis diagnosis={itemDiagnosis} question={q} returnTo={returnTo} />}
+      {q && <QuestionFeedback questionId={q.id} testId={q.testId} />}
     </div>
   );
 }

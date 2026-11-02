@@ -3,28 +3,33 @@ import { Link } from "@/i18n/navigation";
 import { PageHeader } from "@/components/page-header";
 import { SubjectInterview } from "@/components/interview/subject-interview";
 import { getSubject, getQuestionsBySubject } from "@/lib/interview";
+import { setRequestLocale } from "next-intl/server";
+import { INTERVIEW_BLURBS_EN } from "@/lib/interview/presentation";
+import { localizeStaticContent } from "@/lib/content-language";
 
 export default async function SubjectPage({
   params,
 }: {
-  params: Promise<{ subject: string }>;
+  params: Promise<{ subject: string; locale: string }>;
 }) {
-  const { subject: subjectId } = await params;
+  const { subject: subjectId, locale } = await params;
+  setRequestLocale(locale);
+  const en = locale === "en";
   const subject = getSubject(subjectId);
   if (!subject) notFound();
 
-  const questions = getQuestionsBySubject(subjectId);
+  const questions = localizeStaticContent(getQuestionsBySubject(subjectId), locale);
 
   return (
     <div className="mx-auto max-w-3xl px-4 py-10">
       <Link href="/interview" className="text-sm text-[var(--ink-soft)] hover:text-[var(--indigo)] mb-4 inline-block">
-        ← 返回面试准备
+        ← {en ? "Back to interviews" : "返回面试准备"}
       </Link>
       <PageHeader
-        title={`${subject.name} 面试`}
-        subtitle={subject.blurb}
+        title={en ? (/interview/i.test(subject.nameEn) ? subject.nameEn : `${subject.nameEn} interview`) : `${subject.name} 面试`}
+        subtitle={en ? INTERVIEW_BLURBS_EN[subject.id] : subject.blurb}
       />
-      <SubjectInterview subjectId={subject.id} subjectName={subject.name} questions={questions} />
+      <SubjectInterview subjectId={subject.id} subjectName={en ? subject.nameEn : subject.name} questions={questions} />
     </div>
   );
 }

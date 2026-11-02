@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { aiSystemForRequest, aiMessageForRequest } from "@/lib/ai-response-language";
 import OpenAI from "openai";
 import { captureError } from "@/lib/monitoring";
 import { requireAiAccess } from "@/lib/security/ai-route";
@@ -108,7 +109,7 @@ export async function POST(req: NextRequest) {
   if (!access.ok) return access.response;
   if (!process.env.DEEPSEEK_API_KEY) {
     return NextResponse.json(
-      { error: "AI 反馈暂未配置（缺少 DEEPSEEK_API_KEY）" },
+      { error: aiMessageForRequest("AI 反馈暂未配置（缺少 DEEPSEEK_API_KEY）", req) },
       { status: 503 }
     );
   }
@@ -125,7 +126,7 @@ export async function POST(req: NextRequest) {
   }
 
   if (body.mode !== "reflection" && !body.stageTitle) {
-    return NextResponse.json({ error: "缺少阶段信息" }, { status: 400 });
+    return NextResponse.json({ error: aiMessageForRequest("缺少阶段信息", req) }, { status: 400 });
   }
 
   try {
@@ -135,7 +136,7 @@ export async function POST(req: NextRequest) {
       max_tokens: 1500,
       response_format: { type: "json_object" },
       messages: [
-        { role: "system", content: isReflection ? SYSTEM_PROMPT_REFLECTION : SYSTEM_PROMPT },
+        { role: "system", content: aiSystemForRequest(isReflection ? SYSTEM_PROMPT_REFLECTION : SYSTEM_PROMPT, req) },
         { role: "user", content: isReflection ? buildReflectionPrompt(body) : buildPrompt(body) },
       ],
     });
@@ -155,7 +156,7 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     captureError(err, { route: "project-feedback" });
     return NextResponse.json(
-      { error: "反馈生成失败，请稍后重试。" },
+      { error: aiMessageForRequest("反馈生成失败，请稍后重试。", req) },
       { status: 500 }
     );
   }

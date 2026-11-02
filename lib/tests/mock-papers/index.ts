@@ -112,8 +112,11 @@ import { IELTS_FULL_PAPERS_1 } from "./ielts-full-paper-1";
 import { CAIE9709_P3_WRITTEN_PAPERS, CAIE9709_P3_ARCHIVED_PAPERS } from "./caie9709-p3-written-papers";
 import { ESAT_BOUNDARY_PAPERS } from "./esat-boundary-papers";
 import { reviseStepPapers, reviseTmuaPapers } from "./boundary-revisions";
-import { isReleasedPaper, hasPaperReleaseApproval } from "../syllabus-release";
+import { isReleasedPaper, isPreCalibrationReleasedPaper, hasPaperReleaseApproval } from "../syllabus-release";
+import { calibratePaper } from "../difficulty-calibration";
 import { reviewedPaper, verifyReviewCorrections } from "../review-corrections";
+import { reviseCurrentPaper, verifyContentCorrections } from "../content-revisions";
+import contentManifest from "@/data/question-bank/content-manifest-20261026.json";
 
 export interface MockModule {
   id: string;
@@ -1337,6 +1340,13 @@ ALL_MOCK_PAPERS.push(
 verifyReviewCorrections();
 ALL_MOCK_PAPERS.push(...ALL_MOCK_PAPERS.filter(hasPaperReleaseApproval)
   .map(reviewedPaper).filter((paper) => !ALL_MOCK_PAPERS.some((old) => old.id === paper.id)));
+verifyContentCorrections();
+ALL_MOCK_PAPERS.push(...ALL_MOCK_PAPERS.filter(paper => contentManifest.supersededPapers.includes(paper.id) && hasPaperReleaseApproval(paper))
+  .map(reviseCurrentPaper).filter((paper) => !ALL_MOCK_PAPERS.some((old) => old.id === paper.id)));
+
+const PRE_CALIBRATION_PAPERS = ALL_MOCK_PAPERS.filter(isPreCalibrationReleasedPaper);
+ALL_MOCK_PAPERS.push(...PRE_CALIBRATION_PAPERS.map(calibratePaper).filter(paper => !ALL_MOCK_PAPERS.some(old => old.id === paper.id)));
+export function getPreCalibrationMockPapersForTest(testId: string): MockPaper[] { return PRE_CALIBRATION_PAPERS.filter(p => p.testId === testId); }
 
 export function getRegisteredMockPapersForTest(testId: string): MockPaper[] {
   return ALL_MOCK_PAPERS.filter((p) => p.testId === testId);

@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { getMockPapersForTest } from "@/lib/tests/mock-papers";
+import { getMockPapersForTest, getPreCalibrationMockPapersForTest } from "@/lib/tests/mock-papers";
+import { reviewedDifficultyContract } from "./reviewed-difficulty";
 import { UCAT_QUESTIONS } from "@/lib/tests/questions/ucat";
 import type { MCQQuestion } from "@/lib/tests/questions/types";
 
@@ -60,18 +61,22 @@ describe("UCAT full mock structure", () => {
     }
   });
 
-  it("balances answer positions and keeps a real hard-question tail", () => {
+  it("balances answer positions and preserves the exact reviewed difficulty labels", () => {
     for (const paper of papers) {
+      expect(reviewedDifficultyContract(paper), paper.id).toBe("reviewed");
       for (const section of paper.modules) {
         const questions = section.questions as MCQQuestion[];
-        const hardRate = questions.filter((question) => question.difficulty === 3).length / questions.length;
-        expect(hardRate, `${paper.id}/${section.id}`).toBeGreaterThanOrEqual(0.2);
         const singles = questions.filter((question) => question.responseMode !== "matrix");
         const availableKeys = section.id === "vr" ? ["A", "B", "C"] : ["A", "B", "C", "D"];
         const counts = Object.fromEntries(availableKeys.map((key) => [key, singles.filter((question) => question.answer === key).length]));
         for (const key of availableKeys) expect(counts[key], `${paper.id}/${section.id}/${key}`).toBeGreaterThanOrEqual(3);
         expect(Math.max(...Object.values(counts)) / singles.length, `${paper.id}/${section.id} answer skew`).toBeLessThanOrEqual(0.65);
       }
+    }
+  });
+  it("keeps legacy author-labelled hard quotas as history, not current truth", () => {
+    for (const paper of getPreCalibrationMockPapersForTest("ucat")) for (const section of paper.modules) {
+      expect(section.questions.filter(q=>q.difficulty===3).length / section.questions.length).toBeGreaterThanOrEqual(0.2);
     }
   });
 

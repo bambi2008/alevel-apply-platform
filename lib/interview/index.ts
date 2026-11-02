@@ -11,9 +11,10 @@ import {
   ASSESSMENT_QUESTIONS,
   ASSESSMENT_SUBJECTS,
 } from "./assessment-questions";
+import { reviseInterviewQuestion } from "./content-revisions";
 
 export const INTERVIEW_SUBJECTS = [...CORE_SUBJECTS, ...ASSESSMENT_SUBJECTS];
-export const INTERVIEW_QUESTIONS = [...CORE_QUESTIONS, ...ASSESSMENT_QUESTIONS];
+export const INTERVIEW_QUESTIONS = [...CORE_QUESTIONS, ...ASSESSMENT_QUESTIONS].map(reviseInterviewQuestion);
 export const INTERVIEW_CATEGORIES = [...CORE_CATEGORIES, ...ASSESSMENT_CATEGORIES];
 
 export {
@@ -38,7 +39,7 @@ export function getQuestionsBySubject(subjectId: string): InterviewQuestion[] {
 export const INTERVIEW_GUIDE: { title: string; body: string }[] = [
   {
     title: "面试到底在考什么",
-    body: "牛剑及顶尖英国大学的学科面试，不是考你知道多少，而是考你面对陌生问题时怎么思考——像一场'迷你辅导课'。导师想看到的是你的推理过程、对提示的反应、以及被追问时能否调整。真题从不公开，因为它们会跨年重复使用，考的正是现场思维而非背诵。",
+    body: "通过陌生问题练习展示推理过程、回应提示，并在追问下调整方法。面试安排因院校与课程而异，请以收到的邀请和院校说明为准。",
   },
   {
     title: "把思路说出来",

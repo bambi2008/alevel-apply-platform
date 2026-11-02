@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { aiSystemForRequest, aiMessageForRequest } from "@/lib/ai-response-language";
 import OpenAI from "openai";
 import { captureError } from "@/lib/monitoring";
 import { requireAiAccess } from "@/lib/security/ai-route";
@@ -154,7 +155,7 @@ export async function POST(req: NextRequest) {
   const access = await requireAiAccess(req, "ps-coach", 30);
   if (!access.ok) return access.response;
   if (!process.env.DEEPSEEK_API_KEY) {
-    return NextResponse.json({ error: "AI 暂未配置（缺少 DEEPSEEK_API_KEY）" }, { status: 503 });
+    return NextResponse.json({ error: aiMessageForRequest("AI 暂未配置（缺少 DEEPSEEK_API_KEY）", req) }, { status: 503 });
   }
   const client = new OpenAI({
     apiKey: process.env.DEEPSEEK_API_KEY,
@@ -170,10 +171,10 @@ export async function POST(req: NextRequest) {
   const isOverall = body.mode === "overall";
   const isHk = body.mode === "hk";
   if (!isOverall && !isHk && (!body.question || !["q1", "q2", "q3"].includes(body.question))) {
-    return NextResponse.json({ error: "缺少题号" }, { status: 400 });
+    return NextResponse.json({ error: aiMessageForRequest("缺少题号", req) }, { status: 400 });
   }
 
-  const system = isHk ? SYSTEM_PROMPT_HK : isOverall ? SYSTEM_PROMPT_OVERALL : SYSTEM_PROMPT;
+  const system = aiSystemForRequest(isHk ? SYSTEM_PROMPT_HK : isOverall ? SYSTEM_PROMPT_OVERALL : SYSTEM_PROMPT, req);
   const userPrompt = isHk
     ? buildHkPrompt(body)
     : isOverall
@@ -204,6 +205,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (err) {
     captureError(err, { route: "ps-coach" });
-    return NextResponse.json({ error: "点评生成失败，请稍后重试。" }, { status: 500 });
+    return NextResponse.json({ error: aiMessageForRequest("点评生成失败，请稍后重试。", req) }, { status: 500 });
   }
 }

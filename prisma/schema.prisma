@@ -30,6 +30,7 @@ model User {
   consents               Consent[]
   documents              Document[]
   answerImages           AnswerImage[]
+  questionFeedback       QuestionFeedback[]
   studentProjects        StudentProject[]
   applicationPreps       ApplicationPrep[]
   auditLogs              AuditLog[]
@@ -647,6 +648,27 @@ model AnswerImage {
   createdAt  DateTime @default(now())
 
   @@index([ownerId, createdAt])
+}
+
+enum QuestionFeedbackKind {
+  ERROR
+  TOO_HARD
+  MORE_LIKE_THIS
+}
+
+model QuestionFeedback {
+  id          String               @id @default(cuid())
+  userId      String
+  user        User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  testId      String
+  topicId     String
+  questionKey String
+  kind        QuestionFeedbackKind
+  createdAt   DateTime             @default(now())
+
+  @@unique([userId, testId, questionKey, kind])
+  @@index([testId, topicId, createdAt])
+  @@index([createdAt])
 }
 
 model ApplicationDocument {

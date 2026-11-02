@@ -3,6 +3,8 @@ import { classifyTaraCritical, TARA_CRITICAL_SKILLS, type TaraCriticalSkill } fr
 import { TARA_FIXED_PS_SKILLS, type TaraProblemSkill } from "@/lib/tests/mock-papers/tara-fixed-problem-papers";
 import { TARA_QUESTIONS } from "@/lib/tests/questions/tara";
 import type { MCQQuestion } from "@/lib/tests/questions/types";
+import { calibrationSourceId } from "../difficulty-calibration";
+import { reviewedDifficultyContract } from "./reviewed-difficulty";
 
 export interface TaraAuditIssue {
   paperId: string;
@@ -58,8 +60,8 @@ function count(values: string[]): Record<string, number> {
 
 export function buildTaraMockAudit(): TaraAuditReport {
   const allPapers = getMockPapersForTest("tara");
-  const objective = allPapers.filter((paper) => /^tara-mock-\d+$/.test(paper.id));
-  const written = allPapers.filter((paper) => /^tara-written-\d+$/.test(paper.id));
+  const objective = allPapers.filter(paper => paper.modules.every(m => m.questions.every(q => q.type === "mcq")));
+  const written = allPapers.filter(paper => paper.modules.some(m => m.questions.some(q => q.type === "long")));
   const issues: TaraAuditIssue[] = [];
   const seenIds = new Map<string, string>();
   const seenPrompts = new Map<string, string>();
@@ -70,6 +72,8 @@ export function buildTaraMockAudit(): TaraAuditReport {
   }
 
   const modules = objective.flatMap((paper): TaraModuleSummary[] => {
+    const difficultyContract = reviewedDifficultyContract(paper);
+    if (difficultyContract === "drift") issues.push({paperId:paper.id,code:"CALIBRATION_DRIFT",severity:"critical",message:"Paper differs from its reviewed difficulty/content snapshot."});
     if (paper.modules.length !== 2) {
       issues.push({ paperId: paper.id, code: "MODULE_COUNT", severity: "critical", message: "Each objective paper must contain CT and PS modules." });
     }
@@ -123,7 +127,7 @@ export function buildTaraMockAudit(): TaraAuditReport {
         3: questions.filter((question) => question.difficulty === 3).length,
       };
       const answerCounts = count(questions.map((question) => question.answer));
-      if (difficulty[1] !== 4 || difficulty[2] !== 12 || difficulty[3] !== 6) {
+      if (difficultyContract !== "reviewed" && (difficulty[1] !== 4 || difficulty[2] !== 12 || difficulty[3] !== 6)) {
         issues.push({ paperId: paper.id, moduleId: module.id, code: "DIFFICULTY_BALANCE", severity: "warning", message: `Expected 4/12/6 difficulty split; found ${difficulty[1]}/${difficulty[2]}/${difficulty[3]}.` });
       }
       if (answersMismatch(answerCounts)) {
@@ -140,7 +144,7 @@ export function buildTaraMockAudit(): TaraAuditReport {
         return { paperId: paper.id, moduleId: module.id, questions: questions.length, difficulty, answerCounts, criticalSkills };
       }
 
-      const problemSkills = count(questions.map((question) => TARA_FIXED_PS_SKILLS.get(question.id) ?? "finding-procedures")) as Record<TaraProblemSkill, number>;
+      const problemSkills = count(questions.map((question) => TARA_FIXED_PS_SKILLS.get(calibrationSourceId(question.id)) ?? "finding-procedures")) as Record<TaraProblemSkill, number>;
       if (problemSkills["relevant-selection"] !== 5 || problemSkills["finding-procedures"] !== 12 || problemSkills["identifying-similarity"] !== 5) {
         issues.push({ paperId: paper.id, moduleId: module.id, code: "PS_SKILL_BALANCE", severity: "warning", message: "Problem Solving module must use the calibrated 5/12/5 skill split." });
       }
@@ -182,7 +186,7 @@ export function buildTaraMockAudit(): TaraAuditReport {
   }
 
   const expandedCritical = objective
-    .filter((paper) => /^tara-mock-[456]$/.test(paper.id))
+    .filter((paper) => /^tara-mock-[456]$/.test(calibrationSourceId(paper.id)))
     .flatMap((paper) => paper.modules.find((module) => module.id === "ct")?.questions ?? [])
     .filter((question): question is MCQQuestion => question.type === "mcq");
   for (const skill of TARA_CRITICAL_SKILLS) {

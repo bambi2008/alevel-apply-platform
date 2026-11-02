@@ -15,7 +15,8 @@ import { persistExamSession } from "@/lib/tests/persist-session";
 import { examProgressKey, parseExamProgress, type ObjectiveExamProgress } from "@/lib/tests/exam-progress";
 import { useExamReliability } from "@/hooks/use-exam-reliability";
 import { ExamReliabilityStatus } from "@/components/exam-reliability-status";
-import { isReleasedPaper, paperPresentation } from "@/lib/tests/syllabus-release";
+import { isReleasedPaper } from "@/lib/tests/syllabus-release";
+import { englishPaperPresentation } from "@/lib/tests/english-presentation";
 
 type Phase = "briefing" | "running" | "results";
 type ObjectivePaper = Omit<MockPaper, "modules"> & {
@@ -25,9 +26,9 @@ type ObjectivePaper = Omit<MockPaper, "modules"> & {
 export default function MockPaperPage({
   params,
 }: {
-  params: Promise<{ testId: string; paperId: string }>;
+  params: Promise<{ testId: string; paperId: string; locale: string }>;
 }) {
-  const { testId, paperId } = use(params);
+  const { testId, paperId, locale } = use(params);
   const paper = getMockPaper(paperId);
   if (!paper || paper.testId !== testId) notFound();
   if(!isReleasedPaper(paper)) return <main className="mx-auto max-w-4xl px-4 py-10">
@@ -36,7 +37,7 @@ export default function MockPaperPage({
     {testId==="caie9709" && <Link href={`/tests/caie9709/paper/${getCurrentP3PaperId(paper.id)}`} className="mt-4 block underline">开始 R3 修订卷 →</Link>}
     <Link href={`/tests/${testId}/mock`} className="mt-4 block underline">选择范围核验后的训练卷 →</Link>
   </main>;
-  const presentation = paperPresentation(paper);
+  const presentation = englishPaperPresentation(paper, locale);
 
   const hasWrittenQuestions = paper.modules.some((module) => module.questions.some((question) => question.type === "long"));
   return hasWrittenQuestions

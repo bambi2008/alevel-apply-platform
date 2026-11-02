@@ -9,7 +9,7 @@ describe("question bank audit", () => {
   it("inventories every supported test without structural blockers", () => {
     const report = buildQuestionBankAudit();
     expect(report.totals.tests).toBe(13);
-    expect(report.totals.questions).toBe(2081);
+    expect(report.totals.questions).toBe(2088);
     expect(report.totals.mockPapers).toBe(85);
     expect(report.totals.topicsCovered).toBe(84);
     expect(report.totals.topicsTotal).toBe(84);

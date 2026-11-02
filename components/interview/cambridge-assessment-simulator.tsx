@@ -9,6 +9,9 @@ import {
 } from "@/lib/interview/cambridge-assessment-flows";
 import { InterviewThinkingChecklist } from "./interview-thinking-checklist";
 import { clearRemoteProgress, loadLearningRecords, saveLearningRecord, saveRemoteProgress } from "@/lib/learning/client";
+import { useLocale } from "next-intl";
+import { uiCopy } from "@/lib/ui-copy";
+import { contentText } from "@/lib/content-language";
 
 type Phase = "intro" | "preparation" | "response" | "result";
 
@@ -48,6 +51,10 @@ export function TimedAssessmentSimulator({
   questions: InterviewQuestion[];
   showThinkingChecklist?: boolean;
 }) {
+  const locale = useLocale();
+  const t = (source: string, ...values: Array<string | number>) => uiCopy(locale, source, ...values);
+  // Translate only owned flow metadata, never saved responses or generated feedback.
+  const flowTitle = contentText(flow.title, locale);
   const subjectId = flow.subjectId;
   const storageKey = `alevel:timed-assessment:${subjectId}:v1`;
   const [phase, setPhase] = useState<Phase>("intro");
@@ -180,13 +187,13 @@ export function TimedAssessmentSimulator({
       });
       const response = await fetch("/api/interview-mock", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mode: "feedback", subject: subjectName, history }),
+        headers: { "Content-Type": "application/json", "x-qiaoshen-locale": document.documentElement.lang },
+        body: JSON.stringify({ mode: "feedback", subject: subjectName, subjectId, history }),
       });
       const data = await response.json();
-      setFeedback(response.ok ? data.feedback : data.error || "暂时无法生成反馈。");
+      setFeedback(response.ok ? data.feedback : data.error || t("暂时无法生成反馈。"));
     } catch {
-      setFeedback("网络连接失败，作答记录已保存在本机。");
+      setFeedback(t("网络连接失败，作答记录已保存在本机。"));
     } finally {
       setFeedbackLoading(false);
     }
@@ -195,34 +202,34 @@ export function TimedAssessmentSimulator({
   if (phase === "intro") {
     return (
       <div className="border border-[var(--border)] bg-white p-5 sm:p-6">
-        <p className="text-xs font-semibold uppercase text-[var(--indigo)]">Fixed assessment flow</p>
-        <h3 className="mt-1 text-lg font-bold text-[var(--ink)]">{flow.title}</h3>
-        <p className="mt-2 text-sm leading-relaxed text-[var(--ink-soft)]">{flow.note}</p>
+        <p className="text-xs font-semibold uppercase text-[var(--indigo)]">{t("固定评估流程")}</p>
+        <h3 className="mt-1 text-lg font-bold text-[var(--ink)]">{flowTitle}</h3>
+        <p className="mt-2 text-sm leading-relaxed text-[var(--ink-soft)]">{contentText(flow.note, locale)}</p>
         <div className="mt-5 divide-y divide-[var(--border)] border-y border-[var(--border)]">
           {tasks.map((task, index) => (
             <div key={task.questionId} className="grid gap-2 py-3 sm:grid-cols-[72px_1fr_auto] sm:items-center">
-              <strong className="text-sm text-[var(--ink)]">任务 {index + 1}</strong>
+              <strong className="text-sm text-[var(--ink)]">{t("任务 {0}", index + 1)}</strong>
               <span className="text-sm text-[var(--ink-soft)]">{task.question.format ?? task.question.prompt}</span>
               <span className="text-xs text-[var(--ink-faint)]">
-                准备 {Math.round(task.preparationSec / 60)} 分钟 · 作答 {Math.round(task.responseSec / 60)} 分钟
+                {t("准备 {0} 分钟 · 作答 {1} 分钟", Math.round(task.preparationSec / 60), Math.round(task.responseSec / 60))}
               </span>
             </div>
           ))}
         </div>
         <div className="mt-5 flex flex-wrap items-center gap-3">
           <button type="button" onClick={begin} className="btn btn-primary">
-            开始固定流程
+            {t("开始固定流程")}
             <ArrowRight className="size-4" />
           </button>
-          <span className="text-xs text-[var(--ink-faint)]">{tasks.length} 项任务 · 约 {totalMinutes} 分钟</span>
+          <span className="text-xs text-[var(--ink-faint)]">{t("{0} 项任务 · 约 {1} 分钟", tasks.length, totalMinutes)}</span>
         </div>
         {attempts.length > 0 && (
           <div className="mt-5 border-t border-[var(--border)] pt-4">
-            <p className="text-xs font-semibold uppercase text-[var(--ink-faint)]">最近完成</p>
+            <p className="text-xs font-semibold uppercase text-[var(--ink-faint)]">{t("最近完成")}</p>
             {attempts.slice(0, 3).map((attempt) => (
               <div key={attempt.id} className="flex justify-between gap-3 py-2 text-xs">
-                <span>{new Date(attempt.completedAt).toLocaleDateString("zh-CN")}</span>
-                <span className="text-[var(--ink-faint)]">{attempt.responses.filter((item) => item.answer).length}/{tasks.length} 项已作答</span>
+                <span>{new Date(attempt.completedAt).toLocaleDateString(locale === "en" ? "en-GB" : "zh-CN")}</span>
+                <span className="text-[var(--ink-faint)]">{t("{0}/{1} 项已作答", attempt.responses.filter((item) => item.answer).length, tasks.length)}</span>
               </div>
             ))}
           </div>
@@ -237,18 +244,18 @@ export function TimedAssessmentSimulator({
         <section className="border-l-4 border-[var(--success)] bg-[var(--success-bg)] p-5">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="size-5 text-[var(--success)]" />
-            <h3 className="font-bold text-[var(--ink)]">{flow.title}已完成</h3>
+            <h3 className="font-bold text-[var(--ink)]">{t("{0}已完成", flowTitle)}</h3>
           </div>
           <p className="mt-2 text-sm text-[var(--ink-soft)]">
-            已作答 {responses.filter((item) => item.answer).length}/{tasks.length} 项 · 共 {totalWords} 词
+            {t("已作答 {0}/{1} 项 · 共 {2} 词", responses.filter((item) => item.answer).length, tasks.length, totalWords)}
           </p>
         </section>
         <section className="border-y border-[var(--border)] py-5">
-          <h3 className="font-bold text-[var(--ink)]">整场复盘</h3>
-          <p className="mt-1 text-sm text-[var(--ink-soft)]">反馈只用于训练，不代表学院评分或面试结论。</p>
+          <h3 className="font-bold text-[var(--ink)]">{t("整场复盘")}</h3>
+          <p className="mt-1 text-sm text-[var(--ink-soft)]">{t("反馈只用于训练，不代表学院评分或面试结论。")}</p>
           {!feedback ? (
             <button type="button" onClick={requestFeedback} disabled={feedbackLoading} className="btn btn-primary mt-4">
-              {feedbackLoading ? "正在分析…" : "生成整场复盘"}
+              {feedbackLoading ? t("正在分析…") : t("生成整场复盘")}
             </button>
           ) : (
             <div className="mt-4 whitespace-pre-wrap bg-[var(--surface)] p-4 text-sm leading-relaxed">{feedback}</div>
@@ -259,7 +266,7 @@ export function TimedAssessmentSimulator({
             const question = questions.find((item) => item.id === response.questionId);
             return (
               <details key={response.questionId} className="border border-[var(--border)] bg-white p-4">
-                <summary className="cursor-pointer text-sm font-semibold">任务 {index + 1} 思路对照</summary>
+                <summary className="cursor-pointer text-sm font-semibold">{t("任务 {0} 思路对照", index + 1)}</summary>
                 <p className="mt-3 text-sm leading-relaxed text-[var(--ink-soft)]">{question?.approach}</p>
               </details>
             );
@@ -267,7 +274,7 @@ export function TimedAssessmentSimulator({
         </div>
         <button type="button" onClick={() => setPhase("intro")} className="btn btn-secondary">
           <RotateCcw className="size-4" />
-          返回流程首页
+          {t("返回流程首页")}
         </button>
       </div>
     );
@@ -277,9 +284,9 @@ export function TimedAssessmentSimulator({
     <div className="border border-[var(--border)] bg-white">
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--border)] p-4">
         <div>
-          <p className="text-xs font-semibold uppercase text-[var(--indigo)]">{flow.title}</p>
+          <p className="text-xs font-semibold uppercase text-[var(--indigo)]">{flowTitle}</p>
           <p className="mt-1 text-sm text-[var(--ink-soft)]">
-            任务 {taskIndex + 1}/{tasks.length} · {phase === "preparation" ? "独立准备" : "正式作答"}
+            {t("任务 {0}/{1}", taskIndex + 1, tasks.length)} · {phase === "preparation" ? t("独立准备") : t("正式作答")}
           </p>
         </div>
         <div className={`flex items-center gap-2 font-mono text-lg font-bold ${secondsLeft === 0 ? "text-[var(--danger)]" : ""}`}>
@@ -296,27 +303,29 @@ export function TimedAssessmentSimulator({
         {phase === "preparation" ? (
           <div className="mt-5">
             <textarea
+              aria-label={t("准备笔记")}
               value={notes}
               onChange={(event) => setNotes(event.target.value)}
               className="input min-h-40 w-full resize-y"
-              placeholder="记录观察、假设、证据和准备验证的点。"
+              placeholder={t("记录观察、假设、证据和准备验证的点。")}
             />
-            <button type="button" onClick={beginResponse} className="btn btn-primary mt-3">提前结束准备</button>
+            <button type="button" onClick={beginResponse} className="btn btn-primary mt-3">{t("提前结束准备")}</button>
           </div>
         ) : (
           <div className="mt-5">
-            {notes && <div className="mb-3 bg-[var(--surface)] p-3 text-xs text-[var(--ink-soft)]">准备笔记：{notes}</div>}
+            {notes && <div className="mb-3 bg-[var(--surface)] p-3 text-xs text-[var(--ink-soft)]">{t("准备笔记")}：{notes}</div>}
             <textarea
+              aria-label={t("作答内容")}
               autoFocus
               value={answer}
               onChange={(event) => setAnswer(event.target.value)}
               className="input min-h-52 w-full resize-y"
-              placeholder="写出完整推理。区分观察、解释和结论，并说明不确定性。"
+              placeholder={t("写出完整推理。区分观察、解释和结论，并说明不确定性。")}
             />
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-              <span className="text-xs text-[var(--ink-faint)]">当前 {countWords(answer)} 词</span>
+              <span className="text-xs text-[var(--ink-faint)]">{t("当前 {0} 词", countWords(answer))}</span>
               <button type="button" onClick={submitTask} className="btn btn-primary">
-                {taskIndex === tasks.length - 1 ? "完成整场" : "提交并进入下一任务"}
+                {taskIndex === tasks.length - 1 ? t("完成整场") : t("提交并进入下一任务")}
                 <ArrowRight className="size-4" />
               </button>
             </div>

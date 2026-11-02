@@ -30,10 +30,20 @@ describe("R2 mathematical and compatibility checks", () => {
     expect(new Set(revised.map(x => x.id)).size).toBe(88);
     expect(revised.every(x => !legacy.some(old => old.id === x.id))).toBe(true);
     expect(getMockPapersForTest("caie9709")).toHaveLength(16);
+    // Partition candidates by ID before the same full-object containment check.
+    // Keep duplicate-ID candidates: deep equality still decides membership.
+    const byId = new Map<string, ReturnType<typeof getAllMockQuestions>>();
+    for (const question of getAllMockQuestions()) {
+      const candidates = byId.get(question.id) ?? [];
+      candidates.push(question);
+      byId.set(question.id, candidates);
+    }
     for (const paper of CAIE9709_P3_ARCHIVED_PAPERS) {
       expect(getMockPaper(paper.id)).toEqual(paper);
       expect(CAIE9709_P3_WRITTEN_PAPERS.some(p => p.id === paper.id)).toBe(false);
-      expect(getAllMockQuestions()).toEqual(expect.arrayContaining(paper.modules[0].questions));
+      for (const question of paper.modules[0].questions) {
+        expect(byId.get(question.id) ?? []).toEqual(expect.arrayContaining([question]));
+      }
     }
   });
   it("replaces 72 prompts, retaining only eight foundations and eight precision exercises", () => {

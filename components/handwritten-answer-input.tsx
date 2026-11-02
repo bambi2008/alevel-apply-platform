@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import { useLocale } from "next-intl";
 import { useRef, useState, useSyncExternalStore } from "react";
 import { Camera, ImagePlus, LoaderCircle, Trash2 } from "lucide-react";
 import { supportsDirectCameraCapture } from "@/lib/device-capabilities";
@@ -21,9 +22,17 @@ const ERROR_MESSAGES: Record<string, string> = {
   too_large: "单张图片不能超过 8 MB。",
 };
 
-function uploadMessage(status: number, error?: string) {
-  if (status === 401) return ERROR_MESSAGES.unauthenticated;
-  return ERROR_MESSAGES[error ?? ""] ?? "上传失败，请检查网络后重试。";
+const ERROR_MESSAGES_EN: Record<string, string> = {
+  unauthenticated: "Sign in before uploading answer photographs.",
+  unsupported_type: "Only JPG, PNG and WebP images are supported.",
+  signature_mismatch: "The image does not match its file format. Please take another photograph.",
+  invalid_image: "The image could not be read. Please try another photograph or file.",
+  too_large: "Each image must be no larger than 8 MB.",
+};
+function uploadMessage(status: number, error?: string, en = false) {
+  const messages = en ? ERROR_MESSAGES_EN : ERROR_MESSAGES;
+  if (status === 401) return messages.unauthenticated;
+  return messages[error ?? ""] ?? (en ? "Upload failed. Check your connection and try again." : "上传失败，请检查网络后重试。");
 }
 
 const subscribeToStaticDeviceCapability = () => () => {};
@@ -63,6 +72,7 @@ export function HandwrittenAnswerInput({
   rows?: number;
   placeholder?: string;
 }) {
+  const en = useLocale() === "en";
   const cameraRef = useRef<HTMLInputElement>(null);
   const pickerRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
@@ -74,7 +84,7 @@ export function HandwrittenAnswerInput({
     if (!files?.length || disabled || uploading) return;
     const available = MAX_ANSWER_IMAGES_PER_PART - images.length;
     if (available <= 0) {
-      setError(`每个小问最多上传 ${MAX_ANSWER_IMAGES_PER_PART} 张。`);
+      setError(en ? `Up to ${MAX_ANSWER_IMAGES_PER_PART} images per part.` : `每个小问最多上传 ${MAX_ANSWER_IMAGES_PER_PART} 张。`);
       return;
     }
     setUploading(true);
@@ -82,18 +92,18 @@ export function HandwrittenAnswerInput({
     const next = [...images];
     try {
       for (const file of Array.from(files).slice(0, available)) {
-        if (file.size > MAX_ANSWER_IMAGE_BYTES) throw new Error(ERROR_MESSAGES.too_large);
+        if (file.size > MAX_ANSWER_IMAGE_BYTES) throw new Error((en ? ERROR_MESSAGES_EN : ERROR_MESSAGES).too_large);
         const form = new FormData();
         form.append("file", file);
         form.append("contextKey", contextKey);
         const response = await fetch("/api/answer-images", { method: "POST", body: form });
         const body = await response.json().catch(() => ({})) as { error?: string; image?: AnswerImageRef };
-        if (!response.ok || !body.image) throw new Error(uploadMessage(response.status, body.error));
+        if (!response.ok || !body.image) throw new Error(uploadMessage(response.status, body.error, en));
         next.push(body.image);
         onImagesChange([...next]);
       }
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "上传失败，请重试。");
+      setError(cause instanceof Error ? cause.message : (en ? "Upload failed. Please try again." : "上传失败，请重试。"));
     } finally {
       setUploading(false);
       if (cameraRef.current) cameraRef.current.value = "";
@@ -107,10 +117,10 @@ export function HandwrittenAnswerInput({
     setError(null);
     try {
       const response = await fetch(`/api/answer-images/${image.id}`, { method: "DELETE" });
-      if (!response.ok) throw new Error("删除失败，请重试。");
+      if (!response.ok) throw new Error(en ? "Could not remove the image. Please try again." : "删除失败，请重试。");
       onImagesChange(images.filter((item) => item.id !== image.id));
     } catch (cause) {
-      setError(cause instanceof Error ? cause.message : "删除失败，请重试。");
+      setError(cause instanceof Error ? cause.message : (en ? "Could not remove the image. Please try again." : "删除失败，请重试。"));
     } finally {
       setRemovingId(null);
     }
@@ -122,11 +132,11 @@ export function HandwrittenAnswerInput({
     <div className="rounded-md border border-[var(--border)] bg-[var(--surface)] p-3">
       <div className="flex flex-wrap items-center justify-between gap-2">
         <div>
-          <p className="text-sm font-semibold text-[var(--ink)]">上传手写答案</p>
+          <p className="text-sm font-semibold text-[var(--ink)]">{en ? "Upload handwriting" : "上传手写答案"}</p>
           <p className="mt-0.5 text-xs text-[var(--ink-faint)]">
             {canCaptureDirectly
-              ? "每个小问单独拍，保证字迹清楚、页面完整。"
-              : "请选择已有答题图片，保证字迹清楚、页面完整。"}
+              ? (en ? "Photograph each part separately, keeping the writing clear and the page complete." : "每个小问单独拍，保证字迹清楚、页面完整。")
+              : (en ? "Choose an existing answer image with clear writing and a complete page." : "请选择已有答题图片，保证字迹清楚、页面完整。")}
           </p>
         </div>
         <div className="flex flex-wrap gap-2">
@@ -137,7 +147,7 @@ export function HandwrittenAnswerInput({
               accept="image/jpeg,image/png,image/webp"
               capture="environment"
               className="sr-only"
-              aria-label="拍摄答题照片"
+              aria-label={en ? "Photograph your answer" : "拍摄答题照片"}
               disabled={!canAdd}
               onChange={(event) => void upload(event.target.files)}
             />
@@ -148,7 +158,7 @@ export function HandwrittenAnswerInput({
             accept="image/jpeg,image/png,image/webp"
             multiple
             className="sr-only"
-            aria-label="选择答题图片"
+            aria-label={en ? "Choose answer images" : "选择答题图片"}
             disabled={!canAdd}
             onChange={(event) => void upload(event.target.files)}
           />
@@ -157,45 +167,45 @@ export function HandwrittenAnswerInput({
               type="button"
               onClick={() => cameraRef.current?.click()}
               disabled={!canAdd}
-              className="inline-flex min-h-10 items-center gap-2 rounded-md bg-[var(--indigo)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50"
+              className="inline-flex min-h-11 items-center gap-2 rounded-md bg-[var(--indigo)] px-3 py-2 text-sm font-semibold text-white disabled:opacity-50"
             >
               {uploading ? <LoaderCircle className="size-4 animate-spin" /> : <Camera className="size-4" />}
-              {uploading ? "上传中…" : "拍照"}
+              {uploading ? (en ? "Uploading…" : "上传中…") : (en ? "Take a photo" : "拍照")}
             </button>
           )}
           <button
             type="button"
             onClick={() => pickerRef.current?.click()}
             disabled={!canAdd}
-            className="inline-flex min-h-10 items-center gap-2 rounded-md border border-[var(--border)] bg-white px-3 py-2 text-sm font-semibold text-[var(--ink)] disabled:opacity-50"
+            className="inline-flex min-h-11 items-center gap-2 rounded-md border border-[var(--border)] bg-white px-3 py-2 text-sm font-semibold text-[var(--ink)] disabled:opacity-50"
           >
             <ImagePlus className="size-4" />
-            选图片
+            {en ? "Choose images" : "选图片"}
           </button>
         </div>
       </div>
 
       {images.length > 0 && (
-        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4" aria-label="已上传的答题照片">
+        <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-4" aria-label={en ? "Uploaded answer images" : "已上传的答题照片"}>
           {images.map((image, index) => (
             <figure key={image.id} className="relative overflow-hidden rounded-md border border-[var(--border)] bg-white">
               <Image
                 src={image.url}
-                alt={`答题照片 ${index + 1}`}
+                alt={en ? `Answer image ${index + 1}` : `答题照片 ${index + 1}`}
                 width={image.width}
                 height={image.height}
                 unoptimized
                 className="aspect-[4/3] w-full object-cover"
               />
               <figcaption className="flex items-center justify-between gap-2 px-2 py-1.5 text-xs text-[var(--ink-soft)]">
-                <span>第 {index + 1} 张</span>
+                <span>{en ? `Image ${index + 1}` : `第 ${index + 1} 张`}</span>
                 {!disabled && (
                   <button
                     type="button"
                     onClick={() => void remove(image)}
                     disabled={removingId === image.id}
-                    aria-label={`删除答题照片 ${index + 1}`}
-                    className="inline-flex min-h-8 min-w-8 items-center justify-center rounded text-[var(--danger)] hover:bg-[var(--danger-bg)] disabled:opacity-50"
+                    aria-label={en ? `Remove answer image ${index + 1}` : `删除答题照片 ${index + 1}`}
+                    className="inline-flex min-h-11 min-w-11 items-center justify-center rounded text-[var(--danger)] hover:bg-[var(--danger-bg)] disabled:opacity-50"
                   >
                     {removingId === image.id ? <LoaderCircle className="size-4 animate-spin" /> : <Trash2 className="size-4" />}
                   </button>
@@ -207,19 +217,19 @@ export function HandwrittenAnswerInput({
       )}
 
       <label className="mt-3 block">
-        <span className="mb-1.5 block text-xs font-medium text-[var(--ink-soft)]">补充文字（可选）</span>
+        <span className="mb-1.5 block text-xs font-medium text-[var(--ink-soft)]">{en ? "Optional notes" : "补充文字（可选）"}</span>
         <textarea
           value={value}
           onChange={(event) => onChange(event.target.value)}
           rows={rows}
-          placeholder={placeholder}
+          placeholder={en && placeholder === "补充必要说明（可选）" ? "Add any essential notes (optional)" : placeholder}
           disabled={disabled}
           className="w-full resize-y rounded-md border border-[var(--border)] bg-white px-3 py-2 text-sm leading-6 outline-none focus:border-[var(--indigo)] focus:ring-2 focus:ring-[color:var(--indigo)]/10 disabled:opacity-60"
         />
       </label>
       <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs">
-        <span className="text-[var(--ink-faint)]">支持 JPG、PNG、WebP；单张不超过 8 MB，最多 {MAX_ANSWER_IMAGES_PER_PART} 张。</span>
-        {images.length > 0 && <span className="font-semibold text-[var(--success)]">已上传 {images.length} 张</span>}
+        <span className="text-[var(--ink-soft)]">{en ? `JPG, PNG or WebP · Up to 8 MB each · Maximum ${MAX_ANSWER_IMAGES_PER_PART} images` : `支持 JPG、PNG、WebP；单张不超过 8 MB，最多 ${MAX_ANSWER_IMAGES_PER_PART} 张。`}</span>
+        {images.length > 0 && <span className="font-semibold text-[var(--success)]">{en ? `${images.length} uploaded` : `已上传 ${images.length} 张`}</span>}
       </div>
       {error && <p role="alert" className="mt-2 text-sm text-[var(--danger)]">{error}</p>}
     </div>

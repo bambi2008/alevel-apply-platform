@@ -7,6 +7,8 @@ import { loadStudentAdaptiveData } from "@/lib/study/adaptive-server";
 import { buildRemediationProfile, selectRemediationQuestions } from "@/lib/tests/remediation";
 import { matchesExamModule } from "@/lib/tests/syllabus-policy";
 import { isReleasedPublishedQuestion } from "@/lib/tests/practice-banks";
+import { aiResponseLanguage } from "@/lib/ai-response-language";
+import { adaptivePresentation } from "@/lib/tests/study-presentation";
 
 export async function GET(req: NextRequest) {
   const testId = req.nextUrl.searchParams.get("testId") ?? "";
@@ -61,5 +63,5 @@ export async function GET(req: NextRequest) {
       reviewOnly,
     });
 
-  return NextResponse.json({ authenticated: true, ...adaptiveProfile, recommendedQuestionIds });
+  return NextResponse.json({ authenticated: true, ...adaptivePresentation(adaptiveProfile, aiResponseLanguage(req)), recommendedQuestionIds });
 }

@@ -1,0 +1,553 @@
+{
+  "schemaVersion": 1,
+  "releases": [
+    {
+      "id": "mat-practice-baseline-20261026",
+      "testId": "mat",
+      "publishedAt": "2026-10-25T16:00:00Z",
+      "kind": "baseline",
+      "status": "published",
+      "title": "专项练习题库数据化",
+      "titleEn": "Practice-bank data baseline",
+      "summary": "现有已审核专项练习建立数据文件基线，未新增题目，未改动模考。",
+      "summaryEn": "Existing reviewed practice content moved to data files. No questions added and no mocks changed.",
+      "subjectReview": "existing-reviewed-release",
+      "teachingReview": "existing-reviewed-release",
+      "questions": []
+    },
+    {
+      "id": "step-practice-baseline-20261026",
+      "testId": "step",
+      "publishedAt": "2026-10-25T16:00:00Z",
+      "kind": "baseline",
+      "status": "published",
+      "title": "专项练习题库数据化",
+      "titleEn": "Practice-bank data baseline",
+      "summary": "现有已审核专项练习建立数据文件基线，未新增题目，未改动模考。",
+      "summaryEn": "Existing reviewed practice content moved to data files. No questions added and no mocks changed.",
+      "subjectReview": "existing-reviewed-release",
+      "teachingReview": "existing-reviewed-release",
+      "questions": []
+    },
+    {
+      "id": "esat-practice-baseline-20261026",
+      "testId": "esat",
+      "publishedAt": "2026-10-25T16:00:00Z",
+      "kind": "baseline",
+      "status": "published",
+      "title": "专项练习题库数据化",
+      "titleEn": "Practice-bank data baseline",
+      "summary": "现有已审核专项练习建立数据文件基线，未新增题目，未改动模考。",
+      "summaryEn": "Existing reviewed practice content moved to data files. No questions added and no mocks changed.",
+      "subjectReview": "existing-reviewed-release",
+      "teachingReview": "existing-reviewed-release",
+      "questions": []
+    },
+    {
+      "id": "tmua-practice-baseline-20261026",
+      "testId": "tmua",
+      "publishedAt": "2026-10-25T16:00:00Z",
+      "kind": "baseline",
+      "status": "published",
+      "title": "专项练习题库数据化",
+      "titleEn": "Practice-bank data baseline",
+      "summary": "现有已审核专项练习建立数据文件基线，未新增题目，未改动模考。",
+      "summaryEn": "Existing reviewed practice content moved to data files. No questions added and no mocks changed.",
+      "subjectReview": "existing-reviewed-release",
+      "teachingReview": "existing-reviewed-release",
+      "questions": []
+    },
+    {
+      "id": "pat-practice-baseline-20261026",
+      "testId": "pat",
+      "publishedAt": "2026-10-25T16:00:00Z",
+      "kind": "baseline",
+      "status": "published",
+      "title": "专项练习题库数据化",
+      "titleEn": "Practice-bank data baseline",
+      "summary": "现有已审核专项练习建立数据文件基线，未新增题目，未改动模考。",
+      "summaryEn": "Existing reviewed practice content moved to data files. No questions added and no mocks changed.",
+      "subjectReview": "existing-reviewed-release",
+      "teachingReview": "existing-reviewed-release",
+      "questions": []
+    },
+    {
+      "id": "lnat-practice-baseline-20261026",
+      "testId": "lnat",
+      "publishedAt": "2026-10-25T16:00:00Z",
+      "kind": "baseline",
+      "status": "published",
+      "title": "专项练习题库数据化",
+      "titleEn": "Practice-bank data baseline",
+      "summary": "现有已审核专项练习建立数据文件基线，未新增题目，未改动模考。",
+      "summaryEn": "Existing reviewed practice content moved to data files. No questions added and no mocks changed.",
+      "subjectReview": "existing-reviewed-release",
+      "teachingReview": "existing-reviewed-release",
+      "questions": []
+    },
+    {
+      "id": "tara-practice-baseline-20261026",
+      "testId": "tara",
+      "publishedAt": "2026-10-25T16:00:00Z",
+      "kind": "baseline",
+      "status": "published",
+      "title": "专项练习题库数据化",
+      "titleEn": "Practice-bank data baseline",
+      "summary": "现有已审核专项练习建立数据文件基线，未新增题目，未改动模考。",
+      "summaryEn": "Existing reviewed practice content moved to data files. No questions added and no mocks changed.",
+      "subjectReview": "existing-reviewed-release",
+      "teachingReview": "existing-reviewed-release",
+      "questions": []
+    },
+    {
+      "id": "bpho-practice-baseline-20261026",
+      "testId": "bpho",
+      "publishedAt": "2026-10-25T16:00:00Z",
+      "kind": "baseline",
+      "status": "published",
+      "title": "专项练习题库数据化",
+      "titleEn": "Practice-bank data baseline",
+      "summary": "现有已审核专项练习建立数据文件基线，未新增题目，未改动模考。",
+      "summaryEn": "Existing reviewed practice content moved to data files. No questions added and no mocks changed.",
+      "subjectReview": "existing-reviewed-release",
+      "teachingReview": "existing-reviewed-release",
+      "questions": []
+    },
+    {
+      "id": "bmo-practice-baseline-20261026",
+      "testId": "bmo",
+      "publishedAt": "2026-10-25T16:00:00Z",
+      "kind": "baseline",
+      "status": "published",
+      "title": "专项练习题库数据化",
+      "titleEn": "Practice-bank data baseline",
+      "summary": "现有已审核专项练习建立数据文件基线，未新增题目，未改动模考。",
+      "summaryEn": "Existing reviewed practice content moved to data files. No questions added and no mocks changed.",
+      "subjectReview": "existing-reviewed-release",
+      "teachingReview": "existing-reviewed-release",
+      "questions": []
+    },
+    {
+      "id": "ucat-practice-baseline-20261026",
+      "testId": "ucat",
+      "publishedAt": "2026-10-25T16:00:00Z",
+      "kind": "baseline",
+      "status": "published",
+      "title": "专项练习题库数据化",
+      "titleEn": "Practice-bank data baseline",
+      "summary": "现有已审核专项练习建立数据文件基线，未新增题目，未改动模考。",
+      "summaryEn": "Existing reviewed practice content moved to data files. No questions added and no mocks changed.",
+      "subjectReview": "existing-reviewed-release",
+      "teachingReview": "existing-reviewed-release",
+      "questions": []
+    },
+    {
+      "id": "ielts-practice-baseline-20261026",
+      "testId": "ielts",
+      "publishedAt": "2026-10-25T16:00:00Z",
+      "kind": "baseline",
+      "status": "published",
+      "title": "专项练习题库数据化",
+      "titleEn": "Practice-bank data baseline",
+      "summary": "现有已审核专项练习建立数据文件基线，未新增题目，未改动模考。",
+      "summaryEn": "Existing reviewed practice content moved to data files. No questions added and no mocks changed.",
+      "subjectReview": "existing-reviewed-release",
+      "teachingReview": "existing-reviewed-release",
+      "questions": []
+    },
+    {
+      "id": "csat-practice-baseline-20261026",
+      "testId": "csat",
+      "publishedAt": "2026-10-25T16:00:00Z",
+      "kind": "baseline",
+      "status": "published",
+      "title": "专项练习题库数据化",
+      "titleEn": "Practice-bank data baseline",
+      "summary": "现有已审核专项练习建立数据文件基线，未新增题目，未改动模考。",
+      "summaryEn": "Existing reviewed practice content moved to data files. No questions added and no mocks changed.",
+      "subjectReview": "existing-reviewed-release",
+      "teachingReview": "existing-reviewed-release",
+      "questions": []
+    },
+    {
+      "id": "caie9709-practice-baseline-20261026",
+      "testId": "caie9709",
+      "publishedAt": "2026-10-25T16:00:00Z",
+      "kind": "baseline",
+      "status": "published",
+      "title": "专项练习题库数据化",
+      "titleEn": "Practice-bank data baseline",
+      "summary": "现有已审核专项练习建立数据文件基线，未新增题目，未改动模考。",
+      "summaryEn": "Existing reviewed practice content moved to data files. No questions added and no mocks changed.",
+      "subjectReview": "existing-reviewed-release",
+      "teachingReview": "existing-reviewed-release",
+      "questions": []
+    },
+    {
+      "id": "step-content-corrections-20261026",
+      "testId": "step",
+      "publishedAt": "2026-10-25T19:08:14Z",
+      "kind": "correction",
+      "status": "published",
+      "title": "题目与解析纠错",
+      "titleEn": "Question and solution corrections",
+      "summary": "修正 4 道现有专项练习的答案、选项或解析；关联固定卷另建修订版，旧作答保留。未新增题目。",
+      "summaryEn": "Corrected answers, options or explanations in 4 existing practice questions. Affected fixed papers use new versions; historical attempts remain intact. No questions added.",
+      "subjectReview": "lib/tests/content-revisions.test.ts",
+      "teachingReview": "docs/CONSOLIDATED_REVIEW_2026-10-25.md",
+      "questions": []
+    },
+    {
+      "id": "tmua-content-corrections-20261026",
+      "testId": "tmua",
+      "publishedAt": "2026-10-25T19:08:14Z",
+      "kind": "correction",
+      "status": "published",
+      "title": "题目与解析纠错",
+      "titleEn": "Question and solution corrections",
+      "summary": "修正 3 道现有专项练习的答案、选项或解析；关联固定卷另建修订版，旧作答保留。未新增题目。",
+      "summaryEn": "Corrected answers, options or explanations in 3 existing practice questions. Affected fixed papers use new versions; historical attempts remain intact. No questions added.",
+      "subjectReview": "lib/tests/content-revisions.test.ts",
+      "teachingReview": "docs/CONSOLIDATED_REVIEW_2026-10-25.md",
+      "questions": []
+    },
+    {
+      "id": "bmo-content-corrections-20261026",
+      "testId": "bmo",
+      "publishedAt": "2026-10-25T19:08:14Z",
+      "kind": "correction",
+      "status": "published",
+      "title": "题目与解析纠错",
+      "titleEn": "Question and solution corrections",
+      "summary": "修正 6 道现有专项练习的答案、选项或解析；关联固定卷另建修订版，旧作答保留。未新增题目。",
+      "summaryEn": "Corrected answers, options or explanations in 6 existing practice questions. Affected fixed papers use new versions; historical attempts remain intact. No questions added.",
+      "subjectReview": "lib/tests/content-revisions.test.ts",
+      "teachingReview": "docs/CONSOLIDATED_REVIEW_2026-10-25.md",
+      "questions": []
+    },
+    {
+      "id": "esat-content-corrections-20261026",
+      "testId": "esat",
+      "publishedAt": "2026-10-25T19:08:14Z",
+      "kind": "correction",
+      "status": "published",
+      "title": "题目与解析纠错",
+      "titleEn": "Question and solution corrections",
+      "summary": "修正 1 道现有专项练习的答案、选项或解析；关联固定卷另建修订版，旧作答保留。未新增题目。",
+      "summaryEn": "Corrected answers, options or explanations in 1 existing practice questions. Affected fixed papers use new versions; historical attempts remain intact. No questions added.",
+      "subjectReview": "lib/tests/content-revisions.test.ts",
+      "teachingReview": "docs/CONSOLIDATED_REVIEW_2026-10-25.md",
+      "questions": []
+    },
+    {
+      "id": "bpho-content-corrections-20261026",
+      "testId": "bpho",
+      "publishedAt": "2026-10-25T19:08:14Z",
+      "kind": "correction",
+      "status": "published",
+      "title": "题目与解析纠错",
+      "titleEn": "Question and solution corrections",
+      "summary": "修正 2 道现有专项练习的答案、选项或解析；关联固定卷另建修订版，旧作答保留。未新增题目。",
+      "summaryEn": "Corrected answers, options or explanations in 2 existing practice questions. Affected fixed papers use new versions; historical attempts remain intact. No questions added.",
+      "subjectReview": "lib/tests/content-revisions.test.ts",
+      "teachingReview": "docs/CONSOLIDATED_REVIEW_2026-10-25.md",
+      "questions": []
+    },
+    {
+      "id": "bpho-practice-challenge-20261028",
+      "testId": "bpho",
+      "publishedAt": "2026-10-28T09:06:19Z",
+      "kind": "addition",
+      "status": "published",
+      "title": "新增 5 道挑战专项练习",
+      "titleEn": "5 new challenge practice questions",
+      "summary": "新增 5 道原创挑战题，仅进入专项练习，不改动模考卷。难度为平台参考，非官方定级。",
+      "summaryEn": "Added 5 original challenge questions to topic practice only. Fixed mocks are unchanged; difficulty is a platform reference, not an official rating.",
+      "subjectReview": "docs/PRACTICE_CHALLENGE_REVIEW_2026-10-28.md#author-calculation-checks",
+      "teachingReview": "docs/PRACTICE_CHALLENGE_REVIEW_2026-10-28.md#independent-review",
+      "questions": [
+        {
+          "id": "bpho-week-20261028-mechanics-01",
+          "testId": "bpho",
+          "topicId": "bpho-mechanics",
+          "type": "long",
+          "difficulty": 3,
+          "totalMarks": 10,
+          "responseKind": "structured",
+          "context": "A ramp of mass $3m$ can move horizontally on a smooth floor. Its straight face slopes down to the right at $30^\\circ$ to the horizontal. A bead of mass $m$ is released from rest on the face, and the ramp is initially at rest. The bead slides without friction through a vertical height $h$. Consider the instant just before it reaches the lower end, while it is still in contact with the straight face. Let $u$ be the bead's speed relative to the ramp and $V$ the ramp's signed horizontal velocity, positive to the right. Treat both objects as rigid and neglect air resistance.",
+          "parts": [
+            {
+              "label": "(a)",
+              "marks": 3,
+              "question": "Express the bead's horizontal and vertical velocity components in terms of $u$ and $V$. Use horizontal momentum conservation to determine $V/u$.",
+              "solutionOutline": "The components are $V+u\\cos30^\\circ$ and $-u\\sin30^\\circ$. Thus $3mV+m(V+u\\cos30^\\circ)=0$, giving $V/u=-\\sqrt3/8$."
+            },
+            {
+              "label": "(b)",
+              "marks": 4,
+              "question": "Using energy conservation for the bead and ramp together, find $u$ in terms of $g$ and $h$.",
+              "solutionOutline": "The bead has components $3\\sqrt3u/8$ and $-u/2$, so its squared speed is $43u^2/64$. The ramp has squared speed $3u^2/64$. Therefore $mgh=\\tfrac12m(43u^2/64)+\\tfrac12(3m)(3u^2/64)=13mu^2/32$, so $u=\\sqrt{32gh/13}$."
+            },
+            {
+              "label": "(c)",
+              "marks": 3,
+              "question": "What fraction of the lost gravitational potential energy is kinetic energy of the ramp? Explain why equating the bead's kinetic energy alone to $mgh$ would fail, despite the absence of friction.",
+              "solutionOutline": "The ramp's energy is $\\tfrac12(3m)(3u^2/64)=9mgh/52$, a fraction $9/52$. Contact forces transfer energy between the moving ramp and bead. The bead receives the remaining fraction $43/52$; absence of friction conserves the combined energy, not each body's energy."
+            }
+          ],
+          "fullSolution": "The laboratory components of the bead's velocity are $(V+\\sqrt3u/2,-u/2)$. Horizontal momentum is initially zero and remains zero, so $4V+\\sqrt3u/2=0$ and $V=-\\sqrt3u/8$. The bead therefore has laboratory velocity $(3\\sqrt3u/8,-u/2)$. Total kinetic energy is $\\tfrac12m(43u^2/64)+\\tfrac12(3m)(3u^2/64)=13mu^2/32$. Equating this to $mgh$ gives $u^2=32gh/13$. The ramp's share is $9mgh/52$, while the bead's share is $43mgh/52$. Relative and laboratory speeds are different; assigning all the gravitational energy to the bead ignores work transferred to the ramp."
+        },
+        {
+          "id": "bpho-week-20261028-waves-01",
+          "testId": "bpho",
+          "topicId": "bpho-waves",
+          "type": "long",
+          "difficulty": 3,
+          "totalMarks": 14,
+          "responseKind": "structured",
+          "context": "A $500\\,\\mathrm{Hz}$ source excites an adjustable air column closed at one end. Two successive resonance lengths are $0.155\\,\\mathrm m$ and $0.495\\,\\mathrm m$. At each open end the effective column extends a distance $\\delta$ beyond the physical end, where $0\\le\\delta<0.040\\,\\mathrm m$. The closed end has no correction. Assume the same $\\delta$ applies at every open end mentioned below and remains constant when the air is cooled. Resonance requires an antinode at an open end and a node at a closed end. For the idealised comparison in part (d), all stated lengths are exact, resonance has zero bandwidth, and the end correction is independent of source frequency.",
+          "parts": [
+            {
+              "label": "(a)",
+              "marks": 3,
+              "question": "Find the wavelength and sound speed. Show why the shorter resonance is the fundamental and determine $\\delta$.",
+              "solutionOutline": "Successive closed-column resonances differ by $\\lambda/2$, so $\\lambda=0.680\\,\\mathrm m$ and $v=340\\,\\mathrm{m\\,s^{-1}}$. The shorter effective length is $(2n-1)\\lambda/4$. For $n=1$, $\\delta=0.170-0.155=0.015\\,\\mathrm m$; $n\\ge2$ would require $\\delta\\ge0.355\\,\\mathrm m$, excluded."
+            },
+            {
+              "label": "(b)",
+              "marks": 4,
+              "question": "A second column, open at both ends, has physical length $0.650\\,\\mathrm m$. Is it resonant with the same source? If so, identify its harmonic and the number and positions of displacement nodes, with coordinate zero at the left effective displacement antinode, a distance $\\delta$ outside the physical opening.",
+              "solutionOutline": "Its effective length is $0.650+2(0.015)=0.680\\,\\mathrm m=\\lambda$, hence it is in its second harmonic. Displacement antinodes occur at the two ends and centre, with two nodes at effective distances $0.170\\,\\mathrm m$ and $0.510\\,\\mathrm m$."
+            },
+            {
+              "label": "(c)",
+              "marks": 3,
+              "question": "The absolute air temperature changes from $289\\,\\mathrm K$ to $256\\,\\mathrm K$. Given $v\\propto\\sqrt T$, find the new physical length for the fundamental resonance of the closed column with the source still at $500\\,\\mathrm{Hz}$.",
+              "solutionOutline": "The new speed is $340\\sqrt{256/289}=320\\,\\mathrm{m\\,s^{-1}}$. Thus $\\lambda'=0.640\\,\\mathrm m$, and $L'=\\lambda'/4-\\delta=0.160-0.015=0.145\\,\\mathrm m$."
+            },
+            {
+              "label": "(d)",
+              "marks": 4,
+              "question": "Return the closed column to physical length $0.155\\,\\mathrm m$ and the original temperature. A third column is open at both ends with physical length $0.325\\,\\mathrm m$. The source frequency may now be any positive value. Can the closed and third columns resonate at exactly the same frequency? Prove your answer for all harmonic orders, rather than checking only the first few.",
+              "solutionOutline": "The closed column has effective length $0.170\\,\\mathrm m$, so its resonances are $f_c=500(2j-1)\\,\\mathrm{Hz}$ for positive integers $j$. The third column has effective length $0.355\\,\\mathrm m$, so $f_o=(34000/71)k\\,\\mathrm{Hz}$ for positive integers $k$. Equality requires $71(2j-1)=68k$. The left side is odd and the right side even, impossible. Nearness or overlap of finite-width resonances would not establish exact equality in this ideal model."
+            }
+          ],
+          "fullSolution": "The separation of adjacent closed-column resonances is half a wavelength: $\\lambda=2(0.495-0.155)=0.680\\,\\mathrm m$, so $v=f\\lambda=340\\,\\mathrm{m\\,s^{-1}}$. The shorter resonance satisfies $0.155+\\delta=(2n-1)0.170$. The stated correction bound forces $n=1$ and $\\delta=0.015\\,\\mathrm m$. The open-open column has effective length $0.680\\,\\mathrm m$, which equals one wavelength: second harmonic, with nodes at one-quarter and three-quarters of its effective length, $0.170$ and $0.510\\,\\mathrm m$. Cooling gives $v'=340(16/17)=320\\,\\mathrm{m\\,s^{-1}}$, wavelength $0.640\\,\\mathrm m$, and corrected fundamental length $0.145\\,\\mathrm m$. The two end corrections in the open-open column must both be included. For the third column, $L_{\\rm eff}=0.325+2(0.015)=0.355\\,\\mathrm m$. The fixed closed column allows $500(2j-1)\\,\\mathrm{Hz}$, while the third allows $(34000/71)k\\,\\mathrm{Hz}$. Exact equality would imply $71(2j-1)=68k$, impossible by parity. This conclusion uses exact lengths, zero resonance bandwidth and the explicitly constant end correction; it does not rule out overlapping finite-width resonances in a real experiment."
+        },
+        {
+          "id": "bpho-week-20261028-em-01",
+          "testId": "bpho",
+          "topicId": "bpho-em",
+          "type": "long",
+          "difficulty": 3,
+          "totalMarks": 10,
+          "responseKind": "structured",
+          "context": "Three ideal capacitors have capacitances $C$, $2C$ and $3C$. Each is initially isolated and charged to the same positive voltage $V$. Label the initially positive and negative plates $P_i,N_i$ for capacitor $i=1,2,3$. They are then connected into an isolated triangle: node $A$ joins $P_1$ to $N_3$, node $B$ joins $N_1$ to $P_2$, and node $D$ joins $N_2$ to $P_3$. No node is connected to a battery or to Earth. Small wire resistances allow a final electrostatic equilibrium; neglect wire capacitance and radiation. For a capacitor between nodes $i,j$, the charge on its plate at $i$ is $C_{ij}(V_i-V_j)$.",
+          "parts": [
+            {
+              "label": "(a)",
+              "marks": 3,
+              "question": "Find the conserved net charge of each node immediately after connection.",
+              "solutionOutline": "Initially $Q_A=CV-3CV=-2CV$, $Q_B=-CV+2CV=CV$ and $Q_D=-2CV+3CV=CV$. Individual capacitor charges are not separately conserved after reconnection."
+            },
+            {
+              "label": "(b)",
+              "marks": 4,
+              "question": "Choose $V_A=0$ as a potential reference, without grounding the circuit. Find $V_B$ and $V_D$, and state whether capacitor 1 retains its original polarity.",
+              "solutionOutline": "Node equations give $3V_B-2V_D=V$ and $-2V_B+5V_D=V$. Hence $V_B=7V/11$, $V_D=5V/11$. Since $P_1$ is at $A$ and $N_1$ at $B$, its voltage $V_A-V_B=-7V/11$ is reversed."
+            },
+            {
+              "label": "(c)",
+              "marks": 3,
+              "question": "Determine the energy dissipated in the connecting wires, as a multiple of $CV^2$.",
+              "solutionOutline": "Initial energy is $3CV^2$. Final energy is $\\tfrac12C(7V/11)^2+\\tfrac12(2C)(2V/11)^2+\\tfrac12(3C)(5V/11)^2=6CV^2/11$. The dissipated energy is $27CV^2/11$."
+            }
+          ],
+          "fullSolution": "Plate charges before reconnection are $\\pm CV,\\pm2CV,\\pm3CV$, so the three isolated nodes retain charges $-2CV,CV,CV$. Taking $A$ as zero potential is a gauge choice, not an Earth connection. At $B$, $C V_B+2C(V_B-V_D)=CV$; at $D$, $3C V_D+2C(V_D-V_B)=CV$. Solving gives $V_B=7V/11$, $V_D=5V/11$. Capacitor 1 reverses polarity because its originally positive plate is now at the lower potential. Initial stored energy is $3CV^2$ and final energy is $[49+8+75]CV^2/242=6CV^2/11$, leaving $27CV^2/11$ dissipated. Conserving the charge on each capacitor separately would incorrectly forbid the redistribution."
+        },
+        {
+          "id": "bpho-week-20261028-thermal-01",
+          "testId": "bpho",
+          "topicId": "bpho-thermal",
+          "type": "long",
+          "difficulty": 3,
+          "totalMarks": 15,
+          "responseKind": "structured",
+          "context": "A rigid thermally insulated vessel is divided into two equal volumes $V$ by a movable, thermally conducting, impermeable partition. At the instant its clamp is removed, side $A$ contains $n$ moles of a monatomic ideal gas at temperature $3T$ and side $B$ contains $2n$ moles of the same gas at $T$. These are the release-time initial conditions, not temperatures maintained indefinitely while the conducting partition is clamped. The partition is initially at rest, has finite positive mass and negligible heat capacity, and has finite positive thermal conductance, so thermal equilibration is not instantaneous. It moves horizontally and eventually reaches thermal and mechanical equilibrium. Weak internal viscous damping converts motion into gas internal energy without static-friction sticking. No energy leaves the vessel. Use $pV=nRT$ and $U=\\tfrac32nRT$.",
+          "parts": [
+            {
+              "label": "(a)",
+              "marks": 3,
+              "question": "Determine the initial pressure on each side and the initial direction of motion of the partition.",
+              "solutionOutline": "Initially $p_A=3nRT/V$ and $p_B=2nRT/V$, so the partition moves towards side $B$ and side $A$ initially expands."
+            },
+            {
+              "label": "(b)",
+              "marks": 3,
+              "question": "Find the final common temperature. Explain why treating either gas as having constant internal energy would be invalid.",
+              "solutionOutline": "The total initial energy is $\\tfrac32nR(3T)+\\tfrac32(2n)RT=\\tfrac{15}{2}nRT$. Final energy is $\\tfrac32(3n)RT_f$, so $T_f=5T/3$. Each gas can exchange heat and work with the other; only the combined system is isolated."
+            },
+            {
+              "label": "(c)",
+              "marks": 4,
+              "question": "Find the final volumes and common pressure. Must the partition reverse its initial direction at least once before equilibrium? Justify your answer.",
+              "solutionOutline": "Equal final pressure and temperature imply $V_{Bf}=2V_{Af}$. Since their sum is $2V$, $V_{Af}=2V/3$ and $V_{Bf}=4V/3$. The final pressure is $5nRT/(2V)$. Side $A$ expands initially but finishes at a volume smaller than its initial $V$, so continuous motion requires at least one reversal."
+            },
+            {
+              "label": "(d)",
+              "marks": 5,
+              "question": "In a general version, replace the initial temperature $3T$ in $A$ by $\\alpha T$, where $\\alpha>1$, and replace the amount in $B$ by $rn$ moles, where $r>0$. Initial volumes are still $V$ each. Find the necessary and sufficient inequalities for $A$ to expand initially but finish at a smaller volume than $V$. Do the specified initial and final states uniquely determine either the greatest volume reached by $A$ or its net heat gain? Explain without inventing a time evolution.",
+              "solutionOutline": "Initially $p_A=\\alpha nRT/V$ and $p_B=rnRT/V$, so initial expansion requires $\\alpha>r$. Final equal pressure and temperature give $V_{Af}=2V/(1+r)$, which is smaller than $V$ exactly when $r>1$. Thus the requested endpoint behaviour holds precisely for $1<r<\\alpha$. The final temperature is $T_f=(\\alpha+r)T/(1+r)$. Endpoints determine $\\Delta U_A$ but not the net heat $Q_A$: with work by $A$ denoted $W_A$, $Q_A=\\Delta U_A+W_A$, and the boundary-work path is not specified. Nor do the endpoints determine the maximum volume; that requires heat-transfer, inertia and damping dynamics. The endpoint criterion is not a claim to classify every parameter choice that might reverse during an oscillation."
+            }
+          ],
+          "fullSolution": "The initial pressures are $3nRT/V$ and $2nRT/V$, making $A$ expand at first. The whole rigid insulated vessel conserves energy, while each gas does not. Total energy conservation gives $\\tfrac32 nR(3T)+3nRT=\\tfrac92nRT_f$, hence $T_f=5T/3$. Equal final pressure at this common temperature gives volumes proportional to mole numbers, $1:2$. Thus $V_{Af}=2V/3$, $V_{Bf}=4V/3$ and $p_f=5nRT/(2V)$. The final compression of $A$ despite its initial expansion forces a reversal of partition motion. Insulation of the outer wall does not make the conducting partition thermally insulating. In the general case initial expansion is equivalent to $\\alpha>r$, whereas $V_{Af}=2V/(1+r)<V$ is equivalent to $r>1$. Hence $1<r<\\alpha$ is necessary and sufficient for the stated initial-expansion/final-compression behaviour. Conservation of total energy gives $T_f=(\\alpha+r)T/(1+r)$, determining each gas's internal-energy change. Net heat into $A$ also depends on its boundary work, which is path dependent; the same endpoint constraints do not specify this work or the maximum partition displacement. No unique heat-transfer law, trajectory or maximum volume is implied."
+        },
+        {
+          "id": "bpho-week-20261028-modern-01",
+          "testId": "bpho",
+          "topicId": "bpho-modern",
+          "type": "long",
+          "difficulty": 3,
+          "totalMarks": 13,
+          "responseKind": "structured",
+          "context": "Light of wavelengths $\\lambda$ and $2\\lambda$ is used separately on the same photoelectric surface. The fastest emitted electrons enter a uniform magnetic field perpendicular to their velocity, following circular paths of radii $r_1$ and $r_2$. The field is unchanged and $r_1=2r_2$. Take electron speeds to be small compared with the speed of light. Use $K_{\\max}=hc/\\lambda_{\\rm light}-\\phi$ and $r=\\sqrt{2mK}/(eB)$. A later retarding voltage $U\\ge0$ removes energy $eU$ before the magnetic region; consider electrons initially moving along that retarding field and neglect other losses.",
+          "parts": [
+            {
+              "label": "(a)",
+              "marks": 3,
+              "question": "Find the work function $\\phi$ in terms of $h,c,\\lambda$, and the threshold wavelength.",
+              "solutionOutline": "Since $K_1/K_2=(r_1/r_2)^2=4$, writing $E=hc/\\lambda$ gives $E-\\phi=4(E/2-\\phi)$. Therefore $\\phi=E/3$ and the threshold wavelength is $3\\lambda$."
+            },
+            {
+              "label": "(b)",
+              "marks": 3,
+              "question": "Light of wavelength $3\\lambda/2$ is now used. Find the retarding voltage that makes its fastest electrons follow radius $r_2$ after retardation.",
+              "solutionOutline": "Their initial maximum energy is $2E/3-\\phi=E/3$. The original radius $r_2$ requires energy $E/6$, so $eU=E/6$ and $U=hc/(6e\\lambda)$."
+            },
+            {
+              "label": "(c)",
+              "marks": 3,
+              "question": "Find the interval of retarding voltages for which no electrons from the $2\\lambda$ source can pass the retarding region, while electrons from the $\\lambda$ source can still pass. Specify endpoint inclusion and explain why halving the wavelength does not simply double the maximum electron energy.",
+              "solutionOutline": "The initial maximum energies are $E/6$ and $2E/3$. Thus $E/(6e)\\le U<2E/(3e)$. At the lower endpoint the less energetic source has no positive remaining energy; at the upper endpoint neither source has positive remaining energy. The same work function is subtracted from each photon energy, so the electron energies have ratio $4$, not $2$."
+            },
+            {
+              "label": "(d)",
+              "marks": 4,
+              "question": "Consider a separate, ideal planar retarding region with no side walls or fringe fields. The electric field is normal to its two parallel boundaries. For wavelength $3\\lambda/2$, the fastest electrons enter at angle $\\theta$ to the forward normal, with $0\\le\\theta<90^\\circ$. Use the voltage found in (b). What range of $\\theta$ allows these electrons to emerge with positive forward velocity? Explain why using only the total energy remaining after retardation gives the wrong transmission condition, and decide whether a $60^\\circ$ beam can pass. No magnetic-radius claim is made for this separate oblique-incidence situation.",
+              "solutionOutline": "The electric force has no tangential component, so tangential velocity is unchanged. The initial normal kinetic energy is $K_3\\cos^2\\theta=(E/3)\\cos^2\\theta$ and only this component can pay the retarding energy $eU=E/6$. Positive forward exit velocity requires $(E/3)\\cos^2\\theta>E/6$, hence $0\\le\\theta<45^\\circ$. At $45^\\circ$ the forward exit speed is zero, excluded. At $60^\\circ$ the normal energy is $E/12<E/6$, so it turns back although the formal total-energy difference $K_3-eU=E/6$ is positive; its tangential energy cannot overcome the normal barrier."
+            }
+          ],
+          "fullSolution": "Let $E=hc/\\lambda$. The radius relation gives $E-\\phi=4(E/2-\\phi)$, hence $\\phi=E/3$. The threshold wavelength is $hc/\\phi=3\\lambda$. Maximum emitted energies for $\\lambda,2\\lambda,3\\lambda/2$ are respectively $2E/3,E/6,E/3$. To leave energy $E/6$ for the third source, the retarding field must remove $E/6$, giving $U=hc/(6e\\lambda)$. Blocking the $2\\lambda$ source while transmitting some electrons from the $\\lambda$ source requires $hc/(6e\\lambda)\\le U<2hc/(3e\\lambda)$. These are transmission conditions, not a claim that the retarding voltage prevents emission at the surface. In the separate planar region, tangential momentum is conserved because the field has no tangential force. Only the normal kinetic energy $K_3\\cos^2\\theta$ is available to overcome the potential barrier. With $K_3=E/3$ and $eU=E/6$, transmission with positive forward velocity requires $\\cos^2\\theta>1/2$, i.e. $0\\le\\theta<45^\\circ$. The equality endpoint has zero forward speed and is excluded. A $60^\\circ$ beam turns back because its normal energy is only $E/12$, even though total initial energy exceeds $eU$. Using a positive total-energy remainder alone incorrectly treats the conserved tangential energy as available for forward motion."
+        }
+      ],
+      "questionFingerprints": {
+        "bpho-week-20261028-mechanics-01": "615185b2:d1d45f28:2556",
+        "bpho-week-20261028-waves-01": "6c6c3d7a:8bbe6e:4486",
+        "bpho-week-20261028-em-01": "59c8ff63:2bc06205:2359",
+        "bpho-week-20261028-thermal-01": "42ff1fb5:45f9d0f1:4635",
+        "bpho-week-20261028-modern-01": "11e26014:779e03a6:4646"
+      }
+    },
+    {
+      "id": "tmua-practice-challenge-20261028",
+      "testId": "tmua",
+      "publishedAt": "2026-10-28T09:06:19Z",
+      "kind": "addition",
+      "status": "published",
+      "title": "新增 2 道挑战专项练习",
+      "titleEn": "2 new challenge practice questions",
+      "summary": "新增 2 道原创挑战题，仅进入专项练习，不改动模考卷。难度为平台参考，非官方定级。",
+      "summaryEn": "Added 2 original challenge questions to topic practice only. Fixed mocks are unchanged; difficulty is a platform reference, not an official rating.",
+      "subjectReview": "docs/PRACTICE_CHALLENGE_REVIEW_2026-10-28.md#author-calculation-checks",
+      "teachingReview": "docs/PRACTICE_CHALLENGE_REVIEW_2026-10-28.md#independent-review",
+      "questions": [
+        {
+          "id": "tmua-week-20261028-number-01",
+          "testId": "tmua",
+          "topicId": "tmua-number",
+          "type": "mcq",
+          "difficulty": 3,
+          "marks": 1,
+          "question": "Positive integers $a<b$ have highest common factor $12$ and lowest common multiple $2160$. Their sum is divisible by $7$. What is $b-a$?",
+          "options": [
+            {
+              "key": "A",
+              "text": "132"
+            },
+            {
+              "key": "B",
+              "text": "372"
+            },
+            {
+              "key": "C",
+              "text": "492"
+            },
+            {
+              "key": "D",
+              "text": "588"
+            },
+            {
+              "key": "E",
+              "text": "2148"
+            }
+          ],
+          "answer": "C",
+          "hint": "Write $a=12x$ and $b=12y$. The factors $x,y$ must have no common prime factor.",
+          "solution": "Write $a=12x,b=12y$ with $x<y$ and highest common factor $1$. The least common multiple condition gives $xy=180=4\\cdot9\\cdot5$. Each whole prime-power block must go to one of $x,y$; splitting a block would create a common factor. The possible pairs are $(1,180),(4,45),(5,36),(9,20)$. Since $7$ does not divide $12$, the sum condition requires $x+y$ divisible by $7$. Only $(4,45)$ works, with sum $49$. Thus $(a,b)=(48,540)$ and $b-a=492$.",
+          "optionExplanations": {
+            "A": "Uses the coprime pair (9,20) but ignores the sum condition.",
+            "B": "Uses the pair (5,36) but ignores the sum condition.",
+            "C": "The only admissible coprime pair is (4,45), giving difference 492.",
+            "D": "588 is the sum of the required integers, not their difference.",
+            "E": "Uses the pair (1,180) but ignores the sum condition."
+          }
+        },
+        {
+          "id": "tmua-week-20261028-logic-01",
+          "testId": "tmua",
+          "topicId": "tmua-logic",
+          "type": "mcq",
+          "difficulty": 3,
+          "marks": 1,
+          "question": "For a real parameter $k$, consider two statements. $S$: for every real $x$, there is a real $y$ such that $x^2+y^2-2kxy\\le0$. $T$: there is a real $y$ such that, for every real $x$, $x^2+y^2-2kxy\\le0$. Which option is correct?",
+          "options": [
+            {
+              "key": "A",
+              "text": "$S$ is true exactly when $|k|>1$; $T$ is always false."
+            },
+            {
+              "key": "B",
+              "text": "Both statements are true exactly when $|k|\\ge1$."
+            },
+            {
+              "key": "C",
+              "text": "$S$ is true exactly when $|k|\\ge1$; $T$ is always false."
+            },
+            {
+              "key": "D",
+              "text": "$S$ is true exactly when $|k|\\le1$; $T$ is always false."
+            },
+            {
+              "key": "E",
+              "text": "$S$ is true exactly when $k\\ge1$; $T$ is true exactly when $k\\le-1$."
+            }
+          ],
+          "answer": "C",
+          "hint": "Complete the square in $y$. In $S$ the chosen $y$ may depend on $x$; in $T$ one value of $y$ must work for every $x$.",
+          "solution": "Rewrite the expression as $(y-kx)^2+(1-k^2)x^2$. If $|k|\\ge1$, choosing $y=kx$ makes it non-positive for every $x$, so $S$ is true. If $|k|<1$, take $x=1$; the expression is at least $1-k^2>0$ for every $y$, so $S$ is false. For $T$, taking $x=0$ forces $y^2\\le0$, so the only possible fixed choice is $y=0$. But then $x=1$ makes the expression $1>0$. Thus no single $y$ works, whatever $k$. The boundary values $k=1,-1$ are included in $S$.",
+          "optionExplanations": {
+            "A": "Incorrectly excludes the equality cases k=1 and k=-1.",
+            "B": "Reversing the order of 'for every' and 'there is' changes the requirement.",
+            "C": "Completing the square proves the condition for S; a counterexample x exists for every fixed y in T.",
+            "D": "When |k|<1, x=1 makes the expression strictly positive for every y.",
+            "E": "The condition for S is symmetric in k, and T is false for all k."
+          }
+        }
+      ],
+      "questionFingerprints": {
+        "tmua-week-20261028-number-01": "6fbd0167:11ec2c93:1308",
+        "tmua-week-20261028-logic-01": "634f7a20:acbc3bc:1776"
+      }
+    }
+  ]
+}

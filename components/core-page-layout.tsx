@@ -22,7 +22,7 @@ export function CorePageHeader({
   return (
     <header className="grid gap-6 border-b border-black/15 pb-7 md:grid-cols-[minmax(0,1fr)_auto] md:items-end">
       <div className="min-w-0">
-        <p className="text-xs font-semibold tracking-[0.22em] text-black/45">CORE {step}</p>
+        <p className="text-xs font-semibold tracking-[0.22em] text-black/60">CORE {step}</p>
         <h1 className="mt-3 text-[clamp(2.75rem,6vw,5.25rem)] font-semibold leading-[0.94] tracking-[-0.055em] text-[#101817]">
           {title}
         </h1>
@@ -30,7 +30,7 @@ export function CorePageHeader({
           {description}
         </p>
       </div>
-      {meta ? <div className="shrink-0 text-xs font-semibold tracking-[0.16em] text-black/35">{meta}</div> : null}
+      {meta ? <div className="shrink-0 text-xs font-semibold tracking-[0.16em] text-black/60">{meta}</div> : null}
     </header>
   );
 }
@@ -66,7 +66,7 @@ export function CoreSectionHeader({
   return (
     <div className="flex items-center justify-between gap-4">
       <h2 className="text-2xl font-semibold tracking-[-0.035em] text-[#101817]">{title}</h2>
-      {meta ? <span className="text-xs font-semibold tracking-[0.12em] text-black/35">{meta}</span> : null}
+      {meta ? <span className="text-xs font-semibold tracking-[0.12em] text-black/60">{meta}</span> : null}
     </div>
   );
 }

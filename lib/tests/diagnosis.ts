@@ -1,4 +1,6 @@
 import type { MCQOptionKey, MCQQuestion, Question } from "@/lib/tests/questions/types";
+import { hasWrittenResponse } from "./answer-images";
+import { uiCopy } from "@/lib/ui-copy";
 
 export type DiagnosisCode =
   | "secure"
@@ -30,6 +32,8 @@ export interface DiagnosisObservation {
   visits?: number;
   flagged?: boolean;
   firstSelected?: string | null;
+  /** Server-derived fixed-module reference; absent for standalone practice. */
+  expectedTimeSec?: number;
 }
 
 export interface AnswerDiagnosis {
@@ -144,20 +148,17 @@ function diagnosis(
   };
 }
 
-function hasWrittenWork(work?: Record<string, string> | null) {
-  return Object.values(work ?? {}).some((value) => value.trim().length > 0);
-}
-
 function missingSteps(feedback?: AnswerFeedbackPart[] | null) {
   return (feedback ?? []).flatMap((part) => part.keyStepsMissing ?? []).filter(Boolean);
 }
 
 export function diagnoseAnswer(observation: DiagnosisObservation): AnswerDiagnosis {
   const rate = scoreRate(observation);
-  const expected = expectedAnswerTimeSec(observation.question);
+  const expected = observation.expectedTimeSec !== undefined && Number.isFinite(observation.expectedTimeSec) && observation.expectedTimeSec > 0
+    ? observation.expectedTimeSec : expectedAnswerTimeSec(observation.question);
 
   if (observation.question.type === "long") {
-    if (!hasWrittenWork(observation.work)) {
+    if (!hasWrittenResponse(observation.work)) {
       return diagnosis(observation, "unanswered", "没有检测到可评分的书面作答。");
     }
     if (rate >= 0.999) {
@@ -254,18 +255,21 @@ export function buildSessionDiagnosis(observations: DiagnosisObservation[]): Ses
 export function optionReview(
   question: MCQQuestion,
   key: MCQOptionKey,
+  locale = "zh-CN",
 ): { title: string; detail: string; correct: boolean } {
   if (key === question.answer) {
     return {
-      title: "正确选项",
-      detail: question.optionExplanations?.[key] ?? "该选项与标准解法的推导结果一致。",
+      title: uiCopy(locale, "正确选项"),
+      detail: question.optionExplanations?.[key] ?? uiCopy(locale, "该选项与标准解法的推导结果一致。"),
       correct: true,
     };
   }
   return {
-    title: "干扰项",
+    title: uiCopy(locale, "干扰项"),
     detail: question.optionExplanations?.[key]
-      ?? `该选项与标准解法得到的 ${question.answer} 不一致。请定位首次出现差异的推导步骤，而不是只记选项字母。`,
+      ?? (locale === "en"
+        ? `This option does not agree with ${question.answer}, the worked solution's result. Find the first difference in your reasoning rather than memorising the option letter.`
+        : `该选项与标准解法得到的 ${question.answer} 不一致。请定位首次出现差异的推导步骤，而不是只记选项字母。`),
     correct: false,
   };
 }

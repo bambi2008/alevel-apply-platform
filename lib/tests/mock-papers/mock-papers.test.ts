@@ -10,7 +10,7 @@ import { getCountedResults } from "./scoring";
 // Archived content retains its historical structural regressions. Public
 // catalogues are separately verified in syllabus-release.test.ts.
 const getMockPapersForTest=(testId:string)=>getRegisteredMockPapersForTest(testId)
-  .filter(p=>!p.id.endsWith("-boundary") && !p.id.startsWith("esat-boundary-") && !p.id.endsWith("-rev20261025"));
+  .filter(p=>!p.id.endsWith("-boundary") && !p.id.startsWith("esat-boundary-") && !/-(?:rev|cal)\d{8}$/.test(p.id));
 
 describe("mock papers", () => {
   it("ESAT has ten general papers, three specification-completion modules and two mathematics intensification papers", () => {

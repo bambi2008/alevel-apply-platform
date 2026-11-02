@@ -1,4 +1,5 @@
 "use client";
+import { useUiCopy } from "@/components/use-ui-copy";
 
 import { useEffect, useState } from "react";
 import { Save } from "lucide-react";
@@ -28,6 +29,7 @@ type Coach = {
 };
 
 export default function StatementsPage() {
+  const ui = useUiCopy();
   const t = useTranslations("statements");
   const tc = useTranslations("common");
   const [content, setContent] = useState<UcasPsContent>(emptyUcasPs.content);
@@ -57,52 +59,52 @@ export default function StatementsPage() {
   const getCoach = async (key: keyof UcasPsContent) => {
     const text = content[key];
     if (!text.trim()) {
-      setFb((f) => ({ ...f, [key]: { error: "请先写点内容，AI 教练才能点评这一题。" } }));
+      setFb((f) => ({ ...f, [key]: { error: ui("请先写点内容，AI 教练才能点评这一题。") } }));
       return;
     }
     setFb((f) => ({ ...f, [key]: { loading: true } }));
     try {
       const res = await fetch("/api/ps-coach", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-qiaoshen-locale": document.documentElement.lang },
         body: JSON.stringify({ question: key, text }),
       });
       if (!res.ok) {
         const e = await res.json().catch(() => ({}));
-        throw new Error(e.error || "点评失败");
+        throw new Error(e.error || ui("点评失败"));
       }
       const data = (await res.json()) as Coach;
       setFb((f) => ({ ...f, [key]: { data } }));
     } catch (e) {
-      setFb((f) => ({ ...f, [key]: { error: e instanceof Error ? e.message : "点评失败" } }));
+      setFb((f) => ({ ...f, [key]: { error: e instanceof Error ? e.message : ui("点评失败") } }));
     }
   };
 
   const getOverall = async () => {
     if (!content.q1.trim() && !content.q2.trim() && !content.q3.trim()) {
-      setOverall({ error: "请先写点内容再做整体点评。" });
+      setOverall({ error: ui("请先写点内容再做整体点评。") });
       return;
     }
     setOverall({ loading: true });
     try {
       const res = await fetch("/api/ps-coach", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-qiaoshen-locale": document.documentElement.lang },
         body: JSON.stringify({ mode: "overall", q1: content.q1, q2: content.q2, q3: content.q3 }),
       });
       if (!res.ok) {
         const e = await res.json().catch(() => ({}));
-        throw new Error(e.error || "点评失败");
+        throw new Error(e.error || ui("点评失败"));
       }
       const data = (await res.json()) as Coach;
       setOverall({ data });
     } catch (e) {
-      setOverall({ error: e instanceof Error ? e.message : "点评失败" });
+      setOverall({ error: e instanceof Error ? e.message : ui("点评失败") });
     }
   };
 
   if (!loaded) return <CorePageShell>
-    <CorePageHeader step="4 / 4" title="文书工作台" description="从真实经历整理素材、搭建结构与修改草稿。不代写，不编造经历。" />
+    <CorePageHeader step="5 / 5" title={ui("文书工作台")} description={ui("从真实经历整理素材、搭建结构与修改草稿。不代写，不编造经历。")} />
     <p className="py-8 text-sm text-[var(--ink-soft)]" role="status">{tc("loading")}</p>
   </CorePageShell>;
 
@@ -112,64 +114,55 @@ export default function StatementsPage() {
   return (
     <CorePageShell>
       <CorePageHeader
-        step="4 / 4"
-        title="文书工作台"
-        description="从真实经历中整理素材、搭建结构、完成草稿，再进行诊断与修改。平台提供方法和反馈，不代写申请文书。"
-        meta={`${total} / ${UCAS_TOTAL_LIMIT} 字符`}
+        step="5 / 5"
+        title={ui("文书工作台")}
+        description={ui("从真实经历中整理素材、搭建结构、完成草稿，再进行诊断与修改。平台提供方法和反馈，不代写申请文书。")}
+        meta={ui("{0} / {1} 字符", total, UCAS_TOTAL_LIMIT)}
       />
 
-      <nav aria-label="文书写作流程" className="grid grid-cols-2 divide-x divide-y divide-[var(--border)] border-b border-[var(--border)] sm:grid-cols-4 sm:divide-y-0">
+      <nav aria-label={ui("文书写作流程")} className="grid grid-cols-2 divide-x divide-y divide-[var(--border)] border-b border-[var(--border)] sm:grid-cols-4 sm:divide-y-0">
         <Link href="/background/my-projects" className="py-4 pr-4 hover:text-[var(--indigo)] sm:px-4 sm:first:pl-0">
-          <span className="text-sm font-medium text-[var(--ink)]">1. 素材库</span>
-          <span className="mt-0.5 block text-xs text-[var(--ink-faint)]">整理真实经历</span>
+          <span className="text-sm font-medium text-[var(--ink)]">{ui("1. 素材库")}</span>
+          <span className="mt-0.5 block text-xs text-[var(--ink-faint)]">{ui("整理真实经历")}</span>
         </Link>
         <a href="#statement-structure" className="px-4 py-4 hover:text-[var(--indigo)]">
-          <span className="text-sm font-medium text-[var(--ink)]">2. 结构规划</span>
-          <span className="mt-0.5 block text-xs text-[var(--ink-faint)]">对应申请问题</span>
+          <span className="text-sm font-medium text-[var(--ink)]">{ui("2. 结构规划")}</span>
+          <span className="mt-0.5 block text-xs text-[var(--ink-faint)]">{ui("对应申请问题")}</span>
         </a>
         <a href="#statement-draft" className="px-4 py-4 hover:text-[var(--indigo)]">
-          <span className="text-sm font-medium text-[var(--ink)]">3. 完成草稿</span>
-          <span className="mt-0.5 block text-xs text-[var(--ink-faint)]">保留自己的表达</span>
+          <span className="text-sm font-medium text-[var(--ink)]">{ui("3. 完成草稿")}</span>
+          <span className="mt-0.5 block text-xs text-[var(--ink-faint)]">{ui("保留自己的表达")}</span>
         </a>
         <a href="#statement-review" className="px-4 py-4 hover:text-[var(--indigo)] sm:pr-0">
-          <span className="text-sm font-medium text-[var(--ink)]">4. 点评保存</span>
-          <span className="mt-0.5 block text-xs text-[var(--ink-faint)]">修改并保存最新版</span>
+          <span className="text-sm font-medium text-[var(--ink)]">{ui("4. 点评保存")}</span>
+          <span className="mt-0.5 block text-xs text-[var(--ink-faint)]">{ui("修改并保存最新版")}</span>
         </a>
       </nav>
 
       {/* 英国 / 香港 切换 */}
       <div id="statement-structure" className="scroll-mt-24">
-      <CoreTabBar label="文书申请地区">
+      <CoreTabBar label={ui("文书申请地区")}>
         <button
           type="button"
           onClick={() => setRegion("uk")}
           className={coreTabClass(region === "uk")}
-        >
-          英国 UCAS（三问）
-        </button>
+        >{ui("英国 UCAS（三问）")}</button>
         <button
           type="button"
           onClick={() => setRegion("hk")}
           className={coreTabClass(region === "hk")}
-        >
-          香港（单篇）
-        </button>
+        >{ui("香港（单篇）")}</button>
       </CoreTabBar>
       </div>
 
       {/* 参考资源（学生自学，不代写） */}
-      <div className="mt-5 border-l-2 border-[var(--indigo)] pl-4 text-sm leading-6 text-[var(--ink-soft)]">
-        想看各专业优秀文书长什么样？可参考{" "}
+      <div className="mt-5 border-l-2 border-[var(--indigo)] pl-4 text-sm leading-6 text-[var(--ink-soft)]">{ui("想看各专业优秀文书长什么样？可参考")}{" "}
         <a
           href="https://firstclasseducation.org.uk/guides/category/Personal+Statement"
           target="_blank"
           rel="noopener noreferrer"
           className="text-indigo-600 hover:underline font-medium"
-        >
-          First Class Education 各专业 PS 指南
-        </a>
-        （含工程 / CS / 经济 / 数学 / 生物 / 物理等，附最新牛剑录取数据）。仅供学习参考——请务必用自己的话原创，切勿照搬（UCAS 有相似度检测）。
-      </div>
+        >{ui("First Class Education 各专业 PS 指南")}</a>{ui("（含工程 / CS / 经济 / 数学 / 生物 / 物理等，附最新牛剑录取数据）。仅供学习参考——请务必用自己的话原创，切勿照搬（UCAS 有相似度检测）。")}</div>
 
       {region === "hk" && <HkEssayEditor />}
 
@@ -199,9 +192,10 @@ export default function StatementsPage() {
           const f = fb[key];
           return (
             <div key={key}>
-              <label className="font-medium">{q.title}</label>
+              <label htmlFor={`statement-${key}`} className="font-medium">{q.title}</label>
               <p className="text-sm text-neutral-500 mt-0.5">{q.hint}</p>
               <textarea
+                id={`statement-${key}`}
                 className="mt-2 w-full min-h-40 rounded-lg border border-neutral-300 px-3 py-2 text-sm leading-relaxed focus:outline-none focus:ring-2 focus:ring-blue-200"
                 value={val}
                 onChange={(e) => setContent((c) => ({ ...c, [key]: e.target.value }))}
@@ -222,9 +216,9 @@ export default function StatementsPage() {
                   disabled={f?.loading}
                   className="text-sm px-3 py-1.5 rounded-lg border border-indigo-200 text-indigo-700 bg-white hover:bg-indigo-50 disabled:opacity-60"
                 >
-                  {f?.loading ? "点评中…" : "🎓 让 AI 教练点评这一题"}
+                  {f?.loading ? ui("点评中…") : ui("🎓 让 AI 教练点评这一题")}
                 </button>
-                <span className="ml-2 text-xs text-neutral-400">不代写，只给诊断、建议与追问</span>
+                <span className="ml-2 text-xs text-neutral-400">{ui("不代写，只给诊断、建议与追问")}</span>
 
                 {f?.error && (
                   <p className="mt-2 text-sm text-amber-700 bg-amber-50 rounded-lg px-3 py-2">{f.error}</p>
@@ -233,13 +227,11 @@ export default function StatementsPage() {
                 {f?.data && (
                   <div className="mt-2 space-y-3 rounded-xl border border-indigo-100 bg-indigo-50/40 p-4">
                     {f.data.summary && <p className="text-sm font-medium text-neutral-800">{f.data.summary}</p>}
-                    <FbList title="✅ 写得好" items={f.data.strengths} color="text-green-700" />
-                    <FbList title="⚠️ 具体问题" items={f.data.issues} color="text-amber-700" />
-                    <FbList title="💡 改进方向" items={f.data.suggestions} color="text-indigo-700" />
-                    <FbList title="🤔 深入追问" items={f.data.questions} color="text-violet-700" />
-                    <p className="text-[11px] text-neutral-400 pt-1 border-t border-indigo-100">
-                      这些是教练建议。文书必须是你本人的真实想法与文字（UCAS 有相似度检测）。
-                    </p>
+                    <FbList title={ui("✅ 写得好")} items={f.data.strengths} color="text-green-700" />
+                    <FbList title={ui("⚠️ 具体问题")} items={f.data.issues} color="text-amber-700" />
+                    <FbList title={ui("💡 改进方向")} items={f.data.suggestions} color="text-indigo-700" />
+                    <FbList title={ui("🤔 深入追问")} items={f.data.questions} color="text-violet-700" />
+                    <p className="text-[11px] text-neutral-400 pt-1 border-t border-indigo-100">{ui("这些是教练建议。文书必须是你本人的真实想法与文字（UCAS 有相似度检测）。")}</p>
                   </div>
                 )}
               </div>
@@ -255,8 +247,8 @@ export default function StatementsPage() {
       <section id="statement-review" className="mt-8 scroll-mt-24 rounded-lg border border-indigo-200 bg-indigo-50/30 p-5">
         <div className="flex items-center justify-between gap-3">
           <div>
-            <h2 className="font-semibold text-neutral-800">📋 整体点评</h2>
-            <p className="text-sm text-neutral-500 mt-0.5">把三题当一个整体通读：查重复、篇幅分配、整体连贯（招生官正是这样读的）。</p>
+            <h2 className="font-semibold text-neutral-800">{ui("📋 整体点评")}</h2>
+            <p className="text-sm text-neutral-500 mt-0.5">{ui("把三题当一个整体通读：查重复、篇幅分配、整体连贯（招生官正是这样读的）。")}</p>
           </div>
           <button
             type="button"
@@ -264,7 +256,7 @@ export default function StatementsPage() {
             disabled={overall.loading}
             className="shrink-0 text-sm px-4 py-2 rounded-lg bg-indigo-600 text-white font-medium hover:bg-indigo-700 disabled:opacity-60"
           >
-            {overall.loading ? "点评中…" : "通读三题·整体点评"}
+            {overall.loading ? ui("点评中…") : ui("通读三题·整体点评")}
           </button>
         </div>
 
@@ -275,13 +267,11 @@ export default function StatementsPage() {
         {overall.data && (
           <div className="mt-3 space-y-3 rounded-xl border border-indigo-100 bg-white p-4">
             {overall.data.summary && <p className="text-sm font-medium text-neutral-800">{overall.data.summary}</p>}
-            <FbList title="✅ 整体优点" items={overall.data.strengths} color="text-green-700" />
-            <FbList title="⚠️ 整体问题（重复 / 篇幅 / 连贯）" items={overall.data.issues} color="text-amber-700" />
-            <FbList title="💡 改进方向" items={overall.data.suggestions} color="text-indigo-700" />
-            <FbList title="🤔 深入追问" items={overall.data.questions} color="text-violet-700" />
-            <p className="text-[11px] text-neutral-400 pt-1 border-t border-indigo-100">
-              这些是教练建议。文书必须是你本人的真实想法与文字（UCAS 有相似度检测）。
-            </p>
+            <FbList title={ui("✅ 整体优点")} items={overall.data.strengths} color="text-green-700" />
+            <FbList title={ui("⚠️ 整体问题（重复 / 篇幅 / 连贯）")} items={overall.data.issues} color="text-amber-700" />
+            <FbList title={ui("💡 改进方向")} items={overall.data.suggestions} color="text-indigo-700" />
+            <FbList title={ui("🤔 深入追问")} items={overall.data.questions} color="text-violet-700" />
+            <p className="text-[11px] text-neutral-400 pt-1 border-t border-indigo-100">{ui("这些是教练建议。文书必须是你本人的真实想法与文字（UCAS 有相似度检测）。")}</p>
           </div>
         )}
       </section>

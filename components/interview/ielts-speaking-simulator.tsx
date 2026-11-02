@@ -6,8 +6,11 @@ import {
   IELTS_SPEAKING_PAPERS,
   type SpeakingPart,
   type SpeakingPrompt,
+  type SpeakingPaper,
 } from "@/lib/english/speaking-papers";
 import { clearRemoteProgress, loadLearningRecords, saveLearningRecord, saveRemoteProgress } from "@/lib/learning/client";
+import { useLocale } from "next-intl";
+import { uiCopy } from "@/lib/ui-copy";
 
 type Phase = "intro" | "answer" | "prep" | "result";
 
@@ -24,6 +27,12 @@ interface SpeakingAttempt {
 }
 
 const STORAGE_KEY = "alevel:ielts-speaking-attempts:v1";
+
+// Event-only record creation; never invoked during component rendering.
+function createSpeakingAttempt(paper: SpeakingPaper, answers: SpeakingAnswer[]): SpeakingAttempt {
+  const now = new Date();
+  return { id: `ielts-speaking-${now.getTime()}`, completedAt: now.toISOString(), paperId: paper.id, paperTitle: paper.title, answers };
+}
 
 const PART_META = {
   1: { title: "Part 1 · Introduction and interview", note: "4–5 分钟。自然、直接地回答并补充一个具体细节。" },
@@ -45,6 +54,8 @@ function wordCount(text: string): number {
 }
 
 export function IeltsSpeakingSimulator() {
+  const locale = useLocale();
+  const t = (source: string, ...values: Array<string | number>) => uiCopy(locale, source, ...values);
   const [paperId, setPaperId] = useState(IELTS_SPEAKING_PAPERS[0].id);
   const [phase, setPhase] = useState<Phase>("intro");
   const [index, setIndex] = useState(0);
@@ -127,13 +138,7 @@ export function IeltsSpeakingSimulator() {
     setInput("");
 
     if (index === prompts.length - 1) {
-      const attempt: SpeakingAttempt = {
-        id: `ielts-speaking-${Date.now()}`,
-        completedAt: new Date().toISOString(),
-        paperId: paper.id,
-        paperTitle: paper.title,
-        answers: nextAnswers,
-      };
+      const attempt = createSpeakingAttempt(paper, nextAnswers);
       const nextAttempts = [attempt, ...attempts].slice(0, 5);
       setAttempts(nextAttempts);
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(nextAttempts));
@@ -172,13 +177,13 @@ export function IeltsSpeakingSimulator() {
       ]);
       const response = await fetch("/api/interview-mock", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-qiaoshen-locale": document.documentElement.lang },
         body: JSON.stringify({ mode: "feedback", subject: "IELTS Speaking", history }),
       });
       const data = await response.json();
-      setFeedback(response.ok ? data.feedback : data.error || "暂时无法生成反馈。");
+      setFeedback(response.ok ? data.feedback : data.error || t("暂时无法生成反馈。"));
     } catch {
-      setFeedback("网络连接失败，作答记录已保存在本机。");
+      setFeedback(t("网络连接失败，作答记录已保存在本机。"));
     } finally {
       setFeedbackLoading(false);
     }
@@ -187,13 +192,12 @@ export function IeltsSpeakingSimulator() {
   if (phase === "intro") {
     return (
       <div className="border border-[var(--border)] bg-white p-5 sm:p-6">
-        <h3 className="text-lg font-bold text-[var(--ink)]">IELTS Speaking 固定全真流程</h3>
+        <h3 className="text-lg font-bold text-[var(--ink)]">{t("IELTS Speaking 固定练习流程")}</h3>
         <p className="mt-2 text-sm leading-relaxed text-[var(--ink-soft)]">
-          按真实 Part 1–3 顺序完成。当前平台要求打字作答，因此只能评价内容展开、连贯、词汇和语法；
-          发音必须通过真人教师或录音复盘另行检查。
+          {t("按 Part 1–3 顺序完成。当前平台要求打字作答，因此只能评价内容展开、连贯、词汇和语法；发音必须通过真人教师或录音复盘另行检查。")}
         </p>
         <div className="mt-5">
-          <p className="text-xs font-semibold uppercase text-[var(--ink-faint)]">选择题组</p>
+          <p className="text-xs font-semibold uppercase text-[var(--ink-faint)]">{t("选择题组")}</p>
           <div className="mt-2 grid gap-2 sm:grid-cols-3">
             {IELTS_SPEAKING_PAPERS.map((item) => {
               const selected = item.id === paperId;
@@ -210,9 +214,9 @@ export function IeltsSpeakingSimulator() {
                       : "border-[var(--border)] bg-white hover:bg-[var(--surface)]"
                   }`}
                 >
-                  <strong className="block text-sm text-[var(--ink)]">{item.title}</strong>
-                  <span className="mt-1 block text-xs text-[var(--ink-soft)]">{item.focus}</span>
-                  <span className="mt-1 block text-[11px] text-[var(--ink-faint)]">已完成 {completed} 次</span>
+                  <strong className="block text-sm text-[var(--ink)]">{t(item.title)}</strong>
+                  <span className="mt-1 block text-xs text-[var(--ink-soft)]">{t(item.focus)}</span>
+                  <span className="mt-1 block text-[11px] text-[var(--ink-faint)]">{t("已完成 {0} 次", completed)}</span>
                 </button>
               );
             })}
@@ -222,23 +226,23 @@ export function IeltsSpeakingSimulator() {
           {[1, 2, 3].map((value) => (
             <div key={value} className="bg-white p-4">
               <strong className="text-sm text-[var(--ink)]">{PART_META[value as SpeakingPart].title}</strong>
-              <p className="mt-1 text-xs leading-relaxed text-[var(--ink-soft)]">{PART_META[value as SpeakingPart].note}</p>
+              <p className="mt-1 text-xs leading-relaxed text-[var(--ink-soft)]">{t(PART_META[value as SpeakingPart].note)}</p>
             </div>
           ))}
         </div>
         <button type="button" onClick={begin} className="btn btn-primary mt-5">
-          开始{paper.title}
+          {t("开始 {0}", t(paper.title))}
           <ArrowRight className="size-4" />
         </button>
         {attempts.length > 0 && (
           <div className="mt-5 border-t border-[var(--border)] pt-4">
-            <p className="text-xs font-semibold uppercase text-[var(--ink-faint)]">最近完成</p>
+            <p className="text-xs font-semibold uppercase text-[var(--ink-faint)]">{t("最近完成")}</p>
             <div className="mt-2 divide-y divide-[var(--border)]">
               {attempts.slice(0, 3).map((attempt) => (
                 <div key={attempt.id} className="flex items-center justify-between gap-3 py-2 text-xs">
-                  <span className="font-medium text-[var(--ink)]">{attempt.paperTitle ?? "早期训练流程"}</span>
+                  <span className="font-medium text-[var(--ink)]">{t(IELTS_SPEAKING_PAPERS.find(item => item.id === attempt.paperId)?.title ?? "早期训练流程")}</span>
                   <span className="text-[var(--ink-faint)]">
-                    {new Date(attempt.completedAt).toLocaleDateString("zh-CN")} · {attempt.answers.filter((answer) => answer.answer).length}/9
+                    {new Date(attempt.completedAt).toLocaleDateString(locale === "en" ? "en-GB" : "zh-CN")} · {attempt.answers.filter((answer) => answer.answer).length}/9
                   </span>
                 </div>
               ))}
@@ -256,23 +260,23 @@ export function IeltsSpeakingSimulator() {
         <section className="border-l-4 border-[var(--success)] bg-[var(--success-bg)] p-5">
           <div className="flex items-center gap-2">
             <CheckCircle2 className="size-5 text-[var(--success)]" />
-            <h3 className="font-bold text-[var(--ink)]">全真流程已完成</h3>
+            <h3 className="font-bold text-[var(--ink)]">{t("练习流程已完成")}</h3>
           </div>
           <div className="mt-4 grid grid-cols-3 gap-3 text-center">
-            <div><strong className="block text-xl">{answered}/9</strong><span className="text-xs text-[var(--ink-soft)]">已作答</span></div>
-            <div><strong className="block text-xl">{totalWords}</strong><span className="text-xs text-[var(--ink-soft)]">总词数</span></div>
-            <div><strong className="block text-xl">3/3</strong><span className="text-xs text-[var(--ink-soft)]">完成 Parts</span></div>
+            <div><strong className="block text-xl">{answered}/9</strong><span className="text-xs text-[var(--ink-soft)]">{t("已作答")}</span></div>
+            <div><strong className="block text-xl">{totalWords}</strong><span className="text-xs text-[var(--ink-soft)]">{t("总词数")}</span></div>
+            <div><strong className="block text-xl">3/3</strong><span className="text-xs text-[var(--ink-soft)]">{t("完成 Parts")}</span></div>
           </div>
         </section>
 
         <section className="border-y border-[var(--border)] py-5">
-          <h3 className="font-bold text-[var(--ink)]">形成性反馈</h3>
+          <h3 className="font-bold text-[var(--ink)]">{t("形成性反馈")}</h3>
           <p className="mt-1 text-sm text-[var(--ink-soft)]">
-            AI 只根据打字内容评估四项官方标准中的前三项，不生成官方 Band，也不评价发音。
+            {t("AI 只根据打字内容提供连贯、词汇和语法反馈，不生成官方 Band，也不评价发音。")}
           </p>
           {!feedback ? (
             <button type="button" onClick={requestFeedback} disabled={feedbackLoading} className="btn btn-primary mt-4">
-              {feedbackLoading ? "正在分析…" : "生成整场复盘"}
+              {feedbackLoading ? t("正在分析…") : t("生成整场复盘")}
             </button>
           ) : (
             <div className="mt-4 whitespace-pre-wrap bg-[var(--surface)] p-4 text-sm leading-relaxed text-[var(--ink)]">{feedback}</div>
@@ -281,7 +285,7 @@ export function IeltsSpeakingSimulator() {
 
         <button type="button" onClick={() => setPhase("intro")} className="btn btn-secondary">
           <RotateCcw className="size-4" />
-          选择下一套
+          {t("选择下一套")}
         </button>
       </div>
     );
@@ -293,7 +297,7 @@ export function IeltsSpeakingSimulator() {
         <div>
           <p className="text-xs font-semibold uppercase text-[var(--indigo)]">IELTS Speaking · Part {part}</p>
           <p className="mt-1 text-sm text-[var(--ink-soft)]">
-            {phase === "prep" ? "准备时间" : `本部分第 ${partQuestionNumber} / ${partQuestionCount} 题`}
+            {phase === "prep" ? t("准备时间") : t("本部分第 {0} / {1} 题", partQuestionNumber, partQuestionCount)}
           </p>
         </div>
         <div className={`flex items-center gap-2 text-lg font-bold ${secondsLeft === 0 ? "text-[var(--danger)]" : "text-[var(--ink)]"}`}>
@@ -307,28 +311,30 @@ export function IeltsSpeakingSimulator() {
         {phase === "prep" ? (
           <div className="mt-5">
             <textarea
+              aria-label={t("准备笔记")}
               value={input}
               onChange={(event) => setInput(event.target.value)}
               className="input min-h-32 w-full resize-y"
-              placeholder="写下关键词，不要写完整答案。准备结束后这些笔记会保留。"
+              placeholder={t("写下关键词，不要写完整答案。准备结束后这些笔记会保留。")}
             />
             <button type="button" onClick={() => { setPhase("answer"); setSecondsLeft(current.seconds); }} className="btn btn-primary mt-3">
-              提前结束准备
+              {t("提前结束准备")}
             </button>
           </div>
         ) : (
           <div className="mt-5">
             <textarea
+              aria-label={t("作答内容")}
               autoFocus
               value={input}
               onChange={(event) => setInput(event.target.value)}
               className="input min-h-40 w-full resize-y"
-              placeholder="按口语方式自然打字作答，不要写成正式作文。"
+              placeholder={t("按口语方式自然打字作答，不要写成正式作文。")}
             />
             <div className="mt-3 flex flex-wrap items-center justify-between gap-3">
-              <span className="text-xs text-[var(--ink-faint)]">当前 {wordCount(input)} 词</span>
+              <span className="text-xs text-[var(--ink-faint)]">{t("当前 {0} 词", wordCount(input))}</span>
               <button type="button" onClick={moveNext} className="btn btn-primary">
-                {index === prompts.length - 1 ? "完成整场" : "提交并继续"}
+                {index === prompts.length - 1 ? t("完成整场") : t("提交并继续")}
                 <ArrowRight className="size-4" />
               </button>
             </div>

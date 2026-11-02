@@ -7,9 +7,12 @@ function requiredElement<T extends HTMLElement>(selector: string): T {
   return element
 }
 
+export function startWaterlightScene(): () => void {
+const events = new AbortController()
+const listen = <K extends keyof GlobalEventHandlersEventMap>(target: EventTarget, type: K, handler: (event: GlobalEventHandlersEventMap[K]) => void, options: AddEventListenerOptions = {}) => target.addEventListener(type, handler as EventListener, { ...options, signal: events.signal })
 const stage = requiredElement<HTMLDivElement>('#water-stage')
-const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'high-performance' })
-renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.65))
+const renderer = new THREE.WebGLRenderer({ antialias: true, powerPreference: 'low-power' })
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25))
 renderer.setSize(window.innerWidth, window.innerHeight)
 renderer.outputColorSpace = THREE.SRGBColorSpace
 stage.appendChild(renderer.domElement)
@@ -23,7 +26,7 @@ camera.position.set(0, 1.28, 6.2)
 const cameraLook = new THREE.Vector3(0, -4.9, -12)
 camera.lookAt(cameraLook)
 
-const bedTexture = new THREE.TextureLoader().load('/waterlight/riverbed-albedo-v3.png')
+const bedTexture = new THREE.TextureLoader().load('/waterlight/riverbed-albedo-v4.webp')
 bedTexture.colorSpace = THREE.SRGBColorSpace
 bedTexture.wrapS = THREE.MirroredRepeatWrapping
 bedTexture.wrapT = THREE.MirroredRepeatWrapping
@@ -50,8 +53,8 @@ function createNoiseTexture(size = 128) {
 
 const noiseTexture = createNoiseTexture()
 
-const SIMULATION_SIZE = 512
-const SIMULATION_SUBSTEPS = 4
+const SIMULATION_SIZE = 256
+const SIMULATION_SUBSTEPS = 2
 const INTERACTION_PATCH_SIZE = 7.4
 const WATER_WIDTH = 120
 const WATER_LENGTH = 160
@@ -1110,17 +1113,17 @@ function setPointer(clientX: number, clientY: number) {
   }
 }
 
-window.addEventListener('pointermove', (event) => setPointer(event.clientX, event.clientY))
-window.addEventListener('pointerdown', (event) => {
+listen(window, 'pointermove', (event) => setPointer(event.clientX, event.clientY))
+listen(window, 'pointerdown', (event) => {
   pointerIsDown = true
   setPointer(event.clientX, event.clientY)
   cursor.classList.add('is-active')
 })
-window.addEventListener('pointerup', () => {
+listen(window, 'pointerup', () => {
   pointerIsDown = false
   cursor.classList.remove('is-active')
 })
-window.addEventListener('pointerleave', () => {
+listen(window, 'pointerleave', () => {
   pointerIsDown = false
   hasPointerSample = false
   lastPointerSpeed = 0
@@ -1162,14 +1165,14 @@ function selectMood(index: number) {
   centerCopy.classList.add('is-changing')
 }
 
-moodButtons.forEach((button) => button.addEventListener('click', () => selectMood(Number(button.dataset.mood))))
-moodWheel.addEventListener('wheel', (event) => {
+moodButtons.forEach((button) => listen(button, 'click', () => selectMood(Number(button.dataset.mood))))
+listen(moodWheel, 'wheel', (event) => {
   event.preventDefault()
   const direction = Math.sign(event.deltaY || event.deltaX)
   if (direction === 0) return
   selectMood((moodTarget + direction + moods.length) % moods.length)
 }, { passive: false })
-moodWheel.addEventListener('keydown', (event) => {
+listen(moodWheel, 'keydown', (event) => {
   if (!['ArrowUp', 'ArrowDown', 'Home', 'End'].includes(event.key)) return
   event.preventDefault()
   if (event.key === 'Home') selectMood(0)
@@ -1177,14 +1180,13 @@ moodWheel.addEventListener('keydown', (event) => {
   else selectMood((moodTarget + (event.key === 'ArrowDown' ? 1 : -1) + moods.length) % moods.length)
 })
 updateMoodWheel(0)
-window.addEventListener('keydown', (event) => {
+listen(window, 'keydown', (event) => {
   const index = Number(event.key) - 1
   if (index >= 0 && index < moods.length) selectMood(index)
 })
 
 const soundtrack = requiredElement<HTMLAudioElement>('#soundtrack')
 const soundToggle = requiredElement<HTMLButtonElement>('.sound-toggle')
-const soundLabel = requiredElement<HTMLSpanElement>('.sound-label')
 soundtrack.volume = .58
 
 let audioContext: AudioContext | null = null
@@ -1266,23 +1268,9 @@ function updateReactiveAudio(deltaSeconds: number) {
   waterPanner.pan.setTargetAtTime(waterAudioPan, now, .075)
 }
 
-soundToggle.addEventListener('click', async () => {
-  if (soundtrack.paused) {
-    try {
-      const context = setupReactiveAudio()
-      if (context?.state === 'suspended') await context.resume()
-      await soundtrack.play()
-      soundToggle.setAttribute('aria-pressed', 'true')
-      soundLabel.textContent = '关闭水声'
-    } catch {
-      soundLabel.textContent = '请再点一次'
-    }
-  } else {
-    soundtrack.pause()
-    soundToggle.setAttribute('aria-pressed', 'false')
-    soundLabel.textContent = '开启水声'
-  }
-})
+window.addEventListener('waterlight-audio-start', () => { void setupReactiveAudio()?.resume() }, { signal: events.signal })
+// On touch devices the first audio gesture can precede the lazy scene import.
+if (!soundtrack.paused) void setupReactiveAudio()?.resume()
 
 function resize() {
   camera.aspect = window.innerWidth / window.innerHeight
@@ -1290,9 +1278,26 @@ function resize() {
   renderer.setSize(window.innerWidth, window.innerHeight)
   uniforms.uResolution.value.set(window.innerWidth, window.innerHeight)
 }
-window.addEventListener('resize', resize)
+listen(window, 'resize', resize)
 
-function render() {
+let frameId = 0
+let lastFrame = 0
+let active = !document.hidden
+const motionPreference = window.matchMedia('(prefers-reduced-motion: reduce)')
+const pause = () => { cancelAnimationFrame(frameId); frameId = 0; previousFrameTime = 0 }
+const resume = () => { pause(); if (active && !motionPreference.matches) frameId = requestAnimationFrame(render) }
+document.addEventListener('visibilitychange', () => { active = !document.hidden; resume() }, { signal: events.signal })
+window.addEventListener('message', event => {
+  if (event.source !== window.parent || event.origin !== window.location.origin || event.data?.type !== 'qiaoshen-waterlight-visibility') return
+  active = event.data.visible === true && !document.hidden
+  resume()
+}, { signal: events.signal })
+motionPreference.addEventListener('change', resume, { signal: events.signal })
+if (window.parent !== window) window.parent.postMessage({ type: 'qiaoshen-waterlight-ready' }, window.location.origin)
+function render(now = 0) {
+  if (!active || motionPreference.matches) { pause(); return }
+  if (now - lastFrame < 1000 / 30) { frameId = requestAnimationFrame(render); return }
+  lastFrame = now
   const elapsed = clock.getElapsedTime()
   const deltaSeconds = previousFrameTime === 0 ? 1 / 60 : Math.min(elapsed - previousFrameTime, 1 / 20)
   previousFrameTime = elapsed
@@ -1333,7 +1338,27 @@ function render() {
   const orbit = 5 + Math.sin(elapsed * 1.8) * 2
   cursor.style.transform = `translate3d(${pointerX - 17}px, ${pointerY - 17}px, 0) rotate(${orbit}deg)`
   renderer.render(scene, camera)
-  requestAnimationFrame(render)
+  stage.dataset.frameCount = String(Number(stage.dataset.frameCount ?? 0) + 1)
+  frameId = requestAnimationFrame(render)
 }
 
-render()
+resume()
+return () => {
+  pause()
+  events.abort()
+  soundtrack.pause()
+  void audioContext?.close()
+  const geometries = new Set<THREE.BufferGeometry>()
+  const materials = new Set<THREE.Material>()
+  for (const root of [scene, simulationScene]) root.traverse(object => {
+    const mesh = object as THREE.Mesh
+    if (mesh.geometry) geometries.add(mesh.geometry)
+    if (mesh.material) (Array.isArray(mesh.material) ? mesh.material : [mesh.material]).forEach(material => materials.add(material))
+  })
+  geometries.forEach(geometry => geometry.dispose())
+  materials.forEach(material => material.dispose())
+  simulationRead.dispose(); simulationWrite.dispose(); bedTexture.dispose(); noiseTexture.dispose()
+  renderer.dispose(); renderer.forceContextLoss(); renderer.domElement.remove()
+  delete stage.dataset.waterlightReady
+}
+}

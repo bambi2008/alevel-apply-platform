@@ -3,6 +3,8 @@ import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { getTestById } from "@/lib/tests";
 import { loadStudentReadiness } from "@/lib/study/readiness-server";
+import { aiResponseLanguage } from "@/lib/ai-response-language";
+import { readinessPresentation } from "@/lib/tests/study-presentation";
 
 export async function GET(req: NextRequest) {
   const testId = req.nextUrl.searchParams.get("testId") ?? "";
@@ -20,5 +22,5 @@ export async function GET(req: NextRequest) {
   if (!student) return NextResponse.json({ authenticated: true, readiness: null });
 
   const readiness = await loadStudentReadiness(student.id, testId);
-  return NextResponse.json({ authenticated: true, readiness });
+  return NextResponse.json({ authenticated: true, readiness: readinessPresentation(readiness, aiResponseLanguage(req), test.topics) });
 }

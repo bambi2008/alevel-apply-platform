@@ -1,6 +1,8 @@
 import { describe, it, expect } from "vitest";
 import { getKnowledgeByTopicId } from "@/lib/tests/knowledge";
 import { getTestById } from "@/lib/tests";
+import { ADMISSIONS_TESTS } from "@/lib/tests";
+import { renderToString } from "katex";
 
 // 有题库的考试，其每个知识点都应有「学习讲解」内容（否则 learn 页 404）。
 const TESTS_WITH_BANK = ["mat", "step", "esat", "tmua"];
@@ -19,6 +21,24 @@ describe("knowledge coverage", () => {
 });
 
 describe("knowledge entry integrity", () => {
+  it("renders every current formula without hidden control characters", () => {
+    let formulas = 0;
+    function check(value: unknown, path: string) {
+      if (typeof value === "string") {
+        expect(value, path).not.toMatch(/[\u0000-\u0008\u000b\u000c\u000e-\u001f]/);
+        for (const formula of value.matchAll(/\$\$([\s\S]*?)\$\$|\$([^$]+)\$/g)) {
+          formulas++;
+          expect(() => renderToString(formula[1] ?? formula[2], { throwOnError: true, strict: "ignore" }), path).not.toThrow();
+        }
+      } else if (Array.isArray(value)) value.forEach((v,i) => check(v, `${path}.${i}`));
+      else if (value && typeof value === "object") for (const [key,v] of Object.entries(value)) check(v, `${path}.${key}`);
+    }
+    for (const exam of ADMISSIONS_TESTS) for (const topic of exam.topics) check(getKnowledgeByTopicId(topic.id), topic.id);
+    expect(formulas).toBeGreaterThan(900);
+    const algebra = getKnowledgeByTopicId("caie9709-algebra")!;
+    expect(algebra.concepts[0].body).toContain("\\frac");
+    expect(getKnowledgeByTopicId("caie9709-vectors")!.concepts[0].body).toContain("\\lambda");
+  });
   for (const testId of TESTS_WITH_BANK) {
     it(`${testId}: entries are well-formed`, () => {
       const test = getTestById(testId)!;

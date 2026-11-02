@@ -48,6 +48,7 @@ export default async function AdminLayout({
           >
             题库审计
           </Link>
+          <Link href="/admin/content-priorities" className="min-h-11 rounded-md px-3 py-3 text-neutral-700 hover:bg-neutral-100">补题优先级</Link>
           <Link
             href="/admin/question-studio"
             className="px-3 py-1.5 rounded-md text-neutral-600 hover:bg-neutral-100"

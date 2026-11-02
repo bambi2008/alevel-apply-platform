@@ -8,7 +8,8 @@ const configPath = prismaRequire.resolve("@prisma/config");
 const configRequire = createRequire(configPath);
 
 describe("patched Prisma config dependency compatibility", () => {
-  it("loads a real Prisma config without changing schema or migrations", async () => {
+  // Cold Jiti/Prisma compilation is an integration check, not a 5s unit benchmark.
+  it("loads a real Prisma config without changing schema or migrations", { timeout: 60_000 }, async () => {
     const { loadConfigFromFile } = configRequire(configPath);
     const loaded = await loadConfigFromFile({
       configFile: path.resolve("tests/fixtures/prisma-security.config.ts"),

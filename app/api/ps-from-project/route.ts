@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { aiSystemForRequest, aiMessageForRequest } from "@/lib/ai-response-language";
 import OpenAI from "openai";
 import { captureError } from "@/lib/monitoring";
 import { requireAiAccess } from "@/lib/security/ai-route";
@@ -56,7 +57,7 @@ export async function POST(req: NextRequest) {
   const access = await requireAiAccess(req, "ps-from-project", 30);
   if (!access.ok) return access.response;
   if (!process.env.DEEPSEEK_API_KEY) {
-    return NextResponse.json({ error: "AI 暂未配置（缺少 DEEPSEEK_API_KEY）" }, { status: 503 });
+    return NextResponse.json({ error: aiMessageForRequest("AI 暂未配置（缺少 DEEPSEEK_API_KEY）", req) }, { status: 503 });
   }
   const client = new OpenAI({
     apiKey: process.env.DEEPSEEK_API_KEY,
@@ -69,10 +70,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
   }
   if (!body.question || !["q2", "q3"].includes(body.question)) {
-    return NextResponse.json({ error: "请选择要写入的题目（Q2 或 Q3）" }, { status: 400 });
+    return NextResponse.json({ error: aiMessageForRequest("请选择要写入的题目（Q2 或 Q3）", req) }, { status: 400 });
   }
   if (!body.projectTitle) {
-    return NextResponse.json({ error: "缺少课题信息" }, { status: 400 });
+    return NextResponse.json({ error: aiMessageForRequest("缺少课题信息", req) }, { status: 400 });
   }
 
   try {
@@ -81,7 +82,7 @@ export async function POST(req: NextRequest) {
       max_tokens: 1500,
       response_format: { type: "json_object" },
       messages: [
-        { role: "system", content: SYSTEM_PROMPT },
+        { role: "system", content: aiSystemForRequest(SYSTEM_PROMPT, req) },
         { role: "user", content: buildPrompt(body) },
       ],
     });
@@ -96,6 +97,6 @@ export async function POST(req: NextRequest) {
     });
   } catch (err) {
     captureError(err, { route: "ps-from-project" });
-    return NextResponse.json({ error: "生成失败，请稍后重试。" }, { status: 500 });
+    return NextResponse.json({ error: aiMessageForRequest("生成失败，请稍后重试。", req) }, { status: 500 });
   }
 }

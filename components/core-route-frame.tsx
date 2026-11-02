@@ -2,13 +2,10 @@
 
 import type { ReactNode } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
+import { useLocale } from "next-intl";
+import { CORE_AREAS, coreAreaForPath, coreAreaTitle } from "@/lib/core-navigation";
 
-const CORE_ROUTES = [
-  { key: "tests", href: "/tests", index: "01", title: "考试训练" },
-  { key: "background", href: "/background", index: "02", title: "竞赛与专业实践" },
-  { key: "interview", href: "/interview", index: "03", title: "面试训练" },
-  { key: "statements", href: "/statements", index: "04", title: "文书" },
-] as const;
+const CORE_ROUTES = CORE_AREAS;
 
 const ROUTE_LABELS: Record<string, string> = {
   learn: "知识学习",
@@ -43,11 +40,13 @@ function routeLabel(segments: string[]) {
 }
 
 export function CoreRouteFrame({ children }: { children: ReactNode }) {
+  const locale = useLocale();
+  const en = locale === "en";
   const pathname = usePathname();
   const segments = pathname.split("/").filter(Boolean);
   if (segments[0] === "zh-CN" || segments[0] === "en") segments.shift();
 
-  const current = CORE_ROUTES.find((route) => route.key === segments[0]);
+  const current = coreAreaForPath(pathname);
   if (!current) return children;
 
   const nested = segments.length > 1;
@@ -55,18 +54,18 @@ export function CoreRouteFrame({ children }: { children: ReactNode }) {
   return (
     <div className="core-route-frame min-h-[calc(100svh-4rem)]">
       {nested ? (
-        <aside className="core-route-masthead border-b border-black/15" aria-label="当前核心路径">
+        <aside className="core-route-masthead border-b border-black/15" aria-label={en ? "Current area" : "当前路径"}>
           <div className="mx-auto max-w-6xl px-5 py-5 sm:px-8 sm:py-6">
             <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
               <Link href={current.href} className="group inline-flex w-fit items-baseline gap-3 text-[#101817]">
-                <span className="text-xs font-semibold tracking-[0.2em] text-black/40">CORE {current.index} / 04</span>
-                <span className="text-lg font-semibold tracking-[-0.025em] group-hover:underline group-hover:underline-offset-4">{current.title}</span>
+                <span className="text-xs font-semibold tracking-[0.2em] text-black/60">AREA {current.index} / 05</span>
+                <span className="text-lg font-semibold tracking-[-0.025em] group-hover:underline group-hover:underline-offset-4">{coreAreaTitle(current, locale)}</span>
               </Link>
-              <p className="text-xs font-semibold tracking-[0.16em] text-black/35">
-                LEVEL {String(segments.length).padStart(2, "0")} · {routeLabel(segments)}
+              <p className="text-xs font-semibold tracking-[0.16em] text-black/60">
+                LEVEL {String(segments.length).padStart(2, "0")} · {en ? (segments.at(-1) ?? "Workspace").replaceAll("-", " ") : routeLabel(segments)}
               </p>
             </div>
-            <nav className="mt-4 grid grid-cols-2 border-y border-black/15 sm:grid-cols-4" aria-label="四个核心路径">
+            <nav className="mt-4 grid grid-cols-2 border-y border-black/15 sm:grid-cols-5" aria-label={en ? "Five areas" : "五个入口"}>
               {CORE_ROUTES.map((route) => {
                 const active = route.key === current.key;
                 return (
@@ -75,11 +74,11 @@ export function CoreRouteFrame({ children }: { children: ReactNode }) {
                     href={route.href}
                     aria-current={active ? "page" : undefined}
                     className={`flex min-h-11 items-center gap-2 border-black/15 px-3 py-2 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-[#101817] sm:border-r sm:last:border-r-0 ${
-                      active ? "bg-[#101817] text-white" : "text-black/45 hover:bg-white/55 hover:text-black"
+                      active ? "bg-[#101817] text-white" : "text-black/60 hover:bg-white/55 hover:text-black"
                     }`}
                   >
-                    <span className={active ? "text-white/55" : "text-black/30"}>{route.index}</span>
-                    <span className="truncate">{route.title}</span>
+                    <span className={active ? "text-white/55" : "text-black/60"}>{route.index}</span>
+                    <span>{coreAreaTitle(route, locale)}</span>
                   </Link>
                 );
               })}

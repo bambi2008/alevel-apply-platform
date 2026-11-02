@@ -1,9 +1,9 @@
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { Prisma } from "@prisma/client";
 
 const m = vi.hoisted(() => ({
   findUser: vi.fn(), createUser: vi.fn(), execute: vi.fn(), event: vi.fn(),
-  invite: vi.fn(), participant: vi.fn(), transaction: vi.fn(),
+  invite: vi.fn(), claim: vi.fn(), participant: vi.fn(), transaction: vi.fn(),
   signIn: vi.fn(), hash: vi.fn(), limit: vi.fn(),
 }));
 vi.mock("@/lib/db", () => ({ db: { $transaction: m.transaction } }));
@@ -15,6 +15,7 @@ vi.mock("@/lib/security/rate-limit", () => ({
   consumePersistentRateLimit: m.limit,
 }));
 import { registerAction } from "../../lib/auth/actions";
+afterEach(() => vi.unstubAllEnvs());
 
 function form(overrides: Record<string, string | null | undefined> = {}) {
   const data = new FormData();
@@ -29,6 +30,7 @@ function form(overrides: Record<string, string | null | undefined> = {}) {
 
 beforeEach(() => {
   vi.resetAllMocks();
+  vi.stubEnv("REGISTRATION_MODE", "open");
   m.findUser.mockResolvedValue(null);
   m.createUser.mockResolvedValue({ id: "new-student", profile: { id: "new-profile" } });
   m.hash.mockResolvedValue("hashed-password");
@@ -37,9 +39,37 @@ beforeEach(() => {
     user: { findUnique: m.findUser, create: m.createUser },
     $executeRaw: m.execute, learningEvent: { create: m.event },
     // Must remain unused: self-registration must not spend old cohort places.
-    betaInvite: { findUnique: m.invite, count: m.invite, updateMany: m.invite },
+    betaInvite: { findUnique: m.invite, count: m.invite, updateMany: m.claim },
     betaParticipant: { create: m.participant },
   }));
+});
+
+describe("temporary invite registration", () => {
+  const available = { id: "invite-1", email: "selfsignup@example.test", cohort: "beta-2026-1", status: "AVAILABLE", expiresAt: null, usedByUserId: null };
+  beforeEach(() => { vi.stubEnv("REGISTRATION_MODE", "invite"); m.invite.mockResolvedValue(available); m.claim.mockResolvedValue({ count: 1 }); });
+  it("rejects a missing invitation before password hashing or database work", async () => {
+    expect(await registerAction({}, form())).toEqual({ error: "INVITE_INVALID" });
+    expect(m.hash).not.toHaveBeenCalled();
+    expect(m.transaction).not.toHaveBeenCalled();
+  });
+  it.each([null, { ...available, email: "other@example.test" }, { ...available, expiresAt: new Date(0) }, { ...available, status: "REVOKED" }, { ...available, status: "USED" }])("rejects unavailable or mismatched invitations", async (invite) => {
+    m.invite.mockResolvedValue(invite);
+    expect(await registerAction({}, form({ inviteCode: "QS-TEST-CODE" }))).toEqual({ error: "INVITE_INVALID" });
+    expect(m.createUser).not.toHaveBeenCalled();
+    expect(m.claim).not.toHaveBeenCalled();
+  });
+  it("consumes one valid email-bound invitation without recreating cohort enrollment or a capacity gate", async () => {
+    expect(await registerAction({}, form({ inviteCode: "QS-TEST-CODE" }))).toEqual({});
+    expect(m.claim).toHaveBeenCalledOnce();
+    expect(m.claim.mock.calls[0][0]).toMatchObject({ where: { id: "invite-1", email: "selfsignup@example.test", status: "AVAILABLE", usedByUserId: null }, data: { status: "USED", usedByUserId: "new-student" } });
+    expect(m.participant).not.toHaveBeenCalled();
+  });
+  it("aborts the transaction rather than allowing a double claim", async () => {
+    m.claim.mockResolvedValue({ count: 0 });
+    expect(await registerAction({}, form({ inviteCode: "QS-TEST-CODE" }))).toEqual({ error: "INVITE_INVALID" });
+    expect(m.signIn).not.toHaveBeenCalled();
+    expect(m.event).not.toHaveBeenCalled();
+  });
 });
 
 describe("open email self-registration", () => {

@@ -7,7 +7,7 @@
   /* Notion 风：暖调近黑文字（非纯黑），是 Notion 的招牌 */
   --ink: #37352f;                   /* 主文字/标题 rgb(55,53,47) */
   --ink-soft: rgba(55,53,47,0.65);  /* 次要文字 */
-  --ink-faint: rgba(55,53,47,0.4);  /* 辅助/说明文字 */
+  --ink-faint: #66635c;            /* 辅助文字仍须满足小字号对比度 */
 
   /* 强调色：Notion 蓝 */
   --indigo: #2383e2;       /* 主强调（链接/当前项/主按钮） */
@@ -28,7 +28,7 @@
   /* 语义色：Notion callout 低饱和配色 */
   --success: #448361;
   --success-bg: #edf3ec;
-  --warning: #cb7b29;
+  --warning: #8a4b11;
   --warning-bg: #faebdd;
   --danger: #e03e3e;
   --danger-bg: #fbe4e4;
@@ -222,7 +222,7 @@ body {
   font-weight: 600; font-size: 0.9375rem; line-height: 1;
   padding: 0.6rem 1rem; border-radius: 6px;
   transition: background 0.16s ease, color 0.16s ease, border-color 0.16s ease, box-shadow 0.2s ease, transform 0.12s ease;
-  cursor: pointer; white-space: nowrap; min-height: 2.6rem;
+  cursor: pointer; white-space: nowrap; min-height: 44px;
 }
 .btn:active { transform: translateY(0.5px); }
 .btn-primary { background: var(--indigo); color: #fff; box-shadow: var(--shadow-sm); }
@@ -243,11 +243,13 @@ body {
 /* —— 表单输入：清晰 focus 反馈 —— */
 .input {
   width: 100%; background: #fff; border: 1px solid var(--border); border-radius: 6px;
+  min-height: 44px;
   padding: 0.6rem 0.85rem; font-size: 0.9375rem; color: var(--ink);
   transition: border-color 0.16s ease, box-shadow 0.16s ease;
 }
 .input::placeholder { color: var(--ink-faint); }
 .input:focus { outline: none; border-color: var(--indigo); box-shadow: 0 0 0 3px rgba(35,131,226,0.22); }
+.input:focus-visible { outline: 2px solid var(--indigo); outline-offset: 2px; box-shadow: none; }
 
 /* —— 徽章 / 语义状态标签（全站唯一来源） —— */
 .badge { display: inline-flex; align-items: center; gap: 0.3rem; font-size: 0.75rem; font-weight: 600; padding: 0.2rem 0.6rem; border-radius: 999px; }
@@ -410,6 +412,12 @@ body {
 }
 
 /* Homepage Waterlight hero owns the first viewport; navigation resumes through the four-core section. */
+.auth-registration {
+  --ink-soft: #59625e;
+  --indigo: #101817;
+  --indigo-hover: #273331;
+}
+
 body:has(.core-dashboard-home) > header {
   display: none;
 }
@@ -424,7 +432,7 @@ body:has(.core-dashboard-home) footer {
   --foreground: #101817;
   --ink: #101817;
   --ink-soft: rgba(16, 24, 23, 0.64);
-  --ink-faint: rgba(16, 24, 23, 0.42);
+  --ink-faint: #59625e;
   --indigo: #101817;
   --indigo-hover: #273331;
   --accent-bar: #101817;

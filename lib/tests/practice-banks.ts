@@ -1,35 +1,26 @@
-import { MAT_QUESTIONS } from "./questions/mat";
-import { STEP_QUESTIONS } from "./questions/step";
-import { ESAT_BOUNDARY_QUESTIONS } from "./questions/esat-boundary";
-import { TMUA_QUESTIONS } from "./questions/tmua";
-import { PAT_QUESTIONS } from "./questions/pat";
-import { LNAT_QUESTIONS } from "./questions/lnat";
-import { TARA_QUESTIONS } from "./questions/tara";
-import { BPHO_QUESTIONS } from "./questions/bpho";
-import { BMO_QUESTIONS } from "./questions/bmo";
-import { UCAT_QUESTIONS } from "./questions/ucat";
-import { IELTS_QUESTIONS } from "./questions/ielts";
-import { CSAT_QUESTIONS } from "./questions/csat";
-import { CAIE9709_QUESTIONS } from "./questions/caie9709";
+import practiceBase from "@/data/question-bank/practice-base.json";
 import type { Question } from "./questions/types";
 import { releasedPracticeBank } from "./syllabus-release";
 import { reviewedQuestion, verifyReviewCorrections } from "./review-corrections";
 import { syllabusFingerprint } from "./syllabus-policy";
-import { P3_SYLLABUS_SUPPLEMENTS, ESAT_SYLLABUS_SUPPLEMENTS, BPHO_SYLLABUS_SUPPLEMENTS } from "./questions/syllabus-supplements";
+import { practiceAdditions } from "./practice-updates";
+import { reviseCurrentQuestion, verifyContentCorrections } from "./content-revisions";
+import { calibrateQuestion } from "./difficulty-calibration";
 
-// Source inventory for the boundary review, not a claim that raw content passed.
-export const REVIEWED_PRACTICE_SOURCES:Record<string,Question[]> = {
-  mat:MAT_QUESTIONS,step:STEP_QUESTIONS,esat:[...ESAT_BOUNDARY_QUESTIONS,...ESAT_SYLLABUS_SUPPLEMENTS],
-  tmua:TMUA_QUESTIONS,pat:PAT_QUESTIONS,lnat:LNAT_QUESTIONS,tara:TARA_QUESTIONS,
-  bpho:[...BPHO_QUESTIONS,...BPHO_SYLLABUS_SUPPLEMENTS],bmo:BMO_QUESTIONS,ucat:UCAT_QUESTIONS,ielts:IELTS_QUESTIONS,
-  csat:CSAT_QUESTIONS,caie9709:[...CAIE9709_QUESTIONS,...P3_SYLLABUS_SUPPLEMENTS],
-};
+// Data baseline retains raw archived/released distinctions and approval checks.
+// Fixed mock papers keep their independent immutable registry and legacy sources.
+export const REVIEWED_PRACTICE_SOURCES = practiceBase as unknown as Record<string, Question[]>;
+const ADDITIONS = practiceAdditions(new Set(Object.values(REVIEWED_PRACTICE_SOURCES).flatMap(bank => bank.flatMap(q => [q.id, reviewedQuestion(q).id, reviseCurrentQuestion(reviewedQuestion(q)).id]))));
 
 // Stable references avoid repeated hydration/session restore effects in the client.
 verifyReviewCorrections();
-const RELEASED_PRACTICE_BANKS = new Map(Object.entries(REVIEWED_PRACTICE_SOURCES)
-  .map(([testId,bank])=>[testId,releasedPracticeBank(testId,bank).map(reviewedQuestion)]));
+verifyContentCorrections();
+const PRE_CALIBRATION_PRACTICE_BANKS = new Map(Object.entries(REVIEWED_PRACTICE_SOURCES)
+  .map(([testId,bank])=>[testId,[...releasedPracticeBank(testId,bank).map(reviewedQuestion).map(reviseCurrentQuestion), ...ADDITIONS.filter(q => q.testId === testId)]]));
+const RELEASED_PRACTICE_BANKS = new Map([...PRE_CALIBRATION_PRACTICE_BANKS].map(([id, bank]) => [id, bank.map(q => calibrateQuestion(q))]));
 const EMPTY:Question[]=[];
+/** Audit-only original release: historical versions remain immutable. */
+export function getPreCalibrationPracticeQuestions(testId:string):Question[] { return PRE_CALIBRATION_PRACTICE_BANKS.get(testId) ?? EMPTY; }
 export function getReleasedPracticeQuestions(testId:string):Question[] {
   return RELEASED_PRACTICE_BANKS.get(testId) ?? EMPTY;
 }

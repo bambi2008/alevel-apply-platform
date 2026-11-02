@@ -1,0 +1,1413 @@
+{
+  "mat-cx-005": {
+    "id": "mat-cx-005",
+    "type": "mcq",
+    "testId": "mat",
+    "topicId": "mat-calc",
+    "difficulty": 3,
+    "marks": 4,
+    "question": "The number of real solutions of $x^2=2^{x}$ is:",
+    "options": [
+      {
+        "key": "A",
+        "text": "$0$"
+      },
+      {
+        "key": "B",
+        "text": "$2$"
+      },
+      {
+        "key": "C",
+        "text": "$3$"
+      },
+      {
+        "key": "D",
+        "text": "$1$"
+      },
+      {
+        "key": "E",
+        "text": "$4$"
+      }
+    ],
+    "answer": "C",
+    "solution": "Let $h(x)=x^2-2^x$. For $x<0$, $h'(x)=2x-2^x\\ln2<0$, so $h$ is decreasing; since $h(-1)=\\tfrac12>0$ and $h(0)=-1<0$, there is exactly one negative root (near $-0.77$). For $x>0$ the equation is equivalent to $\\dfrac{\\ln x}{x}=\\dfrac{\\ln 2}{2}$. The function $\\dfrac{\\ln x}{x}$ increases on $(0,e)$ and decreases on $(e,\\infty)$, so there are at most two positive roots, and $x=2$ and $x=4$ both work. Hence there are $3$ real solutions."
+  },
+  "mat-a-034": {
+    "id": "mat-a-034",
+    "type": "mcq",
+    "testId": "mat",
+    "topicId": "mat-trig",
+    "difficulty": 3,
+    "marks": 4,
+    "question": "Which of the following equals $\\sin 75°$?",
+    "options": [
+      {
+        "key": "A",
+        "text": "$\\dfrac{\\sqrt{6}+\\sqrt{2}}{4}$"
+      },
+      {
+        "key": "B",
+        "text": "$\\dfrac{\\sqrt{6}-\\sqrt{2}}{4}$"
+      },
+      {
+        "key": "C",
+        "text": "$\\dfrac{\\sqrt{3}+1}{4}$"
+      },
+      {
+        "key": "D",
+        "text": "$\\dfrac{\\sqrt{3}-1}{4}$"
+      }
+    ],
+    "answer": "A",
+    "solution": "$\\sin 75°=\\sin(45°+30°)=\\sin45°\\cos30°+\\cos45°\\sin30°=\\dfrac{\\sqrt2}{2}\\cdot\\dfrac{\\sqrt3}{2}+\\dfrac{\\sqrt2}{2}\\cdot\\dfrac12=\\dfrac{\\sqrt6+\\sqrt2}{4}$."
+  },
+  "mat-mk1-17": {
+    "id": "mat-mk1-17",
+    "type": "mcq",
+    "testId": "mat",
+    "topicId": "mat-geo",
+    "difficulty": 2,
+    "marks": 2,
+    "question": "The distance between the points $(1,2)$ and $(4,6)$ is:",
+    "options": [
+      {
+        "key": "A",
+        "text": "$5$"
+      },
+      {
+        "key": "B",
+        "text": "$7$"
+      },
+      {
+        "key": "C",
+        "text": "$\\sqrt{7}$"
+      },
+      {
+        "key": "D",
+        "text": "$\\sqrt{13}$"
+      },
+      {
+        "key": "E",
+        "text": "$25$"
+      }
+    ],
+    "answer": "A",
+    "solution": "$\\sqrt{(4-1)^2+(6-2)^2}=\\sqrt{9+16}=\\sqrt{25}=5$."
+  },
+  "tmua-ex-s03": {
+    "id": "tmua-ex-s03",
+    "type": "mcq",
+    "testId": "tmua",
+    "topicId": "tmua-stats",
+    "difficulty": 3,
+    "marks": 1,
+    "question": "A card is drawn from a standard $52$-card deck. What is the probability it is a king or a heart?",
+    "options": [
+      {
+        "key": "A",
+        "text": "$\\tfrac{4}{13}$"
+      },
+      {
+        "key": "B",
+        "text": "$\\tfrac{17}{52}$"
+      },
+      {
+        "key": "C",
+        "text": "$\\tfrac{1}{4}$"
+      },
+      {
+        "key": "D",
+        "text": "$\\tfrac{5}{13}$"
+      },
+      {
+        "key": "E",
+        "text": "$\\tfrac{15}{52}$"
+      }
+    ],
+    "answer": "A",
+    "solution": "$P(K\\cup\\heartsuit)=P(K)+P(\\heartsuit)-P(K\\cap\\heartsuit)=\\tfrac{4}{52}+\\tfrac{13}{52}-\\tfrac{1}{52}=\\tfrac{16}{52}=\\tfrac{4}{13}$. The king of hearts must be counted only once."
+  },
+  "step-025": {
+    "id": "step-025",
+    "type": "long",
+    "testId": "step",
+    "topicId": "step-mech",
+    "difficulty": 3,
+    "totalMarks": 20,
+    "context": "A particle $P$ of mass $m$ is attached to one end of a light elastic string of natural length $l$ and modulus $\\lambda$. The other end is fixed at a point $O$ on a smooth horizontal surface. The particle moves along a fixed straight line through $O$ and may pass through $O$. The string is taut only when $OP>l$. Let $x=OP-l$ denote the extension when $OP>l$.",
+    "parts": [
+      {
+        "label": "(i)",
+        "marks": 4,
+        "question": "Write down the equation of motion for the particle when the string is taut (extension $x > 0$) and when the string is slack ($x < 0$, where $x$ is measured from the natural length position). Show that when the string is taut the motion is SHM about the point where the string has its natural length.",
+        "solutionOutline": "Let $x$ be the extension of the string. When the string is taut ($x>0$) the tension $T=\\dfrac{\\lambda x}{l}$ acts towards $O$, so $m\\ddot x=-\\dfrac{\\lambda}{l}x$, i.e. $\\ddot x=-\\omega^2x$ with $\\omega^2=\\dfrac{\\lambda}{ml}$: simple harmonic motion centred on the natural-length position $x=0$. When the string is slack there is no horizontal force, so $\\ddot x=0$ and the particle moves with constant velocity."
+      },
+      {
+        "label": "(ii)",
+        "marks": 5,
+        "question": "The particle is held at rest at a point $A$ where the extension is $a$ (so $a > 0$), and released. Find, in terms of $a$, $\\omega = \\sqrt{\\lambda/(ml)}$, the speed of the particle when the string first becomes slack.",
+        "solutionOutline": "With $x(0)=a$ and $\\dot x(0)=0$, $x=a\\cos\\omega t$. The string becomes slack when $x=0$, at $t=\\dfrac{\\pi}{2\\omega}$, and then $|\\dot x|=a\\omega\\sin\\dfrac{\\pi}{2}=a\\omega$."
+      },
+      {
+        "label": "(iii)",
+        "marks": 6,
+        "question": "After the string becomes slack, the particle moves towards $O$ with constant speed $a\\omega$, passes through $O$, and the string becomes taut again when $P$ is at distance $l$ from $O$ on the other side. Describe the subsequent motion and show that the motion is periodic with period $\\dfrac{2\\pi}{\\omega}+\\dfrac{4l}{a\\omega}$.",
+        "solutionOutline": "The string cannot push, so after it becomes slack the particle moves at constant speed $a\\omega$ towards $O$, passes through $O$, and continues until it is at distance $l$ from $O$ on the other side. There the same string becomes taut again (now pulling back towards $O$ from the other side), so the slack stage covers a distance $2l$ and takes $\\dfrac{2l}{a\\omega}$. On the far side the particle performs half an SHM oscillation of amplitude $a$ (time $\\dfrac{\\pi}{\\omega}$), leaving with speed $a\\omega$ back towards $O$. It crosses the slack region again in $\\dfrac{2l}{a\\omega}$, and when the string becomes taut again at the natural-length position on the original side it performs another half oscillation of amplitude $a$ (time $\\dfrac{\\pi}{\\omega}$), returning to $A$ at rest. No energy is lost on the smooth surface, so the motion then repeats. Period $=\\dfrac{2\\pi}{\\omega}+\\dfrac{4l}{a\\omega}$."
+      },
+      {
+        "label": "(iv)",
+        "marks": 5,
+        "question": "Now suppose the particle rests on a rough horizontal surface (coefficient of friction $\\mu$). The particle is projected from the natural-length position with speed $u$ along the string direction. Find the condition on $u$ for the particle to reach a maximum extension $x = d$ and come instantaneously to rest there. Using energy, find $u$ in terms of $d$, $\\mu$, $m$, $g$, $\\lambda$, $l$.",
+        "solutionOutline": "From the natural-length position to maximum extension $d$, friction $\\mu mg$ does work $\\mu mgd$ against the motion and the string stores $\\dfrac{\\lambda d^2}{2l}$. Energy: $\\tfrac12mu^2=\\dfrac{\\lambda d^2}{2l}+\\mu mgd$, so $u=\\sqrt{\\dfrac{\\lambda d^2}{ml}+2\\mu gd}$. (The particle then remains at rest there if and only if $\\dfrac{\\lambda d}{l}\\le\\mu mg$.)"
+      }
+    ],
+    "fullSolution": "(i) Taut ($x>0$): $m\\ddot x=-\\dfrac{\\lambda}{l}x$, so $\\ddot x=-\\omega^2x$ with $\\omega^2=\\dfrac{\\lambda}{ml}$, which is SHM about the natural-length position. Slack: no horizontal force, constant velocity.\n\n(ii) $x=a\\cos\\omega t$; the string becomes slack when $x=0$, i.e. $t=\\dfrac{\\pi}{2\\omega}$, with speed $a\\omega$.\n\n(iii) The particle crosses the slack region from the natural-length position on one side of $O$ to the natural-length position on the other side, a distance $2l$, in time $\\dfrac{2l}{a\\omega}$. Each taut stage (one on each side of $O$) is half an SHM oscillation of amplitude $a$, taking $\\dfrac{\\pi}{\\omega}$. One complete oscillation contains two taut stages and two slack crossings, so the period is $\\dfrac{2\\pi}{\\omega}+\\dfrac{4l}{a\\omega}$.\n\n(iv) $\\tfrac12mu^2=\\dfrac{\\lambda d^2}{2l}+\\mu mgd\\Rightarrow u=\\sqrt{\\dfrac{\\lambda d^2}{ml}+2\\mu gd}$. For the particle to remain at rest at $x=d$ the tension must not exceed limiting friction: $\\dfrac{\\lambda d}{l}\\le\\mu mg$."
+  },
+  "lnat-ex-001": {
+    "id": "lnat-ex-001",
+    "type": "mcq",
+    "testId": "lnat",
+    "topicId": "lnat-analyse",
+    "difficulty": 2,
+    "marks": 1,
+    "question": "**Passage**\n\nSome city councils argue that introducing a congestion charge is the most effective way to cut urban air pollution. When drivers must pay to enter the city centre, many switch to public transport, so the number of cars falls and emissions decline. Since cleaner air reduces respiratory illness, councils conclude that every large city should adopt such a charge without delay.\n\n**Question**\n\nWhich of the following is an assumption on which the argument depends?",
+    "options": [
+      {
+        "key": "A",
+        "text": "Public transport in the city has enough capacity to absorb drivers who stop using cars."
+      },
+      {
+        "key": "B",
+        "text": "Congestion charges raise significant revenue for the council."
+      },
+      {
+        "key": "C",
+        "text": "Respiratory illness is the most common health problem in cities."
+      },
+      {
+        "key": "D",
+        "text": "Drivers dislike paying to enter the city centre."
+      },
+      {
+        "key": "E",
+        "text": "Air pollution is caused entirely by cars."
+      }
+    ],
+    "answer": "A",
+    "solution": "The argument moves from 'drivers must pay' to 'many switch to public transport, so the number of cars falls'. That step only works if public transport has the capacity to absorb the extra passengers; if it could not, drivers would keep using their cars and emissions would not fall. So the capacity of public transport is an assumption on which the argument depends. None of the other statements is required: drivers need only respond to the cost, not dislike it; whether the charge raises revenue has no bearing on whether pollution falls; the argument needs cleaner air to reduce respiratory illness, not respiratory illness to be the most common health problem; and cars need only be a significant source of pollution, not the only one."
+  },
+  "lnat-ex-005": {
+    "id": "lnat-ex-005",
+    "type": "mcq",
+    "testId": "lnat",
+    "topicId": "lnat-read",
+    "difficulty": 2,
+    "marks": 1,
+    "question": "**Passage**\n\nIt is fashionable to dismiss the study of history as impractical. Yet the person who knows no history is at the mercy of whoever tells the most confident story about the past. History does not hand us ready-made answers; rather, it trains us to ask how we know what we claim to know, to weigh evidence, and to notice when a tidy narrative has quietly discarded inconvenient facts. That habit of mind is not a luxury. It is a defence.\n\n**Question**\n\nWhich statement best expresses the author's main point?",
+    "options": [
+      {
+        "key": "A",
+        "text": "History is useless in modern life."
+      },
+      {
+        "key": "B",
+        "text": "History is valuable because it cultivates a critical habit of mind that guards against manipulation."
+      },
+      {
+        "key": "C",
+        "text": "Historians disagree about most events."
+      },
+      {
+        "key": "D",
+        "text": "People today know very little about the past."
+      },
+      {
+        "key": "E",
+        "text": "Confident storytellers are usually correct."
+      }
+    ],
+    "answer": "B",
+    "solution": "The passage argues that the value of history lies in training judgement (it is 'a defence' against confident but selective stories), not in supplying ready-made answers. The claim that history is useless in modern life is the view the author argues against, and the remaining statements are side issues rather than the main point."
+  },
+  "step-003": {
+    "id": "step-003",
+    "type": "long",
+    "testId": "step",
+    "topicId": "step-pure3",
+    "difficulty": 2,
+    "totalMarks": 20,
+    "context": "The curve $C$ is defined parametrically by $x = t - \\sin t$, $y = 1 - \\cos t$ for $t \\in [0,\\, 2\\pi]$.",
+    "parts": [
+      {
+        "label": "(i)",
+        "marks": 3,
+        "question": "Find $\\dfrac{dy}{dx}$ in terms of $t$. At what values of $t$ is the tangent horizontal?",
+        "solutionOutline": "$\\dfrac{dx}{dt}=1-\\cos t$, $\\dfrac{dy}{dt}=\\sin t$, so $\\dfrac{dy}{dx}=\\dfrac{\\sin t}{1-\\cos t}$. The tangent is horizontal when $\\sin t=0$ and $1-\\cos t\\ne0$, i.e. $t=\\pi$ (the point $(\\pi,2)$). At $t=0$ and $t=2\\pi$ both derivatives vanish and the curve has cusps."
+      },
+      {
+        "label": "(ii)",
+        "marks": 5,
+        "question": "Show that the length of arc $C$ is $8$.",
+        "solutionOutline": "Arc length $=\\int_0^{2\\pi}\\sqrt{(1-\\cos t)^2+\\sin^2t}\\,dt=\\int_0^{2\\pi}\\sqrt{2-2\\cos t}\\,dt=\\int_0^{2\\pi}2\\left|\\sin\\tfrac t2\\right|dt$. Since $\\sin\\tfrac t2\\ge0$ on $[0,2\\pi]$, this is $2\\left[-2\\cos\\tfrac t2\\right]_0^{2\\pi}=2(2+2)=8$."
+      },
+      {
+        "label": "(iii)",
+        "marks": 6,
+        "question": "Find the area enclosed between $C$ and the $x$-axis.",
+        "solutionOutline": "Area $=\\int_0^{2\\pi}y\\,\\dfrac{dx}{dt}\\,dt=\\int_0^{2\\pi}(1-\\cos t)^2\\,dt=\\int_0^{2\\pi}\\left(\\tfrac32-2\\cos t+\\tfrac12\\cos2t\\right)dt=3\\pi$."
+      },
+      {
+        "label": "(iv)",
+        "marks": 6,
+        "question": "By substituting $t=2u$, or otherwise, show that $\\displaystyle\\int_0^{2\\pi}\\sin^2\\!\\left(\\frac t2\\right)dt=\\pi$. Hence show that $\\displaystyle\\int_0^{2\\pi}y\\,dt=2\\pi$.",
+        "solutionOutline": "With $t=2u$, $dt=2\\,du$ and the limits become $0$ and $\\pi$: $\\int_0^{2\\pi}\\sin^2\\tfrac t2\\,dt=2\\int_0^{\\pi}\\sin^2u\\,du=2\\int_0^{\\pi}\\tfrac{1-\\cos2u}{2}\\,du=\\pi$. Since $y=1-\\cos t=2\\sin^2\\tfrac t2$, $\\int_0^{2\\pi}y\\,dt=2\\pi$."
+      }
+    ],
+    "fullSolution": "(i) $\\frac{dy}{dx}=\\frac{\\sin t}{1-\\cos t}$. Tangent horizontal when $\\sin t=0$ and $1-\\cos t\\ne 0$: $t=\\pi$. (At $t=0,2\\pi$: both numerator and denominator vanish — cusp point.)\n\n(ii) Arc length $=\\int_0^{2\\pi}\\sqrt{(1-\\cos t)^2+\\sin^2 t}\\,dt=\\int_0^{2\\pi}\\sqrt{2-2\\cos t}\\,dt$. Using $1-\\cos t=2\\sin^2(t/2)$: $=\\int_0^{2\\pi}2|\\sin(t/2)|\\,dt=2\\int_0^{2\\pi}\\sin(t/2)\\,dt$ (since $\\sin(t/2)\\ge 0$ on $[0,2\\pi]$) $=2[-2\\cos(t/2)]_0^{2\\pi}=2(-2\\cos\\pi+2\\cos 0)=2(2+2)=\\mathbf{8}$. ✓\n\n(iii) $A=\\int y\\,dx=\\int_0^{2\\pi}(1-\\cos t)^2\\,dt=\\int_0^{2\\pi}\\left(\\frac{3}{2}-2\\cos t+\\frac{\\cos 2t}{2}\\right)dt=\\left[\\frac{3t}{2}-2\\sin t+\\frac{\\sin 2t}{4}\\right]_0^{2\\pi}=3\\pi$.\n\n(iv) $u=t/2$: $\\int_0^{2\\pi}\\sin^2\\frac{t}{2}\\,dt=2\\int_0^{\\pi}\\sin^2 u\\,du=2\\cdot\\frac{\\pi}{2}=\\pi$. Since $y=1-\\cos t=2\\sin^2\\frac t2$, $\\int_0^{2\\pi}y\\,dt=2\\pi$."
+  },
+  "step-010": {
+    "id": "step-010",
+    "type": "long",
+    "testId": "step",
+    "topicId": "step-mech",
+    "difficulty": 2,
+    "totalMarks": 20,
+    "context": "A particle of mass $m$ is projected vertically upwards from the ground with initial speed $u$. The particle experiences a drag force of magnitude $mkv^2$ where $v$ is its speed and $k > 0$ is a constant.",
+    "parts": [
+      {
+        "label": "(i)",
+        "marks": 5,
+        "question": "Show that while the particle is moving upwards, $v\\dfrac{dv}{dx} = -g - kv^2$, where $x$ is the height above the ground. Hence find the maximum height $H$ reached.",
+        "solutionOutline": "Taking upwards as positive, gravity and drag both act downwards: $m\\dfrac{dv}{dt}=-mg-mkv^2$. Using $\\dfrac{dv}{dt}=v\\dfrac{dv}{dx}$ gives $v\\dfrac{dv}{dx}=-g-kv^2$. Separating and integrating from $v=u$ at $x=0$ to $v=0$ at $x=H$: $H=\\int_0^u\\dfrac{v\\,dv}{g+kv^2}=\\left[\\dfrac{\\ln(g+kv^2)}{2k}\\right]_0^u=\\dfrac1{2k}\\ln\\!\\left(1+\\dfrac{ku^2}{g}\\right)$."
+      },
+      {
+        "label": "(ii)",
+        "marks": 7,
+        "question": "Write the equation of motion for the particle as it falls from height $H$. Find the speed $V$ when it returns to the ground.",
+        "solutionOutline": "Take downwards as positive and let $y$ be the distance fallen from the highest point. Gravity acts downwards and drag upwards: $v\\dfrac{dv}{dy}=g-kv^2$. Integrating from $v=0$ at $y=0$ to $v=V$ at $y=H$: $\\left[-\\dfrac{\\ln(g-kv^2)}{2k}\\right]_0^V=H$, so $\\dfrac1{2k}\\ln\\dfrac{g}{g-kV^2}=\\dfrac1{2k}\\ln\\dfrac{g+ku^2}{g}$. Hence $g-kV^2=\\dfrac{g^2}{g+ku^2}$, giving $V^2=\\dfrac{gu^2}{g+ku^2}$ and $V=u\\sqrt{\\dfrac{g}{g+ku^2}}$."
+      },
+      {
+        "label": "(iii)",
+        "marks": 4,
+        "question": "Show that $V < u$ and explain this physically.",
+        "solutionOutline": "V=u√(g/(g+ku²))<u since g<g+ku² (k>0). Physically, energy is lost to drag on both upward and downward journeys, so the particle returns with less kinetic energy (and hence less speed) than it started with."
+      },
+      {
+        "label": "(iv)",
+        "marks": 4,
+        "question": "Find the limit of $V$ as $k\\to0$, and describe the behaviour of $V$ as $k\\to\\infty$.",
+        "solutionOutline": "As $k\\to0$, $V\\to u$: with no drag the particle returns with its launch speed. As $k\\to\\infty$, $V=u\\sqrt{\\dfrac{g}{g+ku^2}}\\approx\\sqrt{\\dfrac gk}\\to0$; for large $k$ the return speed is approximately the terminal speed $\\sqrt{g/k}$."
+      }
+    ],
+    "fullSolution": "(i) Newton's law (upward $+$ve): $m\\frac{dv}{dt}=-mg-mkv^2$. Using $\\frac{dv}{dt}=v\\frac{dv}{dx}$: $v\\frac{dv}{dx}=-(g+kv^2)$. Separate: $\\int_u^0\\frac{v\\,dv}{g+kv^2}=-H\\Rightarrow H=\\int_0^u\\frac{v\\,dv}{g+kv^2}=\\left[\\frac{\\ln(g+kv^2)}{2k}\\right]_0^u=\\dfrac{1}{2k}\\ln\\!\\left(1+\\frac{ku^2}{g}\\right)$.\n\n(ii) Falling (downward $+$ve): $v\\frac{dv}{dx}=g-kv^2$. Integrating from $x=0$ (height $H$, $v=0$) to $x=H$ (ground, $v=V$): $\\left[-\\frac{\\ln(g-kv^2)}{2k}\\right]_0^V=H$, so $\\frac{1}{2k}\\ln\\frac{g}{g-kV^2}=\\frac{1}{2k}\\ln\\!\\left(\\frac{g+ku^2}{g}\\right)$. Thus $g-kV^2=\\frac{g^2}{g+ku^2}\\Rightarrow V^2=\\frac{gu^2}{g+ku^2}$.\n\n(iii) $V=u\\sqrt{\\frac{g}{g+ku^2}}<u$ since $g+ku^2>g$. **Physically**: drag dissipates kinetic energy throughout both legs of the journey, so return speed is less than launch speed.\n\n(iv) $k\\to 0$: $V\\to u$ (no drag). $k\\to\\infty$: $V\\approx\\sqrt{g/k}\\to 0$, i.e. the return speed approaches the (vanishing) terminal speed."
+  },
+  "step-011": {
+    "id": "step-011",
+    "type": "long",
+    "testId": "step",
+    "topicId": "step-pure3",
+    "difficulty": 2,
+    "totalMarks": 20,
+    "context": "The ellipse $E$ has equation $\\dfrac{x^2}{a^2} + \\dfrac{y^2}{b^2} = 1$ with $a > b > 0$.",
+    "parts": [
+      {
+        "label": "(i)",
+        "marks": 4,
+        "question": "Show that the tangent at the point $P = (a\\cos\\theta,\\, b\\sin\\theta)$ on $E$ has equation $\\dfrac{x\\cos\\theta}{a} + \\dfrac{y\\sin\\theta}{b} = 1$.",
+        "solutionOutline": "Differentiating implicitly, $\\dfrac{2x}{a^2}+\\dfrac{2yy'}{b^2}=0$, so $y'=-\\dfrac{b^2x}{a^2y}$. At $P$, $y'=-\\dfrac{b\\cos\\theta}{a\\sin\\theta}$. The tangent is $y-b\\sin\\theta=-\\dfrac{b\\cos\\theta}{a\\sin\\theta}(x-a\\cos\\theta)$; multiplying by $\\dfrac{\\sin\\theta}{b}$ and rearranging gives $\\dfrac{x\\cos\\theta}{a}+\\dfrac{y\\sin\\theta}{b}=\\cos^2\\theta+\\sin^2\\theta=1$."
+      },
+      {
+        "label": "(ii)",
+        "marks": 5,
+        "question": "This tangent meets the $x$-axis at $A$ and the $y$-axis at $B$. Find the coordinates of $A$ and $B$ and show that $P$ divides $AB$ in the ratio $\\sin^2\\theta : \\cos^2\\theta$.",
+        "solutionOutline": "Setting $y=0$ gives $A=\\left(\\dfrac{a}{\\cos\\theta},0\\right)$; setting $x=0$ gives $B=\\left(0,\\dfrac{b}{\\sin\\theta}\\right)$. Check that $P=\\cos^2\\theta\\,A+\\sin^2\\theta\\,B$: the $x$-coordinate is $\\cos^2\\theta\\cdot\\dfrac{a}{\\cos\\theta}=a\\cos\\theta$ and the $y$-coordinate is $\\sin^2\\theta\\cdot\\dfrac{b}{\\sin\\theta}=b\\sin\\theta$. So $\\overrightarrow{AP}=\\sin^2\\theta\\,\\overrightarrow{AB}$ and $\\overrightarrow{PB}=\\cos^2\\theta\\,\\overrightarrow{AB}$, hence $AP:PB=\\sin^2\\theta:\\cos^2\\theta$."
+      },
+      {
+        "label": "(iii)",
+        "marks": 5,
+        "question": "Find the area of triangle $OAB$ and the minimum area as $\\theta$ varies.",
+        "solutionOutline": "Area $=\\tfrac12\\cdot\\dfrac{a}{\\cos\\theta}\\cdot\\dfrac{b}{\\sin\\theta}=\\dfrac{ab}{\\sin2\\theta}$ (for $0<\\theta<\\tfrac\\pi2$). This is least when $\\sin2\\theta=1$, i.e. $\\theta=\\tfrac\\pi4$, giving minimum area $ab$."
+      },
+      {
+        "label": "(iv)",
+        "marks": 6,
+        "question": "Find the area enclosed by the ellipse $E$.",
+        "solutionOutline": "By symmetry, area $=4\\int_0^a b\\sqrt{1-\\dfrac{x^2}{a^2}}\\,dx$. With $x=a\\cos t$, $dx=-a\\sin t\\,dt$, this becomes $4ab\\int_0^{\\pi/2}\\sin^2t\\,dt=4ab\\cdot\\dfrac\\pi4=\\pi ab$."
+      }
+    ],
+    "fullSolution": "(i) Implicit differentiation: $y'=-\\frac{b^2x}{a^2y}$. At $P$: gradient $=-\\frac{b\\cos\\theta}{a\\sin\\theta}$. Equation: $y-b\\sin\\theta=-\\frac{b\\cos\\theta}{a\\sin\\theta}(x-a\\cos\\theta)$. Rearranging: $\\frac{x\\cos\\theta}{a}+\\frac{y\\sin\\theta}{b}=\\cos^2\\theta+\\sin^2\\theta=1$. ✓\n\n(ii) $A=\\left(\\frac{a}{\\cos\\theta},0\\right)$, $B=\\left(0,\\frac{b}{\\sin\\theta}\\right)$. $P=A\\cdot\\cos^2\\theta+B\\cdot\\sin^2\\theta$ (check: $x$-coord $=\\frac{a}{\\cos\\theta}\\cdot\\cos^2\\theta=a\\cos\\theta$ ✓). So $P$ divides $AB$ in ratio $\\sin^2\\theta:\\cos^2\\theta$ from $A$.\n\n(iii) Area $=\\frac{1}{2}\\cdot\\frac{a}{\\cos\\theta}\\cdot\\frac{b}{\\sin\\theta}=\\frac{ab}{\\sin 2\\theta}\\ge ab$ (minimum when $\\sin 2\\theta=1$, i.e. $\\theta=\\frac{\\pi}{4}$). Min area $=ab$.\n\n(iv) Let $x=a\\cos t$: Area $=4ab\\int_0^{\\pi/2}\\sin^2 t\\,dt=4ab\\cdot\\frac{\\pi}{4}=\\pi ab$."
+  },
+  "step-017": {
+    "id": "step-017",
+    "type": "long",
+    "testId": "step",
+    "topicId": "step-pure1",
+    "difficulty": 3,
+    "totalMarks": 20,
+    "context": "For positive reals $a, b, c$ with $a + b + c = 1$, we investigate several classical inequalities.",
+    "parts": [
+      {
+        "label": "(i)",
+        "marks": 4,
+        "question": "Use the AM-GM inequality to show that $a^2 + b^2 + c^2 \\ge \\dfrac{1}{3}$.",
+        "solutionOutline": "By AM-GM on each pair, $a^2+b^2\\ge2ab$, $b^2+c^2\\ge2bc$, $c^2+a^2\\ge2ca$. Adding gives $a^2+b^2+c^2\\ge ab+bc+ca$. Then $1=(a+b+c)^2=a^2+b^2+c^2+2(ab+bc+ca)\\le3(a^2+b^2+c^2)$, so $a^2+b^2+c^2\\ge\\dfrac13$."
+      },
+      {
+        "label": "(ii)",
+        "marks": 5,
+        "question": "Show that $ab + bc + ca \\le \\dfrac{1}{3}$, and deduce that $a^3 + b^3 + c^3 \\ge \\dfrac{1}{9}$.",
+        "solutionOutline": "Since $(a+b+c)^2=1$, $ab+bc+ca=\\frac{1-(a^2+b^2+c^2)}2\\le\\frac13$. Also Cauchy-Schwarz gives $(a^2+b^2+c^2)^2\\le(a^3+b^3+c^3)(a+b+c)$, so $a^3+b^3+c^3\\ge(a^2+b^2+c^2)^2\\ge\\frac19$."
+      },
+      {
+        "label": "(iii)",
+        "marks": 5,
+        "question": "Show that $\\dfrac{a}{1-a} + \\dfrac{b}{1-b} + \\dfrac{c}{1-c} \\ge \\dfrac{3}{2}$.",
+        "solutionOutline": "Since $a+b+c=1$, $1-a=b+c$ and so on, so the sum is $S=\\dfrac{a}{b+c}+\\dfrac{b}{c+a}+\\dfrac{c}{a+b}$. Adding $1$ to each term gives $S+3=\\dfrac{1}{b+c}+\\dfrac{1}{c+a}+\\dfrac{1}{a+b}$. By Cauchy-Schwarz, $\\big((b+c)+(c+a)+(a+b)\\big)\\left(\\dfrac1{b+c}+\\dfrac1{c+a}+\\dfrac1{a+b}\\right)\\ge9$, and the first bracket equals $2$, so $S+3\\ge\\dfrac92$ and $S\\ge\\dfrac32$."
+      },
+      {
+        "label": "(iv)",
+        "marks": 6,
+        "question": "Show that $a(1-a)^2 + b(1-b)^2 + c(1-c)^2 \\le \\dfrac{4}{9}$, with equality if and only if $a = b = c = \\dfrac{1}{3}$.",
+        "solutionOutline": "$f'(t)=(1-t)^2-2t(1-t)=(1-t)(1-3t)$, so on $[0,1]$ the only interior stationary point is $t=\\tfrac13$, where $f=\\tfrac{4}{27}$; also $f(0)=f(1)=0$. Hence $f(t)\\le\\tfrac4{27}$ on $[0,1]$, with equality only at $t=\\tfrac13$. Applying this to $a,b,c\\in(0,1)$ and adding gives $f(a)+f(b)+f(c)\\le\\tfrac{4}{9}$, with equality if and only if $a=b=c=\\tfrac13$ (which is consistent with $a+b+c=1$).",
+        "hint": "Find the maximum value of $f(t)=t(1-t)^2$ for $0\\le t\\le1$."
+      }
+    ],
+    "fullSolution": "(i) $(a-b)^2+(b-c)^2+(c-a)^2\\ge 0\\Rightarrow 2(a^2+b^2+c^2)\\ge 2(ab+bc+ca)$. Since $(a+b+c)^2=a^2+b^2+c^2+2(ab+bc+ca)=1$, we get $3(a^2+b^2+c^2)\\ge(a+b+c)^2=1$, so $a^2+b^2+c^2\\ge\\frac{1}{3}$.\n\n(ii) From $(a+b+c)^2=1$: $ab+bc+ca=\\frac{1-(a^2+b^2+c^2)}{2}\\le\\frac{1-1/3}{2}=\\frac{1}{3}$. For the cubic: by Cauchy-Schwarz $(a^2+b^2+c^2)^2\\le(a^3+b^3+c^3)(a+b+c)=a^3+b^3+c^3$. Hence $a^3+b^3+c^3\\ge(a^2+b^2+c^2)^2\\ge\\left(\\frac{1}{3}\\right)^2=\\frac{1}{9}$.\n\n(iii) Since $1-a=b+c$ etc., we need Nesbitt's inequality: $\\frac{a}{b+c}+\\frac{b}{a+c}+\\frac{c}{a+b}\\ge\\frac{3}{2}$. By Cauchy-Schwarz on $(\\frac{1}{b+c}+\\frac{1}{a+c}+\\frac{1}{a+b})\\cdot 2(a+b+c)\\ge 9$, so $\\sum\\frac{1}{b+c}\\ge\\frac{9}{2}$. Subtracting 3: $\\sum\\frac{a}{b+c}\\ge\\frac{3}{2}$. ✓\n\n(iv) $f(t)=t(1-t)^2$ has $f'(t)=(1-t)(1-3t)$, so its maximum on $[0,1]$ is $f(\\tfrac13)=\\tfrac4{27}$. Each of $f(a),f(b),f(c)$ is at most $\\tfrac4{27}$, so the sum is at most $\\tfrac49$, with equality iff $a=b=c=\\tfrac13$. (Note: $f''(t)=6t-4$, so $f$ is not concave on all of $[0,1]$; Jensen's inequality cannot be applied directly.)"
+  },
+  "mat-b-006": {
+    "id": "mat-b-006",
+    "type": "long",
+    "testId": "mat",
+    "topicId": "mat-logic",
+    "difficulty": 3,
+    "totalMarks": 15,
+    "context": "Let $n$ be a positive integer.",
+    "parts": [
+      {
+        "label": "(i)",
+        "marks": 3,
+        "question": "Prove that if $n^2$ is even, then $n$ is even.",
+        "solutionOutline": "Proof by contrapositive: suppose n is odd, so n=2k+1. Then n²=4k²+4k+1=2(2k²+2k)+1, which is odd. Hence if n² is even, n must be even."
+      },
+      {
+        "label": "(ii)",
+        "marks": 4,
+        "question": "Using part (i), prove that $\\sqrt{2}$ is irrational.",
+        "solutionOutline": "Suppose √2=p/q in lowest terms (gcd(p,q)=1). Then 2=p²/q² so p²=2q², so p² is even, so p is even (by part i). Write p=2k. Then 4k²=2q² so q²=2k² so q² is even so q is even. But then gcd(p,q)≥2, contradicting lowest terms. ✓"
+      },
+      {
+        "label": "(iii)",
+        "marks": 4,
+        "question": "Is $\\sqrt{4}$ rational? Identify where your proof in part (ii) breaks down if applied to show $\\sqrt{4}$ is irrational.",
+        "solutionOutline": "√4=2 is rational. The proof breaks down because: if p²=4q² then p=2q (taking positive square root), so p/q=2, which is rational. The step 'p² is even implies p is even' still holds, but when we write p=2k we get 4k²=4q² so k²=q² so k=q (taking positive root), so p=2k=2q and p/q=2. No contradiction."
+      },
+      {
+        "label": "(iv)",
+        "marks": 4,
+        "question": "Prove that $\\log_{10} 2$ is irrational.",
+        "solutionOutline": "Since $1<2<10$, $0<\\log_{10}2<1$. Suppose $\\log_{10}2=\\dfrac pq$ with $p,q$ positive integers; then $p<q$. Then $10^{p/q}=2$, so $10^p=2^q$, i.e. $2^p5^p=2^q$, so $5^p=2^{q-p}$. The left side is odd and the right side is even because $q-p\\ge1$, a contradiction. Hence $\\log_{10}2$ is irrational."
+      }
+    ],
+    "fullSolution": "(i) **Contrapositive**: Suppose $n$ is odd, so $n=2k+1$. Then $n^2=4k^2+4k+1=2(2k^2+2k)+1$ is odd. Hence $n^2$ even $\\Rightarrow$ $n$ even. ✓\n\n(ii) Suppose $\\sqrt{2}=\\frac{p}{q}$ in lowest terms. Then $p^2=2q^2$, so $p^2$ is even, so by (i) $p$ is even. Write $p=2k$: $4k^2=2q^2\\Rightarrow q^2=2k^2$, so $q^2$ is even, so $q$ is even. But then $2\\mid\\gcd(p,q)$, contradicting $\\gcd(p,q)=1$. Hence $\\sqrt{2}$ is irrational.\n\n(iii) $\\sqrt{4}=2\\in\\mathbb{Q}$. The proof breaks down at the final step: writing $p=2k$ gives $4k^2=4q^2\\Rightarrow k=q$, so $p=2q$ and $\\frac{p}{q}=2$. No contradiction arises.\n\n(iv) Since $0<\\log_{10}2<1$, suppose $\\log_{10}2=\\frac{p}{q}$ with positive integers $p<q$. Then $10^p=2^q$, so $2^p\\cdot5^p=2^q$ and $5^p=2^{q-p}$. The left side is odd, the right side is even ($q-p\\ge1$): contradiction. So $\\log_{10}2\\notin\\mathbb{Q}$."
+  },
+  "mat-b-010": {
+    "id": "mat-b-010",
+    "type": "long",
+    "testId": "mat",
+    "topicId": "mat-log",
+    "difficulty": 3,
+    "totalMarks": 15,
+    "context": "This question concerns logarithms and their algebraic properties.",
+    "parts": [
+      {
+        "label": "(i)",
+        "marks": 3,
+        "question": "Solve the simultaneous equations $\\log_2 x + \\log_2 y = 5$ and $\\log_2 x - \\log_2 y = 1$.",
+        "solutionOutline": "Adding: 2log₂x=6 ⟹ log₂x=3 ⟹ x=8. Subtracting: 2log₂y=4 ⟹ log₂y=2 ⟹ y=4."
+      },
+      {
+        "label": "(ii)",
+        "marks": 4,
+        "question": "The function $f(x) = \\log_3(x^2-4x+3)$ is defined for certain values of $x$. Find the domain of $f$ and the set of values $f$ can take.",
+        "solutionOutline": "Domain: $x^2-4x+3=(x-1)(x-3)>0$, so $x<1$ or $x>3$. On the domain the argument $g(x)=x^2-4x+3$ takes every positive value: $g(x)\\to0^+$ as $x\\to1^-$ or $x\\to3^+$, and $g(x)\\to\\infty$ as $x\\to\\pm\\infty$, and $g$ is continuous on each interval. Hence $f(x)=\\log_3 g(x)$ takes every real value; the range is $\\mathbb{R}$.",
+        "hint": "Complete the square for $x^2-4x+3$."
+      },
+      {
+        "label": "(iii)",
+        "marks": 4,
+        "question": "Prove that $\\log_a b \\cdot \\log_b c = \\log_a c$ for positive $a,b,c$ with $a,b\\ne 1$. Use this to simplify $\\log_4 9 \\cdot \\log_9 16$.",
+        "solutionOutline": "log_a(b)·log_b(c)=(ln b/ln a)·(ln c/ln b)=ln c/ln a=log_a(c). For the product: log₄9·log₉16=log₄16=log₄(4²)=2."
+      },
+      {
+        "label": "(iv)",
+        "marks": 4,
+        "question": "Find all real solutions of $4^x - 10\\cdot 2^x + 16 = 0$.",
+        "solutionOutline": "Let u=2^x>0. Then u²-10u+16=0 ⟹ (u-2)(u-8)=0 ⟹ u=2 or u=8. So 2^x=2 ⟹ x=1, or 2^x=8=2³ ⟹ x=3."
+      }
+    ],
+    "fullSolution": "(i) Adding the two equations: $2\\log_2 x=6\\Rightarrow x=2^3=8$. Subtracting: $2\\log_2 y=4\\Rightarrow y=2^2=4$.\n\n(ii) **Domain**: $x^2-4x+3=(x-1)(x-3)>0\\Rightarrow x\\in(-\\infty,1)\\cup(3,\\infty)$.\n\n**Range**: On the domain, $(x-2)^2-1>0$, so $x^2-4x+3\\in(0,\\infty)$ (the argument approaches $0^+$ as $x\\to 1^-$ or $x\\to 3^+$, and approaches $\\infty$ as $x\\to\\pm\\infty$). Hence $f(x)=\\log_3(\\cdot)\\in(-\\infty,\\infty)=\\mathbb{R}$.\n\n(iii) By change of base: $\\log_a b\\cdot\\log_b c=\\dfrac{\\ln b}{\\ln a}\\cdot\\dfrac{\\ln c}{\\ln b}=\\dfrac{\\ln c}{\\ln a}=\\log_a c$.\n\nApplication: $\\log_4 9\\cdot\\log_9 16=\\log_4 16=\\log_4(4^2)=2$.\n\n(iv) Let $u=2^x>0$. Then $(2^x)^2-10\\cdot 2^x+16=u^2-10u+16=(u-2)(u-8)=0$.\n- $u=2\\Rightarrow 2^x=2\\Rightarrow x=1$.\n- $u=8\\Rightarrow 2^x=8=2^3\\Rightarrow x=3$.\n\nSolutions: $x=1$ and $x=3$."
+  },
+  "mat-a-043": {
+    "id": "mat-a-043",
+    "type": "mcq",
+    "testId": "mat",
+    "topicId": "mat-geo",
+    "difficulty": 3,
+    "marks": 4,
+    "question": "How many points of intersection do the circle $x^2+y^2=25$ and the line $y=x+7$ have?",
+    "options": [
+      {
+        "key": "A",
+        "text": "$0$"
+      },
+      {
+        "key": "B",
+        "text": "$1$"
+      },
+      {
+        "key": "C",
+        "text": "$2$"
+      },
+      {
+        "key": "D",
+        "text": "Infinitely many"
+      }
+    ],
+    "answer": "C",
+    "solution": "Substitute $y=x+7$ into $x^2+y^2=25$: $x^2+(x+7)^2=25\\Rightarrow 2x^2+14x+24=0\\Rightarrow x^2+7x+12=(x+3)(x+4)=0$. So $x=-3$ or $x=-4$, giving the two points $(-3,4)$ and $(-4,3)$. (Check: the distance from the centre to the line is $7/\\sqrt2\\approx4.95<5$.)"
+  },
+  "mat-a-009": {
+    "id": "mat-a-009",
+    "type": "mcq",
+    "testId": "mat",
+    "topicId": "mat-trig",
+    "difficulty": 3,
+    "marks": 4,
+    "question": "Find the exact value of $\\cos\\!\\left(\\dfrac{\\pi}{12}\\right)$.",
+    "options": [
+      {
+        "key": "A",
+        "text": "$\\dfrac{\\sqrt{6}-\\sqrt{2}}{4}$"
+      },
+      {
+        "key": "B",
+        "text": "$\\dfrac{\\sqrt{6}+\\sqrt{2}}{4}$"
+      },
+      {
+        "key": "C",
+        "text": "$\\dfrac{\\sqrt{3}+1}{2}$"
+      },
+      {
+        "key": "D",
+        "text": "$\\dfrac{\\sqrt{3}+1}{4}$"
+      }
+    ],
+    "answer": "B",
+    "solution": "$\\dfrac{\\pi}{12}=\\dfrac{\\pi}{3}-\\dfrac{\\pi}{4}$, so $\\cos\\dfrac{\\pi}{12}=\\cos\\dfrac{\\pi}{3}\\cos\\dfrac{\\pi}{4}+\\sin\\dfrac{\\pi}{3}\\sin\\dfrac{\\pi}{4}=\\dfrac12\\cdot\\dfrac{\\sqrt2}{2}+\\dfrac{\\sqrt3}{2}\\cdot\\dfrac{\\sqrt2}{2}=\\dfrac{\\sqrt6+\\sqrt2}{4}$.",
+    "hint": "Use the compound angle formula $\\cos(A-B)=\\cos A\\cos B+\\sin A\\sin B$ with $\\frac{\\pi}{12}=\\frac{\\pi}{3}-\\frac{\\pi}{4}$."
+  },
+  "mat-mk1-03": {
+    "id": "mat-mk1-03",
+    "type": "mcq",
+    "testId": "mat",
+    "topicId": "mat-log",
+    "difficulty": 3,
+    "marks": 3,
+    "question": "The value of $\\log_2 3\\times\\log_3 4\\times\\log_4 8$ is:",
+    "options": [
+      {
+        "key": "A",
+        "text": "$2$"
+      },
+      {
+        "key": "B",
+        "text": "$3$"
+      },
+      {
+        "key": "C",
+        "text": "$\\log_2 6$"
+      },
+      {
+        "key": "D",
+        "text": "$\\tfrac32$"
+      },
+      {
+        "key": "E",
+        "text": "$4$"
+      }
+    ],
+    "answer": "B",
+    "solution": "By change of base, $\\log_2 3\\times\\log_3 4\\times\\log_4 8=\\dfrac{\\ln3}{\\ln2}\\cdot\\dfrac{\\ln4}{\\ln3}\\cdot\\dfrac{\\ln8}{\\ln4}=\\dfrac{\\ln8}{\\ln2}=\\log_2 8=3$."
+  },
+  "bmo2-nt-004": {
+    "id": "bmo2-nt-004",
+    "type": "long",
+    "testId": "bmo",
+    "topicId": "bmo-number",
+    "difficulty": 3,
+    "totalMarks": 10,
+    "context": "【BMO2 / Round 2 风格 · 完整证明题】Prove that for every positive integer $n$, there exist $n$ consecutive positive integers each of which is divisible by a perfect square greater than $1$.（求证：对每个正整数 $n$，都存在 $n$ 个连续的正整数，其中每一个都能被某个大于 $1$ 的完全平方数整除。）真实 BMO2 为纯证明题——引导小问示范「中国剩余定理造存在性」。",
+    "parts": [
+      {
+        "label": "a",
+        "marks": 3,
+        "question": "引导一（设目标同余）：取 $n$ 个不同的素数 $p_1,\\dots,p_n$。若想让连续整数 $x+1,\\dots,x+n$ 中第 $i$ 个被 $p_i^2$ 整除，应对 $x$ 提出什么同余条件？",
+        "solutionOutline": "要求 $p_i^2\\mid x+i$，即 $x\\equiv-i\\pmod{p_i^2}$，$i=1,\\dots,n$。"
+      },
+      {
+        "label": "b",
+        "marks": 4,
+        "question": "引导二（CRT 求解）：说明这些模 $p_i^2$ 两两互素，用中国剩余定理得到一个（正整数）解 $x$。",
+        "solutionOutline": "不同素数的平方 $p_i^2$ 两两互素，故同余方程组有解（模 $\\prod p_i^2$ 唯一）；取其最小正解（必要时加上模的乘积）即得正整数 $x$。"
+      },
+      {
+        "label": "c",
+        "marks": 3,
+        "question": "引导三（收尾）：说明 $x+1,\\dots,x+n$ 即为所求。",
+        "solutionOutline": "对每个 $i$，$p_i^2\\mid x+i$ 且 $p_i^2>1$，故这 $n$ 个连续正整数各被一个 $>1$ 的完全平方数整除。$\\blacksquare$"
+      }
+    ],
+    "fullSolution": "**完整证明（中国剩余定理构造）**\\n\\n取 $n$ 个**不同的素数** $p_1,p_2,\\dots,p_n$。我们希望找到正整数 $x$，使得对每个 $i=1,\\dots,n$ 有\\n$$p_i^2\\ \\big|\\ x+i,\\qquad\\text{即}\\qquad x\\equiv-i\\pmod{p_i^2}.$$\\n\\n**用 CRT**：因为 $p_1,\\dots,p_n$ 两两不同，模 $p_1^2,\\dots,p_n^2$ **两两互素**。由中国剩余定理，上述 $n$ 个同余方程组成的系统有解，且解在模 $M=\\prod_{i}p_i^2$ 下唯一。取其中一个**正整数**解 $x$（若最小非负解为 $0$ 或过小，可加上若干个 $M$——同一同余类里有无穷多正整数解）。\\n\\n**收尾**：对这个 $x$，每个 $x+i$（$i=1,\\dots,n$）都被 $p_i^2$ 整除，而 $p_i^2>1$ 是完全平方数。于是\\n$$x+1,\\ x+2,\\ \\dots,\\ x+n$$\\n是 $n$ 个连续的正整数，每一个都能被一个大于 $1$ 的完全平方数整除。$\\blacksquare$\\n\\n**例**（$n=3$，取 $p_1,p_2,p_3=2,3,5$）：解 $x\\equiv-1\\ (4),\\ x\\equiv-2\\ (9),\\ x\\equiv-3\\ (25)$ 得 $x=547$，于是 $x+1=548=4\\cdot137$、$x+2=549=9\\cdot61$、$x+3=550=25\\cdot22$，三个连续整数分别被 $4,9,25$ 整除。\\n\\n---\\n**方法要点（BMO2 通用武器）**：**中国剩余定理是「构造存在性」的利器**——想要一串数各自满足不同的整除/同余要求，就为每个位置分配一个互素的模，用 CRT 一次性凑出满足全部条件的数。这类「任意长的连续整数具有某性质」的题（连续合数、连续 squareful、连续非幂等）几乎都靠 CRT。\\n\\n---\\n*原创题；仅以 BMO2 数论题型做难度校准；CRT 构造对 $n=1\\dots7$ 给出的连续整数确各被相应 $p_i^2$ 整除，已程序核对；请对照证明自评。*"
+  },
+  "step-023": {
+    "id": "step-023",
+    "type": "long",
+    "testId": "step",
+    "topicId": "step-pure4",
+    "difficulty": 3,
+    "totalMarks": 20,
+    "context": "De Moivre's theorem states $(\\cos\\theta + i\\sin\\theta)^n = \\cos n\\theta + i\\sin n\\theta$ for all integers $n$.",
+    "parts": [
+      {
+        "label": "(i)",
+        "marks": 5,
+        "question": "Use De Moivre's theorem to show that $\\cos 5\\theta = 16\\cos^5\\theta - 20\\cos^3\\theta + 5\\cos\\theta$.",
+        "solutionOutline": "(cos θ+i sin θ)⁵=∑_{k=0}^5 C(5,k)(cos θ)^{5-k}(i sin θ)^k. Real part: k=0: cos⁵θ; k=2: C(5,2)(cos³θ)(i²sin²θ)=-10cos³θsin²θ; k=4: C(5,4)(cosθ)(i⁴sin⁴θ)=5cosθsin⁴θ. So cos5θ=cos⁵θ-10cos³θsin²θ+5cosθsin⁴θ=cos⁵θ-10cos³θ(1-cos²θ)+5cosθ(1-cos²θ)²=cos⁵θ-10cos³θ+10cos⁵θ+5cosθ-10cos³θ+5cos⁵θ=16cos⁵θ-20cos³θ+5cosθ. ✓"
+      },
+      {
+        "label": "(ii)",
+        "marks": 5,
+        "question": "Hence solve the equation $16t^5 - 20t^3 + 5t = 0$ and deduce the exact values of $\\cos\\dfrac{\\pi}{5}$ and $\\cos\\dfrac{2\\pi}{5}$.",
+        "solutionOutline": "Factoring gives $t(16t^4-20t^2+5)=0$, so $t=0$ or $t^2=(5\\pm\\sqrt5)/8$. The positive nonzero roots are $\\cos(\\pi/10)=\\sqrt{(5+\\sqrt5)/8}$ and $\\cos(3\\pi/10)=\\sqrt{(5-\\sqrt5)/8}$. Hence $\\cos(\\pi/5)=2\\cos^2(\\pi/10)-1=(1+\\sqrt5)/4$, and $\\cos(2\\pi/5)=2\\cos^2(\\pi/5)-1=(\\sqrt5-1)/4$."
+      },
+      {
+        "label": "(iii)",
+        "marks": 5,
+        "question": "Similarly use De Moivre's theorem to express $\\sin 5\\theta$ in terms of $\\sin\\theta$, and hence show that $16s^4 - 20s^2 + 5 = 0$ has roots $\\sin\\dfrac{\\pi}{5}$, $\\cos\\dfrac{\\pi}{10}$ (and their negatives).",
+        "solutionOutline": "The imaginary part of $(\\cos\\theta+i\\sin\\theta)^5$ is $5\\cos^4\\theta\\sin\\theta-10\\cos^2\\theta\\sin^3\\theta+\\sin^5\\theta$. With $s=\\sin\\theta$ and $\\cos^2\\theta=1-s^2$: $\\sin5\\theta=s\\big(5(1-s^2)^2-10(1-s^2)s^2+s^4\\big)=s(16s^4-20s^2+5)$. If $\\sin5\\theta=0$ and $\\sin\\theta\\ne0$, then $16s^4-20s^2+5=0$. Taking $\\theta=\\tfrac\\pi5$ and $\\theta=\\tfrac{2\\pi}5$ (where $\\sin5\\theta=0$, $\\sin\\theta\\ne0$) shows that $\\sin\\tfrac\\pi5$ and $\\sin\\tfrac{2\\pi}5$ are roots; $\\theta=-\\tfrac\\pi5,-\\tfrac{2\\pi}5$ give their negatives. These four values are distinct, so they are all the roots. Finally $\\sin\\tfrac{2\\pi}5=\\cos\\left(\\tfrac\\pi2-\\tfrac{2\\pi}5\\right)=\\cos\\tfrac\\pi{10}$."
+      },
+      {
+        "label": "(iv)",
+        "marks": 5,
+        "question": "Show that $\\cos\\dfrac{2\\pi}{7} + \\cos\\dfrac{4\\pi}{7} + \\cos\\dfrac{6\\pi}{7} = -\\dfrac{1}{2}$.",
+        "solutionOutline": "The 7th roots of unity sum to 0: ∑_{k=0}^6 e^{2πik/7}=0. So 1+2cos(2π/7)+2cos(4π/7)+2cos(6π/7)=0 (taking real parts, using conjugate pairs). Hence cos(2π/7)+cos(4π/7)+cos(6π/7)=-1/2."
+      }
+    ],
+    "fullSolution": "(i) Expand $(c+is)^5$ via binomial (where $c=\\cos\\theta$, $s=\\sin\\theta$). Real part: $c^5-10c^3s^2+5cs^4$. Substitute $s^2=1-c^2$: $c^5-10c^3(1-c^2)+5c(1-c^2)^2=16c^5-20c^3+5c$. ✓\n\n(ii) $t(16t^4-20t^2+5)=0$. Quartic: $t^2=\\frac{5\\pm\\sqrt{5}}{8}$. The solutions correspond to $\\cos\\theta$ where $\\cos 5\\theta=0$, i.e.\\ $\\theta=\\frac{\\pi}{10},\\frac{3\\pi}{10},\\frac{7\\pi}{10},\\frac{9\\pi}{10}$ (and $t=0$ at $\\theta=\\pi/2$). Positive roots: $\\cos\\frac{\\pi}{10}=\\sqrt{\\frac{5+\\sqrt5}{8}}$ and $\\cos\\frac{3\\pi}{10}=\\sqrt{\\frac{5-\\sqrt5}{8}}$. Then $\\cos\\frac{\\pi}{5}=2\\cos^2\\frac{\\pi}{10}-1=\\frac{\\sqrt5+1}{4}$ and $\\cos\\frac{2\\pi}{5}=2\\cos^2\\frac{3\\pi}{10}-1=\\frac{\\sqrt5-1}{4}$.\n\n(iii) Im$(c+is)^5=\\sin\\theta(16\\sin^4\\theta-20\\sin^2\\theta+5)$. Setting $\\sin 5\\theta=0$ (with $\\sin\\theta\\ne 0$): $16s^4-20s^2+5=0$. Solutions $s=\\sin\\frac{\\pi}{5},\\sin\\frac{2\\pi}{5}=\\cos\\frac{\\pi}{10}$ (and their negatives). ✓\n\n(iv) Real part of $\\sum_{k=0}^6 e^{2\\pi ik/7}=0$: $1+2(\\cos\\frac{2\\pi}{7}+\\cos\\frac{4\\pi}{7}+\\cos\\frac{6\\pi}{7})=0$, so $\\cos\\frac{2\\pi}{7}+\\cos\\frac{4\\pi}{7}+\\cos\\frac{6\\pi}{7}=-\\frac{1}{2}$."
+  },
+  "step-020": {
+    "id": "step-020",
+    "type": "long",
+    "testId": "step",
+    "topicId": "step-pure3",
+    "difficulty": 3,
+    "totalMarks": 20,
+    "context": "The hyperbola $H$ has equation $\\dfrac{x^2}{a^2} - \\dfrac{y^2}{b^2} = 1$ with $a, b > 0$. Its eccentricity is $e = \\sqrt{1 + b^2/a^2} > 1$ and its foci are at $(\\pm ae, 0)$. A point $P = (a\\sec\\theta, b\\tan\\theta)$ lies on $H$.",
+    "parts": [
+      {
+        "label": "(i)",
+        "marks": 4,
+        "question": "Show that the tangent to $H$ at $P$ has equation $\\dfrac{x\\sec\\theta}{a} - \\dfrac{y\\tan\\theta}{b} = 1$.",
+        "solutionOutline": "Implicit differentiation gives $dy/dx=b^2x/(a^2y)$, so the slope at $P$ is $b\\sec\\theta/(a\\tan\\theta)$. Substituting $P$ into the point-slope equation and rearranging gives $x\\sec\\theta/a-y\\tan\\theta/b=\\sec^2\\theta-\\tan^2\\theta=1$."
+      },
+      {
+        "label": "(ii)",
+        "marks": 5,
+        "question": "The tangent at $P$ meets the asymptotes $y = \\pm(b/a)x$ at points $Q$ and $R$. Show that $P$ is the midpoint of $QR$.",
+        "solutionOutline": "Asymptote y=(b/a)x: substitute y=(b/a)x into tangent: x sec θ/a - (b/a)x·tan θ/b = 1 → x/a·(sec θ-tan θ)=1 → x=a/(sec θ-tan θ). y=(b/a)·a/(sec θ-tan θ)=b/(sec θ-tan θ). So Q=(a/(sec θ-tan θ), b/(sec θ-tan θ)). Similarly for y=-(b/a)x: x sec θ/a+x tan θ/a=1 → x(sec θ+tan θ)/a=1 → x=a/(sec θ+tan θ). R=(a/(sec θ+tan θ), -b/(sec θ+tan θ)). Midpoint x: a/2·[1/(sec θ-tan θ)+1/(sec θ+tan θ)]=a/2·2sec θ/(sec²θ-tan²θ)=a sec θ=a sec θ ✓. Midpoint y: b/2·[1/(sec θ-tan θ)-1/(sec θ+tan θ)]=b/2·2tan θ=b tan θ ✓. So midpoint=P."
+      },
+      {
+        "label": "(iii)",
+        "marks": 5,
+        "question": "Show that $\\overrightarrow{OQ}\\cdot\\overrightarrow{OR}=a^2-b^2$, where $O$ is the origin.",
+        "solutionOutline": "Write $s=\\sec\\theta$ and $t=\\tan\\theta$. From part (ii), $\\overrightarrow{OQ}=(a,b)/(s-t)$ and $\\overrightarrow{OR}=(a,-b)/(s+t)$. Their dot product is $\\frac{a^2-b^2}{(s-t)(s+t)}=a^2-b^2$ because $s^2-t^2=1$."
+      },
+      {
+        "label": "(iv)",
+        "marks": 6,
+        "question": "A chord of $H$ has the property that the mid-point of the chord lies on the line $y = mx$. Show that the chord has gradient $\\dfrac{b^2}{a^2 m}$.",
+        "solutionOutline": "Let the chord join $(a\\sec\\alpha,b\\tan\\alpha)$ and $(a\\sec\\beta,b\\tan\\beta)$, and write $\\phi=\\tfrac{\\alpha+\\beta}2$, $\\psi=\\tfrac{\\alpha-\\beta}2$. Using $\\tan\\alpha\\pm\\tan\\beta=\\dfrac{\\sin(\\alpha\\pm\\beta)}{\\cos\\alpha\\cos\\beta}$, $\\sec\\alpha+\\sec\\beta=\\dfrac{2\\cos\\phi\\cos\\psi}{\\cos\\alpha\\cos\\beta}$ and $\\sec\\alpha-\\sec\\beta=\\dfrac{2\\sin\\phi\\sin\\psi}{\\cos\\alpha\\cos\\beta}$: gradient $=\\dfrac{b(\\tan\\alpha-\\tan\\beta)}{a(\\sec\\alpha-\\sec\\beta)}=\\dfrac ba\\cdot\\dfrac{\\cos\\psi}{\\sin\\phi}$, and the midpoint lies on $y=mx$, so $m=\\dfrac{b(\\tan\\alpha+\\tan\\beta)}{a(\\sec\\alpha+\\sec\\beta)}=\\dfrac ba\\cdot\\dfrac{\\sin\\phi}{\\cos\\psi}$. Multiplying, gradient $\\times\\,m=\\dfrac{b^2}{a^2}$, so the gradient is $\\dfrac{b^2}{a^2m}$."
+      }
+    ],
+    "fullSolution": "(i) Implicit differentiation of $x^2/a^2-y^2/b^2=1$ gives $dy/dx=b^2x/(a^2y)$. At $P$: slope $=b\\sec\\theta/(a\\tan\\theta)$. The tangent line through $P$: algebraic manipulation gives $\\frac{x\\sec\\theta}{a}-\\frac{y\\tan\\theta}{b}=\\sec^2\\theta-\\tan^2\\theta=1$. ✓\n\n(ii) On asymptote $y=(b/a)x$: substituting gives $x=\\frac{a}{\\sec\\theta-\\tan\\theta}$, so $Q=\\frac{1}{\\sec\\theta-\\tan\\theta}(a,b)$. On $y=-(b/a)x$: $R=\\frac{1}{\\sec\\theta+\\tan\\theta}(a,-b)$. Midpoint $x$-coord: $\\frac{a}{2}\\left(\\frac{1}{s-t}+\\frac{1}{s+t}\\right)=\\frac{as}{s^2-t^2}=a\\sec\\theta$. ✓ Similarly $y$-coord $=b\\tan\\theta$. So $P$ is the midpoint of $QR$.\n\n(iii) $\\overrightarrow{OQ}\\cdot\\overrightarrow{OR}=\\frac{a^2-b^2}{\\sec^2\\theta-\\tan^2\\theta}=a^2-b^2$, independent of $P$. (The signed product of the position vectors projected along asymptotes equals $a^2-b^2=a^2(e^2-2)$, a constant depending only on the hyperbola.)\n\n(iv) With $\\phi=\\frac{\\alpha+\\beta}{2}$, $\\psi=\\frac{\\alpha-\\beta}{2}$, the chord gradient is $\\frac ba\\cdot\\frac{\\cos\\psi}{\\sin\\phi}$ and the midpoint condition gives $m=\\frac ba\\cdot\\frac{\\sin\\phi}{\\cos\\psi}$. Their product is $\\frac{b^2}{a^2}$, so the gradient is $\\frac{b^2}{a^2m}$."
+  },
+  "step-018": {
+    "id": "step-018",
+    "type": "long",
+    "testId": "step",
+    "topicId": "step-pure1",
+    "difficulty": 3,
+    "totalMarks": 20,
+    "context": "A Pythagorean triple $(a, b, c)$ with $a, b, c \\in \\mathbb{Z}^+$ satisfies $a^2 + b^2 = c^2$. It is called primitive if $\\gcd(a, b, c) = 1$.",
+    "parts": [
+      {
+        "label": "(i)",
+        "marks": 4,
+        "question": "Show that in a primitive Pythagorean triple, exactly one of $a$, $b$ is even.",
+        "solutionOutline": "Both odd: a=2p+1, b=2q+1, a²+b²=4p²+4p+1+4q²+4q+1=4(p²+p+q²+q)+2≡2 mod 4. But c² is 0 or 1 mod 4, so c²≡2 mod 4 is impossible. Both even: contradicts gcd=1. So exactly one of a,b is even."
+      },
+      {
+        "label": "(ii)",
+        "marks": 6,
+        "question": "Assume $b$ is even. Show that there exist coprime integers $m > n > 0$ with opposite parity such that $a = m^2 - n^2$, $b = 2mn$, $c = m^2 + n^2$.",
+        "solutionOutline": "c²-a²=b², so (c-a)(c+a)=b²=4m²n² (with b=2k). Let c-a=2s, c+a=2t with st=k² and gcd(s,t)=1 (using primitivity), s<t. Since gcd(s,t)=1 and st is a perfect square, each of s,t must itself be a perfect square: s=n², t=m² with gcd(m,n)=1. Then c=m²+n², a=m²-n², b=2mn. Parity: a odd, b even requires m,n opposite parity."
+      },
+      {
+        "label": "(iii)",
+        "marks": 5,
+        "question": "Find all primitive Pythagorean triples with $c < 50$.",
+        "solutionOutline": "Use $a=m^2-n^2$, $b=2mn$, $c=m^2+n^2$ with $m>n>0$, $\\gcd(m,n)=1$, $m,n$ of opposite parity, and $m^2+n^2<50$. The admissible pairs are $(m,n)=(2,1),(3,2),(4,1),(4,3),(5,2),(5,4),(6,1)$; the next candidates $(7,2)$ and $(6,5)$ give $c=53$ and $c=61$. The triples (listing the smaller leg first) are $(3,4,5),(5,12,13),(8,15,17),(7,24,25),(20,21,29),(9,40,41),(12,35,37)$."
+      },
+      {
+        "label": "(iv)",
+        "marks": 5,
+        "question": "Show that there is no primitive Pythagorean triple in which both $a$ and $c$ are perfect squares. [You may quote without proof Fermat's result that the equation $x^4 - y^4 = z^2$ has no solutions in positive integers.]",
+        "solutionOutline": "Suppose $a=r^2$ and $c=s^2$ for positive integers $r,s$. Then $r^4+b^2=s^4$, so $s^4-r^4=b^2$ with $s,r,b$ positive integers. By Fermat's result that $x^4-y^4=z^2$ has no solutions in positive integers (quoted, not proved here; it is proved by Fermat's method of infinite descent), this is impossible. Hence no primitive Pythagorean triple has both $a$ and $c$ perfect squares."
+      }
+    ],
+    "fullSolution": "(i) If $a,b$ both odd: $a^2+b^2\\equiv 2\\pmod{4}$, impossible for $c^2$. If both even: $\\gcd\\ge 2$, contradicts primitivity. So exactly one is even.\n\n(ii) With $b$ even write $b=2k$. Then $\\frac{c-a}{2}\\cdot\\frac{c+a}{2}=k^2$; let $s=\\frac{c-a}{2}$, $t=\\frac{c+a}{2}$. From primitivity, $\\gcd(s,t)=1$ and $st=k^2$; since $s,t$ are coprime with product a square, each is a square: $s=n^2$, $t=m^2$, $m>n$, $\\gcd(m,n)=1$. Then $c=m^2+n^2$, $a=m^2-n^2$, $b=2mn$. For $a$ odd: $m,n$ must have opposite parity.\n\n(iii) Tabulating $(m,n)$ with $m>n>0$, $\\gcd(m,n)=1$, opposite parity, $m^2+n^2<50$:\n$(2,1)\\to(3,4,5)$; $(3,2)\\to(5,12,13)$; $(4,1)\\to(15,8,17)$; $(4,3)\\to(7,24,25)$; $(5,2)\\to(21,20,29)$; $(6,1)\\to(35,12,37)$; $(5,4)\\to(9,40,41)$.\n\n(iv) If $a=r^2$ and $c=s^2$, then $s^4-r^4=b^2$ with $r,s,b$ positive integers. We quote without proof Fermat's theorem that $x^4-y^4=z^2$ has no solutions in positive integers (its proof, by infinite descent, is not given here). Hence no such triple exists."
+  },
+  "step-012": {
+    "id": "step-012",
+    "type": "long",
+    "testId": "step",
+    "topicId": "step-pure1",
+    "difficulty": 3,
+    "totalMarks": 20,
+    "context": "",
+    "parts": [
+      {
+        "label": "(i)",
+        "marks": 5,
+        "question": "Show that for any integer $n \\ge 1$, $n^5 - n$ is divisible by 30.",
+        "solutionOutline": "n^5-n=n(n^4-1)=n(n²-1)(n²+1)=n(n-1)(n+1)(n²+1). Product of 3 consecutive integers n-1,n,n+1 is divisible by 6. Also n^5≡n mod 5 (Fermat's little theorem), so 5|(n^5-n). And 5|n^5-n and 6|n^5-n and gcd(5,6)=1, so 30|n^5-n. Alternative: show directly that 2,3,5 each divide n^5-n."
+      },
+      {
+        "label": "(ii)",
+        "marks": 5,
+        "question": "Show that $n^5 \\equiv n \\pmod{5}$ for all integers $n$.",
+        "solutionOutline": "By Fermat's little theorem: if gcd(n,5)=1 then n^4≡1 mod 5, so n^5≡n mod 5. If 5|n: n^5≡0≡n mod 5. Either way n^5≡n mod 5."
+      },
+      {
+        "label": "(iii)",
+        "marks": 5,
+        "question": "Find the remainder when $7^{100}$ is divided by $30$.",
+        "solutionOutline": "7≡7 mod 30. 7²=49≡19. 7³=7·49=343≡343-11·30=343-330=13. 7⁴=7·13=91≡91-90=1 mod 30. So 7⁴≡1 mod 30. 100=4·25, so 7^100=(7^4)^25≡1^25=1 mod 30. Remainder is 1."
+      },
+      {
+        "label": "(iv)",
+        "marks": 5,
+        "question": "Find all positive integers $n$ such that $n^4 + 4^n$ is prime.",
+        "solutionOutline": "For $n=1$, the value is $5$, which is prime. If $n>1$ is even, both terms are even, so the sum is an even integer greater than $2$. If $n>1$ is odd, set $b=2^{(n-1)/2}$. Then $4^n=4b^4$, and Sophie Germain's identity factors $n^4+4b^4=(n^2+2b^2+2nb)(n^2+2b^2-2nb)$ into two integers greater than $1$. Hence only $n=1$ works."
+      }
+    ],
+    "fullSolution": "(i) $n^5-n=n(n-1)(n+1)(n^2+1)$. The product $(n-1)n(n+1)$ of three consecutive integers is divisible by $6$. By Fermat (or direct check): $5\\mid n^5-n$ for all $n$ (see part ii). Since $\\gcd(5,6)=1$, $30\\mid n^5-n$.\n\n(ii) If $5\\nmid n$: by Fermat's little theorem, $n^4\\equiv 1\\pmod 5$, so $n^5\\equiv n\\pmod 5$. If $5\\mid n$: $n^5\\equiv 0\\equiv n\\pmod 5$. ✓\n\n(iii) $7^4=2401=30\\cdot 80+1\\equiv 1\\pmod{30}$. So $7^{100}=(7^4)^{25}\\equiv 1^{25}=1\\pmod{30}$. Remainder: **1**.\n\n(iv) For $n=1$: $1+4=5$, which is prime. If $n>1$ is even, $n^4$ and $4^n$ are both even, so the sum is an even number greater than $2$ and is composite. If $n>1$ is odd, let $b=2^{(n-1)/2}$, so that $4^n=4b^4$. Sophie Germain's identity gives $n^4+4b^4=(n^2+2b^2+2nb)(n^2+2b^2-2nb)$, and the smaller factor is $(n-b)^2+b^2\\ge b^2>1$, so the number is composite. Hence only $n=1$ works."
+  },
+  "step-008": {
+    "id": "step-008",
+    "type": "long",
+    "testId": "step",
+    "topicId": "step-pure1",
+    "difficulty": 3,
+    "totalMarks": 20,
+    "context": "",
+    "parts": [
+      {
+        "label": "(i)",
+        "marks": 5,
+        "question": "Prove that, for all real $x$ and $y$, $\\,x^2 + xy + y^2 \\ge 0$, with equality iff $x = y = 0$.",
+        "solutionOutline": "x²+xy+y²=(x+y/2)²+3y²/4≥0. Equality when x+y/2=0 and y=0, i.e. x=y=0."
+      },
+      {
+        "label": "(ii)",
+        "marks": 5,
+        "question": "Hence prove that for positive reals $a, b, c$: $a^2 + b^2 + c^2 \\ge ab + bc + ca$.",
+        "solutionOutline": "2(a²+b²+c²)-2(ab+bc+ca)=(a-b)²+(b-c)²+(c-a)²≥0. So a²+b²+c²≥ab+bc+ca."
+      },
+      {
+        "label": "(iii)",
+        "marks": 5,
+        "question": "Prove that $\\dfrac{a}{b+c}+\\dfrac{b}{c+a}+\\dfrac{c}{a+b} \\ge \\dfrac{3}{2}$ for positive reals $a,b,c$ (Nesbitt's inequality).",
+        "solutionOutline": "Let $S$ be the sum and $s=a+b+c$. Adding $1$ to each fraction gives $S+3=s\\left(\\dfrac1{b+c}+\\dfrac1{c+a}+\\dfrac1{a+b}\\right)$. By Cauchy-Schwarz, $\\big((b+c)+(c+a)+(a+b)\\big)\\left(\\dfrac1{b+c}+\\dfrac1{c+a}+\\dfrac1{a+b}\\right)\\ge9$, and the first bracket equals $2s$, so the second bracket is at least $\\dfrac{9}{2s}$. Hence $S+3\\ge\\dfrac92$, i.e. $S\\ge\\dfrac32$."
+      },
+      {
+        "label": "(iv)",
+        "marks": 5,
+        "question": "Show when equality holds in Nesbitt's inequality.",
+        "solutionOutline": "Equality in Cauchy-Schwarz (or AM-HM) holds when all terms are equal: b+c=c+a=a+b, which gives a=b=c."
+      }
+    ],
+    "fullSolution": "(i) $x^2+xy+y^2=\\left(x+\\frac{y}{2}\\right)^2+\\frac{3y^2}{4}\\ge 0$. Equality iff $y=0$ and $x=0$.\n\n(ii) $2(a^2+b^2+c^2-ab-bc-ca)=(a-b)^2+(b-c)^2+(c-a)^2\\ge 0$. So $a^2+b^2+c^2\\ge ab+bc+ca$.\n\n(iii) Write $S=\\sum\\frac{a}{b+c}$. Then $S+3=s\\cdot\\sum\\frac{1}{b+c}$ where $s=a+b+c$. By Cauchy-Schwarz (or AM-HM), $(\\sum(b+c))\\cdot(\\sum\\frac{1}{b+c})\\ge 9$, i.e. $2s\\cdot\\sum\\frac{1}{b+c}\\ge 9$, so $S+3\\ge\\frac{9}{2}$, giving $S\\ge\\frac{3}{2}$.\n\n(iv) Equality in Cauchy-Schwarz iff $b+c=c+a=a+b$, i.e. $a=b=c$."
+  },
+  "tmua-hard-005": {
+    "id": "tmua-hard-005",
+    "type": "mcq",
+    "testId": "tmua",
+    "topicId": "tmua-stats",
+    "difficulty": 3,
+    "marks": 1,
+    "question": "A fair coin is tossed $4$ times. Given that at least one head appears, what is the probability of exactly two heads?",
+    "options": [
+      {
+        "key": "A",
+        "text": "$\\tfrac{2}{5}$"
+      },
+      {
+        "key": "B",
+        "text": "$\\tfrac{3}{8}$"
+      },
+      {
+        "key": "C",
+        "text": "$\\tfrac{1}{2}$"
+      },
+      {
+        "key": "D",
+        "text": "$\\tfrac{6}{11}$"
+      },
+      {
+        "key": "E",
+        "text": "$\\tfrac{1}{4}$"
+      }
+    ],
+    "answer": "A",
+    "solution": "$P(\\text{exactly }2)=\\tfrac{\\binom{4}{2}}{16}=\\tfrac{6}{16}$. $P(\\text{at least }1)=1-\\tfrac{1}{16}=\\tfrac{15}{16}$. The conditional probability is $\\dfrac{6/16}{15/16}=\\dfrac{6}{15}=\\dfrac{2}{5}$.",
+    "hint": "Use $P(A\\mid B)=\\dfrac{P(A\\cap B)}{P(B)}$; here $A\\subset B$."
+  },
+  "tmua-spec-g17": {
+    "id": "tmua-spec-g17",
+    "type": "mcq",
+    "testId": "tmua",
+    "topicId": "tmua-geometry",
+    "difficulty": 3,
+    "marks": 1,
+    "question": "The points $(-2,1)$ and $(4,5)$ are endpoints of a diameter of a circle. What is the radius?",
+    "options": [
+      {
+        "key": "A",
+        "text": "$\\sqrt5$"
+      },
+      {
+        "key": "B",
+        "text": "$\\sqrt{10}$"
+      },
+      {
+        "key": "C",
+        "text": "$2\\sqrt{13}$"
+      },
+      {
+        "key": "D",
+        "text": "$\\sqrt{13}$"
+      },
+      {
+        "key": "E",
+        "text": "$\\sqrt{26}$"
+      }
+    ],
+    "answer": "D",
+    "solution": "The diameter is $\\sqrt{(4+2)^2+(5-1)^2}=\\sqrt{52}=2\\sqrt{13}$. The radius is half of this, $\\sqrt{13}$."
+  },
+  "tmua-cal1-p1-09": {
+    "id": "tmua-cal1-p1-09",
+    "type": "mcq",
+    "testId": "tmua",
+    "topicId": "tmua-geometry",
+    "difficulty": 2,
+    "marks": 1,
+    "question": "The vertices of a triangle are $(0,0)$, $(6,0)$ and $(2,4)$. What is the perpendicular distance from its centroid to the line through $(6,0)$ and $(2,4)$?",
+    "options": [
+      {
+        "key": "A",
+        "text": "$1$"
+      },
+      {
+        "key": "B",
+        "text": "$\\sqrt2$"
+      },
+      {
+        "key": "C",
+        "text": "$2$"
+      },
+      {
+        "key": "D",
+        "text": "$2\\sqrt2$"
+      },
+      {
+        "key": "E",
+        "text": "$3\\sqrt2$"
+      }
+    ],
+    "answer": "B",
+    "solution": "The centroid is $(8/3,4/3)$. The line through the last two vertices is $x+y=6$. The distance is $|8/3+4/3-6|/\\sqrt2=2/\\sqrt2=\\sqrt2$."
+  },
+  "esat-boundary-m1-05": {
+    "id": "esat-boundary-m1-05",
+    "type": "mcq",
+    "testId": "esat",
+    "topicId": "esat-math1",
+    "difficulty": 2,
+    "marks": 1,
+    "question": "Simplify $\\sqrt{75}-\\sqrt{12}$.",
+    "options": [
+      {
+        "key": "A",
+        "text": "$\\dfrac52$"
+      },
+      {
+        "key": "B",
+        "text": "$3\\sqrt3$"
+      },
+      {
+        "key": "C",
+        "text": "$\\sqrt{63}$"
+      },
+      {
+        "key": "D",
+        "text": "$7\\sqrt3$"
+      },
+      {
+        "key": "E",
+        "text": "$\\sqrt3$"
+      }
+    ],
+    "answer": "B",
+    "solution": "$\\sqrt{75}=5\\sqrt3$ and $\\sqrt{12}=2\\sqrt3$, so $\\sqrt{75}-\\sqrt{12}=3\\sqrt3$. [M2]"
+  },
+  "esat-mk7-m-01": {
+    "id": "esat-mk7-m-01",
+    "type": "mcq",
+    "testId": "esat",
+    "topicId": "esat-math1",
+    "difficulty": 1,
+    "marks": 1,
+    "question": "Simplify $\\sqrt{50}-\\sqrt{18}$.",
+    "options": [
+      {
+        "key": "A",
+        "text": "$2\\sqrt2$"
+      },
+      {
+        "key": "B",
+        "text": "$\\sqrt{32}$"
+      },
+      {
+        "key": "C",
+        "text": "$\\sqrt2$"
+      },
+      {
+        "key": "D",
+        "text": "$\\sqrt{68}$"
+      },
+      {
+        "key": "E",
+        "text": "$8\\sqrt2$"
+      }
+    ],
+    "answer": "A",
+    "solution": "$5\\sqrt2-3\\sqrt2=2\\sqrt2$."
+  },
+  "esat-mk9-m-11": {
+    "id": "esat-mk9-m-11",
+    "type": "mcq",
+    "testId": "esat",
+    "topicId": "esat-math1",
+    "difficulty": 2,
+    "marks": 1,
+    "question": "$60\\,\\text{cm}^3$ is what fraction of $1$ litre?",
+    "options": [
+      {
+        "key": "A",
+        "text": "$\\dfrac{3}{50}$"
+      },
+      {
+        "key": "B",
+        "text": "$\\dfrac{3}{500}$"
+      },
+      {
+        "key": "C",
+        "text": "$\\dfrac{1}{6}$"
+      },
+      {
+        "key": "D",
+        "text": "$\\dfrac{3}{5}$"
+      },
+      {
+        "key": "E",
+        "text": "$\\dfrac{1}{60}$"
+      }
+    ],
+    "answer": "A",
+    "solution": "$1\\,\\text{L}=1000\\,\\text{cm}^3$; $\\dfrac{60}{1000}=\\dfrac{3}{50}$."
+  },
+  "bpho-s1-b-037": {
+    "id": "bpho-s1-b-037",
+    "type": "mcq",
+    "testId": "bpho",
+    "topicId": "bpho-thermal",
+    "difficulty": 3,
+    "marks": 4,
+    "question": "An ideal monatomic gas expands adiabatically. Its pressure and volume obey $pV^\\gamma=$ const with $\\gamma=\\dfrac53$. If the volume doubles, the pressure falls to what fraction of its original value?",
+    "options": [
+      {
+        "key": "A",
+        "text": "$2^{-2/3}\\approx0.63$"
+      },
+      {
+        "key": "B",
+        "text": "$\\dfrac14$"
+      },
+      {
+        "key": "C",
+        "text": "$2^{-3/5}\\approx0.66$"
+      },
+      {
+        "key": "D",
+        "text": "$2^{-1}$"
+      },
+      {
+        "key": "E",
+        "text": "$2^{-5/3}\\approx0.31$"
+      }
+    ],
+    "answer": "E",
+    "solution": "$p\\propto V^{-\\gamma}$: doubling $V$ gives $p\\to p\\cdot2^{-5/3}\\approx0.31p$ — falls faster than isothermal ($2^{-1}$) because the gas also cools."
+  },
+  "bpho-s1-b-045": {
+    "id": "bpho-s1-b-045",
+    "type": "mcq",
+    "testId": "bpho",
+    "topicId": "bpho-modern",
+    "difficulty": 2,
+    "marks": 4,
+    "question": "A radioactive nuclide has a half-life of $6.0$ hours. What fraction of a sample remains after $24$ hours?",
+    "options": [
+      {
+        "key": "A",
+        "text": "$\\dfrac{1}{4}$"
+      },
+      {
+        "key": "B",
+        "text": "$\\dfrac{1}{16}$"
+      },
+      {
+        "key": "C",
+        "text": "$\\dfrac18$"
+      },
+      {
+        "key": "D",
+        "text": "$\\dfrac{1}{32}$"
+      },
+      {
+        "key": "E",
+        "text": "$\\dfrac{15}{16}$"
+      }
+    ],
+    "answer": "B",
+    "solution": "$24/6=4$ half-lives: fraction $=(1/2)^4=1/16$."
+  },
+  "bmo-smc-b-001": {
+    "id": "bmo-smc-b-001",
+    "type": "mcq",
+    "testId": "bmo",
+    "topicId": "bmo-combinatorics",
+    "difficulty": 1,
+    "marks": 4,
+    "question": "Two fair dice are rolled. Find the probability that the total is $7$.",
+    "options": [
+      {
+        "key": "A",
+        "text": "$\\dfrac17$"
+      },
+      {
+        "key": "B",
+        "text": "$\\dfrac7{36}$"
+      },
+      {
+        "key": "C",
+        "text": "$\\dfrac1{12}$"
+      },
+      {
+        "key": "D",
+        "text": "$\\dfrac15$"
+      },
+      {
+        "key": "E",
+        "text": "$\\dfrac16$"
+      }
+    ],
+    "answer": "E",
+    "solution": "和为 7 的组合 $(1,6)\\dots(6,1)$ 共 6 种，$6/36=1/6$——所有点数和中概率最大。"
+  },
+  "bmo-smc-b-002": {
+    "id": "bmo-smc-b-002",
+    "type": "mcq",
+    "testId": "bmo",
+    "topicId": "bmo-combinatorics",
+    "difficulty": 2,
+    "marks": 4,
+    "question": "Two fair dice are rolled. Find the probability that at least one shows a six.",
+    "options": [
+      {
+        "key": "A",
+        "text": "$\\dfrac1{36}$"
+      },
+      {
+        "key": "B",
+        "text": "$\\dfrac{11}{36}$"
+      },
+      {
+        "key": "C",
+        "text": "$\\dfrac{25}{36}$"
+      },
+      {
+        "key": "D",
+        "text": "$\\dfrac{12}{36}$"
+      },
+      {
+        "key": "E",
+        "text": "$\\dfrac16$"
+      }
+    ],
+    "answer": "B",
+    "solution": "补集：都不是 6 的概率 $\\left(\\tfrac56\\right)^2=\\tfrac{25}{36}$，故 $1-\\tfrac{25}{36}=\\tfrac{11}{36}$。"
+  },
+  "bmo-smc-b-006": {
+    "id": "bmo-smc-b-006",
+    "type": "mcq",
+    "testId": "bmo",
+    "topicId": "bmo-combinatorics",
+    "difficulty": 3,
+    "marks": 4,
+    "question": "A fair die is rolled three times. Find the probability of rolling at least one six.",
+    "options": [
+      {
+        "key": "A",
+        "text": "$\\dfrac12$"
+      },
+      {
+        "key": "B",
+        "text": "$\\dfrac{91}{216}$"
+      },
+      {
+        "key": "C",
+        "text": "$\\dfrac{75}{216}$"
+      },
+      {
+        "key": "D",
+        "text": "$\\dfrac{1}{216}$"
+      },
+      {
+        "key": "E",
+        "text": "$\\dfrac{125}{216}$"
+      }
+    ],
+    "answer": "B",
+    "solution": "$1-(5/6)^3=1-125/216=91/216$。"
+  },
+  "bmo-smc-b-012": {
+    "id": "bmo-smc-b-012",
+    "type": "mcq",
+    "testId": "bmo",
+    "topicId": "bmo-combinatorics",
+    "difficulty": 3,
+    "marks": 4,
+    "question": "A two-digit number is chosen at random. Find the probability that it is divisible by $3$.",
+    "options": [
+      {
+        "key": "A",
+        "text": "$\\dfrac13$"
+      },
+      {
+        "key": "B",
+        "text": "$\\dfrac{29}{90}$"
+      },
+      {
+        "key": "C",
+        "text": "$\\dfrac{3}{10}$"
+      },
+      {
+        "key": "D",
+        "text": "$\\dfrac{33}{90}$"
+      },
+      {
+        "key": "E",
+        "text": "$\\dfrac{30}{99}$"
+      }
+    ],
+    "answer": "A",
+    "solution": "两位数 $10\\dots99$ 共 90 个，其中 3 的倍数 $12\\dots99$ 共 30 个：$1/3$。"
+  },
+  "bmo-smc-b-020": {
+    "id": "bmo-smc-b-020",
+    "type": "mcq",
+    "testId": "bmo",
+    "topicId": "bmo-combinatorics",
+    "difficulty": 3,
+    "marks": 4,
+    "question": "Two people each pick a number at random from $\\{1,\\dots,10\\}$ (independently). Find the probability they pick the same number.",
+    "options": [
+      {
+        "key": "A",
+        "text": "$\\dfrac9{10}$"
+      },
+      {
+        "key": "B",
+        "text": "$\\dfrac15$"
+      },
+      {
+        "key": "C",
+        "text": "$\\dfrac{2}{11}$"
+      },
+      {
+        "key": "D",
+        "text": "$\\dfrac1{10}$"
+      },
+      {
+        "key": "E",
+        "text": "$\\dfrac1{100}$"
+      }
+    ],
+    "answer": "D",
+    "solution": "无论第一人选什么，第二人猜中的概率都是 $1/10$。"
+  },
+  "bmo-smc-b-046": {
+    "id": "bmo-smc-b-046",
+    "type": "mcq",
+    "testId": "bmo",
+    "topicId": "bmo-algebra",
+    "difficulty": 3,
+    "marks": 4,
+    "question": "If $x^2+y^2=8$, find the maximum value of $x+y$.",
+    "options": [
+      {
+        "key": "A",
+        "text": "$8$"
+      },
+      {
+        "key": "B",
+        "text": "$2\\sqrt2$"
+      },
+      {
+        "key": "C",
+        "text": "$16$"
+      },
+      {
+        "key": "D",
+        "text": "$4\\sqrt2$"
+      },
+      {
+        "key": "E",
+        "text": "$4$"
+      }
+    ],
+    "answer": "E",
+    "solution": "$(x+y)^2\\le2(x^2+y^2)=16$（柯西/QM–AM），故 $x+y\\le4$，等号 $x=y=2$。"
+  },
+  "step-mk3-25": {
+    "id": "step-mk3-25",
+    "type": "mcq",
+    "testId": "step",
+    "topicId": "step-pure2",
+    "difficulty": 3,
+    "marks": 20,
+    "question": "The value of $\\displaystyle\\int_0^{\\pi/2}\\sin^{6} x\\,dx$ is:",
+    "options": [
+      {
+        "key": "A",
+        "text": "$\\frac{1}{3} + \\frac{5 \\pi}{32}$"
+      },
+      {
+        "key": "B",
+        "text": "$\\frac{5 \\pi}{32}$"
+      },
+      {
+        "key": "C",
+        "text": "$\\frac{5 \\pi}{16}$"
+      },
+      {
+        "key": "D",
+        "text": "$\\frac{8}{15}$"
+      },
+      {
+        "key": "E",
+        "text": "$\\frac{5 \\pi}{64}$"
+      }
+    ],
+    "answer": "B",
+    "solution": "By the reduction formula $I_n=\\frac{n-1}{n}I_{n-2}$, $I_{6}=\\frac{5 \\pi}{32}.$"
+  },
+  "tmua-spec-n11": {
+    "id": "tmua-spec-n11",
+    "type": "mcq",
+    "testId": "tmua",
+    "topicId": "tmua-number",
+    "difficulty": 2,
+    "marks": 1,
+    "question": "Write $(6\\times10^7)(4\\times10^{-3})$ in standard form.",
+    "options": [
+      {
+        "key": "A",
+        "text": "$1.0\\times10^{5}$"
+      },
+      {
+        "key": "B",
+        "text": "$2.4\\times10^{11}$"
+      },
+      {
+        "key": "C",
+        "text": "$24\\times10^4$"
+      },
+      {
+        "key": "D",
+        "text": "$2.4\\times10^5$"
+      },
+      {
+        "key": "E",
+        "text": "$2.4\\times10^4$"
+      }
+    ],
+    "answer": "D",
+    "solution": "$(6\\times10^7)(4\\times10^{-3})=24\\times10^{4}$. Standard form requires $a\\times10^n$ with $1\\le a<10$, so this is $2.4\\times10^5$. ($24\\times10^4$ has the right value but is not in standard form.)"
+  },
+  "esat-math-pressure-1-03": {
+    "id": "esat-math-pressure-1-03",
+    "type": "mcq",
+    "testId": "esat",
+    "topicId": "esat-math1",
+    "difficulty": 1,
+    "marks": 1,
+    "question": "Write $0.000072$ in standard form.",
+    "options": [
+      {
+        "key": "A",
+        "text": "$7.2\\times10^{-6}$"
+      },
+      {
+        "key": "B",
+        "text": "$7.2\\times10^{-4}$"
+      },
+      {
+        "key": "C",
+        "text": "$7.2\\times10^{-5}$"
+      },
+      {
+        "key": "D",
+        "text": "$7.2\\times10^{5}$"
+      },
+      {
+        "key": "E",
+        "text": "$0.72\\times10^{-4}$"
+      }
+    ],
+    "answer": "C",
+    "solution": "Moving the decimal point five places gives $7.2\\times10^{-5}$. ($0.72\\times10^{-4}$ has the same value but is not in standard form, since $0.72<1$.)"
+  },
+  "esat-mk8-m-02": {
+    "id": "esat-mk8-m-02",
+    "type": "mcq",
+    "testId": "esat",
+    "topicId": "esat-math1",
+    "difficulty": 1,
+    "marks": 1,
+    "question": "Express $0.000045$ in standard form.",
+    "options": [
+      {
+        "key": "A",
+        "text": "$4.5\\times10^{-6}$"
+      },
+      {
+        "key": "B",
+        "text": "$4.5\\times10^{-5}$"
+      },
+      {
+        "key": "C",
+        "text": "$4.5\\times10^{-4}$"
+      },
+      {
+        "key": "D",
+        "text": "$4.5\\times10^{5}$"
+      },
+      {
+        "key": "E",
+        "text": "$0.45\\times10^{-4}$"
+      }
+    ],
+    "answer": "B",
+    "solution": "$0.000045=4.5\\times10^{-5}$. ($0.45\\times10^{-4}$ has the same value but is not in standard form, since $0.45<1$.)"
+  },
+  "esat-mk7-m-04": {
+    "id": "esat-mk7-m-04",
+    "type": "mcq",
+    "testId": "esat",
+    "topicId": "esat-math1",
+    "difficulty": 2,
+    "marks": 1,
+    "question": "Factorise fully $2x^2-8$.",
+    "options": [
+      {
+        "key": "A",
+        "text": "$2(x-4)(x+1)$"
+      },
+      {
+        "key": "B",
+        "text": "$(2x-4)(x+2)$"
+      },
+      {
+        "key": "C",
+        "text": "$2(x^2-4)$"
+      },
+      {
+        "key": "D",
+        "text": "$2(x-2)(x+2)$"
+      },
+      {
+        "key": "E",
+        "text": "$2(x-2)^2$"
+      }
+    ],
+    "answer": "D",
+    "solution": "$2x^2-8=2(x^2-4)=2(x-2)(x+2)$. The expressions $2(x^2-4)$ and $(2x-4)(x+2)$ are equal to this but are not fully factorised: $x^2-4$ is a difference of two squares, and $2x-4$ still has a common factor $2$."
+  },
+  "lnat-ex-008": {
+    "id": "lnat-ex-008",
+    "type": "mcq",
+    "testId": "lnat",
+    "topicId": "lnat-read",
+    "difficulty": 2,
+    "marks": 1,
+    "question": "**Passage**\n\nIt is fashionable to dismiss the study of history as impractical. Yet the person who knows no history is at the mercy of whoever tells the most confident story about the past. History does not hand us ready-made answers; rather, it trains us to ask how we know what we claim to know, to weigh evidence, and to notice when a tidy narrative has quietly discarded inconvenient facts. That habit of mind is not a luxury. It is a defence.\n\n**Question**\n\nWhich of the following can be inferred from the passage?",
+    "options": [
+      {
+        "key": "A",
+        "text": "History provides definite answers to present problems."
+      },
+      {
+        "key": "B",
+        "text": "A tidy narrative may omit facts that complicate it."
+      },
+      {
+        "key": "C",
+        "text": "Only professional historians can reason well."
+      },
+      {
+        "key": "D",
+        "text": "Studying history guarantees good decisions."
+      },
+      {
+        "key": "E",
+        "text": "Evidence is irrelevant to historical claims."
+      }
+    ],
+    "answer": "B",
+    "solution": "The author explicitly warns that a 'tidy narrative' can 'quietly discard inconvenient facts', so the statement that a tidy narrative may omit facts that complicate it follows directly. The other statements either overstate the passage (definite answers, guaranteed good decisions, only professional historians) or contradict it (evidence being irrelevant)."
+  }
+}

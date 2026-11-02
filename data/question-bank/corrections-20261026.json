@@ -1,0 +1,1558 @@
+{
+  "schemaVersion": 1,
+  "reviewedAt": "2026-10-26",
+  "entries": [
+    {
+      "source": {
+        "id": "step-018",
+        "type": "long",
+        "testId": "step",
+        "topicId": "step-pure1",
+        "difficulty": 3,
+        "totalMarks": 20,
+        "context": "A Pythagorean triple $(a, b, c)$ with $a, b, c \\in \\mathbb{Z}^+$ satisfies $a^2 + b^2 = c^2$. It is called primitive if $\\gcd(a, b, c) = 1$.",
+        "parts": [
+          {
+            "label": "(i)",
+            "marks": 4,
+            "question": "Show that in a primitive Pythagorean triple, exactly one of $a$, $b$ is even.",
+            "solutionOutline": "Both odd: a=2p+1, b=2q+1, a²+b²=4p²+4p+1+4q²+4q+1=4(p²+p+q²+q)+2≡2 mod 4. But c² is 0 or 1 mod 4, so c²≡2 mod 4 is impossible. Both even: contradicts gcd=1. So exactly one of a,b is even."
+          },
+          {
+            "label": "(ii)",
+            "marks": 6,
+            "question": "Assume $b$ is even. Show that there exist coprime integers $m > n > 0$ with opposite parity such that $a = m^2 - n^2$, $b = 2mn$, $c = m^2 + n^2$.",
+            "solutionOutline": "c²-a²=b², so (c-a)(c+a)=b²=4m²n² (with b=2k). Let c-a=2s, c+a=2t with st=k² and gcd(s,t)=1 (using primitivity), s<t. Since gcd(s,t)=1 and st is a perfect square, each of s,t must itself be a perfect square: s=n², t=m² with gcd(m,n)=1. Then c=m²+n², a=m²-n², b=2mn. Parity: a odd, b even requires m,n opposite parity."
+          },
+          {
+            "label": "(iii)",
+            "marks": 5,
+            "question": "Find all primitive Pythagorean triples with $c < 50$.",
+            "solutionOutline": "m=2,n=1: a=3,b=4,c=5. m=3,n=2: a=5,b=12,c=13. m=4,n=1: a=15,b=8,c=17. m=4,n=3: a=7,b=24,c=25. m=5,n=2: a=21,b=20,c=29. m=5,n=4: a=9,b=40,c=41. m=6,n=1: a=35,b=12,c=37. m=6,n=5: a=11,b=60—too large. m=7,n=2: a=45,b=28,c=53>50. Check m=3,n=2 gives c=13 ✓; m=4,n=1 c=17 ✓; m=4,n=3 c=25 ✓; m=5,n=2 c=29 ✓; m=5,n=4 c=41 ✓; m=6,n=1 c=37 ✓. Triples: (3,4,5),(5,12,13),(8,15,17),(7,24,25),(20,21,29),(9,40,41),(12,35,37)."
+          },
+          {
+            "label": "(iv)",
+            "marks": 5,
+            "question": "Show that there is no primitive Pythagorean triple in which both $a$ and $c$ are perfect squares. [Hint: consider the equation $u^4 + v^4 = w^2$.]",
+            "solutionOutline": "If a=r², c=s², then r⁴+b²=s⁴. So (s²-r²)(s²+r²)=b². This means we have a solution to u⁴+v⁴=w² with u=r, v=b^{1/2}... The statement that x⁴+y⁴=z² has no positive integer solutions is Fermat's theorem for exponent 4 (provable by infinite descent). Since r⁴+b²=s⁴ means s⁴-r⁴=b², which factors as (s²-r²)(s²+r²)=b². With a=r², c=s² and using the parametric form: a=m²-n², c=m²+n², so r²=m²-n², s²=m²+n². Then m²=r²+n² ... this leads to another Pythagorean triple and descent shows no solution exists."
+          }
+        ],
+        "fullSolution": "(i) If $a,b$ both odd: $a^2+b^2\\equiv 2\\pmod{4}$, impossible for $c^2$. If both even: $\\gcd\\ge 2$, contradicts primitivity. So exactly one is even.\n\n(ii) With $b$ even write $b=2k$. Then $\\frac{c-a}{2}\\cdot\\frac{c+a}{2}=k^2$; let $s=\\frac{c-a}{2}$, $t=\\frac{c+a}{2}$. From primitivity, $\\gcd(s,t)=1$ and $st=k^2$; since $s,t$ are coprime with product a square, each is a square: $s=n^2$, $t=m^2$, $m>n$, $\\gcd(m,n)=1$. Then $c=m^2+n^2$, $a=m^2-n^2$, $b=2mn$. For $a$ odd: $m,n$ must have opposite parity.\n\n(iii) Tabulating $(m,n)$ with $m>n>0$, $\\gcd(m,n)=1$, opposite parity, $m^2+n^2<50$:\n$(2,1)\\to(3,4,5)$; $(3,2)\\to(5,12,13)$; $(4,1)\\to(15,8,17)$; $(4,3)\\to(7,24,25)$; $(5,2)\\to(21,20,29)$; $(6,1)\\to(35,12,37)$; $(5,4)\\to(9,40,41)$.\n\n(iv) Suppose $a=r^2$, $c=s^2$. Then $r^4+b^2=s^4$, i.e.\\ $(s^2)^2-(r^2)^2=b^2$, giving $(s^2-r^2)(s^2+r^2)=b^2$. From the parametric form $a=m^2-n^2=r^2$, $c=m^2+n^2=s^2$, so $(m,n,r)$ and $(n,r,s)$ each satisfy Pythagorean-like equations, producing a strictly smaller solution by infinite descent — contradicting the minimality of the original triple. This descent argument (Fermat) shows $u^4+v^4=w^2$ has no positive solution, so no such primitive triple exists."
+      },
+      "corrected": {
+        "id": "step-018",
+        "type": "long",
+        "testId": "step",
+        "topicId": "step-pure1",
+        "difficulty": 3,
+        "totalMarks": 20,
+        "context": "A Pythagorean triple $(a, b, c)$ with $a, b, c \\in \\mathbb{Z}^+$ satisfies $a^2 + b^2 = c^2$. It is called primitive if $\\gcd(a, b, c) = 1$.",
+        "parts": [
+          {
+            "label": "(i)",
+            "marks": 4,
+            "question": "Show that in a primitive Pythagorean triple, exactly one of $a$, $b$ is even.",
+            "solutionOutline": "Both odd: a=2p+1, b=2q+1, a²+b²=4p²+4p+1+4q²+4q+1=4(p²+p+q²+q)+2≡2 mod 4. But c² is 0 or 1 mod 4, so c²≡2 mod 4 is impossible. Both even: contradicts gcd=1. So exactly one of a,b is even."
+          },
+          {
+            "label": "(ii)",
+            "marks": 6,
+            "question": "Assume $b$ is even. Show that there exist coprime integers $m > n > 0$ with opposite parity such that $a = m^2 - n^2$, $b = 2mn$, $c = m^2 + n^2$.",
+            "solutionOutline": "c²-a²=b², so (c-a)(c+a)=b²=4m²n² (with b=2k). Let c-a=2s, c+a=2t with st=k² and gcd(s,t)=1 (using primitivity), s<t. Since gcd(s,t)=1 and st is a perfect square, each of s,t must itself be a perfect square: s=n², t=m² with gcd(m,n)=1. Then c=m²+n², a=m²-n², b=2mn. Parity: a odd, b even requires m,n opposite parity."
+          },
+          {
+            "label": "(iii)",
+            "marks": 5,
+            "question": "Find all primitive Pythagorean triples with $c < 50$.",
+            "solutionOutline": "Use $a=m^2-n^2$, $b=2mn$, $c=m^2+n^2$ with $m>n>0$, $\\gcd(m,n)=1$, $m,n$ of opposite parity, and $m^2+n^2<50$. The admissible pairs are $(m,n)=(2,1),(3,2),(4,1),(4,3),(5,2),(5,4),(6,1)$; the next candidates $(7,2)$ and $(6,5)$ give $c=53$ and $c=61$. The triples (listing the smaller leg first) are $(3,4,5),(5,12,13),(8,15,17),(7,24,25),(20,21,29),(9,40,41),(12,35,37)$."
+          },
+          {
+            "label": "(iv)",
+            "marks": 5,
+            "question": "Show that there is no primitive Pythagorean triple in which both $a$ and $c$ are perfect squares. [You may quote without proof Fermat's result that the equation $x^4 - y^4 = z^2$ has no solutions in positive integers.]",
+            "solutionOutline": "Suppose $a=r^2$ and $c=s^2$ for positive integers $r,s$. Then $r^4+b^2=s^4$, so $s^4-r^4=b^2$ with $s,r,b$ positive integers. By Fermat's result that $x^4-y^4=z^2$ has no solutions in positive integers (quoted, not proved here; it is proved by Fermat's method of infinite descent), this is impossible. Hence no primitive Pythagorean triple has both $a$ and $c$ perfect squares."
+          }
+        ],
+        "fullSolution": "(i) If $a,b$ both odd: $a^2+b^2\\equiv 2\\pmod{4}$, impossible for $c^2$. If both even: $\\gcd\\ge 2$, contradicts primitivity. So exactly one is even.\n\n(ii) With $b$ even write $b=2k$. Then $\\frac{c-a}{2}\\cdot\\frac{c+a}{2}=k^2$; let $s=\\frac{c-a}{2}$, $t=\\frac{c+a}{2}$. From primitivity, $\\gcd(s,t)=1$ and $st=k^2$; since $s,t$ are coprime with product a square, each is a square: $s=n^2$, $t=m^2$, $m>n$, $\\gcd(m,n)=1$. Then $c=m^2+n^2$, $a=m^2-n^2$, $b=2mn$. For $a$ odd: $m,n$ must have opposite parity.\n\n(iii) Tabulating $(m,n)$ with $m>n>0$, $\\gcd(m,n)=1$, opposite parity, $m^2+n^2<50$:\n$(2,1)\\to(3,4,5)$; $(3,2)\\to(5,12,13)$; $(4,1)\\to(15,8,17)$; $(4,3)\\to(7,24,25)$; $(5,2)\\to(21,20,29)$; $(6,1)\\to(35,12,37)$; $(5,4)\\to(9,40,41)$.\n\n(iv) If $a=r^2$ and $c=s^2$, then $s^4-r^4=b^2$ with $r,s,b$ positive integers. We quote without proof Fermat's theorem that $x^4-y^4=z^2$ has no solutions in positive integers (its proof, by infinite descent, is not given here). Hence no such triple exists."
+      }
+    },
+    {
+      "source": {
+        "id": "step-012",
+        "type": "long",
+        "testId": "step",
+        "topicId": "step-pure1",
+        "difficulty": 3,
+        "totalMarks": 20,
+        "context": "",
+        "parts": [
+          {
+            "label": "(i)",
+            "marks": 5,
+            "question": "Show that for any integer $n \\ge 1$, $n^5 - n$ is divisible by 30.",
+            "solutionOutline": "n^5-n=n(n^4-1)=n(n²-1)(n²+1)=n(n-1)(n+1)(n²+1). Product of 3 consecutive integers n-1,n,n+1 is divisible by 6. Also n^5≡n mod 5 (Fermat's little theorem), so 5|(n^5-n). And 5|n^5-n and 6|n^5-n and gcd(5,6)=1, so 30|n^5-n. Alternative: show directly that 2,3,5 each divide n^5-n."
+          },
+          {
+            "label": "(ii)",
+            "marks": 5,
+            "question": "Show that $n^5 \\equiv n \\pmod{5}$ for all integers $n$.",
+            "solutionOutline": "By Fermat's little theorem: if gcd(n,5)=1 then n^4≡1 mod 5, so n^5≡n mod 5. If 5|n: n^5≡0≡n mod 5. Either way n^5≡n mod 5."
+          },
+          {
+            "label": "(iii)",
+            "marks": 5,
+            "question": "Find the remainder when $7^{100}$ is divided by $30$.",
+            "solutionOutline": "7≡7 mod 30. 7²=49≡19. 7³=7·49=343≡343-11·30=343-330=13. 7⁴=7·13=91≡91-90=1 mod 30. So 7⁴≡1 mod 30. 100=4·25, so 7^100=(7^4)^25≡1^25=1 mod 30. Remainder is 1."
+          },
+          {
+            "label": "(iv)",
+            "marks": 5,
+            "question": "Find all positive integers $n$ such that $n^4 + 4^n$ is prime.",
+            "solutionOutline": "For $n=1$, the value is $5$, which is prime. If $n>1$ is even, both terms are even, so the sum is an even integer greater than $2$. If $n>1$ is odd, set $b=2^{(n-1)/2}$. Then $4^n=4b^4$, and Sophie Germain's identity factors $n^4+4b^4=(n^2+2b^2+2nb)(n^2+2b^2-2nb)$ into two integers greater than $1$. Hence only $n=1$ works."
+          }
+        ],
+        "fullSolution": "(i) $n^5-n=n(n-1)(n+1)(n^2+1)$. The product $(n-1)n(n+1)$ of three consecutive integers is divisible by $6$. By Fermat (or direct check): $5\\mid n^5-n$ for all $n$ (see part ii). Since $\\gcd(5,6)=1$, $30\\mid n^5-n$.\n\n(ii) If $5\\nmid n$: by Fermat's little theorem, $n^4\\equiv 1\\pmod 5$, so $n^5\\equiv n\\pmod 5$. If $5\\mid n$: $n^5\\equiv 0\\equiv n\\pmod 5$. ✓\n\n(iii) $7^4=2401=30\\cdot 80+1\\equiv 1\\pmod{30}$. So $7^{100}=(7^4)^{25}\\equiv 1^{25}=1\\pmod{30}$. Remainder: **1**.\n\n(iv) For $n=1$: $1+4=5$, prime. ✓ For $n>1$ odd: Sophie Germain identity with $a=n$, $b=2^{(n-1)/2}$... more directly: $n^4+4^n=n^4+4\\cdot(2^{n-1})^2=(n^2+2\\cdot 2^{n-1})^2-(2n\\cdot 2^{(n-1)/2})^2$ factors as a product of two integers each $>1$, so composite. For $n$ even and $n>2$: $4^n$ ends in $...6$ and $n^4$ is divisible by $16$; more simply, $n^4+4^n$ is always even and $>2$, hence composite. Only $n=\\boxed{1}$ works."
+      },
+      "corrected": {
+        "id": "step-012",
+        "type": "long",
+        "testId": "step",
+        "topicId": "step-pure1",
+        "difficulty": 3,
+        "totalMarks": 20,
+        "context": "",
+        "parts": [
+          {
+            "label": "(i)",
+            "marks": 5,
+            "question": "Show that for any integer $n \\ge 1$, $n^5 - n$ is divisible by 30.",
+            "solutionOutline": "n^5-n=n(n^4-1)=n(n²-1)(n²+1)=n(n-1)(n+1)(n²+1). Product of 3 consecutive integers n-1,n,n+1 is divisible by 6. Also n^5≡n mod 5 (Fermat's little theorem), so 5|(n^5-n). And 5|n^5-n and 6|n^5-n and gcd(5,6)=1, so 30|n^5-n. Alternative: show directly that 2,3,5 each divide n^5-n."
+          },
+          {
+            "label": "(ii)",
+            "marks": 5,
+            "question": "Show that $n^5 \\equiv n \\pmod{5}$ for all integers $n$.",
+            "solutionOutline": "By Fermat's little theorem: if gcd(n,5)=1 then n^4≡1 mod 5, so n^5≡n mod 5. If 5|n: n^5≡0≡n mod 5. Either way n^5≡n mod 5."
+          },
+          {
+            "label": "(iii)",
+            "marks": 5,
+            "question": "Find the remainder when $7^{100}$ is divided by $30$.",
+            "solutionOutline": "7≡7 mod 30. 7²=49≡19. 7³=7·49=343≡343-11·30=343-330=13. 7⁴=7·13=91≡91-90=1 mod 30. So 7⁴≡1 mod 30. 100=4·25, so 7^100=(7^4)^25≡1^25=1 mod 30. Remainder is 1."
+          },
+          {
+            "label": "(iv)",
+            "marks": 5,
+            "question": "Find all positive integers $n$ such that $n^4 + 4^n$ is prime.",
+            "solutionOutline": "For $n=1$, the value is $5$, which is prime. If $n>1$ is even, both terms are even, so the sum is an even integer greater than $2$. If $n>1$ is odd, set $b=2^{(n-1)/2}$. Then $4^n=4b^4$, and Sophie Germain's identity factors $n^4+4b^4=(n^2+2b^2+2nb)(n^2+2b^2-2nb)$ into two integers greater than $1$. Hence only $n=1$ works."
+          }
+        ],
+        "fullSolution": "(i) $n^5-n=n(n-1)(n+1)(n^2+1)$. The product $(n-1)n(n+1)$ of three consecutive integers is divisible by $6$. By Fermat (or direct check): $5\\mid n^5-n$ for all $n$ (see part ii). Since $\\gcd(5,6)=1$, $30\\mid n^5-n$.\n\n(ii) If $5\\nmid n$: by Fermat's little theorem, $n^4\\equiv 1\\pmod 5$, so $n^5\\equiv n\\pmod 5$. If $5\\mid n$: $n^5\\equiv 0\\equiv n\\pmod 5$. ✓\n\n(iii) $7^4=2401=30\\cdot 80+1\\equiv 1\\pmod{30}$. So $7^{100}=(7^4)^{25}\\equiv 1^{25}=1\\pmod{30}$. Remainder: **1**.\n\n(iv) For $n=1$: $1+4=5$, which is prime. If $n>1$ is even, $n^4$ and $4^n$ are both even, so the sum is an even number greater than $2$ and is composite. If $n>1$ is odd, let $b=2^{(n-1)/2}$, so that $4^n=4b^4$. Sophie Germain's identity gives $n^4+4b^4=(n^2+2b^2+2nb)(n^2+2b^2-2nb)$, and the smaller factor is $(n-b)^2+b^2\\ge b^2>1$, so the number is composite. Hence only $n=1$ works."
+      }
+    },
+    {
+      "source": {
+        "id": "step-008",
+        "type": "long",
+        "testId": "step",
+        "topicId": "step-pure1",
+        "difficulty": 3,
+        "totalMarks": 20,
+        "context": "",
+        "parts": [
+          {
+            "label": "(i)",
+            "marks": 5,
+            "question": "Prove that, for all real $x$ and $y$, $\\,x^2 + xy + y^2 \\ge 0$, with equality iff $x = y = 0$.",
+            "solutionOutline": "x²+xy+y²=(x+y/2)²+3y²/4≥0. Equality when x+y/2=0 and y=0, i.e. x=y=0."
+          },
+          {
+            "label": "(ii)",
+            "marks": 5,
+            "question": "Hence prove that for positive reals $a, b, c$: $a^2 + b^2 + c^2 \\ge ab + bc + ca$.",
+            "solutionOutline": "2(a²+b²+c²)-2(ab+bc+ca)=(a-b)²+(b-c)²+(c-a)²≥0. So a²+b²+c²≥ab+bc+ca."
+          },
+          {
+            "label": "(iii)",
+            "marks": 5,
+            "question": "Prove that $\\dfrac{a}{b+c}+\\dfrac{b}{c+a}+\\dfrac{c}{a+b} \\ge \\dfrac{3}{2}$ for positive reals $a,b,c$ (Nesbitt's inequality).",
+            "solutionOutline": "Add 1 to each fraction: (a+b+c)/(b+c)+(a+b+c)/(c+a)+(a+b+c)/(a+b)=S+3 where S is the original sum. Let s=a+b+c. S+3=s[1/(b+c)+1/(c+a)+1/(a+b)]. By AM-HM: 1/(b+c)+1/(c+a)+1/(a+b)≥9/(2s) (since (b+c)+(c+a)+(a+b)=2s and AM-HM gives 3/[(2s)/3]≤... using Cauchy-Schwarz: sum·sum(b+c)≥9, so sum≥9/(2s)). So S+3≥s·9/(2s)=9/2, giving S≥3/2. ✓"
+          },
+          {
+            "label": "(iv)",
+            "marks": 5,
+            "question": "Show when equality holds in Nesbitt's inequality.",
+            "solutionOutline": "Equality in Cauchy-Schwarz (or AM-HM) holds when all terms are equal: b+c=c+a=a+b, which gives a=b=c."
+          }
+        ],
+        "fullSolution": "(i) $x^2+xy+y^2=\\left(x+\\frac{y}{2}\\right)^2+\\frac{3y^2}{4}\\ge 0$. Equality iff $y=0$ and $x=0$.\n\n(ii) $2(a^2+b^2+c^2-ab-bc-ca)=(a-b)^2+(b-c)^2+(c-a)^2\\ge 0$. So $a^2+b^2+c^2\\ge ab+bc+ca$.\n\n(iii) Write $S=\\sum\\frac{a}{b+c}$. Then $S+3=s\\cdot\\sum\\frac{1}{b+c}$ where $s=a+b+c$. By Cauchy-Schwarz (or AM-HM), $(\\sum(b+c))\\cdot(\\sum\\frac{1}{b+c})\\ge 9$, i.e. $2s\\cdot\\sum\\frac{1}{b+c}\\ge 9$, so $S+3\\ge\\frac{9}{2}$, giving $S\\ge\\frac{3}{2}$.\n\n(iv) Equality in Cauchy-Schwarz iff $b+c=c+a=a+b$, i.e. $a=b=c$."
+      },
+      "corrected": {
+        "id": "step-008",
+        "type": "long",
+        "testId": "step",
+        "topicId": "step-pure1",
+        "difficulty": 3,
+        "totalMarks": 20,
+        "context": "",
+        "parts": [
+          {
+            "label": "(i)",
+            "marks": 5,
+            "question": "Prove that, for all real $x$ and $y$, $\\,x^2 + xy + y^2 \\ge 0$, with equality iff $x = y = 0$.",
+            "solutionOutline": "x²+xy+y²=(x+y/2)²+3y²/4≥0. Equality when x+y/2=0 and y=0, i.e. x=y=0."
+          },
+          {
+            "label": "(ii)",
+            "marks": 5,
+            "question": "Hence prove that for positive reals $a, b, c$: $a^2 + b^2 + c^2 \\ge ab + bc + ca$.",
+            "solutionOutline": "2(a²+b²+c²)-2(ab+bc+ca)=(a-b)²+(b-c)²+(c-a)²≥0. So a²+b²+c²≥ab+bc+ca."
+          },
+          {
+            "label": "(iii)",
+            "marks": 5,
+            "question": "Prove that $\\dfrac{a}{b+c}+\\dfrac{b}{c+a}+\\dfrac{c}{a+b} \\ge \\dfrac{3}{2}$ for positive reals $a,b,c$ (Nesbitt's inequality).",
+            "solutionOutline": "Let $S$ be the sum and $s=a+b+c$. Adding $1$ to each fraction gives $S+3=s\\left(\\dfrac1{b+c}+\\dfrac1{c+a}+\\dfrac1{a+b}\\right)$. By Cauchy-Schwarz, $\\big((b+c)+(c+a)+(a+b)\\big)\\left(\\dfrac1{b+c}+\\dfrac1{c+a}+\\dfrac1{a+b}\\right)\\ge9$, and the first bracket equals $2s$, so the second bracket is at least $\\dfrac{9}{2s}$. Hence $S+3\\ge\\dfrac92$, i.e. $S\\ge\\dfrac32$."
+          },
+          {
+            "label": "(iv)",
+            "marks": 5,
+            "question": "Show when equality holds in Nesbitt's inequality.",
+            "solutionOutline": "Equality in Cauchy-Schwarz (or AM-HM) holds when all terms are equal: b+c=c+a=a+b, which gives a=b=c."
+          }
+        ],
+        "fullSolution": "(i) $x^2+xy+y^2=\\left(x+\\frac{y}{2}\\right)^2+\\frac{3y^2}{4}\\ge 0$. Equality iff $y=0$ and $x=0$.\n\n(ii) $2(a^2+b^2+c^2-ab-bc-ca)=(a-b)^2+(b-c)^2+(c-a)^2\\ge 0$. So $a^2+b^2+c^2\\ge ab+bc+ca$.\n\n(iii) Write $S=\\sum\\frac{a}{b+c}$. Then $S+3=s\\cdot\\sum\\frac{1}{b+c}$ where $s=a+b+c$. By Cauchy-Schwarz (or AM-HM), $(\\sum(b+c))\\cdot(\\sum\\frac{1}{b+c})\\ge 9$, i.e. $2s\\cdot\\sum\\frac{1}{b+c}\\ge 9$, so $S+3\\ge\\frac{9}{2}$, giving $S\\ge\\frac{3}{2}$.\n\n(iv) Equality in Cauchy-Schwarz iff $b+c=c+a=a+b$, i.e. $a=b=c$."
+      }
+    },
+    {
+      "source": {
+        "id": "tmua-hard-005",
+        "type": "mcq",
+        "testId": "tmua",
+        "topicId": "tmua-stats",
+        "difficulty": 3,
+        "marks": 1,
+        "question": "A fair coin is tossed $4$ times. Given that at least one head appears, what is the probability of exactly two heads?",
+        "options": [
+          {
+            "key": "A",
+            "text": "$\\tfrac{2}{5}$"
+          },
+          {
+            "key": "B",
+            "text": "$\\tfrac{3}{8}$"
+          },
+          {
+            "key": "C",
+            "text": "$\\tfrac{1}{2}$"
+          },
+          {
+            "key": "D",
+            "text": "$\\tfrac{6}{16}$"
+          },
+          {
+            "key": "E",
+            "text": "$\\tfrac{1}{4}$"
+          }
+        ],
+        "answer": "A",
+        "solution": "$P(\\text{exactly }2)=\\tfrac{\\binom{4}{2}}{16}=\\tfrac{6}{16}$. $P(\\text{at least }1)=1-\\tfrac{1}{16}=\\tfrac{15}{16}$. The conditional probability is $\\dfrac{6/16}{15/16}=\\dfrac{6}{15}=\\dfrac{2}{5}$.",
+        "hint": "Use $P(A\\mid B)=\\dfrac{P(A\\cap B)}{P(B)}$; here $A\\subset B$."
+      },
+      "corrected": {
+        "id": "tmua-hard-005",
+        "type": "mcq",
+        "testId": "tmua",
+        "topicId": "tmua-stats",
+        "difficulty": 3,
+        "marks": 1,
+        "question": "A fair coin is tossed $4$ times. Given that at least one head appears, what is the probability of exactly two heads?",
+        "options": [
+          {
+            "key": "A",
+            "text": "$\\tfrac{2}{5}$"
+          },
+          {
+            "key": "B",
+            "text": "$\\tfrac{3}{8}$"
+          },
+          {
+            "key": "C",
+            "text": "$\\tfrac{1}{2}$"
+          },
+          {
+            "key": "D",
+            "text": "$\\tfrac{6}{11}$"
+          },
+          {
+            "key": "E",
+            "text": "$\\tfrac{1}{4}$"
+          }
+        ],
+        "answer": "A",
+        "solution": "$P(\\text{exactly }2)=\\tfrac{\\binom{4}{2}}{16}=\\tfrac{6}{16}$. $P(\\text{at least }1)=1-\\tfrac{1}{16}=\\tfrac{15}{16}$. The conditional probability is $\\dfrac{6/16}{15/16}=\\dfrac{6}{15}=\\dfrac{2}{5}$.",
+        "hint": "Use $P(A\\mid B)=\\dfrac{P(A\\cap B)}{P(B)}$; here $A\\subset B$."
+      }
+    },
+    {
+      "source": {
+        "id": "tmua-spec-g17",
+        "type": "mcq",
+        "testId": "tmua",
+        "topicId": "tmua-geometry",
+        "difficulty": 3,
+        "marks": 1,
+        "question": "The points $(-2,1)$ and $(4,5)$ are endpoints of a diameter of a circle. What is the radius?",
+        "options": [
+          {
+            "key": "A",
+            "text": "$\\sqrt5$"
+          },
+          {
+            "key": "B",
+            "text": "$\\sqrt{10}$"
+          },
+          {
+            "key": "C",
+            "text": "$2\\sqrt{13}$"
+          },
+          {
+            "key": "D",
+            "text": "$\\sqrt{13}$"
+          },
+          {
+            "key": "E",
+            "text": "$\\sqrt{52}$"
+          }
+        ],
+        "answer": "D",
+        "solution": "The diameter is $\\sqrt{(4+2)^2+(5-1)^2}=\\sqrt{52}=2\\sqrt{13}$. The radius is half of this, $\\sqrt{13}$."
+      },
+      "corrected": {
+        "id": "tmua-spec-g17",
+        "type": "mcq",
+        "testId": "tmua",
+        "topicId": "tmua-geometry",
+        "difficulty": 3,
+        "marks": 1,
+        "question": "The points $(-2,1)$ and $(4,5)$ are endpoints of a diameter of a circle. What is the radius?",
+        "options": [
+          {
+            "key": "A",
+            "text": "$\\sqrt5$"
+          },
+          {
+            "key": "B",
+            "text": "$\\sqrt{10}$"
+          },
+          {
+            "key": "C",
+            "text": "$2\\sqrt{13}$"
+          },
+          {
+            "key": "D",
+            "text": "$\\sqrt{13}$"
+          },
+          {
+            "key": "E",
+            "text": "$\\sqrt{26}$"
+          }
+        ],
+        "answer": "D",
+        "solution": "The diameter is $\\sqrt{(4+2)^2+(5-1)^2}=\\sqrt{52}=2\\sqrt{13}$. The radius is half of this, $\\sqrt{13}$."
+      }
+    },
+    {
+      "source": {
+        "id": "tmua-cal1-p1-09",
+        "type": "mcq",
+        "testId": "tmua",
+        "topicId": "tmua-geometry",
+        "difficulty": 2,
+        "marks": 1,
+        "question": "The vertices of a triangle are $(0,0)$, $(6,0)$ and $(2,4)$. What is the perpendicular distance from its centroid to the line through $(6,0)$ and $(2,4)$?",
+        "options": [
+          {
+            "key": "A",
+            "text": "$1$"
+          },
+          {
+            "key": "B",
+            "text": "$\\sqrt2$"
+          },
+          {
+            "key": "C",
+            "text": "$2$"
+          },
+          {
+            "key": "D",
+            "text": "$2\\sqrt2$"
+          },
+          {
+            "key": "E",
+            "text": "$\\dfrac4{\\sqrt2}$"
+          }
+        ],
+        "answer": "B",
+        "solution": "The centroid is $(8/3,4/3)$. The line through the last two vertices is $x+y=6$. The distance is $|8/3+4/3-6|/\\sqrt2=2/\\sqrt2=\\sqrt2$."
+      },
+      "corrected": {
+        "id": "tmua-cal1-p1-09",
+        "type": "mcq",
+        "testId": "tmua",
+        "topicId": "tmua-geometry",
+        "difficulty": 2,
+        "marks": 1,
+        "question": "The vertices of a triangle are $(0,0)$, $(6,0)$ and $(2,4)$. What is the perpendicular distance from its centroid to the line through $(6,0)$ and $(2,4)$?",
+        "options": [
+          {
+            "key": "A",
+            "text": "$1$"
+          },
+          {
+            "key": "B",
+            "text": "$\\sqrt2$"
+          },
+          {
+            "key": "C",
+            "text": "$2$"
+          },
+          {
+            "key": "D",
+            "text": "$2\\sqrt2$"
+          },
+          {
+            "key": "E",
+            "text": "$3\\sqrt2$"
+          }
+        ],
+        "answer": "B",
+        "solution": "The centroid is $(8/3,4/3)$. The line through the last two vertices is $x+y=6$. The distance is $|8/3+4/3-6|/\\sqrt2=2/\\sqrt2=\\sqrt2$."
+      }
+    },
+    {
+      "source": {
+        "id": "esat-boundary-m1-05",
+        "type": "mcq",
+        "testId": "esat",
+        "topicId": "esat-math1",
+        "difficulty": 2,
+        "marks": 1,
+        "question": "Simplify $\\sqrt{75}-\\sqrt{12}$.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$3\\sqrt7$"
+          },
+          {
+            "key": "B",
+            "text": "$3\\sqrt3$"
+          },
+          {
+            "key": "C",
+            "text": "$\\sqrt{63}$"
+          },
+          {
+            "key": "D",
+            "text": "$7\\sqrt3$"
+          },
+          {
+            "key": "E",
+            "text": "$\\sqrt3$"
+          }
+        ],
+        "answer": "B",
+        "solution": "$\\sqrt{75}=5\\sqrt3$, $\\sqrt{12}=2\\sqrt3$. [M2]"
+      },
+      "corrected": {
+        "id": "esat-boundary-m1-05",
+        "type": "mcq",
+        "testId": "esat",
+        "topicId": "esat-math1",
+        "difficulty": 2,
+        "marks": 1,
+        "question": "Simplify $\\sqrt{75}-\\sqrt{12}$.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$\\dfrac52$"
+          },
+          {
+            "key": "B",
+            "text": "$3\\sqrt3$"
+          },
+          {
+            "key": "C",
+            "text": "$\\sqrt{63}$"
+          },
+          {
+            "key": "D",
+            "text": "$7\\sqrt3$"
+          },
+          {
+            "key": "E",
+            "text": "$\\sqrt3$"
+          }
+        ],
+        "answer": "B",
+        "solution": "$\\sqrt{75}=5\\sqrt3$ and $\\sqrt{12}=2\\sqrt3$, so $\\sqrt{75}-\\sqrt{12}=3\\sqrt3$."
+      }
+    },
+    {
+      "source": {
+        "id": "esat-mk7-m-01",
+        "type": "mcq",
+        "testId": "esat",
+        "topicId": "esat-math1",
+        "difficulty": 1,
+        "marks": 1,
+        "question": "Simplify $\\sqrt{50}-\\sqrt{18}$.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$2\\sqrt2$"
+          },
+          {
+            "key": "B",
+            "text": "$\\sqrt{32}$"
+          },
+          {
+            "key": "C",
+            "text": "$\\sqrt2$"
+          },
+          {
+            "key": "D",
+            "text": "$4\\sqrt2$"
+          },
+          {
+            "key": "E",
+            "text": "$8\\sqrt2$"
+          }
+        ],
+        "answer": "A",
+        "solution": "$5\\sqrt2-3\\sqrt2=2\\sqrt2$."
+      },
+      "corrected": {
+        "id": "esat-mk7-m-01",
+        "type": "mcq",
+        "testId": "esat",
+        "topicId": "esat-math1",
+        "difficulty": 1,
+        "marks": 1,
+        "question": "Simplify $\\sqrt{50}-\\sqrt{18}$.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$2\\sqrt2$"
+          },
+          {
+            "key": "B",
+            "text": "$\\sqrt{32}$"
+          },
+          {
+            "key": "C",
+            "text": "$\\sqrt2$"
+          },
+          {
+            "key": "D",
+            "text": "$\\sqrt{68}$"
+          },
+          {
+            "key": "E",
+            "text": "$8\\sqrt2$"
+          }
+        ],
+        "answer": "A",
+        "solution": "$5\\sqrt2-3\\sqrt2=2\\sqrt2$."
+      }
+    },
+    {
+      "source": {
+        "id": "esat-mk9-m-11",
+        "type": "mcq",
+        "testId": "esat",
+        "topicId": "esat-math1",
+        "difficulty": 2,
+        "marks": 1,
+        "question": "$60\\,\\text{cm}^3$ is what fraction of $1$ litre?",
+        "options": [
+          {
+            "key": "A",
+            "text": "$\\dfrac{3}{50}$"
+          },
+          {
+            "key": "B",
+            "text": "$\\dfrac{6}{10}$"
+          },
+          {
+            "key": "C",
+            "text": "$\\dfrac{1}{6}$"
+          },
+          {
+            "key": "D",
+            "text": "$\\dfrac{3}{5}$"
+          },
+          {
+            "key": "E",
+            "text": "$\\dfrac{1}{60}$"
+          }
+        ],
+        "answer": "A",
+        "solution": "$1\\,\\text{L}=1000\\,\\text{cm}^3$; $\\dfrac{60}{1000}=\\dfrac{3}{50}$."
+      },
+      "corrected": {
+        "id": "esat-mk9-m-11",
+        "type": "mcq",
+        "testId": "esat",
+        "topicId": "esat-math1",
+        "difficulty": 2,
+        "marks": 1,
+        "question": "$60\\,\\text{cm}^3$ is what fraction of $1$ litre?",
+        "options": [
+          {
+            "key": "A",
+            "text": "$\\dfrac{3}{50}$"
+          },
+          {
+            "key": "B",
+            "text": "$\\dfrac{3}{500}$"
+          },
+          {
+            "key": "C",
+            "text": "$\\dfrac{1}{6}$"
+          },
+          {
+            "key": "D",
+            "text": "$\\dfrac{3}{5}$"
+          },
+          {
+            "key": "E",
+            "text": "$\\dfrac{1}{60}$"
+          }
+        ],
+        "answer": "A",
+        "solution": "$1\\,\\text{L}=1000\\,\\text{cm}^3$; $\\dfrac{60}{1000}=\\dfrac{3}{50}$."
+      }
+    },
+    {
+      "source": {
+        "id": "bpho-s1-b-037",
+        "type": "mcq",
+        "testId": "bpho",
+        "topicId": "bpho-thermal",
+        "difficulty": 3,
+        "marks": 4,
+        "question": "An ideal monatomic gas expands adiabatically. Its pressure and volume obey $pV^\\gamma=$ const with $\\gamma=\\dfrac53$. If the volume doubles, the pressure falls to what fraction of its original value?",
+        "options": [
+          {
+            "key": "A",
+            "text": "$2^{-2/3}\\approx0.63$"
+          },
+          {
+            "key": "B",
+            "text": "$\\dfrac14$"
+          },
+          {
+            "key": "C",
+            "text": "$\\dfrac12$"
+          },
+          {
+            "key": "D",
+            "text": "$2^{-1}$"
+          },
+          {
+            "key": "E",
+            "text": "$2^{-5/3}\\approx0.31$"
+          }
+        ],
+        "answer": "E",
+        "solution": "$p\\propto V^{-\\gamma}$: doubling $V$ gives $p\\to p\\cdot2^{-5/3}\\approx0.31p$ — falls faster than isothermal ($2^{-1}$) because the gas also cools."
+      },
+      "corrected": {
+        "id": "bpho-s1-b-037",
+        "type": "mcq",
+        "testId": "bpho",
+        "topicId": "bpho-thermal",
+        "difficulty": 3,
+        "marks": 4,
+        "question": "An ideal monatomic gas expands adiabatically. Its pressure and volume obey $pV^\\gamma=$ const with $\\gamma=\\dfrac53$. If the volume doubles, the pressure falls to what fraction of its original value?",
+        "options": [
+          {
+            "key": "A",
+            "text": "$2^{-2/3}\\approx0.63$"
+          },
+          {
+            "key": "B",
+            "text": "$\\dfrac14$"
+          },
+          {
+            "key": "C",
+            "text": "$2^{-3/5}\\approx0.66$"
+          },
+          {
+            "key": "D",
+            "text": "$2^{-1}$"
+          },
+          {
+            "key": "E",
+            "text": "$2^{-5/3}\\approx0.31$"
+          }
+        ],
+        "answer": "E",
+        "solution": "$p\\propto V^{-\\gamma}$: doubling $V$ gives $p\\to p\\cdot2^{-5/3}\\approx0.31p$ — falls faster than isothermal ($2^{-1}$) because the gas also cools."
+      }
+    },
+    {
+      "source": {
+        "id": "bpho-s1-b-045",
+        "type": "mcq",
+        "testId": "bpho",
+        "topicId": "bpho-modern",
+        "difficulty": 2,
+        "marks": 4,
+        "question": "A radioactive nuclide has a half-life of $6.0$ hours. What fraction of a sample remains after $24$ hours?",
+        "options": [
+          {
+            "key": "A",
+            "text": "$\\dfrac{1}{4}$"
+          },
+          {
+            "key": "B",
+            "text": "$\\dfrac{1}{16}$"
+          },
+          {
+            "key": "C",
+            "text": "$\\dfrac18$"
+          },
+          {
+            "key": "D",
+            "text": "$\\dfrac{1}{32}$"
+          },
+          {
+            "key": "E",
+            "text": "$\\dfrac14$"
+          }
+        ],
+        "answer": "B",
+        "solution": "$24/6=4$ half-lives: fraction $=(1/2)^4=1/16$."
+      },
+      "corrected": {
+        "id": "bpho-s1-b-045",
+        "type": "mcq",
+        "testId": "bpho",
+        "topicId": "bpho-modern",
+        "difficulty": 2,
+        "marks": 4,
+        "question": "A radioactive nuclide has a half-life of $6.0$ hours. What fraction of a sample remains after $24$ hours?",
+        "options": [
+          {
+            "key": "A",
+            "text": "$\\dfrac{1}{4}$"
+          },
+          {
+            "key": "B",
+            "text": "$\\dfrac{1}{16}$"
+          },
+          {
+            "key": "C",
+            "text": "$\\dfrac18$"
+          },
+          {
+            "key": "D",
+            "text": "$\\dfrac{1}{32}$"
+          },
+          {
+            "key": "E",
+            "text": "$\\dfrac{15}{16}$"
+          }
+        ],
+        "answer": "B",
+        "solution": "$24/6=4$ half-lives: fraction $=(1/2)^4=1/16$."
+      }
+    },
+    {
+      "source": {
+        "id": "bmo-smc-b-001",
+        "type": "mcq",
+        "testId": "bmo",
+        "topicId": "bmo-combinatorics",
+        "difficulty": 1,
+        "marks": 4,
+        "question": "Two fair dice are rolled. Find the probability that the total is $7$.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$\\dfrac16+\\dfrac1{36}$"
+          },
+          {
+            "key": "B",
+            "text": "$\\dfrac7{36}$"
+          },
+          {
+            "key": "C",
+            "text": "$\\dfrac1{12}$"
+          },
+          {
+            "key": "D",
+            "text": "$\\dfrac15$"
+          },
+          {
+            "key": "E",
+            "text": "$\\dfrac16$"
+          }
+        ],
+        "answer": "E",
+        "solution": "和为 7 的组合 $(1,6)\\dots(6,1)$ 共 6 种，$6/36=1/6$——所有点数和中概率最大。"
+      },
+      "corrected": {
+        "id": "bmo-smc-b-001",
+        "type": "mcq",
+        "testId": "bmo",
+        "topicId": "bmo-combinatorics",
+        "difficulty": 1,
+        "marks": 4,
+        "question": "Two fair dice are rolled. Find the probability that the total is $7$.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$\\dfrac17$"
+          },
+          {
+            "key": "B",
+            "text": "$\\dfrac7{36}$"
+          },
+          {
+            "key": "C",
+            "text": "$\\dfrac1{12}$"
+          },
+          {
+            "key": "D",
+            "text": "$\\dfrac15$"
+          },
+          {
+            "key": "E",
+            "text": "$\\dfrac16$"
+          }
+        ],
+        "answer": "E",
+        "solution": "和为 7 的组合 $(1,6)\\dots(6,1)$ 共 6 种，$6/36=1/6$——所有点数和中概率最大。"
+      }
+    },
+    {
+      "source": {
+        "id": "bmo-smc-b-002",
+        "type": "mcq",
+        "testId": "bmo",
+        "topicId": "bmo-combinatorics",
+        "difficulty": 2,
+        "marks": 4,
+        "question": "Two fair dice are rolled. Find the probability that at least one shows a six.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$\\dfrac1{36}$"
+          },
+          {
+            "key": "B",
+            "text": "$\\dfrac{11}{36}$"
+          },
+          {
+            "key": "C",
+            "text": "$\\dfrac13$"
+          },
+          {
+            "key": "D",
+            "text": "$\\dfrac{12}{36}$"
+          },
+          {
+            "key": "E",
+            "text": "$\\dfrac16$"
+          }
+        ],
+        "answer": "B",
+        "solution": "补集：都不是 6 的概率 $\\left(\\tfrac56\\right)^2=\\tfrac{25}{36}$，故 $1-\\tfrac{25}{36}=\\tfrac{11}{36}$。"
+      },
+      "corrected": {
+        "id": "bmo-smc-b-002",
+        "type": "mcq",
+        "testId": "bmo",
+        "topicId": "bmo-combinatorics",
+        "difficulty": 2,
+        "marks": 4,
+        "question": "Two fair dice are rolled. Find the probability that at least one shows a six.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$\\dfrac1{36}$"
+          },
+          {
+            "key": "B",
+            "text": "$\\dfrac{11}{36}$"
+          },
+          {
+            "key": "C",
+            "text": "$\\dfrac{25}{36}$"
+          },
+          {
+            "key": "D",
+            "text": "$\\dfrac{12}{36}$"
+          },
+          {
+            "key": "E",
+            "text": "$\\dfrac16$"
+          }
+        ],
+        "answer": "B",
+        "solution": "补集：都不是 6 的概率 $\\left(\\tfrac56\\right)^2=\\tfrac{25}{36}$，故 $1-\\tfrac{25}{36}=\\tfrac{11}{36}$。"
+      }
+    },
+    {
+      "source": {
+        "id": "bmo-smc-b-006",
+        "type": "mcq",
+        "testId": "bmo",
+        "topicId": "bmo-combinatorics",
+        "difficulty": 3,
+        "marks": 4,
+        "question": "A fair die is rolled three times. Find the probability of rolling at least one six.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$\\dfrac12$"
+          },
+          {
+            "key": "B",
+            "text": "$\\dfrac{91}{216}$"
+          },
+          {
+            "key": "C",
+            "text": "$\\dfrac{3}{6}$"
+          },
+          {
+            "key": "D",
+            "text": "$\\dfrac{1}{216}$"
+          },
+          {
+            "key": "E",
+            "text": "$\\dfrac{125}{216}$"
+          }
+        ],
+        "answer": "B",
+        "solution": "$1-(5/6)^3=1-125/216=91/216$。"
+      },
+      "corrected": {
+        "id": "bmo-smc-b-006",
+        "type": "mcq",
+        "testId": "bmo",
+        "topicId": "bmo-combinatorics",
+        "difficulty": 3,
+        "marks": 4,
+        "question": "A fair die is rolled three times. Find the probability of rolling at least one six.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$\\dfrac12$"
+          },
+          {
+            "key": "B",
+            "text": "$\\dfrac{91}{216}$"
+          },
+          {
+            "key": "C",
+            "text": "$\\dfrac{75}{216}$"
+          },
+          {
+            "key": "D",
+            "text": "$\\dfrac{1}{216}$"
+          },
+          {
+            "key": "E",
+            "text": "$\\dfrac{125}{216}$"
+          }
+        ],
+        "answer": "B",
+        "solution": "$1-(5/6)^3=1-125/216=91/216$。"
+      }
+    },
+    {
+      "source": {
+        "id": "bmo-smc-b-012",
+        "type": "mcq",
+        "testId": "bmo",
+        "topicId": "bmo-combinatorics",
+        "difficulty": 3,
+        "marks": 4,
+        "question": "A two-digit number is chosen at random. Find the probability that it is divisible by $3$.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$\\dfrac13$"
+          },
+          {
+            "key": "B",
+            "text": "$\\dfrac{29}{90}$"
+          },
+          {
+            "key": "C",
+            "text": "$\\dfrac{1}{3}-\\dfrac{1}{90}$"
+          },
+          {
+            "key": "D",
+            "text": "$\\dfrac{33}{90}$"
+          },
+          {
+            "key": "E",
+            "text": "$\\dfrac{30}{99}$"
+          }
+        ],
+        "answer": "A",
+        "solution": "两位数 $10\\dots99$ 共 90 个，其中 3 的倍数 $12\\dots99$ 共 30 个：$1/3$。"
+      },
+      "corrected": {
+        "id": "bmo-smc-b-012",
+        "type": "mcq",
+        "testId": "bmo",
+        "topicId": "bmo-combinatorics",
+        "difficulty": 3,
+        "marks": 4,
+        "question": "A two-digit number is chosen at random. Find the probability that it is divisible by $3$.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$\\dfrac13$"
+          },
+          {
+            "key": "B",
+            "text": "$\\dfrac{29}{90}$"
+          },
+          {
+            "key": "C",
+            "text": "$\\dfrac{3}{10}$"
+          },
+          {
+            "key": "D",
+            "text": "$\\dfrac{33}{90}$"
+          },
+          {
+            "key": "E",
+            "text": "$\\dfrac{30}{99}$"
+          }
+        ],
+        "answer": "A",
+        "solution": "两位数 $10\\dots99$ 共 90 个，其中 3 的倍数 $12\\dots99$ 共 30 个：$1/3$。"
+      }
+    },
+    {
+      "source": {
+        "id": "bmo-smc-b-020",
+        "type": "mcq",
+        "testId": "bmo",
+        "topicId": "bmo-combinatorics",
+        "difficulty": 3,
+        "marks": 4,
+        "question": "Two people each pick a number at random from $\\{1,\\dots,10\\}$ (independently). Find the probability they pick the same number.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$\\dfrac9{10}$"
+          },
+          {
+            "key": "B",
+            "text": "$\\dfrac15$"
+          },
+          {
+            "key": "C",
+            "text": "$\\dfrac{2}{10}$"
+          },
+          {
+            "key": "D",
+            "text": "$\\dfrac1{10}$"
+          },
+          {
+            "key": "E",
+            "text": "$\\dfrac1{100}$"
+          }
+        ],
+        "answer": "D",
+        "solution": "无论第一人选什么，第二人猜中的概率都是 $1/10$。"
+      },
+      "corrected": {
+        "id": "bmo-smc-b-020",
+        "type": "mcq",
+        "testId": "bmo",
+        "topicId": "bmo-combinatorics",
+        "difficulty": 3,
+        "marks": 4,
+        "question": "Two people each pick a number at random from $\\{1,\\dots,10\\}$ (independently). Find the probability they pick the same number.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$\\dfrac9{10}$"
+          },
+          {
+            "key": "B",
+            "text": "$\\dfrac15$"
+          },
+          {
+            "key": "C",
+            "text": "$\\dfrac{2}{11}$"
+          },
+          {
+            "key": "D",
+            "text": "$\\dfrac1{10}$"
+          },
+          {
+            "key": "E",
+            "text": "$\\dfrac1{100}$"
+          }
+        ],
+        "answer": "D",
+        "solution": "无论第一人选什么，第二人猜中的概率都是 $1/10$。"
+      }
+    },
+    {
+      "source": {
+        "id": "bmo-smc-b-046",
+        "type": "mcq",
+        "testId": "bmo",
+        "topicId": "bmo-algebra",
+        "difficulty": 3,
+        "marks": 4,
+        "question": "If $x^2+y^2=8$, find the maximum value of $x+y$.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$8$"
+          },
+          {
+            "key": "B",
+            "text": "$2\\sqrt2$"
+          },
+          {
+            "key": "C",
+            "text": "$16$"
+          },
+          {
+            "key": "D",
+            "text": "$\\sqrt8$"
+          },
+          {
+            "key": "E",
+            "text": "$4$"
+          }
+        ],
+        "answer": "E",
+        "solution": "$(x+y)^2\\le2(x^2+y^2)=16$（柯西/QM–AM），故 $x+y\\le4$，等号 $x=y=2$。"
+      },
+      "corrected": {
+        "id": "bmo-smc-b-046",
+        "type": "mcq",
+        "testId": "bmo",
+        "topicId": "bmo-algebra",
+        "difficulty": 3,
+        "marks": 4,
+        "question": "If $x^2+y^2=8$, find the maximum value of $x+y$.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$8$"
+          },
+          {
+            "key": "B",
+            "text": "$2\\sqrt2$"
+          },
+          {
+            "key": "C",
+            "text": "$16$"
+          },
+          {
+            "key": "D",
+            "text": "$4\\sqrt2$"
+          },
+          {
+            "key": "E",
+            "text": "$4$"
+          }
+        ],
+        "answer": "E",
+        "solution": "$(x+y)^2\\le2(x^2+y^2)=16$（柯西/QM–AM），故 $x+y\\le4$，等号 $x=y=2$。"
+      }
+    },
+    {
+      "source": {
+        "id": "step-mk3-25",
+        "type": "mcq",
+        "testId": "step",
+        "topicId": "step-pure2",
+        "difficulty": 3,
+        "marks": 20,
+        "question": "The value of $\\displaystyle\\int_0^{\\pi/2}\\sin^{6} x\\,dx$ is:",
+        "options": [
+          {
+            "key": "A",
+            "text": "$\\frac{1}{3} + \\frac{5 \\pi}{32}$"
+          },
+          {
+            "key": "B",
+            "text": "$\\frac{5 \\pi}{32}$"
+          },
+          {
+            "key": "C",
+            "text": "$\\frac{5 \\pi}{16}$"
+          },
+          {
+            "key": "D",
+            "text": "$\\frac{8 \\cdot 2^{\\frac{87}{226}} \\cdot 3^{\\frac{19}{113}} \\cdot 5^{\\frac{88}{113}} \\cdot 7^{\\frac{35}{113}}}{63}$"
+          },
+          {
+            "key": "E",
+            "text": "$\\frac{5 \\pi}{64}$"
+          }
+        ],
+        "answer": "B",
+        "solution": "By the reduction formula $I_n=\\frac{n-1}{n}I_{n-2}$, $I_{6}=\\frac{5 \\pi}{32}.$"
+      },
+      "corrected": {
+        "id": "step-mk3-25",
+        "type": "mcq",
+        "testId": "step",
+        "topicId": "step-pure2",
+        "difficulty": 3,
+        "marks": 20,
+        "question": "The value of $\\displaystyle\\int_0^{\\pi/2}\\sin^{6} x\\,dx$ is:",
+        "options": [
+          {
+            "key": "A",
+            "text": "$\\frac{1}{3} + \\frac{5 \\pi}{32}$"
+          },
+          {
+            "key": "B",
+            "text": "$\\frac{5 \\pi}{32}$"
+          },
+          {
+            "key": "C",
+            "text": "$\\frac{5 \\pi}{16}$"
+          },
+          {
+            "key": "D",
+            "text": "$\\frac{8}{15}$"
+          },
+          {
+            "key": "E",
+            "text": "$\\frac{5 \\pi}{64}$"
+          }
+        ],
+        "answer": "B",
+        "solution": "By the reduction formula $I_n=\\frac{n-1}{n}I_{n-2}$, $I_{6}=\\frac{5 \\pi}{32}.$"
+      }
+    },
+    {
+      "source": {
+        "id": "tmua-spec-n11",
+        "type": "mcq",
+        "testId": "tmua",
+        "topicId": "tmua-number",
+        "difficulty": 2,
+        "marks": 1,
+        "question": "Write $(6\\times10^7)(4\\times10^{-3})$ in standard form.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$24\\times10^{10}$"
+          },
+          {
+            "key": "B",
+            "text": "$2.4\\times10^{11}$"
+          },
+          {
+            "key": "C",
+            "text": "$24\\times10^4$"
+          },
+          {
+            "key": "D",
+            "text": "$2.4\\times10^5$"
+          },
+          {
+            "key": "E",
+            "text": "$2.4\\times10^4$"
+          }
+        ],
+        "answer": "D",
+        "solution": "The product is $24\\times10^4=2.4\\times10^5$, which is in standard form."
+      },
+      "corrected": {
+        "id": "tmua-spec-n11",
+        "type": "mcq",
+        "testId": "tmua",
+        "topicId": "tmua-number",
+        "difficulty": 2,
+        "marks": 1,
+        "question": "Write $(6\\times10^7)(4\\times10^{-3})$ in standard form.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$1.0\\times10^{5}$"
+          },
+          {
+            "key": "B",
+            "text": "$2.4\\times10^{11}$"
+          },
+          {
+            "key": "C",
+            "text": "$24\\times10^4$"
+          },
+          {
+            "key": "D",
+            "text": "$2.4\\times10^5$"
+          },
+          {
+            "key": "E",
+            "text": "$2.4\\times10^4$"
+          }
+        ],
+        "answer": "D",
+        "solution": "$(6\\times10^7)(4\\times10^{-3})=24\\times10^{4}$. Standard form requires $a\\times10^n$ with $1\\le a<10$, so this is $2.4\\times10^5$. ($24\\times10^4$ has the right value but is not in standard form.)"
+      }
+    },
+    {
+      "source": {
+        "id": "esat-math-pressure-1-03",
+        "type": "mcq",
+        "testId": "esat",
+        "topicId": "esat-math1",
+        "difficulty": 1,
+        "marks": 1,
+        "question": "Write $0.000072$ in standard form.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$7.2\\times10^{-6}$"
+          },
+          {
+            "key": "B",
+            "text": "$7.2\\times10^{-4}$"
+          },
+          {
+            "key": "C",
+            "text": "$7.2\\times10^{-5}$"
+          },
+          {
+            "key": "D",
+            "text": "$72\\times10^{-5}$"
+          },
+          {
+            "key": "E",
+            "text": "$0.72\\times10^{-4}$"
+          }
+        ],
+        "answer": "C",
+        "solution": "Moving the decimal point five places gives $7.2\\times10^{-5}$."
+      },
+      "corrected": {
+        "id": "esat-math-pressure-1-03",
+        "type": "mcq",
+        "testId": "esat",
+        "topicId": "esat-math1",
+        "difficulty": 1,
+        "marks": 1,
+        "question": "Write $0.000072$ in standard form.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$7.2\\times10^{-6}$"
+          },
+          {
+            "key": "B",
+            "text": "$7.2\\times10^{-4}$"
+          },
+          {
+            "key": "C",
+            "text": "$7.2\\times10^{-5}$"
+          },
+          {
+            "key": "D",
+            "text": "$7.2\\times10^{5}$"
+          },
+          {
+            "key": "E",
+            "text": "$0.72\\times10^{-4}$"
+          }
+        ],
+        "answer": "C",
+        "solution": "Moving the decimal point five places gives $7.2\\times10^{-5}$. ($0.72\\times10^{-4}$ has the same value but is not in standard form, since $0.72<1$.)"
+      }
+    },
+    {
+      "source": {
+        "id": "esat-mk8-m-02",
+        "type": "mcq",
+        "testId": "esat",
+        "topicId": "esat-math1",
+        "difficulty": 1,
+        "marks": 1,
+        "question": "Express $0.000045$ in standard form.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$45\\times10^{-6}$"
+          },
+          {
+            "key": "B",
+            "text": "$4.5\\times10^{-5}$"
+          },
+          {
+            "key": "C",
+            "text": "$4.5\\times10^{-4}$"
+          },
+          {
+            "key": "D",
+            "text": "$4.5\\times10^{5}$"
+          },
+          {
+            "key": "E",
+            "text": "$0.45\\times10^{-4}$"
+          }
+        ],
+        "answer": "B",
+        "solution": "$0.000045=4.5\\times10^{-5}$."
+      },
+      "corrected": {
+        "id": "esat-mk8-m-02",
+        "type": "mcq",
+        "testId": "esat",
+        "topicId": "esat-math1",
+        "difficulty": 1,
+        "marks": 1,
+        "question": "Express $0.000045$ in standard form.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$4.5\\times10^{-6}$"
+          },
+          {
+            "key": "B",
+            "text": "$4.5\\times10^{-5}$"
+          },
+          {
+            "key": "C",
+            "text": "$4.5\\times10^{-4}$"
+          },
+          {
+            "key": "D",
+            "text": "$4.5\\times10^{5}$"
+          },
+          {
+            "key": "E",
+            "text": "$0.45\\times10^{-4}$"
+          }
+        ],
+        "answer": "B",
+        "solution": "$0.000045=4.5\\times10^{-5}$. ($0.45\\times10^{-4}$ has the same value but is not in standard form, since $0.45<1$.)"
+      }
+    },
+    {
+      "source": {
+        "id": "esat-mk7-m-04",
+        "type": "mcq",
+        "testId": "esat",
+        "topicId": "esat-math1",
+        "difficulty": 2,
+        "marks": 1,
+        "question": "Factorise fully $2x^2-8$.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$2(x-4)(x+1)$"
+          },
+          {
+            "key": "B",
+            "text": "$(2x-4)(x+2)$"
+          },
+          {
+            "key": "C",
+            "text": "$2(x^2-4)$"
+          },
+          {
+            "key": "D",
+            "text": "$2(x-2)(x+2)$"
+          },
+          {
+            "key": "E",
+            "text": "$(x-2)(2x+4)$"
+          }
+        ],
+        "answer": "D",
+        "solution": "$2x^2-8=2(x^2-4)=2(x-2)(x+2)$."
+      },
+      "corrected": {
+        "id": "esat-mk7-m-04",
+        "type": "mcq",
+        "testId": "esat",
+        "topicId": "esat-math1",
+        "difficulty": 2,
+        "marks": 1,
+        "question": "Factorise fully $2x^2-8$.",
+        "options": [
+          {
+            "key": "A",
+            "text": "$2(x-4)(x+1)$"
+          },
+          {
+            "key": "B",
+            "text": "$(2x-4)(x+2)$"
+          },
+          {
+            "key": "C",
+            "text": "$2(x^2-4)$"
+          },
+          {
+            "key": "D",
+            "text": "$2(x-2)(x+2)$"
+          },
+          {
+            "key": "E",
+            "text": "$2(x-2)^2$"
+          }
+        ],
+        "answer": "D",
+        "solution": "$2x^2-8=2(x^2-4)=2(x-2)(x+2)$. The expressions $2(x^2-4)$ and $(2x-4)(x+2)$ are equal to this but are not fully factorised: $x^2-4$ is a difference of two squares, and $2x-4$ still has a common factor $2$."
+      }
+    },
+    {
+      "source": null,
+      "corrected": {
+        "id": "lnat-ex-008",
+        "type": "mcq",
+        "testId": "lnat",
+        "topicId": "lnat-read",
+        "difficulty": 2,
+        "marks": 1,
+        "question": "**Passage**\n\nIt is fashionable to dismiss the study of history as impractical. Yet the person who knows no history is at the mercy of whoever tells the most confident story about the past. History does not hand us ready-made answers; rather, it trains us to ask how we know what we claim to know, to weigh evidence, and to notice when a tidy narrative has quietly discarded inconvenient facts. That habit of mind is not a luxury. It is a defence.\n\n**Question**\n\nWhich of the following can be inferred from the passage?",
+        "options": [
+          {
+            "key": "A",
+            "text": "History provides definite answers to present problems."
+          },
+          {
+            "key": "B",
+            "text": "A tidy narrative may omit facts that complicate it."
+          },
+          {
+            "key": "C",
+            "text": "Only professional historians can reason well."
+          },
+          {
+            "key": "D",
+            "text": "Studying history guarantees good decisions."
+          },
+          {
+            "key": "E",
+            "text": "Evidence is irrelevant to historical claims."
+          }
+        ],
+        "answer": "B",
+        "solution": "The author explicitly warns that a 'tidy narrative' can 'quietly discard inconvenient facts', so the statement that a tidy narrative may omit facts that complicate it follows directly. The other statements either overstate the passage (definite answers, guaranteed good decisions, only professional historians) or contradict it (evidence being irrelevant)."
+      }
+    }
+  ]
+}

@@ -42,6 +42,8 @@
     "registerTitle": "Sign up",
     "email": "Email",
     "registrationHint": "Create an account with your email. Add your intended universities and subjects to personalise your training.",
+    "inviteRegistrationHint": "Registration currently requires an invitation bound to your email. Existing accounts can sign in as usual.",
+    "inviteCode": "Invitation code",
     "password": "Password",
     "guardian": "I am a minor and have guardian consent",
     "consent": "I have read and agree to the Privacy Policy (PIPL)",
@@ -55,6 +57,7 @@
       "INVALID": "Invalid email or password (10–128 characters)",
       "EXISTS": "Email already registered",
       "BADCREDS": "Wrong email or password",
+      "INVITE_INVALID": "Invitation unavailable, expired or not valid for this email",
       "CONSENT_REQUIRED": "Please read and accept the Privacy Policy and Terms",
       "RATE_LIMITED": "Too many registration attempts. Please try again later."
     }
@@ -102,122 +105,6 @@
     "noProfile": "No profile yet — fill in your grades and goals to get started.",
     "buildProfile": "Build my profile",
     "startMatch": "Start matching"
-  },
-  "home": {
-    "badge": "Built for A-Level · Admission tests + Olympiads",
-    "titleLine1": "Admission tests & competitions for top UK & HK unis,",
-    "titleBefore": "prepared for ",
-    "titleHighlight": "next to nothing",
-    "titleAfter": "",
-    "subtitle": "Current university admission tests such as TMUA, ESAT, STEP, LNAT and TARA, historical MAT and PAT training, plus academic competitions for profile-building — original question banks, full timed mocks, step-by-step solutions and knowledge cards in one platform.",
-    "ctaTry": "Start practising free",
-    "ctaBrowse": "Which tests do I need?",
-    "priceNote": "Free during the Beta: every question bank and full mock is open at no charge.",
-    "features": [
-      {
-        "emoji": "📚",
-        "href": "/tests",
-        "title": "Original question banks",
-        "desc": "Original questions across 9 admission tests and competitions, layered by topic, each with full step-by-step solutions — learn while you practise."
-      },
-      {
-        "emoji": "⏱️",
-        "href": "/tests",
-        "title": "Full timed mocks",
-        "desc": "Mock papers matching the real exam's structure and timing, auto-marked with mistake review — real rehearsal before the day."
-      },
-      {
-        "emoji": "🧠",
-        "href": "/tests",
-        "title": "Knowledge cards",
-        "desc": "Core concepts, methods and examples for every topic, distilled into cards — learn and practise reinforce each other."
-      },
-      {
-        "emoji": "🎯",
-        "href": "/match",
-        "title": "Course matching",
-        "desc": "Enter your A-Level predictions for reach / match / safety tiers — and see exactly which admission tests you'll need."
-      }
-    ],
-    "pricingHeading": "One subscription — tests and competitions covered",
-    "pricingSub": "Unlock question banks, mocks and solutions for all 9 admission tests and competitions. Cancel anytime.",
-    "plans": [
-      {
-        "name": "Free",
-        "price": "¥0",
-        "unit": "",
-        "tagline": "Start practising",
-        "perks": [
-          "Basic practice for one test or competition (limited)",
-          "Prep guides + registration/results info",
-          "Progress tracking"
-        ]
-      },
-      {
-        "name": "Monthly",
-        "price": "¥49",
-        "unit": "/mo",
-        "tagline": "Flexible prep",
-        "perks": [
-          "Unlock every admission-test and competition bank",
-          "Full mock papers",
-          "Smart mistake book",
-          "Step-by-step solutions"
-        ]
-      },
-      {
-        "name": "Annual",
-        "price": "¥399",
-        "unit": "/yr",
-        "tagline": "Best value · ~¥33/mo",
-        "highlight": true,
-        "perks": [
-          "Everything in Monthly",
-          "Interview simulation & bank",
-          "Statement coach tools",
-          "Content updated all year"
-        ]
-      }
-    ],
-    "pricingNote": "Pricing is a product plan, subject to launch. We focus on preparation and do not guarantee test or admission outcomes.",
-    "heroStats": [
-      {
-        "num": "Admission tests",
-        "label": "MAT · TMUA · ESAT · STEP · PAT · LNAT · TARA"
-      },
-      {
-        "num": "Competitions",
-        "label": "Profile boosters · BMO & BPhO live, more coming"
-      },
-      {
-        "num": "Original",
-        "label": "Banks + timed mocks + knowledge cards"
-      }
-    ],
-    "capEyebrow": "What you get",
-    "capTitle": "One platform to master every admission test",
-    "capSub": "Admission tests or academic competitions — original banks + full mocks + step-by-step solutions + knowledge cards, one loop for all.",
-    "processEyebrow": "How it works",
-    "processTitle": "Three steps, from zero to exam day",
-    "pricingEyebrow": "Plans",
-    "processSub": "Pick your test → drill the bank → sit timed mocks. Just follow the path.",
-    "prepSteps": [
-      {
-        "num": "01",
-        "title": "Pick a test or competition · Read the cards",
-        "desc": "Lock in the admission tests (TMUA / ESAT / MAT / STEP / PAT / LNAT / TARA) and competitions (BMO / BPhO) you need, then use knowledge cards to grasp the key methods and question types fast."
-      },
-      {
-        "num": "02",
-        "title": "Drill the bank · Full solutions",
-        "desc": "Practise original questions layered by topic, each with step-by-step solutions and method notes; a smart mistakes log keeps you on your weak spots."
-      },
-      {
-        "num": "03",
-        "title": "Timed mock papers · Close the gaps",
-        "desc": "Rehearse on mocks that match the real exam's structure and timing — auto-marked, with review — so your pace and instincts are ready."
-      }
-    ]
   },
   "match": {
     "title": "Course Matching",
@@ -414,36 +301,5 @@
     "interview": "Interview",
     "test": "Test",
     "toMatch": "→ Match with my grades"
-  },
-  "story": {
-    "eyebrow": "A note at the end",
-    "titleLine": "A father and son who turned the potholes they hit into your path",
-    "cta": "Read our story",
-    "aboutTitle": "About us",
-    "aboutSubtitle": "A father and son on the study-abroad road — and the platform we wish we'd had.",
-    "paras": [
-      "After all that, our clearest conviction became this: the application should be something the student controls. The job of parents and tools is to help them learn, not to do it for them.",
-      "So, with AI, the two of us built this platform. Our son understands what A-Level students actually face; I turned it into something dependable, transparent and usable.",
-      "It doesn't apply for you — it helps you do it well yourself: how to build your background, prepare for tests, write a statement that's honest and strong, and fill in every field. Transparent, low-cost, like someone who's walked the road before you — because we have."
-    ],
-    "valuesTitle": "What we stand for",
-    "values": [
-      {
-        "icon": "🧭",
-        "title": "Empower, don't replace",
-        "desc": "No ghost-writing, no logging in for you, no submitting for you. The ability is what you keep."
-      },
-      {
-        "icon": "💡",
-        "title": "Been there",
-        "desc": "Every feature maps to a real pothole we hit ourselves."
-      },
-      {
-        "icon": "🤖",
-        "title": "AI-powered, human-checked",
-        "desc": "AI makes you faster; direction, judgement and honesty stay with people."
-      }
-    ],
-    "signoff": "— The \"Kitty\" father & son"
   }
 }

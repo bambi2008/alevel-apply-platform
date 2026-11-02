@@ -26,7 +26,7 @@ const mcqSchema = z.object({
   solution: z.string().min(1),
   hint: z.string().optional(),
   context: z.string().optional(),
-  optionExplanations: z.record(z.string()).optional(),
+  optionExplanations: z.record(z.string(), z.string()).optional(),
 });
 const longPartSchema = z.object({
   label: z.string().min(1),

@@ -1,4 +1,5 @@
 import type { MockPaper } from "./index";
+import calibrationManifest from "@/data/question-bank/calibration-manifest-20261026.json";
 import { CAIE9709_P3_ACTIVE_PAPERS } from "@/lib/tests/questions/caie9709";
 import {
   CAIE9709_P3_MOCK_1,
@@ -90,7 +91,9 @@ export const CAIE9709_P3_ARCHIVED_PAPERS: MockPaper[] = [
 ];
 
 export function getCurrentP3PaperId(paperId: string): string | undefined {
-  const match = /^caie9709-p3-written-(\d+)(?:-r2)?$/.exec(paperId);
+  const match = /^caie9709-p3-written-(\d+)(?:(?:-r[23])|(?:-rev\d{8})|(?:-cal\d{8}))*$/.exec(paperId);
   const number = match ? Number(match[1]) : 0;
-  return number >= 1 && number <= 16 ? `caie9709-p3-written-${number}-r3` : undefined;
+  if (number < 1 || number > 16) return undefined;
+  const base = `caie9709-p3-written-${number}-r3`;
+  return Object.keys(calibrationManifest.exams.caie9709.papers).find(id => id === base || id.startsWith(`${base}-`));
 }

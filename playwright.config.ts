@@ -10,6 +10,7 @@ if (!process.env.DATABASE_URL) {
 const port = Number(process.env.E2E_PORT ?? 3130);
 const localBaseUrl = `http://127.0.0.1:${port}`;
 const baseURL = process.env.E2E_BASE_URL ?? localBaseUrl;
+const serverMode = process.env.E2E_USE_PRODUCTION === "true" ? "start" : "dev";
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -46,9 +47,9 @@ export default defineConfig({
   webServer: process.env.E2E_BASE_URL
     ? undefined
     : {
-        command: `node node_modules/next/dist/bin/next dev -p ${port}`,
+        command: `node node_modules/next/dist/bin/next ${serverMode} -p ${port}`,
         url: `${localBaseUrl}/api/health`,
-        reuseExistingServer: !process.env.CI,
+        reuseExistingServer: serverMode === "start" ? false : !process.env.CI,
         timeout: 180_000,
         env: {
           APP_ORIGIN: localBaseUrl,
@@ -59,7 +60,7 @@ export default defineConfig({
             process.env.DATABASE_URL ??
             "postgresql://postgres:postgres@127.0.0.1:5432/alevel_apply",
           STORAGE_DRIVER: "local",
-          LOCAL_STORAGE_PATH: path.join(process.cwd(), ".storage-e2e"),
+          LOCAL_STORAGE_PATH: process.env.LOCAL_STORAGE_PATH ?? path.join(process.cwd(), ".storage-e2e"),
           NEXT_PUBLIC_PHONE_AUTH_ENABLED: "false",
           AI_REQUIRES_CROSS_BORDER_CONSENT: "true",
         },

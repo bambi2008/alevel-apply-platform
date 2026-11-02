@@ -1,4 +1,5 @@
 "use client";
+import { useUiCopy } from "@/components/use-ui-copy";
 
 import { useEffect, useState } from "react";
 import {
@@ -32,6 +33,7 @@ function fieldLabel(v: string): string {
 }
 
 export function ImportFromProjects({ content }: { content: UcasPsContent }) {
+  const ui = useUiCopy();
   const [materials, setMaterials] = useState<Material[]>([]);
   const [picked, setPicked] = useState<string>("");
   const [question, setQuestion] = useState<"q2" | "q3">("q2");
@@ -87,7 +89,7 @@ export function ImportFromProjects({ content }: { content: UcasPsContent }) {
   const run = async () => {
     const m = materials.find((x) => x.uid === picked);
     if (!m) {
-      setError("请先选择一个课题。");
+      setError(ui("请先选择一个课题。"));
       return;
     }
     setError("");
@@ -96,7 +98,7 @@ export function ImportFromProjects({ content }: { content: UcasPsContent }) {
     try {
       const res = await fetch("/api/ps-from-project", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", "x-qiaoshen-locale": document.documentElement.lang },
         body: JSON.stringify({
           question,
           projectTitle: m.title,
@@ -109,11 +111,11 @@ export function ImportFromProjects({ content }: { content: UcasPsContent }) {
       });
       if (!res.ok) {
         const e = await res.json().catch(() => ({}));
-        throw new Error(e.error || "生成失败");
+        throw new Error(e.error || ui("生成失败"));
       }
       setResult((await res.json()) as Result);
     } catch (e) {
-      setError(e instanceof Error ? e.message : "生成失败");
+      setError(e instanceof Error ? e.message : ui("生成失败"));
     } finally {
       setLoading(false);
     }
@@ -121,41 +123,35 @@ export function ImportFromProjects({ content }: { content: UcasPsContent }) {
 
   return (
     <section className="mt-8 rounded-xl border border-violet-200 bg-violet-50/30 p-5">
-      <h2 className="font-semibold text-neutral-800">🔗 从我的课题导入素材</h2>
-      <p className="text-sm text-neutral-500 mt-0.5">
-        参考你在平台做过的课题（平台课题 + 自提课题），让 AI 帮你想清楚这段真实经历怎么写进 Q2 / Q3（不代写）。
-      </p>
+      <h2 className="font-semibold text-neutral-800">{ui("🔗 从我的课题导入素材")}</h2>
+      <p className="text-sm text-neutral-500 mt-0.5">{ui("参考你在平台做过的课题（平台课题 + 自提课题），让 AI 帮你想清楚这段真实经历怎么写进 Q2 / Q3（不代写）。")}</p>
 
       {materials.length === 0 ? (
-        <p className="mt-3 text-sm text-neutral-500">
-          还没有可用的课题素材。去「竞赛与专业实践」做一个课题、写下反思后，这里就能一键参考。
-        </p>
+        <p className="mt-3 text-sm text-neutral-500">{ui("还没有可用的课题素材。去「竞赛与专业实践」做一个课题、写下反思后，这里就能一键参考。")}</p>
       ) : (
         <div className="mt-4 space-y-3">
           <div>
-            <label className="text-sm text-neutral-600">选择一个课题</label>
+            <label className="text-sm text-neutral-600">{ui("选择一个课题")}</label>
             <select
               value={picked}
               onChange={(e) => setPicked(e.target.value)}
               className="mt-1 w-full rounded-lg border border-neutral-300 px-3 py-2 text-sm bg-white"
             >
-              <option value="">— 请选择 —</option>
+              <option value="">{ui("— 请选择 —")}</option>
               {materials.map((m) => (
                 <option key={m.uid} value={m.uid}>
-                  {m.source === "self" ? "【自提】" : "【平台】"} {m.title}
+                  {m.source === "self" ? ui("【自提】") : ui("【平台】")} {m.title}
                 </option>
               ))}
             </select>
           </div>
 
           <div className="flex items-center gap-4">
-            <span className="text-sm text-neutral-600">写入哪一题：</span>
+            <span className="text-sm text-neutral-600">{ui("写入哪一题：")}</span>
             <label className="flex items-center gap-1 text-sm">
-              <input type="radio" checked={question === "q2"} onChange={() => setQuestion("q2")} /> Q2（学术准备）
-            </label>
+              <input type="radio" checked={question === "q2"} onChange={() => setQuestion("q2")} />{ui("Q2（学术准备）")}</label>
             <label className="flex items-center gap-1 text-sm">
-              <input type="radio" checked={question === "q3"} onChange={() => setQuestion("q3")} /> Q3（教育之外）
-            </label>
+              <input type="radio" checked={question === "q3"} onChange={() => setQuestion("q3")} />{ui("Q3（教育之外）")}</label>
           </div>
 
           <button
@@ -163,7 +159,7 @@ export function ImportFromProjects({ content }: { content: UcasPsContent }) {
             disabled={loading}
             className="text-sm px-4 py-2 rounded-lg bg-violet-600 text-white font-medium hover:bg-violet-700 disabled:opacity-60"
           >
-            {loading ? "思考中…" : "让 AI 帮我用这段经历"}
+            {loading ? ui("思考中…") : ui("让 AI 帮我用这段经历")}
           </button>
         </div>
       )}
@@ -173,12 +169,10 @@ export function ImportFromProjects({ content }: { content: UcasPsContent }) {
       {result && (
         <div className="mt-4 space-y-3 rounded-xl border border-violet-100 bg-white p-4">
           {result.summary && <p className="text-sm font-medium text-neutral-800">{result.summary}</p>}
-          <FbList title="✨ 这段经历里可写进文书的点" items={result.strengths} color="text-green-700" />
-          <FbList title="💡 如何组织进这一题" items={result.suggestions} color="text-violet-700" />
-          <FbList title="🤔 帮你写深的追问" items={result.questions} color="text-indigo-700" />
-          <p className="text-[11px] text-neutral-400 pt-1 border-t border-violet-100">
-            这些只是思路提示。请用你自己的话动笔——文书必须是本人真实文字（UCAS 有相似度检测）。
-          </p>
+          <FbList title={ui("✨ 这段经历里可写进文书的点")} items={result.strengths} color="text-green-700" />
+          <FbList title={ui("💡 如何组织进这一题")} items={result.suggestions} color="text-violet-700" />
+          <FbList title={ui("🤔 帮你写深的追问")} items={result.questions} color="text-indigo-700" />
+          <p className="text-[11px] text-neutral-400 pt-1 border-t border-violet-100">{ui("这些只是思路提示。请用你自己的话动笔——文书必须是本人真实文字（UCAS 有相似度检测）。")}</p>
         </div>
       )}
     </section>

@@ -11,7 +11,7 @@ const answerSchema = z.object({
   questionId: z.string().min(1).max(100),
   type: z.enum(["mcq", "long"]),
   selected: z.string().max(20).optional(),
-  work: z.record(z.string()).optional(),
+  work: z.record(z.string(), z.string()).optional(),
   earned: z.number().int().min(-1000).max(1000),
   max: z.number().int().min(0).max(1000),
   feedback: z.unknown().optional(),
@@ -31,7 +31,7 @@ const saveSessionSchema = z.object({
   paperId: z.string().min(1).max(120).optional(),
   presetId: z.string().min(1).max(120).optional(),
   startedAt: z.string().datetime().optional(),
-  clientMeta: z.record(z.unknown()).optional(),
+  clientMeta: z.record(z.string(), z.unknown()).optional(),
   attemptId: z.string().min(8).max(240).optional(),
   answers: z.array(answerSchema).max(300),
 });

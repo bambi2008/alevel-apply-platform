@@ -2,6 +2,7 @@
 
 import { Scale, ShieldCheck, TriangleAlert } from "lucide-react";
 import type { GradeAssessment } from "@/lib/tests/grading";
+import { useUiCopy } from "@/components/use-ui-copy";
 
 const COPY = {
   high: {
@@ -25,6 +26,7 @@ export function GradingTrustPanel({ assessment, compact = false }: {
   assessment: GradeAssessment;
   compact?: boolean;
 }) {
+  const ui = useUiCopy();
   const copy = COPY[assessment.confidence];
   const Icon = copy.icon;
   return (
@@ -32,21 +34,21 @@ export function GradingTrustPanel({ assessment, compact = false }: {
       <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs">
         <span className="inline-flex items-center gap-1 font-semibold">
           <Icon className="size-3.5" aria-hidden="true" />
-          {copy.label}
+          {ui(copy.label)}
         </span>
         <span>
-          {assessment.method === "deterministic-empty"
+          {ui(assessment.method === "deterministic-empty"
             ? "规则评分"
             : assessment.method === "single-pass"
               ? "单轮评分"
               : assessment.method === "dual-pass-adjudicated"
                 ? "双轮评分 + 分歧裁决"
-                : "双轮独立评分"}
+                : "双轮独立评分")}
         </span>
         {assessment.passScores.length > 1 && (
-          <span>阅卷分数 {assessment.passScores.join(" / ")} · 分差 {assessment.scoreDelta}</span>
+          <span>{ui("阅卷分数 {0} · 分差 {1}", assessment.passScores.join(" / "), assessment.scoreDelta)}</span>
         )}
-        {assessment.passScores.length > 1 && <span>小问一致率 {assessment.agreementRate}%</span>}
+        {assessment.passScores.length > 1 && <span>{ui("小问一致率 {0}%", assessment.agreementRate)}</span>}
       </div>
       {!compact && <p className="mt-1 text-xs leading-5 opacity-80">{assessment.rationale}</p>}
     </div>

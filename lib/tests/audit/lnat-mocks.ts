@@ -1,6 +1,7 @@
 import { getMockPapersForTest } from "@/lib/tests/mock-papers";
 import { LNAT_QUESTIONS } from "@/lib/tests/questions/lnat";
 import type { LongQuestion, MCQQuestion } from "@/lib/tests/questions/types";
+import { reviewedDifficultyContract } from "./reviewed-difficulty";
 
 export interface LnatAuditIssue {
   paperId: string;
@@ -76,8 +77,10 @@ function isMcq(question: MCQQuestion | LongQuestion): question is MCQQuestion {
 
 export function buildLnatMockAudit(): LnatAuditReport {
   const allPapers = getMockPapersForTest("lnat");
-  const objective = allPapers.filter((paper) => /^lnat-mock-\d+(?:-rev20261025)?$/.test(paper.id));
-  const written = allPapers.filter((paper) => /^lnat-written-\d+$/.test(paper.id));
+  // The released registry already enforces approval. Version suffixes must not
+  // make approved papers disappear from the structural audit.
+  const objective = allPapers.filter(paper => paper.modules.every(m => m.questions.every(q => q.type === "mcq")));
+  const written = allPapers.filter(paper => paper.modules.some(m => m.questions.some(q => q.type === "long")));
   const issues: LnatAuditIssue[] = [];
   const seenIds = new Map<string, string>();
   const seenPrompts = new Map<string, string>();
@@ -174,7 +177,9 @@ export function buildLnatMockAudit(): LnatAuditReport {
       max: Math.max(...passageWordCounts),
     };
     const questionTypes = count(questions.map((question) => questionType(question.question))) as Record<LnatQuestionType, number>;
-    if (questions.length === 42 && (difficulty[1] < 6 || difficulty[2] < 20 || difficulty[3] < 8)) {
+    const difficultyContract = reviewedDifficultyContract(paper);
+    if (difficultyContract === "drift") issues.push({paperId:paper.id,code:"CALIBRATION_DRIFT",severity:"critical",message:"Paper differs from its reviewed difficulty/content snapshot."});
+    if (difficultyContract !== "reviewed" && questions.length === 42 && (difficulty[1] < 6 || difficulty[2] < 20 || difficulty[3] < 8)) {
       issues.push({ paperId: paper.id, code: "DIFFICULTY_BALANCE", severity: "warning", message: `A full paper needs a real gradient; found ${difficulty[1]}/${difficulty[2]}/${difficulty[3]}.` });
     }
     if (questions.length === 42 && ANSWERS.some((answer) => (answerCounts[answer] ?? 0) < 10 || (answerCounts[answer] ?? 0) > 11)) {
