@@ -25,6 +25,8 @@ Source: owner's seven-part `桥申网站修改总包_给Codex_2026-10-25.md`. Ba
 
 ## Units
 
+November 2 closeout: the historical pending language in the table below is superseded by [the release acceptance record](RELEASE_ACCEPTANCE_2026-11-02.md) and the latest execution-plan entries. Current-exam practice/detail payloads, result/API display language, measured page contrast/mobile headings, water sound/canvas, optimized build and actual-production privacy facts are now checked. Physical-device/live-handwriting acceptance is owner-deferred and interviews are labelled in development. Production AI remains disabled; provider-specific retention exceptions require verification before any later enablement. No full WCAG certification, physical-device test, live grading or Grok result is claimed.
+
 | Unit | FIX | Status |
 | --- | --- | --- |
 | Public contact / obsolete claims | 02/04/05/10/11/22 | Prior school/grade and candidate-source removal preserved; remaining new wording pending |
@@ -51,6 +53,6 @@ Source: owner's seven-part `桥申网站修改总包_给Codex_2026-10-25.md`. Ba
 - 2026-10-26 read-only Tencent console verification: instance `lhins-q4c1zf7p`, public IP `124.156.182.110`, region displayed as “中国香港 | 香港二区”. This verifies the server region, not database/photo/backup storage configuration. Owner requests domestic official DeepSeek. No migration or production configuration change is authorized by that choice; verify the actual AI base URL and storage before drafting definitive processing/transfer disclosures.
 - Suggested (not approved or activated) account/backup/security-log retention remains an owner/legal review item. Relevant network-security logs must not be conflated with the one-year study-data purge; the current Cybersecurity Law requires applicable logs to be kept at least six months. Official source: https://www.cac.gov.cn/2025-12/29/c_1768735112911946.htm . Prefer “six calendar months”, not an unverified 180-day equivalence.
 
-- Grok's independent review is an external release gate; do not fabricate it or message another task without authorization.
+- No Grok review has been provided in this workspace; do not fabricate one or contact another task without authorization. The owner's November 2 instructions explicitly authorise deployment after the current scoped acceptance, with category 3 deferred.
 - Dependency follow-up completed October 29: production audit 12 → 0 and full development/runtime audit 51 → 0. Next 16.4.3, Sharp 0.35.5, Zod 4.6.7, Vitest 4.1.12 and Vite 6.4.5 pass the frozen-copy optimized build, targeted synthetic boundary probes and 686-test regression. No suppression or removed assertions. November 2 complete source regression passes 112 files / 700 tests, including the additional practice/result localization checks. See the dated execution plan for evidence and remaining release gates.
 - No commit, push, production switch, destructive retention job, payment activation or student-data mutation in this phase.
