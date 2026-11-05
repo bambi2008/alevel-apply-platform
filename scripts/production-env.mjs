@@ -91,6 +91,16 @@ export function validateProductionEnv(env = process.env) {
   }
 
   if (env.AI_ENABLED === "true" && !env.DEEPSEEK_API_KEY) errors.push("DEEPSEEK_API_KEY is required when AI_ENABLED=true");
+  if (env.PAYMENTS_ENABLED === "true") {
+    if (env.PAYMENT_PROVIDER !== "mianbaoduo") errors.push("PAYMENT_PROVIDER must be mianbaoduo when payments are enabled");
+    for (const key of ["MBD_APP_ID", "MBD_APP_KEY", "ADMIN_EMAILS"]) {
+      if (!env[key]?.trim() || PLACEHOLDERS.has(env[key].trim().toLowerCase())) errors.push(`${key} is required when payments are enabled`);
+    }
+    if (env.PAYMENTS_ADMIN_ONLY !== "false" && (!/^[1-9]\d*$/.test(env.PAYMENT_TEST_AMOUNT_FEN ?? "") || Number(env.PAYMENT_TEST_AMOUNT_FEN) > 10_000_000)) {
+      errors.push("PAYMENT_TEST_AMOUNT_FEN must be set for the administrator payment test");
+    }
+    if (env.MBD_WEBHOOK_PATH_TOKEN && !/^[a-zA-Z0-9_-]{24,128}$/.test(env.MBD_WEBHOOK_PATH_TOKEN)) errors.push("MBD_WEBHOOK_PATH_TOKEN must be 24–128 URL-safe characters");
+  }
   if (env.EMAIL_DRIVER !== "resend") {
     errors.push("EMAIL_DRIVER must be resend so password recovery works in production");
   } else {
@@ -117,6 +127,17 @@ export function validateProductionEnv(env = process.env) {
     warnings.push("Neither SENTRY_DSN nor OPERATIONS_ALERT_WEBHOOK_URL is configured; external error alerting is disabled");
   }
   if (env.REQUIRE_BACKUPS === "false") warnings.push("Backups are explicitly disabled");
+
+  if (env.TRIAL_PROGRAM_ENABLED === "true") {
+    const trialSecret = env.TRIAL_DEDUP_SECRET ?? "";
+    if (Buffer.byteLength(trialSecret, "utf8") < 32 || /^(change|replace|example)/i.test(trialSecret) || trialSecret === env.AUTH_SECRET) {
+      errors.push("TRIAL_DEDUP_SECRET must be a dedicated non-placeholder secret of at least 32 bytes, distinct from AUTH_SECRET");
+    }
+    if (env.TRIAL_PROGRAM_ENDED_AT) errors.push("An ended trial programme cannot be enabled again with the same eligibility records");
+  }
+  if (env.TRIAL_PROGRAM_ENDED_AT && (!Number.isFinite(Date.parse(env.TRIAL_PROGRAM_ENDED_AT)) || env.TRIAL_PROGRAM_ENABLED !== "false")) {
+    errors.push("TRIAL_PROGRAM_ENDED_AT requires a valid date and TRIAL_PROGRAM_ENABLED=false");
+  }
 
   return { errors, warnings };
 }

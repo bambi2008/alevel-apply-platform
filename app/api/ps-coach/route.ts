@@ -1,7 +1,7 @@
+import { deepSeekFeedback, parseModelJson, readFeedbackInput } from "@/lib/ai/feedback-response";
+import { z } from "zod";
 import { NextRequest, NextResponse } from "next/server";
 import { aiSystemForRequest, aiMessageForRequest } from "@/lib/ai-response-language";
-import OpenAI from "openai";
-import { captureError } from "@/lib/monitoring";
 import { requireAiAccess } from "@/lib/security/ai-route";
 
 export const runtime = "nodejs";
@@ -151,60 +151,38 @@ ${r.text || "（学生尚未填写）"}
 
 注意：若作答空白或太短，strengths 可指出内容太少，把重点放在 suggestions 与 questions。绝不提供可照抄的成句。`;
 
+const strings = (value: unknown) => Array.isArray(value) ? value.filter((entry): entry is string => typeof entry === "string") : [];
+
+const textField = z.string().max(30_000).optional();
+const coachInput = z.object({
+  mode: z.enum(["single", "overall", "hk"]).optional(), question: z.enum(["q1", "q2", "q3"]).optional(),
+  text: textField, subject: textField, q1: textField, q2: textField, q3: textField, targetUni: textField,
+}).strict();
+
 export async function POST(req: NextRequest) {
   const access = await requireAiAccess(req, "ps-coach", 30);
   if (!access.ok) return access.response;
-  if (!process.env.DEEPSEEK_API_KEY) {
+  if (process.env.AI_ENABLED !== "true" || !process.env.DEEPSEEK_API_KEY) {
     return NextResponse.json({ error: aiMessageForRequest("AI 暂未配置（缺少 DEEPSEEK_API_KEY）", req) }, { status: 503 });
   }
-  const client = new OpenAI({
-    apiKey: process.env.DEEPSEEK_API_KEY,
-    baseURL: "https://api.deepseek.com",
-  });
-
-  let body: CoachRequest;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
-  }
-  const isOverall = body.mode === "overall";
-  const isHk = body.mode === "hk";
-  if (!isOverall && !isHk && (!body.question || !["q1", "q2", "q3"].includes(body.question))) {
+  const parsed = await readFeedbackInput(req, coachInput);
+  if (!parsed.ok) return parsed.response;
+  const body = parsed.data;
+  const isOverall = body.mode === "overall", isHk = body.mode === "hk";
+  if (!isOverall && !isHk && !body.question) {
     return NextResponse.json({ error: aiMessageForRequest("缺少题号", req) }, { status: 400 });
   }
-
   const system = aiSystemForRequest(isHk ? SYSTEM_PROMPT_HK : isOverall ? SYSTEM_PROMPT_OVERALL : SYSTEM_PROMPT, req);
-  const userPrompt = isHk
-    ? buildHkPrompt(body)
-    : isOverall
-    ? buildOverallPrompt(body)
-    : buildPrompt(body as CoachRequest & { question: QKey; text: string });
-
-  try {
-    const completion = await client.chat.completions.create({
-      model: "deepseek-chat",
-      max_tokens: 1800,
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: userPrompt },
-      ],
-    });
-
-    const raw = completion.choices[0]?.message?.content?.trim() ?? "";
-    const jsonText = raw.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
-    const parsed = JSON.parse(jsonText);
-
-    return NextResponse.json({
-      strengths: Array.isArray(parsed.strengths) ? parsed.strengths.map(String) : [],
-      issues: Array.isArray(parsed.issues) ? parsed.issues.map(String) : [],
-      suggestions: Array.isArray(parsed.suggestions) ? parsed.suggestions.map(String) : [],
-      questions: Array.isArray(parsed.questions) ? parsed.questions.map(String) : [],
-      summary: typeof parsed.summary === "string" ? parsed.summary : "",
-    });
-  } catch (err) {
-    captureError(err, { route: "ps-coach" });
-    return NextResponse.json({ error: aiMessageForRequest("点评生成失败，请稍后重试。", req) }, { status: 500 });
-  }
+  const user = isHk ? buildHkPrompt(body) : isOverall ? buildOverallPrompt(body) : buildPrompt({ ...body, question: body.question!, text: body.text ?? "" });
+  return deepSeekFeedback({
+    request: req, userId: access.userId, route: "/api/ps-coach", kind: "statement", json: true, maxTokens: 1800,
+    messages: [{ role: "system", content: system }, { role: "user", content: user }],
+    parse(raw) {
+      const data = parseModelJson(raw);
+      return {
+        strengths: strings(data.strengths), issues: strings(data.issues), suggestions: strings(data.suggestions),
+        questions: strings(data.questions), summary: typeof data.summary === "string" ? data.summary : "",
+      };
+    },
+  });
 }

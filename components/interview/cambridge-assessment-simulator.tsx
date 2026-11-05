@@ -1,4 +1,5 @@
 "use client";
+import { fetchAiFeedback } from "@/components/ai-remaining";
 
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, CheckCircle2, Clock3, RotateCcw } from "lucide-react";
@@ -11,7 +12,7 @@ import { InterviewThinkingChecklist } from "./interview-thinking-checklist";
 import { clearRemoteProgress, loadLearningRecords, saveLearningRecord, saveRemoteProgress } from "@/lib/learning/client";
 import { useLocale } from "next-intl";
 import { uiCopy } from "@/lib/ui-copy";
-import { contentText } from "@/lib/content-language";
+import flowLabels from "@/data/ui-copy/interview-flows-en.json";
 
 type Phase = "intro" | "preparation" | "response" | "result";
 
@@ -54,7 +55,8 @@ export function TimedAssessmentSimulator({
   const locale = useLocale();
   const t = (source: string, ...values: Array<string | number>) => uiCopy(locale, source, ...values);
   // Translate only owned flow metadata, never saved responses or generated feedback.
-  const flowTitle = contentText(flow.title, locale);
+  const flowText = (text: string) => locale === "en" ? (flowLabels as Record<string, string>)[text] ?? text : text;
+  const flowTitle = flowText(flow.title);
   const subjectId = flow.subjectId;
   const storageKey = `alevel:timed-assessment:${subjectId}:v1`;
   const [phase, setPhase] = useState<Phase>("intro");
@@ -185,7 +187,7 @@ export function TimedAssessmentSimulator({
           { role: "student" as const, content: response.answer || "(no response)" },
         ];
       });
-      const response = await fetch("/api/interview-mock", {
+      const response = await fetchAiFeedback("/api/interview-mock", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-qiaoshen-locale": document.documentElement.lang },
         body: JSON.stringify({ mode: "feedback", subject: subjectName, subjectId, history }),
@@ -204,7 +206,7 @@ export function TimedAssessmentSimulator({
       <div className="border border-[var(--border)] bg-white p-5 sm:p-6">
         <p className="text-xs font-semibold uppercase text-[var(--indigo)]">{t("固定评估流程")}</p>
         <h3 className="mt-1 text-lg font-bold text-[var(--ink)]">{flowTitle}</h3>
-        <p className="mt-2 text-sm leading-relaxed text-[var(--ink-soft)]">{contentText(flow.note, locale)}</p>
+        <p className="mt-2 text-sm leading-relaxed text-[var(--ink-soft)]">{flowText(flow.note)}</p>
         <div className="mt-5 divide-y divide-[var(--border)] border-y border-[var(--border)]">
           {tasks.map((task, index) => (
             <div key={task.questionId} className="grid gap-2 py-3 sm:grid-cols-[72px_1fr_auto] sm:items-center">

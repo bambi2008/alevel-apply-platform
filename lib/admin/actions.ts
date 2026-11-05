@@ -2,6 +2,7 @@
 
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
+import { isConfiguredAdmin } from "@/lib/admin/allowlist";
 
 type Role = "STUDENT" | "ADMIN" | "MENTOR";
 const ROLES: Role[] = ["STUDENT", "ADMIN", "MENTOR"];
@@ -9,15 +10,15 @@ const ROLES: Role[] = ["STUDENT", "ADMIN", "MENTOR"];
 /** 校验当前用户为管理员，返回其 id；否则抛错。 */
 export async function requireAdmin(): Promise<string> {
   const session = await auth();
-  const u = session?.user as { id?: string; role?: string } | undefined;
-  if (u?.role !== "ADMIN" || !u.id) throw new Error("forbidden");
+  const u = session?.user;
+  if (!u?.id || !isConfiguredAdmin(u)) throw new Error("forbidden");
   return u.id;
 }
 
 /** 当前用户是否管理员（供页面/布局判断，不抛错）。 */
 export async function isAdmin(): Promise<boolean> {
   const session = await auth();
-  return (session?.user as { role?: string } | undefined)?.role === "ADMIN";
+  return isConfiguredAdmin(session?.user);
 }
 
 export interface AdminStats {

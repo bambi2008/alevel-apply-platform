@@ -6,6 +6,13 @@ import { requireAiAccess } from "@/lib/security/ai-route";
 import { MAX_ANSWER_IMAGES_PER_PART } from "@/lib/security/answer-images";
 import { db } from "@/lib/db";
 import { getStorage } from "@/lib/storage";
+import { auth } from "@/auth";
+import { z } from "zod";
+import { boundedJson, privateNoStore, sameOriginWrite } from "@/lib/security/json-request";
+import { canonicalGradeRequest, recordCanonicalGrade, StudyAccessError } from "@/lib/tests/study-attempts";
+import { deepSeekParameters } from "@/lib/ai/deepseek-config";
+import { withFeedbackQuota } from "@/lib/ai/feedback-response";
+import { feedbackFingerprint } from "@/lib/ai/feedback-quota";
 import {
   buildEmptyGradeResponse,
   buildGradeResponse,
@@ -168,7 +175,7 @@ async function transcribeAnswerImages(
   }
 
   const completion = await client.chat.completions.create({
-    model: "deepseek-v4-flash-vision-exp",
+    ...deepSeekParameters(),
     max_tokens: 2200,
     temperature: 0,
     messages: [{ role: "user", content }],
@@ -235,7 +242,7 @@ function estimatedCostMicros(promptTokens: number, completionTokens: number) {
 
 async function runExaminer(client: OpenAI, system: string, prompt: string): Promise<ExaminerRun> {
   const completion = await client.chat.completions.create({
-    model: "deepseek-chat",
+    ...deepSeekParameters(),
     max_tokens: 2600,
     temperature: 0.15,
     response_format: { type: "json_object" },
@@ -255,51 +262,79 @@ async function runExaminer(client: OpenAI, system: string, prompt: string): Prom
   };
 }
 
+const gradingSubmissionSchema = z.object({ attemptId: z.string().min(1).max(100), questionId: z.string().min(1).max(120), reviewMode: z.enum(["standard", "adjudicate"]).optional() }).strict();
+
 export async function POST(req: NextRequest) {
-  let body: unknown;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
-  }
-  if (!validRequest(body)) {
-    return NextResponse.json({ error: "Invalid grading request" }, { status: 400 });
-  }
-  const request = body;
+  const session = await auth();
+  const userId = (session?.user as { id?: string } | undefined)?.id;
+  if (!userId) return NextResponse.json({ error: "unauthenticated" }, { status: 401, headers: privateNoStore });
+  const originError = sameOriginWrite(req);
+  if (originError) return originError;
+  const body = await boundedJson(req, 2048);
+  if (!body.ok) return body.response;
+  const parsed = gradingSubmissionSchema.safeParse(body.value);
+  if (!parsed.success) return NextResponse.json({ error: "Invalid grading request" }, { status: 400, headers: privateNoStore });
   const locale = aiResponseLanguage(req);
+  let request: GradeRequest;
+  try { request = await canonicalGradeRequest({ ...parsed.data, userId, locale }); }
+  catch (error) {
+    if (error instanceof StudyAccessError) return NextResponse.json({ error: error.code }, { status: error.status, headers: privateNoStore });
+    throw error;
+  }
+  if (!validRequest(request)) return NextResponse.json({ error: "grading_data_unavailable" }, { status: 503, headers: privateNoStore });
   if (isBlankSubmission(request)) {
-    return NextResponse.json(buildEmptyGradeResponse(request, locale));
+    const response = buildEmptyGradeResponse(request, locale);
+    await recordCanonicalGrade({ userId, attemptId: parsed.data.attemptId, questionId: request.questionId, response });
+    return NextResponse.json(response, { headers: privateNoStore });
   }
   const access = await requireAiAccess(req, "grading", 30);
   if (!access.ok) return access.response;
-  if (!process.env.DEEPSEEK_API_KEY) {
-    return NextResponse.json({ error: "DEEPSEEK_API_KEY not configured" }, { status: 503 });
+  if (process.env.AI_ENABLED !== "true" || !process.env.DEEPSEEK_API_KEY) {
+    return NextResponse.json({ error: "ai_unavailable" }, { status: 503, headers: privateNoStore });
   }
 
-  const client = new OpenAI({
-    apiKey: process.env.DEEPSEEK_API_KEY,
-    baseURL: "https://api.deepseek.com",
-  });
   let images: Map<string, StoredAnswerImage>;
   try {
     images = await loadOwnedAnswerImages(request, access.userId);
   } catch (error) {
     if (error instanceof Error && error.message === "ANSWER_IMAGE_NOT_FOUND") {
-      return NextResponse.json({ error: "Answer image is missing or inaccessible" }, { status: 400 });
+      return NextResponse.json({ error: "Answer image is missing or inaccessible" }, { status: 400, headers: privateNoStore });
     }
-    return NextResponse.json({ error: "Answer image could not be read" }, { status: 503 });
+    return NextResponse.json({ error: "Answer image could not be read" }, { status: 503, headers: privateNoStore });
   }
+  const hashes = new Map([...images].map(([id, image]) => [id, createHash("sha256").update(image.bytes).digest("hex")]));
+  const { parts, ...canonical } = request;
+  delete canonical.reviewMode;
+  const cacheKey = feedbackFingerprint("written-grade", [
+    locale, deepSeekParameters().model, canonical,
+    parts.map(part => ({ ...part, answerImageIds: part.answerImageIds?.map(id => hashes.get(id)) })),
+  ]);
+  const kind = images.size ? "photo" : "general";
+  const result = await withFeedbackQuota({ userId, kind, locale, cacheKey }, () => gradeWithDeepSeek(req, request, images, userId, locale));
+  if (!result.ok) return result;
+  const response = await result.clone().json() as GradeResponse;
+  const recorded = await recordCanonicalGrade({ userId, attemptId: parsed.data.attemptId, questionId: request.questionId, response });
+  return recorded ? result : NextResponse.json({ error: "not_found" }, { status: 404, headers: privateNoStore });
+}
+
+async function gradeWithDeepSeek(req: NextRequest, request: GradeRequest, images: Map<string, StoredAnswerImage>, userId: string, locale: "en" | "zh-CN") {
+  const client = new OpenAI({
+    apiKey: process.env.DEEPSEEK_API_KEY,
+    baseURL: "https://api.deepseek.com",
+    maxRetries: 0,
+  });
   const requestJson = JSON.stringify(request);
   const hasImages = images.size > 0;
   const evaluation = await db.aiEvaluation.create({
     data: {
-      userId: access.userId,
+      userId,
       route: "/api/grade-answer",
       purpose: request.responseKind === "essay" ? "essay-grading" : "written-grading",
       provider: "deepseek",
-      model: hasImages ? "deepseek-v4-flash-vision-exp + deepseek-chat" : "deepseek-chat",
+      model: deepSeekParameters().model,
       requestHash: createHash("sha256").update(requestJson).digest("hex"),
       inputChars: requestJson.length,
+      providerCalls: hasImages ? 1 : 2,
     },
     select: { id: true, createdAt: true },
   });
@@ -312,8 +347,8 @@ export async function POST(req: NextRequest) {
       imageReview = vision.review;
       visionUsage = vision;
       gradingRequest = withImageTranscription(request, vision.review);
-    } catch (error) {
-      console.error("Handwriting transcription failed", error);
+    } catch {
+      console.error("HANDWRITING_TRANSCRIPTION_FAILED");
       await db.aiEvaluation.update({
         where: { id: evaluation.id },
         data: {
@@ -322,7 +357,7 @@ export async function POST(req: NextRequest) {
           errorCode: "HANDWRITING_TRANSCRIPTION_FAILED",
         },
       });
-      return NextResponse.json({ error: "Handwriting recognition failed. Please retry or add a clearer photo." }, { status: 503 });
+      return NextResponse.json({ error: "Handwriting recognition failed. Please retry or add a clearer photo." }, { status: 503, headers: privateNoStore });
     }
   }
   const system = aiSystemForRequest(gradingRequest.responseKind === "essay" ? ESSAY_SYSTEM : STRUCTURED_SYSTEM, req);
@@ -335,7 +370,7 @@ export async function POST(req: NextRequest) {
     normalizeGradePass(gradingRequest, run.raw, locale)
   );
   if (passes.length === 0) {
-    console.error("Both grading passes failed", attempts);
+    console.error("ALL_GRADING_PASSES_FAILED");
     const timedOut = attempts.some((attempt) => attempt.status === "rejected" && (
       attempt.reason?.name === "TimeoutError" || attempt.reason?.name === "AbortError"
     ));
@@ -343,15 +378,17 @@ export async function POST(req: NextRequest) {
       where: { id: evaluation.id },
       data: {
         status: timedOut ? "TIMED_OUT" : "FAILED",
+        providerCalls: 2 + Number(hasImages),
         latencyMs: Date.now() - evaluation.createdAt.getTime(),
         errorCode: timedOut ? "GRADING_TIMEOUT" : "ALL_PASSES_FAILED",
       },
     });
-    return NextResponse.json({ error: "Grading failed. Please use the mark scheme for self-assessment." }, { status: 503 });
+    return NextResponse.json({ error: "Grading failed. Please use the mark scheme for self-assessment." }, { status: 503, headers: privateNoStore });
   }
 
   let adjudicated: GradePass | undefined;
   let adjudicatorRun: ExaminerRun | undefined;
+  let adjudicatorCalled = false;
   if (passes.length > 1 && (gradingRequest.reviewMode === "adjudicate" || needsAdjudication(gradingRequest, passes))) {
     try {
       const priorReports = JSON.stringify(passes.map((pass) => ({
@@ -359,14 +396,15 @@ export async function POST(req: NextRequest) {
         perPart: pass.perPart,
         dimensions: pass.dimensions,
       })));
+      adjudicatorCalled = true;
       adjudicatorRun = await runExaminer(
         client,
         aiSystemForRequest(ADJUDICATOR_SYSTEM, req),
         `${gradingPrompt(gradingRequest, "Act as the senior adjudicator.")}\n\nPrior independent reports:\n${priorReports}`,
       );
       adjudicated = normalizeGradePass(gradingRequest, adjudicatorRun.raw, locale);
-    } catch (error) {
-      console.error("Grading adjudication failed", error);
+    } catch {
+      console.error("GRADING_ADJUDICATION_FAILED");
     }
   }
 
@@ -376,7 +414,9 @@ export async function POST(req: NextRequest) {
     if (imageReview.parts.some((part) => part.confidence === "low" || part.unclear.length > 0)) {
       response.assessment.confidence = "low";
       response.assessment.reviewStatus = "review-recommended";
-      response.assessment.rationale = `手写识别存在模糊内容；${response.assessment.rationale}`;
+      response.assessment.rationale = locale === "en"
+        ? `Some handwriting was unclear. ${response.assessment.rationale}`
+        : `手写识别存在模糊内容。${response.assessment.rationale}`;
     }
   }
   const runs = adjudicatorRun ? [...successfulRuns, adjudicatorRun] : successfulRuns;
@@ -386,6 +426,7 @@ export async function POST(req: NextRequest) {
     where: { id: evaluation.id },
     data: {
       status: "SUCCEEDED",
+      providerCalls: 2 + Number(hasImages) + Number(adjudicatorCalled),
       outputChars: runs.reduce((sum, run) => sum + run.outputChars, 0),
       promptTokens,
       completionTokens,
@@ -397,5 +438,5 @@ export async function POST(req: NextRequest) {
       scoreDelta: response.assessment.scoreDelta,
     },
   });
-  return NextResponse.json(response);
+  return NextResponse.json(response, { headers: privateNoStore });
 }

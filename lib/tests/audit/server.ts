@@ -61,6 +61,7 @@ export async function getQuestionAuditDashboardData(): Promise<QuestionAuditDash
           questionId: true,
           selected: true,
           earned: true,
+          earnedExact: true,
           max: true,
           timeSpentSec: true,
           answerChanges: true,
@@ -72,6 +73,7 @@ export async function getQuestionAuditDashboardData(): Promise<QuestionAuditDash
               studentId: true,
               testId: true,
               totalEarned: true,
+              totalEarnedExact: true,
               totalMax: true,
               createdAt: true,
             },
@@ -103,13 +105,13 @@ export async function getQuestionAuditDashboardData(): Promise<QuestionAuditDash
       sessionId: row.session.id,
       studentId: row.session.studentId,
       selected: row.selected,
-      earned: row.earned,
+      earned: row.earnedExact ?? row.earned,
       max: row.max,
       timeSpentSec: row.timeSpentSec,
       answerChanges: row.answerChanges,
       visits: row.visits,
       flagged: row.flagged,
-      sessionScoreRate: row.session.totalMax > 0 ? row.session.totalEarned / row.session.totalMax : 0,
+      sessionScoreRate: row.session.totalMax > 0 ? (row.session.totalEarnedExact ?? row.session.totalEarned) / row.session.totalMax : 0,
     }));
     const calibration = buildDetailedQuestionCalibrations(observations);
     const sessions = new Set(rows.map((row) => row.session.id));

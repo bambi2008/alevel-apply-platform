@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
+import { withExactSession } from "@/lib/tests/exact-scores";
 
 // 单次练习/模拟记录的完整明细（供回看页使用）。仅本人可读。
 export async function GET(
@@ -31,6 +32,7 @@ export async function GET(
       testId: true,
       mode: true,
       totalEarned: true,
+      totalEarnedExact: true,
       totalMax: true,
       timeUsedSec: true,
       paperId: true,
@@ -45,6 +47,7 @@ export async function GET(
           selected: true,
           work: true,
           earned: true,
+          earnedExact: true,
           max: true,
           feedback: true,
           timeSpentSec: true,
@@ -61,5 +64,5 @@ export async function GET(
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
 
-  return NextResponse.json(exam);
+  return NextResponse.json(withExactSession(exam));
 }

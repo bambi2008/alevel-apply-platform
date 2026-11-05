@@ -2,7 +2,6 @@ import { z } from "zod";
 import type { MCQOptionKey, Question, QuestionDifficulty } from "@/lib/tests/questions/types";
 import { findSemanticRisks } from "@/lib/tests/audit/semantic";
 import { findTeachingRisks } from "@/lib/tests/audit/teaching";
-import { isReleasedPublishedQuestion } from "./practice-banks";
 import { assessSyllabusCandidate } from "./syllabus-policy";
 
 export const WORKFLOW_STAGES = ["DRAFT", "SUBJECT_REVIEW", "TEACHING_REVIEW", "APPROVED"] as const;
@@ -293,13 +292,15 @@ export function diffQuestionDraft(draft: QuestionDraft): DraftDiff[] {
     .map((field) => ({ field, before: formatValue(before[field]), after: formatValue(after[field]) }));
 }
 
-export function createReleasePackage(drafts: QuestionDraft[]) {
+export function createReleasePackage(drafts: QuestionDraft[], releasedQuestion?: (testId: string, question: Question) => boolean) {
   const issues = drafts.flatMap((draft) => validateDraft(draft).issues.map((issue) => ({
     ...issue,
     field: `${draft.draftId}:${issue.field ?? "draft"}`,
   })));
   for (const draft of drafts) {
-    if(!isReleasedPublishedQuestion(draft.question.testId,draft.question)) issues.push({
+    // Client previews have no release authority and never load the private bank.
+    // Only the authenticated server export supplies the canonical checker.
+    if(!releasedQuestion?.(draft.question.testId,draft.question as Question)) issues.push({
       code:"SYLLABUS_RELEASE_REQUIRED",severity:"warning",field: draft.draftId+":question",
       message:"双重审核不等于考纲发布核验。新增或修改题目须完成方法/模块核验并更新发布快照，才能进入学生新训练。",
     });

@@ -10,6 +10,7 @@ export interface PriorityFeedback { studentKey: string; testId: string; topicId:
 export interface PriorityRow extends PriorityTopic {
   status: "ready" | "insufficient_sample" | "ungraded";
   students: number | null;
+  attempts: number | null;
   gradedAnswers: number | null;
   wrongAnswers: number | null;
   errorRate: number | null;
@@ -35,14 +36,15 @@ export function buildContentPriorities(topics: PriorityTopic[], attempts: Priori
   const within = (date: Date) => date.getTime() >= start && date.getTime() < end;
   const topicKey = (row: { testId: string; topicId: string }) => JSON.stringify([row.testId, row.topicId]);
   const valid = new Set(topics.map(topicKey));
-  const buckets = new Map(topics.map(topic => [topicKey(topic), { students: new Set<string>(), graded: 0, wrong: 0, kinds: { ERROR: 0, TOO_HARD: 0, MORE_LIKE_THIS: 0 } }]));
+  const buckets = new Map(topics.map(topic => [topicKey(topic), { students: new Set<string>(), attempts: 0, graded: 0, wrong: 0, kinds: { ERROR: 0, TOO_HARD: 0, MORE_LIKE_THIS: 0 } }]));
   const seenAttempts = new Set<string>();
   for (const attempt of attempts.filter(a => within(a.createdAt)).sort((a, b) => a.createdAt.getTime() - b.createdAt.getTime())) {
     if (!valid.has(topicKey(attempt))) continue;
+    const bucket = buckets.get(topicKey(attempt))!;
+    bucket.attempts++;
     const key = JSON.stringify([attempt.studentKey, attempt.testId, attempt.topicId, attempt.questionKey]);
     if (seenAttempts.has(key)) continue;
     seenAttempts.add(key);
-    const bucket = buckets.get(topicKey(attempt))!;
     bucket.students.add(attempt.studentKey);
     if (attempt.wrong !== null) { bucket.graded++; bucket.wrong += Number(attempt.wrong); }
   }
@@ -56,8 +58,8 @@ export function buildContentPriorities(topics: PriorityTopic[], attempts: Priori
   }
   const rows: PriorityRow[] = topics.map(topic => {
     const b = buckets.get(topicKey(topic))!;
-    if (b.students.size < PRIORITY_MIN_STUDENTS) return { ...topic, status: "insufficient_sample", students: null, gradedAnswers: null, wrongAnswers: null, errorRate: null, feedbackCount: null, errorFeedback: null, hardFeedback: null, moreFeedback: null, score: null };
-    return { ...topic, status: b.graded ? "ready" : "ungraded", students: b.students.size, gradedAnswers: b.graded, wrongAnswers: b.wrong,
+    if (b.students.size < PRIORITY_MIN_STUDENTS) return { ...topic, status: "insufficient_sample", students: null, attempts: null, gradedAnswers: null, wrongAnswers: null, errorRate: null, feedbackCount: null, errorFeedback: null, hardFeedback: null, moreFeedback: null, score: null };
+    return { ...topic, status: b.graded ? "ready" : "ungraded", students: b.students.size, attempts: b.attempts, gradedAnswers: b.graded, wrongAnswers: b.wrong,
       errorRate: b.graded ? b.wrong / b.graded : null, feedbackCount: Object.values(b.kinds).reduce((sum, n) => sum + n, 0),
       errorFeedback: b.kinds.ERROR, hardFeedback: b.kinds.TOO_HARD, moreFeedback: b.kinds.MORE_LIKE_THIS, score: null };
   });
@@ -82,10 +84,10 @@ export function contentPrioritiesCsv(snapshot: PrioritySnapshot, english = false
     if (/^[\s]*[=+@-]/.test(text)) text = "'" + text;
     return `"${text.replaceAll('"', '""')}"`;
   };
-  const header = english ? ["Window start (UTC)", "Window end (UTC)", "Exam", "Topic", "Question count", "Students", "Graded answers", "Wrong answers", "Error rate", "Feedback", "Question error", "Too hard", "More like this", "Priority score", "Status"]
-    : ["窗口开始(UTC)", "窗口结束(UTC)", "考试", "考点", "题量", "作答人数", "已评分作答", "错误作答", "错误率", "反馈数", "题目有误", "太难了", "想要更多这类题", "补题优先级分", "状态"];
+  const header = english ? ["Window start (UTC)", "Window end (UTC)", "Exam", "Topic", "Question count", "Students", "Attempts", "Graded answers", "Wrong answers", "Error rate", "Feedback", "Question error", "Too hard", "More like this", "Priority score", "Status"]
+    : ["窗口开始(UTC)", "窗口结束(UTC)", "考试", "考点", "题量", "作答人数", "作答次数", "已评分作答", "错误作答", "错误率", "反馈数", "题目有误", "太难了", "想要更多这类题", "补题优先级分", "状态"];
   const status = (row: PriorityRow) => row.status === "insufficient_sample" ? english ? "Insufficient sample" : "样本不足" : row.status === "ungraded" ? english ? "Awaiting scores" : "评分不足" : english ? "Ready" : "可比较";
   return "\uFEFF" + [header, ...snapshot.rows.map(row => [snapshot.windowStart, snapshot.windowEnd, row.testId.toUpperCase(), english ? row.titleEn : row.title, row.questionCount,
-    row.students, row.gradedAnswers, row.wrongAnswers, row.errorRate === null ? null : `${(row.errorRate * 100).toFixed(1)}%`, row.feedbackCount, row.errorFeedback, row.hardFeedback, row.moreFeedback, row.score, status(row)])]
+    row.students, row.attempts, row.gradedAnswers, row.wrongAnswers, row.errorRate === null ? null : `${(row.errorRate * 100).toFixed(1)}%`, row.feedbackCount, row.errorFeedback, row.hardFeedback, row.moreFeedback, row.score, status(row)])]
     .map(row => row.map(cell).join(",")).join("\r\n") + "\r\n";
 }

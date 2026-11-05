@@ -1,9 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
+import { withExactSession } from "@/lib/tests/exact-scores";
 import { getQuestionById, getTopicMeta } from "@/lib/tests/lookup";
 import { getPublishedQuestionsByIds } from "@/lib/tests/published-server";
 import { getMockPaper } from "@/lib/tests/mock-papers";
+import { localizeStaticContent } from "@/lib/content-language";
+import { aiResponseLanguage } from "@/lib/ai-response-language";
+import { privateNoStore } from "@/lib/security/json-request";
 import {
   buildExamPerformanceReport,
   type ReportAnswer,
@@ -60,7 +64,7 @@ function feedbackRows(value: unknown): ReportAnswer["feedback"] {
 }
 
 export async function GET(
-  _request: NextRequest,
+  request: NextRequest,
   context: { params: Promise<{ id: string }> },
 ) {
   const { id } = await context.params;
@@ -71,13 +75,17 @@ export async function GET(
   const profile = await db.studentProfile.findUnique({ where: { userId }, select: { id: true } });
   if (!profile) return NextResponse.json({ error: "Not found" }, { status: 404 });
 
-  const current = await db.examSession.findFirst({
+  const rawCurrent = await db.examSession.findFirst({
     where: { id, studentId: profile.id },
     include: { answers: true },
   });
-  if (!current) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  if (!rawCurrent) return NextResponse.json({ error: "Not found" }, { status: 404 });
+  const current = withExactSession(rawCurrent);
+  const metadata = current.clientMeta && typeof current.clientMeta === "object" && !Array.isArray(current.clientMeta) ? current.clientMeta : {};
+  const pending = new Set(Array.isArray(metadata.pendingWrittenQuestionIds) ? metadata.pendingWrittenQuestionIds : []);
+  const locale = aiResponseLanguage(request);
 
-  const history = await db.examSession.findMany({
+  const rawHistory = await db.examSession.findMany({
     where: { studentId: profile.id, testId: current.testId },
     orderBy: { completedAt: "desc" },
     take: 30,
@@ -86,10 +94,12 @@ export async function GET(
       mode: true,
       paperId: true,
       totalEarned: true,
+      totalEarnedExact: true,
       totalMax: true,
       completedAt: true,
     },
   });
+  const history = rawHistory.map(withExactSession);
   const answers: ReportAnswer[] = current.answers.map((answer) => ({
     questionId: answer.questionId,
     type: answer.type,
@@ -124,8 +134,13 @@ export async function GET(
   const publishedQuestions = await getPublishedQuestionsByIds(
     answers.filter((answer) => !staticIds.has(answer.questionId)).map((answer) => answer.questionId),
   );
-  const questions = [...staticQuestions, ...publishedQuestions];
   const paper = current.paperId ? getMockPaper(current.paperId) : undefined;
+  const canonical = new Map([...staticQuestions, ...publishedQuestions, ...(paper?.modules.flatMap(module => module.questions) ?? [])]
+    .map(question => [question.id, question] as const));
+  const questions = localizeStaticContent(answers.flatMap(answer => {
+    const question = canonical.get(answer.questionId);
+    return question ? [question] : [];
+  }), locale);
   const modules: ReportModuleDefinition[] | undefined = paper?.modules.map((module) => ({
     id: module.id,
     title: module.title,
@@ -135,7 +150,7 @@ export async function GET(
   const report = buildExamPerformanceReport({
     session: reportSession,
     history,
-    questions: [...(paper?.modules.flatMap(module => module.questions) ?? []), ...questions],
+    questions,
     topicMeta: (topicId) => getTopicMeta(current.testId, topicId),
     modules,
     bestQuestionCount: paper?.bestQuestionCount,
@@ -154,9 +169,10 @@ export async function GET(
       startedAt: current.startedAt,
       completedAt: current.completedAt,
       createdAt: current.createdAt,
-      answers,
+      gradingPending: pending.size > 0,
+      answers: answers.map(answer => ({ ...answer, gradingPending: pending.has(answer.questionId) })),
     },
     questions,
     report,
-  });
+  }, { headers: privateNoStore });
 }

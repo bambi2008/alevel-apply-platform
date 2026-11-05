@@ -1,7 +1,7 @@
+import { deepSeekFeedback, parseModelJson, readFeedbackInput } from "@/lib/ai/feedback-response";
+import { z } from "zod";
 import { NextRequest, NextResponse } from "next/server";
 import { aiSystemForRequest, aiMessageForRequest } from "@/lib/ai-response-language";
-import OpenAI from "openai";
-import { captureError } from "@/lib/monitoring";
 import { requireAiAccess } from "@/lib/security/ai-route";
 
 export const runtime = "nodejs";
@@ -104,60 +104,42 @@ ${r.submission || "（学生尚未填写反思）"}
 - 不要提供可照抄的成段 PS 文字；只给方向、建议与追问。
 - 若反思空白或太简略，strengths 可指出"目前还看不出你的独立思考"，把重点放在 suggestions 与 questions 上，引导他写出具体、个人化的思考。`;
 
+const strings = (value: unknown) => Array.isArray(value) ? value.filter((entry): entry is string => typeof entry === "string") : [];
+
+const textField = z.string().max(30_000).default("");
+const textList = z.array(z.string().max(4_000)).max(30).default([]);
+const feedbackInput = z.object({
+  mode: z.enum(["stage", "reflection"]).optional(), projectTitle: textField, stageTitle: textField,
+  stageTask: textField, stageDeliverable: textField, rubric: textList, metrics: textList,
+  baseline: textField, challenge: textField, submission: textField,
+  reflectionQuestions: textList, psUse: textField,
+}).strict();
+
 export async function POST(req: NextRequest) {
   const access = await requireAiAccess(req, "project-feedback", 30);
   if (!access.ok) return access.response;
-  if (!process.env.DEEPSEEK_API_KEY) {
-    return NextResponse.json(
-      { error: aiMessageForRequest("AI 反馈暂未配置（缺少 DEEPSEEK_API_KEY）", req) },
-      { status: 503 }
-    );
+  if (process.env.AI_ENABLED !== "true" || !process.env.DEEPSEEK_API_KEY) {
+    return NextResponse.json({ error: aiMessageForRequest("AI 反馈暂未配置（缺少 DEEPSEEK_API_KEY）", req) }, { status: 503 });
   }
-  const client = new OpenAI({
-    apiKey: process.env.DEEPSEEK_API_KEY,
-    baseURL: "https://api.deepseek.com",
-  });
-
-  let body: ProjectFeedbackRequest;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
-  }
-
-  if (body.mode !== "reflection" && !body.stageTitle) {
+  const parsed = await readFeedbackInput(req, feedbackInput);
+  if (!parsed.ok) return parsed.response;
+  const body = parsed.data;
+  const reflection = body.mode === "reflection";
+  if (!reflection && !body.stageTitle.trim()) {
     return NextResponse.json({ error: aiMessageForRequest("缺少阶段信息", req) }, { status: 400 });
   }
-
-  try {
-    const isReflection = body.mode === "reflection";
-    const completion = await client.chat.completions.create({
-      model: "deepseek-chat",
-      max_tokens: 1500,
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: aiSystemForRequest(isReflection ? SYSTEM_PROMPT_REFLECTION : SYSTEM_PROMPT, req) },
-        { role: "user", content: isReflection ? buildReflectionPrompt(body) : buildPrompt(body) },
-      ],
-    });
-
-    const raw = completion.choices[0]?.message?.content?.trim() ?? "";
-    const jsonText = raw.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
-    const parsed = JSON.parse(jsonText) as ProjectFeedbackResponse;
-
-    const response: ProjectFeedbackResponse = {
-      strengths: Array.isArray(parsed.strengths) ? parsed.strengths : [],
-      suggestions: Array.isArray(parsed.suggestions) ? parsed.suggestions : [],
-      questions: Array.isArray(parsed.questions) ? parsed.questions : [],
-      summary: typeof parsed.summary === "string" ? parsed.summary : "",
-    };
-
-    return NextResponse.json(response);
-  } catch (err) {
-    captureError(err, { route: "project-feedback" });
-    return NextResponse.json(
-      { error: aiMessageForRequest("反馈生成失败，请稍后重试。", req) },
-      { status: 500 }
-    );
-  }
+  return deepSeekFeedback({
+    request: req, userId: access.userId, route: "/api/project-feedback", kind: "general", json: true, maxTokens: 1500,
+    messages: [
+      { role: "system", content: aiSystemForRequest(reflection ? SYSTEM_PROMPT_REFLECTION : SYSTEM_PROMPT, req) },
+      { role: "user", content: reflection ? buildReflectionPrompt(body) : buildPrompt(body) },
+    ],
+    parse(raw): ProjectFeedbackResponse {
+      const data = parseModelJson(raw);
+      return {
+        strengths: strings(data.strengths), suggestions: strings(data.suggestions),
+        questions: strings(data.questions), summary: typeof data.summary === "string" ? data.summary : "",
+      };
+    },
+  });
 }

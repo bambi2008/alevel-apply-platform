@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import type { Prisma } from "@prisma/client";
 import { auth } from "@/auth";
+import { isConfiguredAdmin } from "@/lib/admin/allowlist";
 import { db } from "@/lib/db";
 import { getQuestionById } from "@/lib/tests/lookup";
 import { getQuestionAuditDashboardData } from "@/lib/tests/audit/server";
@@ -14,8 +15,8 @@ const requestSchema = z.discriminatedUnion("action", [
 
 export async function POST(req: NextRequest) {
   const session = await auth();
-  const actor = session?.user as { id?: string; role?: string } | undefined;
-  if (actor?.role !== "ADMIN") return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  const actor = session?.user;
+  if (!actor || !isConfiguredAdmin(actor)) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   const parsed = requestSchema.safeParse(await req.json().catch(() => null));
   if (!parsed.success) return NextResponse.json({ error: "Invalid request" }, { status: 400 });
   const body = parsed.data;

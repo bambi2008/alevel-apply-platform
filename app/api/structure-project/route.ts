@@ -1,7 +1,8 @@
+import { deepSeekFeedback, parseModelJson, readFeedbackInput } from "@/lib/ai/feedback-response";
+import { aiResponseLanguage } from "@/lib/ai-response-language";
+import { z } from "zod";
 import { NextRequest, NextResponse } from "next/server";
 import { aiSystemForRequest, aiMessageForRequest } from "@/lib/ai-response-language";
-import OpenAI from "openai";
-import { captureError } from "@/lib/monitoring";
 import { requireAiAccess } from "@/lib/security/ai-route";
 
 export const runtime = "nodejs";
@@ -52,73 +53,42 @@ const buildPrompt = (r: StructureRequest) => `
   "psUse": "这个课题如何用于英国/港校申请"
 }`;
 
+const strings = (value: unknown) => Array.isArray(value) ? value.filter((entry): entry is string => typeof entry === "string") : [];
+
+const textField = z.string().max(30_000).default("");
+const structureInput = z.object({
+  title: textField, field: textField, question: z.string().trim().min(1).max(30_000),
+  motivation: textField, method: textField, variables: textField,
+}).strict();
+
 export async function POST(req: NextRequest) {
   const access = await requireAiAccess(req, "structure-project", 30);
   if (!access.ok) return access.response;
-  if (!process.env.DEEPSEEK_API_KEY) {
-    return NextResponse.json(
-      { error: aiMessageForRequest("AI 暂未配置（缺少 DEEPSEEK_API_KEY）", req) },
-      { status: 503 }
-    );
+  if (process.env.AI_ENABLED !== "true" || !process.env.DEEPSEEK_API_KEY) {
+    return NextResponse.json({ error: aiMessageForRequest("AI 暂未配置（缺少 DEEPSEEK_API_KEY）", req) }, { status: 503 });
   }
-  const client = new OpenAI({
-    apiKey: process.env.DEEPSEEK_API_KEY,
-    baseURL: "https://api.deepseek.com",
+  const parsed = await readFeedbackInput(req, structureInput);
+  if (!parsed.ok) return parsed.response;
+  return deepSeekFeedback({
+    request: req, userId: access.userId, route: "/api/structure-project", kind: "general", json: true, maxTokens: 2500,
+    messages: [{ role: "system", content: aiSystemForRequest(SYSTEM_PROMPT, req) }, { role: "user", content: buildPrompt(parsed.data) }],
+    parse(raw) {
+      const data = parseModelJson(raw);
+      if (!Array.isArray(data.stages) || !data.stages.length) throw Error("invalid_project_structure");
+      const en = aiResponseLanguage(req) === "en";
+      const stages = data.stages.slice(0, 6).map((entry: unknown, index: number) => {
+        if (!entry || typeof entry !== "object" || Array.isArray(entry)) throw Error("invalid_project_stage");
+        const stage = entry as Record<string, unknown>;
+        return {
+          num: typeof stage.num === "number" ? stage.num : index + 1,
+          title: String(stage.title ?? (en ? "Stage " : "阶段 ") + (index + 1)),
+          goal: String(stage.goal ?? ""), tasks: String(stage.tasks ?? ""),
+          deliverable: String(stage.deliverable ?? ""), metrics: strings(stage.metrics),
+        };
+      });
+      return { structure: { summary: String(data.summary ?? ""), primaryTool: String(data.primaryTool ?? ""),
+        baseline: String(data.baseline ?? ""), challenge: String(data.challenge ?? ""), stages,
+        reflection: strings(data.reflection), psUse: String(data.psUse ?? "") } };
+    },
   });
-
-  let body: StructureRequest;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
-  }
-  if (!body.question?.trim()) {
-    return NextResponse.json({ error: aiMessageForRequest("请先填写研究问题", req) }, { status: 400 });
-  }
-
-  try {
-    const completion = await client.chat.completions.create({
-      model: "deepseek-chat",
-      max_tokens: 2500,
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: aiSystemForRequest(SYSTEM_PROMPT, req) },
-        { role: "user", content: buildPrompt(body) },
-      ],
-    });
-
-    const raw = completion.choices[0]?.message?.content?.trim() ?? "";
-    const jsonText = raw.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
-    const parsed = JSON.parse(jsonText);
-
-    // 规范化，保证结构完整
-    const stages = Array.isArray(parsed.stages)
-      ? parsed.stages.slice(0, 6).map((s: Record<string, unknown>, i: number) => ({
-          num: typeof s.num === "number" ? s.num : i + 1,
-          title: String(s.title ?? `阶段 ${i + 1}`),
-          goal: String(s.goal ?? ""),
-          tasks: String(s.tasks ?? ""),
-          deliverable: String(s.deliverable ?? ""),
-          metrics: Array.isArray(s.metrics) ? s.metrics.map(String) : [],
-        }))
-      : [];
-
-    const structure = {
-      summary: String(parsed.summary ?? ""),
-      primaryTool: String(parsed.primaryTool ?? ""),
-      baseline: String(parsed.baseline ?? ""),
-      challenge: String(parsed.challenge ?? ""),
-      stages,
-      reflection: Array.isArray(parsed.reflection) ? parsed.reflection.map(String) : [],
-      psUse: String(parsed.psUse ?? ""),
-    };
-
-    return NextResponse.json({ structure });
-  } catch (err) {
-    captureError(err, { route: "structure-project" });
-    return NextResponse.json(
-      { error: aiMessageForRequest("生成失败，请稍后重试。", req) },
-      { status: 500 }
-    );
-  }
 }

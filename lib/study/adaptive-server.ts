@@ -13,7 +13,7 @@ export async function loadStudentAdaptiveData(studentId: string, testId: string)
     orderBy: { completedAt: "asc" },
     select: {
       completedAt: true,
-      answers: { select: { questionId: true, earned: true, max: true, timeSpentSec: true } },
+      answers: { select: { questionId: true, earned: true, earnedExact: true, max: true, timeSpentSec: true } },
     },
   }), getPublishedQuestionsForTest(testId)]);
   const allQuestions = new Map(
@@ -23,12 +23,12 @@ export async function loadStudentAdaptiveData(studentId: string, testId: string)
   for (const session of sessions) {
     for (const answer of session.answers) {
       const question = allQuestions.get(answer.questionId) ?? getQuestionById(answer.questionId);
-      if (!question || question.testId !== testId) continue;
+      if (!question || question.testId !== testId || answer.max <= 0) continue;
       observations.push({
         questionId: answer.questionId,
         topicId: question.topicId,
         difficulty: question.difficulty,
-        earned: answer.earned,
+        earned: answer.earnedExact ?? answer.earned,
         max: answer.max,
         completedAt: session.completedAt,
         timeSpentSec: answer.timeSpentSec,

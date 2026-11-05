@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { clientIp, consumePersistentRateLimit, rateLimitKey } from "./rate-limit";
+import { membershipAccess } from "@/lib/membership/access";
+import { privateNoStore, sameOriginWrite } from "./json-request";
 
 const MAX_AI_REQUEST_BYTES = 128 * 1024;
 
@@ -15,7 +17,7 @@ export async function requireAiAccess(
   if (Number.isFinite(contentLength) && contentLength > MAX_AI_REQUEST_BYTES) {
     return {
       ok: false,
-      response: NextResponse.json({ error: "Request is too large" }, { status: 413 }),
+      response: NextResponse.json({ error: "Request is too large" }, { status: 413, headers: privateNoStore }),
     };
   }
 
@@ -25,9 +27,14 @@ export async function requireAiAccess(
   if (!userId) {
     return {
       ok: false,
-      response: NextResponse.json({ error: "Authentication required" }, { status: 401 }),
+      response: NextResponse.json({ error: "Authentication required" }, { status: 401, headers: privateNoStore }),
     };
   }
+  const originError = sameOriginWrite(request);
+  if (originError) return { ok: false, response: originError };
+
+  const access = await membershipAccess(userId);
+  if (!access.active) return { ok: false, response: NextResponse.json({ error: access.membership?.plan === "trial" ? "trial_expired" : "membership_required" }, { status: 402, headers: { "Cache-Control": "private, no-store" } }) };
 
   if (process.env.AI_REQUIRES_CROSS_BORDER_CONSENT !== "false") {
     const { db } = await import("@/lib/db");
@@ -40,7 +47,7 @@ export async function requireAiAccess(
         ok: false,
         response: NextResponse.json(
           { error: "AI processing consent required", consentRequired: true },
-          { status: 403 },
+          { status: 403, headers: privateNoStore },
         ),
       };
     }
@@ -57,7 +64,7 @@ export async function requireAiAccess(
         { error: "AI request rate limit reached" },
         {
           status: 429,
-          headers: { "Retry-After": String(rateLimit.retryAfterSeconds) },
+          headers: { ...privateNoStore, "Retry-After": String(rateLimit.retryAfterSeconds) },
         },
       ),
     };

@@ -16,10 +16,9 @@ describe("public locale proxy", () => {
     expect(response.headers.get("cache-control")).toBe("private, no-store");
     expect(response.headers.get("vary")).toBe("Accept-Language, Cookie");
   });
-  it.each(["en", "zh-CN"])("returns unpublished about as a genuine %s 404", async (locale) => {
+  it.each(["en", "zh-CN"])("allows the supplied v5 %s about draft to reach its page", async (locale) => {
     const response = proxy(new NextRequest(`https://example.test/${locale}/about`));
-    expect(response.status).toBe(404);
-    expect(response.headers.get("x-robots-tag")).toContain("noindex");
-    expect(await response.text()).toContain(`<html lang="${locale}">`);
+    expect(response.status).toBe(200);
+    expect(response.headers.get("x-middleware-request-x-qiaoshen-locale")).toBe(locale);
   });
 });

@@ -14,7 +14,7 @@ await command("pnpm", ["exec", "prisma", "migrate", "deploy"]);
 const server = spawn("pnpm", ["start"], { stdio: "inherit", shell: process.platform === "win32" });
 // Runtime worker is deliberately not executed by builds or local verification.
 // The first purge occurs at the next daily schedule, never during deployment.
-const retention = process.env.DATA_RETENTION_ENABLED === "false" ? null
+const retention = process.env.DATA_RETENTION_ENABLED === "false" && process.env.MEMBERSHIP_REMINDERS_ENABLED !== "true" ? null
   : spawn(process.execPath, ["scripts/study-retention-worker.mjs"], { stdio: "inherit", windowsHide: true });
 const stop = (signal) => {
   if (!server.killed) server.kill(signal);

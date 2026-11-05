@@ -1,9 +1,10 @@
 "use client";
+import { fetchAiFeedback } from "@/components/ai-remaining";
 import { useUiCopy } from "@/components/use-ui-copy";
 
 import { useEffect, useState } from "react";
 import { Save } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { CorePageHeader, CorePageShell, CoreTabBar, coreTabClass } from "@/components/core-page-layout";
 import {
@@ -30,6 +31,7 @@ type Coach = {
 
 export default function StatementsPage() {
   const ui = useUiCopy();
+  const en = useLocale() === "en";
   const t = useTranslations("statements");
   const tc = useTranslations("common");
   const [content, setContent] = useState<UcasPsContent>(emptyUcasPs.content);
@@ -59,12 +61,12 @@ export default function StatementsPage() {
   const getCoach = async (key: keyof UcasPsContent) => {
     const text = content[key];
     if (!text.trim()) {
-      setFb((f) => ({ ...f, [key]: { error: ui("请先写点内容，AI 教练才能点评这一题。") } }));
+      setFb((f) => ({ ...f, [key]: { error: en ? "Write an answer before requesting feedback." : "请先写点内容，再获取 AI 反馈。" } }));
       return;
     }
     setFb((f) => ({ ...f, [key]: { loading: true } }));
     try {
-      const res = await fetch("/api/ps-coach", {
+      const res = await fetchAiFeedback("/api/ps-coach", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-qiaoshen-locale": document.documentElement.lang },
         body: JSON.stringify({ question: key, text }),
@@ -87,7 +89,7 @@ export default function StatementsPage() {
     }
     setOverall({ loading: true });
     try {
-      const res = await fetch("/api/ps-coach", {
+      const res = await fetchAiFeedback("/api/ps-coach", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-qiaoshen-locale": document.documentElement.lang },
         body: JSON.stringify({ mode: "overall", q1: content.q1, q2: content.q2, q3: content.q3 }),
@@ -208,7 +210,7 @@ export default function StatementsPage() {
                 <span className="text-neutral-400">{t("chars", { n: val.length })}</span>
               </div>
 
-              {/* AI 教练 */}
+              {/* AI feedback */}
               <div className="mt-2">
                 <button
                   type="button"
@@ -216,7 +218,7 @@ export default function StatementsPage() {
                   disabled={f?.loading}
                   className="text-sm px-3 py-1.5 rounded-lg border border-indigo-200 text-indigo-700 bg-white hover:bg-indigo-50 disabled:opacity-60"
                 >
-                  {f?.loading ? ui("点评中…") : ui("🎓 让 AI 教练点评这一题")}
+                  {f?.loading ? ui("点评中…") : en ? "Get AI feedback for this answer" : "获取本题 AI 反馈"}
                 </button>
                 <span className="ml-2 text-xs text-neutral-400">{ui("不代写，只给诊断、建议与追问")}</span>
 

@@ -5,10 +5,10 @@ import { nextRetentionRun } from "../scripts/study-retention-worker.mjs";
 const now = new Date("2026-10-26T01:00:00Z");
 function fixture() {
   const old = new Date(+now - 366 * 86_400_000), young = new Date(+now - 364 * 86_400_000);
-  const tables = Object.fromEntries(["questionFeedback", "examSession", "examAnswer", "answerImage", "aiEvaluation", "learningRecord", "progressSnapshot", "learningEvent"].map(name => [name, [{ id: `${name}-old`, createdAt: old, fileKey: "old.jpg" }, { id: `${name}-young`, createdAt: young, fileKey: "young.jpg" }]]));
+  const tables = Object.fromEntries(["questionFeedback", "studySessionFeedback", "examSession", "studyAttempt", "examAnswer", "answerImage", "aiEvaluation", "aiFeedbackUse", "learningRecord", "progressSnapshot", "learningEvent"].map(name => [name, [{ id: `${name}-old`, createdAt: old, fileKey: "old.jpg" }, { id: `${name}-young`, createdAt: young, fileKey: "young.jpg" }]]));
   const calls: string[] = [];
-  const matches = (row: { id: string; createdAt: Date }, arg: { where?: { createdAt?: { lte: Date }; session?: { createdAt: { lte: Date } }; id?: string | { gt: string } } }) => {
-    const where = arg.where ?? {}, cutoff = where.createdAt ?? where.session?.createdAt;
+  const matches = (row: { id: string; createdAt: Date }, arg: { where?: { createdAt?: { lte: Date }; session?: { createdAt: { lte: Date } }; id?: string | { gt: string }; OR?: Array<{ createdAt?: { lte: Date } }> } }) => {
+    const where = arg.where ?? {}, cutoff = where.createdAt ?? where.session?.createdAt ?? where.OR?.[0]?.createdAt;
     return (!cutoff || row.createdAt <= cutoff.lte) && (!where.id || (typeof where.id === "string" ? row.id === where.id : row.id > where.id.gt));
   };
   const client = Object.fromEntries(Object.keys(tables).map(name => [name, {
@@ -30,14 +30,14 @@ describe("365-day study-data retention", () => {
   it("defaults to dry-run: counts without deleting a row or object", async () => {
     const f = fixture(), before = structuredClone(f.tables);
     const result = await runStudyRetention({ ...f, now });
-    expect(result).toMatchObject({ feedback: 1, sessions: 1, answers: 1, images: 1, aiEvaluations: 1, failedImages: 0 });
+    expect(result).toMatchObject({ feedback: 1, sessionFeedback: 1, sessions: 1, answers: 1, images: 1, aiEvaluations: 1, aiFeedbackCache: 1, failedImages: 0 });
     expect(f.tables).toEqual(before); expect(f.storage.delete).not.toHaveBeenCalled(); expect(f.query).not.toHaveBeenCalled();
   });
   it("deletes 366-day records/photos while keeping all 364-day fixtures", async () => {
     const f = fixture();
     const result = await runStudyRetention({ ...f, now, dryRun: false });
-    expect(result).toMatchObject({ feedback: 1, sessions: 1, images: 1, aiEvaluations: 1, learningRecords: 1, progressSnapshots: 1 });
-    for (const name of ["questionFeedback", "examSession", "answerImage", "aiEvaluation", "learningRecord", "progressSnapshot", "learningEvent"]) expect(f.tables[name].map(row => row.id)).toEqual([`${name}-young`]);
+    expect(result).toMatchObject({ feedback: 1, sessions: 1, studyAttempts: 1, images: 1, aiEvaluations: 1, learningRecords: 1, progressSnapshots: 1 });
+    for (const name of ["questionFeedback", "studySessionFeedback", "examSession", "studyAttempt", "answerImage", "aiEvaluation", "aiFeedbackUse", "learningRecord", "progressSnapshot", "learningEvent"]) expect(f.tables[name].map(row => row.id)).toEqual([`${name}-young`]);
     expect(f.storage.delete).toHaveBeenCalledWith("old.jpg");
     expect(f.storage.delete).not.toHaveBeenCalledWith("young.jpg");
     expect(f.calls.indexOf("file:old.jpg")).toBeLessThan(f.calls.indexOf("metadata:answerImage"));

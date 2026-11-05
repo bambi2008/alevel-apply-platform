@@ -44,13 +44,11 @@ describe("enforced limited-training contract", () => {
     const detailView=readFileSync(`${root}/components/test-detail.tsx`,"utf8");
     expect(detailView).toContain("<ExamScopeNote testId={test.id}");
     expect(detailView).toContain("{trainingLabel}");
-    expect(paper).toContain("const presentation = englishPaperPresentation(paper, locale)");
-    expect(paper).toContain("<WrittenPaperRunner paper={presentation}");
-    expect(paper).toContain("<ObjectiveExamRunner paper={presentation");
-    const objective=readFileSync(`${root}/components/objective-exam-runner.tsx`,"utf8");
-    expect(objective).toContain('aria-label={ui("训练限制")}');
-    expect(objective).toContain("paper.instructions?.map");
-    expect(objective).toContain('isLimitedTrainingTest(paper.testId) ? ui("开始训练")');
+    expect(paper).toContain("englishPaperPresentation(paper, locale)");
+    expect(paper).toContain("<ExamScopeNote testId={testId}");
+    expect(paper).toContain("shown.instructions?.map");
+    expect(paper).toContain("<SecureStudySession");
+    expect(paper).not.toMatch(/questions=\{|paper=\{/);
     expect(catalogue).toContain("paperTrainingTitle(p)");
     expect(catalogue).toContain("<ExamScopeNote testId={testId}");
     const frame=readFileSync(`${root}/components/core-route-frame.tsx`,"utf8");

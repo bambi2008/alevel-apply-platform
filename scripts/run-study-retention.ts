@@ -2,6 +2,7 @@ import { existsSync } from "node:fs";
 import { PrismaClient } from "@prisma/client";
 import { runStudyRetention } from "../lib/data-retention";
 import { getStorage } from "../lib/storage";
+import { purgeEndedTrialClaims } from "../lib/membership/trial";
 
 async function main() {
   // Explicit operational/test connection settings take precedence; never pull
@@ -14,8 +15,9 @@ async function main() {
   const client = new PrismaClient({ log: [] });
   try {
     const counts = await runStudyRetention({ client, storage: getStorage(), dryRun: !apply });
+    const endedProgrammeClaims = await purgeEndedTrialClaims(client, !apply);
     // Counts only: never identifiers, content, object keys or environment values.
-    console.log(JSON.stringify({ task: "study-retention", mode: apply ? "apply" : "dry-run", ...counts }));
+    console.log(JSON.stringify({ task: "study-retention", mode: apply ? "apply" : "dry-run", ...counts, endedProgrammeClaims }));
     if (counts.failedImages) process.exitCode = 1;
   } finally { await client.$disconnect(); }
 }

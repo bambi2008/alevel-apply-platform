@@ -3,6 +3,7 @@ import { getMockPaper } from "@/lib/tests/mock-papers";
 import { buildExamReadiness, type ReadinessAttempt } from "@/lib/tests/readiness";
 import { buildRemediationProfile } from "@/lib/tests/remediation";
 import { loadStudentAdaptiveData } from "@/lib/study/adaptive-server";
+import { hasPendingWrittenScores } from "@/lib/tests/exact-scores";
 
 function hasLongResponse(work: unknown) {
   if (!work || typeof work !== "object" || Array.isArray(work)) return false;
@@ -22,7 +23,9 @@ export async function loadStudentReadiness(studentId: string, testId: string) {
         mode: true,
         paperId: true,
         totalEarned: true,
+        totalEarnedExact: true,
         totalMax: true,
+        clientMeta: true,
         timeUsedSec: true,
         completedAt: true,
         answers: { select: { type: true, selected: true, work: true } },
@@ -34,7 +37,7 @@ export async function loadStudentReadiness(studentId: string, testId: string) {
     }),
   ]);
 
-  const attempts: ReadinessAttempt[] = sessions.map((session) => {
+  const attempts: ReadinessAttempt[] = sessions.filter(session => session.totalMax > 0 && !hasPendingWrittenScores(session.clientMeta)).map((session) => {
     const paper = session.paperId ? getMockPaper(session.paperId) : undefined;
     const plannedSec = paper?.modules.reduce((sum, module) => sum + module.durationSec, 0) ?? null;
     const completed = session.answers.filter((answer) => (
@@ -44,7 +47,7 @@ export async function loadStudentReadiness(studentId: string, testId: string) {
       id: session.id,
       mode: session.mode,
       paperId: session.paperId,
-      scorePercent: session.totalMax > 0 ? Math.round((session.totalEarned / session.totalMax) * 100) : 0,
+      scorePercent: session.totalMax > 0 ? Math.round(((session.totalEarnedExact ?? session.totalEarned) / session.totalMax) * 100) : 0,
       completionPercent: session.answers.length ? Math.round((completed / session.answers.length) * 100) : 0,
       timeRatio: plannedSec && session.timeUsedSec ? session.timeUsedSec / plannedSec : null,
       completedAt: session.completedAt,

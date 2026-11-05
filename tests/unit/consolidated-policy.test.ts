@@ -19,21 +19,21 @@ describe("October 25 consolidated policy intake", () => {
     for (const file of ["app/[locale]/layout.tsx", "app/[locale]/privacy/page.tsx", "app/[locale]/terms/page.tsx", "app/[locale]/pricing/page.tsx"]) {
       const source = readFileSync(file, "utf8");
       expect(source).toContain("PUBLIC_CONTACT_EMAIL");
-      expect(source).not.toContain("mao8teen@");
-      expect(source).not.toContain("maoqin1979@");
+      expect(source.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/gi) ?? []).toEqual([]);
       expect(source).not.toContain("process.env.PRIVACY_CONTACT_EMAIL");
     }
   });
   it("displays only approved prices and durations with no auto-renewal", () => {
     expect(STUDY_PLANS.map((plan) => [plan.id, plan.priceCny, plan.durationMonths, plan.durationDays])).toEqual([
-      ["basic", 0, null, null], ["trial", 0, null, 7], ["season", 399, 3, null], ["annual", 799, 12, null],
+      ["trial", 0, null, 7], ["season_pass", 399, 3, null],
     ]);
     expect(STUDY_PLANS.every((plan) => !plan.autoRenew)).toBe(true);
-    expect(STUDY_PLANS[2].name).toBe("考季卡");
+    expect(STUDY_PLANS[1].name).toBe("考季卡");
   });
   it("does not activate payment, trial or unapproved quotas", () => {
     expect(PLAN_RELEASE).toEqual({ purchasesEnabled: false, trialEnabled: false, quotaLimitsEnabled: false });
-    expect(Object.values(PLAN_QUOTAS).every((quota) => Object.values(quota).every((value) => value === null))).toBe(true);
+    expect(PLAN_QUOTAS.trial).toEqual({ dailyAiFeedback: 20, dailyPhotoFeedback: 10, dailyStatementFeedback: 3 });
+    expect(PLAN_QUOTAS.season_pass).toEqual(PLAN_QUOTAS.trial);
     const source = readFileSync("app/[locale]/pricing/page.tsx", "utf8");
     expect(source).toContain('type="button" disabled');
     expect(source).not.toMatch(/onClick|action=|fetch\(|\/checkout|stripe|paypal|二维码/);

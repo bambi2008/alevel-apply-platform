@@ -73,6 +73,9 @@ export default function LoginPage() {
                 ) : (
                   <form action={formAction} className="space-y-6">
                     <input type="hidden" name="locale" value={locale} />
+                    <input type="hidden" name="destination" ref={element => {
+                      if (element) element.value = new URLSearchParams(window.location.search).get("next") ?? "";
+                    }} />
                     <label className="block text-xs font-semibold tracking-[0.12em] text-black/65">
                       {t("email")}
                       <input

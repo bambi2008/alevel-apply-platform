@@ -1,18 +1,11 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { preferredPublicLocale, unpublishedPageHtml } from "@/lib/public-routing";
+import { preferredPublicLocale } from "@/lib/public-routing";
 
 export default function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const localePath = /^\/(zh-CN|en)(?:\/|$)/.exec(pathname);
-  if (/^\/(?:zh-CN|en)\/about\/?$/.test(pathname)) {
-    const locale = localePath?.[1] === "en" ? "en" : "zh-CN";
-    return new NextResponse(unpublishedPageHtml(locale), {
-      status: 404,
-      headers: { "Content-Type": "text/html; charset=utf-8", "X-Robots-Tag": "noindex, nofollow", "Cache-Control": "no-store" },
-    });
-  }
   if (localePath) {
     const forwarded = new Headers(request.headers);
     // Never trust an incoming locale header; derive it from the verified route.

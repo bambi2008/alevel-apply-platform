@@ -1,11 +1,11 @@
 import { auth } from "@/auth";
 import { db } from "@/lib/db";
 import { checkLatestBackup, releaseName, runHealthChecks } from "@/lib/operations/health";
+import { isConfiguredAdmin } from "@/lib/admin/allowlist";
 
 export async function getOperationsDashboardData() {
   const session = await auth();
-  const user = session?.user as { role?: string } | undefined;
-  if (user?.role !== "ADMIN") throw new Error("forbidden");
+  if (!isConfiguredAdmin(session?.user)) throw new Error("forbidden");
 
   const [health, backup] = await Promise.all([runHealthChecks(), checkLatestBackup()]);
   const since = new Date(Date.now() - 24 * 60 * 60 * 1_000);

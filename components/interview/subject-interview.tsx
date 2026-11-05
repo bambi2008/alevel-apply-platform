@@ -1,7 +1,6 @@
 "use client";
+import { fetchAiFeedback } from "@/components/ai-remaining";
 import { useUiCopy } from "@/components/use-ui-copy";
-import { useLocale } from "next-intl";
-import { localizeStaticContent } from "@/lib/content-language";
 import { MathRenderer } from "@/components/math-renderer";
 
 import { useState, useRef, useEffect } from "react";
@@ -12,8 +11,8 @@ import { HkInterviewSimulator } from "./hk-interview-simulator";
 import { QuantitativeInterviewSimulator } from "./quantitative-interview-simulator";
 import { QuantitativeInterviewPaperSimulator } from "./quantitative-interview-paper-simulator";
 import { InterviewThinkingChecklist } from "./interview-thinking-checklist";
-import { getQuantitativeDrills, isQuantitativeInterviewSubject } from "@/lib/interview/quantitative-interview";
-import { getQuantitativeInterviewPapers } from "@/lib/interview/quantitative-interview-papers";
+import type { QuantitativeInterviewDrill } from "@/lib/interview/quantitative-interview";
+import type { QuantitativeInterviewPaper } from "@/lib/interview/quantitative-interview-papers";
 
 type Msg = { role: "interviewer" | "student"; content: string };
 
@@ -21,17 +20,18 @@ export function SubjectInterview({
   subjectId,
   subjectName,
   questions,
+  quantitativeDrills,
+  quantitativePapers,
 }: {
   subjectId: string;
   subjectName: string;
   questions: InterviewQuestion[];
+  quantitativeDrills: QuantitativeInterviewDrill[];
+  quantitativePapers: QuantitativeInterviewPaper[];
 }) {
   const ui = useUiCopy();
-  const locale = useLocale();
   const [tab, setTab] = useState<"bank" | "mock" | "quantitative" | "paper">("bank");
   const [openId, setOpenId] = useState<string | null>(null);
-  const quantitativeDrills = localizeStaticContent(getQuantitativeDrills(subjectId), locale);
-  const quantitativePapers = localizeStaticContent(getQuantitativeInterviewPapers(subjectId), locale);
 
   return (
     <div>
@@ -53,7 +53,7 @@ export function SubjectInterview({
               ? ui("固定 assessment")
               : ui("AI 模拟面试")}
         </button>
-        {isQuantitativeInterviewSubject(subjectId) && quantitativeDrills.length > 0 && (
+        {quantitativeDrills.length > 0 && (
           <button
             type="button"
             onClick={() => setTab("quantitative")}
@@ -75,7 +75,7 @@ export function SubjectInterview({
         <QuantitativeInterviewSimulator subjectName={subjectName} drills={quantitativeDrills} />
       ) : tab === "bank" ? (
         <div className="space-y-4">
-          {isQuantitativeInterviewSubject(subjectId) && (
+          {quantitativeDrills.length > 0 && (
             <div className="space-y-3 pb-1">
               <div>
                 <p className="text-sm font-semibold text-[var(--ink)]">{ui("统一答题框架")}</p>
@@ -142,7 +142,7 @@ export function SubjectInterview({
             ? <CambridgeAssessmentSimulator subjectId={subjectId} subjectName={subjectName} questions={questions} />
             : subjectId.startsWith("hk-")
               ? <HkInterviewSimulator subjectId={subjectId} subjectName={subjectName} questions={questions} />
-          : <MockInterview subjectName={subjectName} seedQuestions={questions} showThinkingChecklist={isQuantitativeInterviewSubject(subjectId)} />
+          : <MockInterview subjectName={subjectName} seedQuestions={questions} showThinkingChecklist={quantitativeDrills.length > 0} />
       )}
     </div>
   );
@@ -173,7 +173,7 @@ function MockInterview({
   async function callApi(payload: object): Promise<string | null> {
     setLoading(true);
     try {
-      const res = await fetch("/api/interview-mock", {
+      const res = await fetchAiFeedback("/api/interview-mock", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-qiaoshen-locale": document.documentElement.lang },
         body: JSON.stringify(payload),
@@ -194,7 +194,7 @@ function MockInterview({
     if (msgs.length < 2 || feedbackLoading) return;
     setFeedbackLoading(true);
     try {
-      const res = await fetch("/api/interview-mock", {
+      const res = await fetchAiFeedback("/api/interview-mock", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-qiaoshen-locale": document.documentElement.lang },
         body: JSON.stringify({ mode: "feedback", subject: subjectName, history: msgs }),

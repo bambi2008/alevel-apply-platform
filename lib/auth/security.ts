@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from "node:crypto";
 
-export const LEGAL_VERSION = "2026-11-02";
+export const LEGAL_VERSION = "2026-11-05";
 export const PASSWORD_RESET_TTL_MS = 30 * 60_000;
 
 export function normalizeEmail(value: unknown): string {

@@ -22,6 +22,12 @@ export async function GET() {
       updatedAt: true,
       consents: true,
       questionFeedback: { select: { testId: true, topicId: true, questionKey: true, kind: true, createdAt: true } },
+      membership: { select: { plan: true, startsAt: true, endsAt: true } },
+      paymentOrders: { select: { outTradeNo: true, amountFen: true, months: true, status: true, payway: true,
+        agreedAt: true, termsVersion: true, paidAt: true, createdAt: true, membershipEndsAt: true, testPayment: true } },
+      aiFeedbackUses: { where: { completedAt: { not: null } }, select: { kind: true, createdAt: true, output: true } },
+      studyAttempts: { select: { testId: true, mode: true, paperId: true, startedAt: true, completedAt: true, reportId: true,
+        answers: { select: { questionId: true, submission: true, submittedAt: true } } } },
       documents: {
         select: {
           id: true,
@@ -56,7 +62,7 @@ export async function GET() {
           studyTasks: true,
           shortlistItems: true,
           examSessions: {
-            include: { answers: true },
+            include: { answers: true, sessionFeedback: { select: { questionId: true, kind: true, reason: true, createdAt: true } } },
           },
           backgroundItems: true,
         },
@@ -67,7 +73,7 @@ export async function GET() {
 
   const payload = {
     exportedAt: new Date().toISOString(),
-    formatVersion: 1,
+    formatVersion: 2,
     user,
   };
   return new NextResponse(JSON.stringify(payload, null, 2), {

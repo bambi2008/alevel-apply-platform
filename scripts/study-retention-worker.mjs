@@ -11,10 +11,19 @@ export function nextRetentionRun(now = new Date()) {
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   let timer, active;
   const schedule = () => { timer = setTimeout(run, nextRetentionRun().getTime() - Date.now()); };
-  const run = () => {
-    active = spawn(process.execPath, ["--import", "tsx", "scripts/run-study-retention.ts", "--apply"], { stdio: "inherit", windowsHide: true });
-    active.once("error", () => { console.error('{"task":"study-retention","status":"worker-failed"}'); active = undefined; schedule(); });
-    active.once("exit", () => { active = undefined; schedule(); });
+  const run = async () => {
+    const tasks = [];
+    if (process.env.DATA_RETENTION_ENABLED !== "false") tasks.push(["scripts/run-study-retention.ts", "--apply"]);
+    if (process.env.MEMBERSHIP_REMINDERS_ENABLED === "true") tasks.push(["scripts/run-membership-notices.ts"]);
+    for (const task of tasks) {
+      await new Promise(resolve => {
+        active = spawn(process.execPath, ["--import", "tsx", ...task], { stdio: "inherit", windowsHide: true });
+        active.once("error", () => { console.error('{"task":"daily-maintenance","status":"worker-failed"}'); resolve(); });
+        active.once("exit", resolve);
+      });
+      active = undefined;
+    }
+    schedule();
   };
   const stop = () => { clearTimeout(timer); active?.kill("SIGTERM"); process.exit(0); };
   process.on("SIGTERM", stop); process.on("SIGINT", stop);

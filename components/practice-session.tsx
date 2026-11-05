@@ -3,8 +3,6 @@ import { useUiCopy } from "@/components/use-ui-copy";
 import { useLocale } from "next-intl";
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
-import { useTier } from "@/hooks/use-tier";
-import { applyFreeLimit } from "@/lib/entitlements";
 import { useSearchParams } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import type { AdmissionsTest } from "@/lib/tests";
@@ -111,7 +109,6 @@ export function PracticeSession({ test, questions, questionModules }: {
   const [sessionPurpose, setSessionPurpose] = useState<SessionPurpose>("practice");
   const questionStartedAt = useRef(0);
   const restoredRef = useRef(false);
-  const tier = useTier();
   const shouldResume = searchParams.get("resume") === "1";
   const availableQuestionCount = allQuestions.filter((question) =>
     (!["topic", "adaptive"].includes(mode) || topicId === "all" || question.topicId === topicId) && matchesFormat(question, format)
@@ -162,8 +159,6 @@ export function PracticeSession({ test, questions, questionModules }: {
       pool = allQuestions.filter((q) => q.topicId === topicId);
     }
     pool = pool.filter((question) => matchesFormat(question, format));
-    // 免费额度门控：付费墙关闭 / 会员时原样返回，绝不改变现有行为。
-    pool = applyFreeLimit(pool, testId, tier);
     let shuffled: Question[];
     if (mode === "adaptive") {
       try {
@@ -207,7 +202,7 @@ export function PracticeSession({ test, questions, questionModules }: {
     questionStartedAt.current = Date.now();
     setSessionState("practicing");
     setStarting(false);
-  }, [allQuestions, format, mode, topicId, effectiveQuestionCount, tier, testId, searchParams, examModule, ui]);
+  }, [allQuestions, format, mode, topicId, effectiveQuestionCount, testId, searchParams, examModule, ui]);
 
   const recordResult = useCallback((result: SessionResult) => {
     const enriched = { ...result, timeSpentSec: Math.max(1, Math.round((Date.now() - questionStartedAt.current) / 1000)), visits: 1 };

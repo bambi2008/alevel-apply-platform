@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
   const sessions = await db.examSession.findMany({
     where: { studentId: profile.id, testId },
     select: {
-      answers: { select: { questionId: true, earned: true, max: true } },
+      answers: { select: { questionId: true, earned: true, earnedExact: true, max: true } },
     },
   });
 
@@ -40,10 +40,10 @@ export async function GET(req: NextRequest) {
   for (const s of sessions) {
     for (const a of s.answers) {
       const topicId = getTopicIdForQuestion(a.questionId);
-      if (!topicId) continue; // 题目已下架/找不到则跳过
+      if (!topicId || a.max <= 0) continue; // 未评分作答不进入正确率分母
       totalAnswered++;
       const cur = agg.get(topicId) ?? { earned: 0, max: 0, count: 0 };
-      cur.earned += a.earned;
+      cur.earned += a.earnedExact ?? a.earned;
       cur.max += a.max;
       cur.count += 1;
       agg.set(topicId, cur);

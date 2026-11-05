@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import { useLocale } from "next-intl";
 import {
   AlertCircle,
   CheckCircle2,
@@ -352,7 +353,7 @@ export function QuestionStudio({ tests }: Props) {
               <h2 className="mb-3 text-sm font-semibold text-neutral-900">来源与权利</h2>
               <div className="grid gap-3 sm:grid-cols-2">
                 <label className={labelClass}>来源类型
-                  <select value={active.source.type} onChange={(event) => touchSource({ ...active.source, type: event.target.value as QuestionDraft["source"]["type"] })} className={fieldClass}><option value="ORIGINAL">原创</option><option value="OFFICIAL">官方真题</option><option value="ADAPTED">改编</option></select>
+                  <select value={active.source.type} onChange={(event) => touchSource({ ...active.source, type: event.target.value as QuestionDraft["source"]["type"] })} className={fieldClass}><option value="ORIGINAL">原创</option><option value="OFFICIAL">官方公开历年卷</option><option value="ADAPTED">改编</option></select>
                 </label>
                 <label className={labelClass}>权利状态
                   <select value={active.source.rights} onChange={(event) => touchSource({ ...active.source, rights: event.target.value as QuestionDraft["source"]["rights"] })} className={fieldClass}><option value="OWNED">自有</option><option value="LICENSED">已获许可</option><option value="LINK_ONLY">仅可链接</option><option value="RESTRICTED">受限制</option><option value="UNKNOWN">待确认</option></select>
@@ -498,7 +499,20 @@ function ReleaseWorkbench({ drafts, active, reviewer, setReviewer, onSelect, onA
   onAdvance: () => void;
   onRevision: () => void;
 }) {
+  const en = useLocale() === "en";
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState("");
   const release = createReleasePackage(drafts.filter((draft) => draft.review.stage === "APPROVED"));
+  const exportRelease = async () => {
+    setExporting(true); setExportError("");
+    try {
+      const response = await fetch("/api/admin/question-release", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ draftIds: drafts.filter(draft => draft.review.stage === "APPROVED").map(draft => draft.draftId) }) });
+      const verified = await response.json() as ReturnType<typeof createReleasePackage>;
+      if (!response.ok || !verified.releasable) throw Error("verification_required");
+      downloadJson(`question-release-${new Date().toISOString().slice(0, 10)}.json`, verified);
+    } catch { setExportError(en ? "Server approval and syllabus verification are required. Save the workspace first and check administrator access." : "需先保存工作区并通过服务端审核及考纲核验，请同时检查管理员权限。"); }
+    finally { setExporting(false); }
+  };
   const diff = diffQuestionDraft(active);
   const activeIssues = validateDraft(active).issues;
   return (
@@ -536,7 +550,8 @@ function ReleaseWorkbench({ drafts, active, reviewer, setReviewer, onSelect, onA
         <section className="rounded-md border border-neutral-200 p-4">
           <div className="flex items-center justify-between"><h2 className="text-sm font-semibold">正式发布包</h2><span className={release.releasable && release.questions.length ? "text-emerald-700" : "text-neutral-500"}>{release.questions.length} 题</span></div>
           <p className="mt-2 text-xs leading-5 text-neutral-500">仅包含已批准题目，并附来源和审核记录。任何告警都会阻止导出。</p>
-          <button type="button" disabled={!release.releasable || release.questions.length === 0} onClick={() => downloadJson(`question-release-${new Date().toISOString().slice(0, 10)}.json`, release)} className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md border border-neutral-300 px-3 py-2 text-sm font-medium hover:bg-neutral-50 disabled:text-neutral-300"><Download className="size-4" />导出发布包</button>
+          <button type="button" disabled={exporting || release.questions.length === 0} onClick={() => void exportRelease()} className="mt-3 inline-flex w-full items-center justify-center gap-2 rounded-md border border-neutral-300 px-3 py-2 text-sm font-medium hover:bg-neutral-50 disabled:text-neutral-300"><Download className="size-4" />{exporting ? (en ? "Verifying…" : "正在核验…") : en ? "Verify and export on server" : "服务端核验并导出"}</button>
+          {exportError && <p role="alert" className="mt-2 text-xs text-red-700">{exportError}</p>}
           <button type="button" onClick={() => downloadJson("question-workspace.json", { schemaVersion: 1, drafts })} className="mt-2 inline-flex w-full items-center justify-center gap-2 rounded-md border border-neutral-300 px-3 py-2 text-sm font-medium hover:bg-neutral-50"><Save className="size-4" />导出可审计工作区</button>
         </section>
       </aside>

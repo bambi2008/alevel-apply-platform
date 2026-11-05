@@ -8,6 +8,7 @@ import { DiagnosisSummary, QuestionDiagnosis } from "../../components/exam-diagn
 import { HandwritingRecognitionNote } from "../../components/handwriting-recognition-note";
 import { GradingTrustPanel } from "../../components/grading-trust-panel";
 import { ExamReliabilityStatus } from "../../components/exam-reliability-status";
+import { AiPracticeNotice } from "../../components/ai-practice-notice";
 import { buildSessionDiagnosis, optionReview, type DiagnosisObservation } from "../../lib/tests/diagnosis";
 import { diagnosisEvidence } from "../../lib/tests/diagnosis-presentation";
 import type { LongQuestion, MCQQuestion } from "../../lib/tests/questions/types";
@@ -39,6 +40,12 @@ const observations: DiagnosisObservation[] = [
 ];
 
 describe("localized results without rewriting student work", () => {
+  it("discloses AI marking limitations in both locales", () => {
+    locale.value = "en";
+    expect(renderToStaticMarkup(createElement(AiPracticeNotice))).toContain("AI feedback is for practice only and is not human or official marking.");
+    locale.value = "zh-CN";
+    expect(renderToStaticMarkup(createElement(AiPracticeNotice))).toContain("AI 反馈仅供练习参考，不是人工或官方评分。");
+  });
   it("localizes fallback option reviews while retaining authored explanations and keys", () => {
     expect(optionReview(mcq, "A", "en").title).toBe("Correct option");
     expect(optionReview(mcq, "B", "en").detail).toContain("A, the worked solution");

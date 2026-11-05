@@ -47,7 +47,7 @@ async function buildAgenda(studentId: string) {
     db.studyGoal.findMany({ where: { studentId, active: true }, orderBy: { targetDate: "asc" } }),
     db.studyTask.findMany({ where: { studentId, scheduledFor: { gte: today, lt: weekEnd } }, orderBy: [{ scheduledFor: "asc" }, { createdAt: "asc" }] }),
     db.studyTask.findMany({ where: { studentId, scheduledFor: { gte: reportStart, lt: addUtcDays(today, 1) } } }),
-    db.examSession.findMany({ where: { studentId, completedAt: { gte: reportStart, lt: addUtcDays(today, 1) } }, select: { completedAt: true, timeUsedSec: true, totalEarned: true, totalMax: true, _count: { select: { answers: true } } } }),
+    db.examSession.findMany({ where: { studentId, completedAt: { gte: reportStart, lt: addUtcDays(today, 1) } }, select: { completedAt: true, timeUsedSec: true, totalEarned: true, totalEarnedExact: true, totalMax: true, _count: { select: { answers: true } } } }),
     db.studyTask.findMany({ where: { studentId, status: "DONE", completedAt: { gte: activityStart } }, select: { completedAt: true } }),
     db.examSession.findMany({ where: { studentId, completedAt: { gte: activityStart } }, select: { completedAt: true } }),
   ]);
@@ -63,7 +63,7 @@ async function buildAgenda(studentId: string) {
     completedTasks: reportTasks.filter((task) => task.status === "DONE").length,
     sessionMinutes: Math.round(sessions.reduce((sum, session) => sum + (session.timeUsedSec ?? 0), 0) / 60),
     questionsAnswered: sessions.reduce((sum, session) => sum + session._count.answers, 0),
-    earned: sessions.reduce((sum, session) => sum + session.totalEarned, 0),
+    earned: sessions.reduce((sum, session) => sum + (session.totalEarnedExact ?? session.totalEarned), 0),
     max: sessions.reduce((sum, session) => sum + session.totalMax, 0),
     activeDates: [...reportDates],
     currentStreak: calculateStreak(activeDates, today),

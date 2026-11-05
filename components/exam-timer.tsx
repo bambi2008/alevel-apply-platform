@@ -8,7 +8,7 @@ export interface TimerPreset {
 }
 
 /**
- * 独立计时器：对照官方真题 PDF 限时作答用。
+ * 独立计时器：对照官方公开历年卷 PDF 计时作答用。
  * 预设按真实考试时长，亦可自定义。纯前端 React 状态，不依赖存储。
  */
 export function ExamTimer({ presets }: { presets: TimerPreset[] }) {

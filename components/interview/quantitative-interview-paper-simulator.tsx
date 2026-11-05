@@ -5,7 +5,7 @@ import { useLocale } from "next-intl";
 import { useUiCopy } from "@/components/use-ui-copy";
 import { interviewSkillLabel } from "@/lib/interview/review-presentation";
 import { AlertTriangle, ChevronRight, Clock3, RotateCcw } from "lucide-react";
-import { scoreQuantitativeResponse } from "@/lib/interview/quantitative-interview";
+import { scoreQuantitativeResponse } from "@/lib/interview/quantitative-scoring";
 import { INTERVIEW_PROCESS_SKILLS } from "@/lib/interview/quantitative-interview-review";
 import type { QuantitativeInterviewPaper } from "@/lib/interview/quantitative-interview-papers";
 import { InterviewThinkingChecklist } from "./interview-thinking-checklist";

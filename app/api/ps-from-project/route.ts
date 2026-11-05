@@ -1,7 +1,7 @@
+import { deepSeekFeedback, parseModelJson, readFeedbackInput } from "@/lib/ai/feedback-response";
+import { z } from "zod";
 import { NextRequest, NextResponse } from "next/server";
 import { aiSystemForRequest, aiMessageForRequest } from "@/lib/ai-response-language";
-import OpenAI from "openai";
-import { captureError } from "@/lib/monitoring";
 import { requireAiAccess } from "@/lib/security/ai-route";
 
 export const runtime = "nodejs";
@@ -53,50 +53,32 @@ ${r.currentAnswer ? `\n学生这一题已经写了的内容：\n"""\n${r.current
 
 注意：strengths 和 suggestions 都只给方向和提示，绝不能是可照抄的成句文书文字。`;
 
+const strings = (value: unknown) => Array.isArray(value) ? value.filter((entry): entry is string => typeof entry === "string") : [];
+
+const textField = z.string().max(30_000).optional();
+const projectInput = z.object({
+  question: z.enum(["q2", "q3"]), projectTitle: z.string().min(1).max(500),
+  field: textField, summary: textField, reflection: textField, currentAnswer: textField,
+  submissions: z.array(z.string().max(20_000)).max(20).optional(),
+}).strict();
+
 export async function POST(req: NextRequest) {
   const access = await requireAiAccess(req, "ps-from-project", 30);
   if (!access.ok) return access.response;
-  if (!process.env.DEEPSEEK_API_KEY) {
+  if (process.env.AI_ENABLED !== "true" || !process.env.DEEPSEEK_API_KEY) {
     return NextResponse.json({ error: aiMessageForRequest("AI 暂未配置（缺少 DEEPSEEK_API_KEY）", req) }, { status: 503 });
   }
-  const client = new OpenAI({
-    apiKey: process.env.DEEPSEEK_API_KEY,
-    baseURL: "https://api.deepseek.com",
+  const parsed = await readFeedbackInput(req, projectInput);
+  if (!parsed.ok) return parsed.response;
+  return deepSeekFeedback({
+    request: req, userId: access.userId, route: "/api/ps-from-project", kind: "statement", json: true, maxTokens: 1500,
+    messages: [{ role: "system", content: aiSystemForRequest(SYSTEM_PROMPT, req) }, { role: "user", content: buildPrompt(parsed.data) }],
+    parse(raw) {
+      const data = parseModelJson(raw);
+      return {
+        strengths: strings(data.strengths), suggestions: strings(data.suggestions),
+        questions: strings(data.questions), summary: typeof data.summary === "string" ? data.summary : "",
+      };
+    },
   });
-  let body: Req;
-  try {
-    body = await req.json();
-  } catch {
-    return NextResponse.json({ error: "Invalid JSON" }, { status: 400 });
-  }
-  if (!body.question || !["q2", "q3"].includes(body.question)) {
-    return NextResponse.json({ error: aiMessageForRequest("请选择要写入的题目（Q2 或 Q3）", req) }, { status: 400 });
-  }
-  if (!body.projectTitle) {
-    return NextResponse.json({ error: aiMessageForRequest("缺少课题信息", req) }, { status: 400 });
-  }
-
-  try {
-    const completion = await client.chat.completions.create({
-      model: "deepseek-chat",
-      max_tokens: 1500,
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: aiSystemForRequest(SYSTEM_PROMPT, req) },
-        { role: "user", content: buildPrompt(body) },
-      ],
-    });
-    const raw = completion.choices[0]?.message?.content?.trim() ?? "";
-    const jsonText = raw.replace(/^```(?:json)?\n?/, "").replace(/\n?```$/, "");
-    const parsed = JSON.parse(jsonText);
-    return NextResponse.json({
-      summary: typeof parsed.summary === "string" ? parsed.summary : "",
-      strengths: Array.isArray(parsed.strengths) ? parsed.strengths.map(String) : [],
-      suggestions: Array.isArray(parsed.suggestions) ? parsed.suggestions.map(String) : [],
-      questions: Array.isArray(parsed.questions) ? parsed.questions.map(String) : [],
-    });
-  } catch (err) {
-    captureError(err, { route: "ps-from-project" });
-    return NextResponse.json({ error: aiMessageForRequest("生成失败，请稍后重试。", req) }, { status: 500 });
-  }
 }

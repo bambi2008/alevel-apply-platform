@@ -32,7 +32,7 @@ export default async function BetaAnalyticsPage() {
   return (
     <div className="space-y-6">
       <header>
-        <h1 className="text-xl font-bold text-neutral-950">Beta 学生数据</h1>
+        <h1 className="text-xl font-bold text-neutral-950">学生使用数据</h1>
         <p className="mt-1 text-sm text-neutral-500">服务器事件口径，更新时间 {data.generatedAt.toLocaleString("zh-CN", { timeZone: "Asia/Shanghai" })}</p>
       </header>
 
@@ -83,7 +83,7 @@ export default async function BetaAnalyticsPage() {
                   <td className="px-3 py-3">{row.gain ? `${row.gain.testId.toUpperCase()} ${row.gain.preScore}% → ${row.gain.postScore}% (${row.gain.delta >= 0 ? "+" : ""}${row.gain.delta}pp)` : "数据不足"}</td>
                 </tr>
               ))}
-              {data.rows.length === 0 && <tr><td colSpan={10} className="px-3 py-12 text-center text-neutral-400">暂无 Beta 学生</td></tr>}
+              {data.rows.length === 0 && <tr><td colSpan={10} className="px-3 py-12 text-center text-neutral-400">暂无学生数据</td></tr>}
             </tbody>
           </table>
         </div>

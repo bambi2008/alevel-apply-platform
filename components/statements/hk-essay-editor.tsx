@@ -1,4 +1,5 @@
 "use client";
+import { fetchAiFeedback } from "@/components/ai-remaining";
 import { useUiCopy } from "@/components/use-ui-copy";
 import { useLocale } from "next-intl";
 import { HK_UNI_PRESENTATION_EN, HK_SELF_CHECK_EN } from "@/lib/statements/presentation";
@@ -54,12 +55,12 @@ export function HkEssayEditor() {
 
   const getCoach = async () => {
     if (!content.body.trim()) {
-      setFb({ error: ui("请先写点内容，AI 教练才能点评。") });
+      setFb({ error: en ? "Write a draft before requesting feedback." : "请先写一段草稿，再获取 AI 反馈。" });
       return;
     }
     setFb({ loading: true });
     try {
-      const res = await fetch("/api/ps-coach", {
+      const res = await fetchAiFeedback("/api/ps-coach", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-qiaoshen-locale": document.documentElement.lang },
         body: JSON.stringify({ mode: "hk", text: content.body, targetUni: uni.label }),
@@ -115,7 +116,7 @@ export function HkEssayEditor() {
         </div>
       </div>
 
-      {/* AI 教练 */}
+      {/* AI feedback */}
       <div className="mt-3">
         <button
           type="button"
@@ -123,7 +124,7 @@ export function HkEssayEditor() {
           disabled={fb.loading}
           className="text-sm px-4 py-2 rounded-lg border border-indigo-200 text-indigo-700 bg-white hover:bg-indigo-50 disabled:opacity-60"
         >
-          {fb.loading ? ui("点评中…") : ui("🎓 让 AI 教练点评这篇")}
+          {fb.loading ? ui("点评中…") : en ? "Get AI feedback on this draft" : "获取本篇 AI 反馈"}
         </button>
         <span className="ml-2 text-xs text-neutral-400">{ui("按港校标准诊断，不代写")}</span>
 

@@ -60,7 +60,7 @@ export function BetaInviteManager({ rows, limit, used, reserved }: Props) {
     <section className="border-y border-neutral-200 py-5">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h2 className="font-semibold text-neutral-950">首批 Beta 邀请码</h2>
+          <h2 className="font-semibold text-neutral-950">注册邀请码</h2>
           <p className="mt-1 text-xs text-neutral-500">邮箱绑定、一次性使用；总量硬限制 {limit} 人。</p>
         </div>
         <div className="flex gap-4 text-sm tabular-nums">

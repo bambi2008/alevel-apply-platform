@@ -20,6 +20,12 @@ const valid = {
 };
 
 describe("production environment validation", () => {
+  it("requires a separate trial secret and prevents restarting an ended programme", () => {
+    expect(validateProductionEnv({ ...valid, TRIAL_PROGRAM_ENABLED: "true" }).errors.join(" ")).toContain("TRIAL_DEDUP_SECRET");
+    expect(validateProductionEnv({ ...valid, TRIAL_PROGRAM_ENABLED: "true", TRIAL_DEDUP_SECRET: valid.AUTH_SECRET }).errors.join(" ")).toContain("TRIAL_DEDUP_SECRET");
+    expect(validateProductionEnv({ ...valid, TRIAL_PROGRAM_ENABLED: "true", TRIAL_DEDUP_SECRET: "dedicated-test-fixture-trial-key-not-production" }).errors).toEqual([]);
+    expect(validateProductionEnv({ ...valid, TRIAL_PROGRAM_ENABLED: "true", TRIAL_PROGRAM_ENDED_AT: "2026-01-01" }).errors.join(" ")).toContain("ended trial programme");
+  });
   it("accepts a complete single-host configuration", () => {
     expect(validateProductionEnv(valid).errors).toEqual([]);
   });

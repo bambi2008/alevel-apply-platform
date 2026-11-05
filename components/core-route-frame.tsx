@@ -4,6 +4,8 @@ import type { ReactNode } from "react";
 import { Link, usePathname } from "@/i18n/navigation";
 import { useLocale } from "next-intl";
 import { CORE_AREAS, coreAreaForPath, coreAreaTitle } from "@/lib/core-navigation";
+import { AiPracticeNotice } from "@/components/ai-practice-notice";
+import { AiRemaining } from "@/components/ai-remaining";
 
 const CORE_ROUTES = CORE_AREAS;
 
@@ -50,6 +52,8 @@ export function CoreRouteFrame({ children }: { children: ReactNode }) {
   if (!current) return children;
 
   const nested = segments.length > 1;
+  const feedbackWorkspace = segments[0] === "statements" || (segments[0] === "interview" && nested)
+    || (segments[0] === "background" && nested) || (segments[0] === "tests" && ["practice", "paper", "speaking"].includes(segments[2] ?? ""));
 
   return (
     <div className="core-route-frame min-h-[calc(100svh-4rem)]">
@@ -86,7 +90,9 @@ export function CoreRouteFrame({ children }: { children: ReactNode }) {
           </div>
         </aside>
       ) : null}
+      {feedbackWorkspace && <AiRemaining key={pathname} en={en} />}
       {children}
+      <AiPracticeNotice />
     </div>
   );
 }

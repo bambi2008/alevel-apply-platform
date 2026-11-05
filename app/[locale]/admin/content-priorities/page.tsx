@@ -34,18 +34,18 @@ export default function ContentPrioritiesPage() {
       <div className="overflow-x-auto rounded-lg border border-black/20">
         <table className="w-full whitespace-nowrap text-left text-sm">
           <caption className="sr-only">{english ? "Aggregate topic-priority measurements; no individual student records" : "考点汇总数据，不含学生个人记录"}</caption>
-          <thead className="bg-black/5"><tr>{(english ? ["Exam", "Topic", "Questions", "Students", "Error rate", "Feedback", "Priority"] : ["考试", "考点", "题量", "作答人数", "错误率", "反馈数", "优先级分"]).map(label => <th key={label} scope="col" className="p-3 font-semibold">{label}</th>)}</tr></thead>
+          <thead className="bg-black/5"><tr>{(english ? ["Exam", "Topic", "Questions", "Students", "Attempts", "Error rate", "Feedback", "Priority"] : ["考试", "考点", "题量", "作答人数", "作答次数", "错误率", "反馈数", "优先级分"]).map(label => <th key={label} scope="col" className="p-3 font-semibold">{label}</th>)}</tr></thead>
           <tbody>{rows.map(row => <tr key={`${row.testId}:${row.topicId}`} className="border-t border-black/15">
             <td className="p-3">{row.testId.toUpperCase()}</td><th scope="row" className="p-3 font-medium">{english ? row.titleEn : row.title}</th><td className="p-3">{row.questionCount}</td>
-            {row.status === "insufficient_sample" ? <td colSpan={4} className="p-3 text-black/65">{english ? "Insufficient sample" : "样本不足"}</td> : <>
-              <td className="p-3">{row.students}</td><td className="p-3">{row.errorRate === null ? "—" : `${(row.errorRate * 100).toFixed(1)}%`}</td><td className="p-3">{row.feedbackCount}</td><td className="p-3 font-semibold">{row.score === null ? english ? "Awaiting scores" : "评分不足" : row.score.toFixed(1)}</td>
+            {row.status === "insufficient_sample" ? <td colSpan={5} className="p-3 text-black/65">{english ? "Insufficient sample" : "样本不足"}</td> : <>
+              <td className="p-3">{row.students}</td><td className="p-3">{row.attempts}</td><td className="p-3">{row.errorRate === null ? "—" : `${(row.errorRate * 100).toFixed(1)}%`}</td><td className="p-3">{row.feedbackCount}</td><td className="p-3 font-semibold">{row.score === null ? english ? "Awaiting scores" : "评分不足" : row.score.toFixed(1)}</td>
             </>}
           </tr>)}</tbody>
         </table>
       </div>
       {rows.length === 0 && <p className="py-5 text-sm">{english ? "No topics in this view." : "当前筛选下没有考点。"}</p>}
       <details className="mt-6 text-sm text-black/70"><summary className="inline-flex min-h-11 cursor-pointer items-center underline">{english ? "How the score works" : "评分口径"}</summary>
-        <p className="mt-2 leading-7">{english ? "40% distinct students + 25% error rate + 20% feedback + 15% question scarcity. Each component is min–max normalised among scoreable topics in the same exam; tied components are neutral (0.5). Repeated answers to the same question use the first in-window answer. An error means not earning full marks; uncertain or unscored written work is excluded from the error-rate denominator. AI marks are provisional. Each of the three feedback types counts once per student/question. CSV contains only topic aggregates and masks small samples." : "40%作答人数 + 25%错误率 + 20%反馈数 + 15%题量稀缺度。各项只在同考试、样本与评分足够的考点中做最小—最大归一化；全部相等时取中性值0.5。每名学生同一道题取窗口内首次作答，未得满分计为错误；未评分或需人工复核的书面作答不进入错误率分母，AI分数仅供参考。三种反馈分别按每人每题最多一次计数。CSV仅含考点汇总，并隐藏小样本数据。"}</p>
+        <p className="mt-2 leading-7">{english ? "40% distinct students + 25% error rate + 20% feedback + 15% question scarcity. Components are normalised within each exam. The attempts column includes repeat answers. Error rate uses each student's first answer to each question and excludes unscored or uncertain written work. Session feedback counts once per kind for the selected question's topic or each topic in the set. Historical feedback is kept. CSV includes topic totals and masks small samples." : "40%作答人数 + 25%错误率 + 20%反馈数 + 15%题量稀缺度。各项在同考试内归一化。作答次数含重复作答。错误率按每名学生对每道题的首次作答计算，排除未评分或评分存疑的书面作答。整套反馈每种计一次，归入所选题的考点，或归入本套题涉及的各考点。旧反馈继续统计。CSV 只含考点汇总，并隐藏小样本数据。"}</p>
       </details>
     </>}
   </section>;

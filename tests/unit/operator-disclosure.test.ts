@@ -23,10 +23,13 @@ describe("owner-confirmed operator disclosure", () => {
       expect(privacy).toContain(locale === "en" ? "no configured time-based automatic expiry" : "未配置按固定天数自动到期");
       expect(privacy).toContain(locale === "en" ? "currently disabled" : "当前未启用 AI");
       expect(privacy).toContain(locale === "en" ? "365 days" : "365天");
+      expect(privacy).toContain(locale === "en" ? "not anonymous data" : "并非匿名数据");
+      expect(privacy).toContain(locale === "en" ? "until we stop offering the new-user trial" : "直至停止提供新用户体验");
+      expect(privacy).toContain(locale === "en" ? "not the original email" : "不保存邮箱原文");
     });
   }
   it("uses the owner's exact confirmed name without inventing a company", () => {
     expect(PUBLIC_OPERATOR_NAME).toBe("茅勤");
-    expect(LEGAL_VERSION).toBe("2026-11-02");
+    expect(LEGAL_VERSION).toBe("2026-11-05");
   });
 });

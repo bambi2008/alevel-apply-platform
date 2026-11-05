@@ -5,6 +5,7 @@ const m = vi.hoisted(() => ({
   findUser: vi.fn(), createUser: vi.fn(), execute: vi.fn(), event: vi.fn(),
   invite: vi.fn(), claim: vi.fn(), participant: vi.fn(), transaction: vi.fn(),
   signIn: vi.fn(), hash: vi.fn(), limit: vi.fn(),
+  trialClaim: vi.fn(), membership: vi.fn(),
 }));
 vi.mock("@/lib/db", () => ({ db: { $transaction: m.transaction } }));
 vi.mock("bcryptjs", () => ({ default: { hash: m.hash } }));
@@ -31,6 +32,7 @@ function form(overrides: Record<string, string | null | undefined> = {}) {
 beforeEach(() => {
   vi.resetAllMocks();
   vi.stubEnv("REGISTRATION_MODE", "open");
+  vi.stubEnv("TRIAL_PROGRAM_ENABLED", "false");
   m.findUser.mockResolvedValue(null);
   m.createUser.mockResolvedValue({ id: "new-student", profile: { id: "new-profile" } });
   m.hash.mockResolvedValue("hashed-password");
@@ -41,6 +43,7 @@ beforeEach(() => {
     // Must remain unused: self-registration must not spend old cohort places.
     betaInvite: { findUnique: m.invite, count: m.invite, updateMany: m.claim },
     betaParticipant: { create: m.participant },
+    trialClaim: { createMany: m.trialClaim }, membership: { create: m.membership },
   }));
 });
 
@@ -73,6 +76,28 @@ describe("temporary invite registration", () => {
 });
 
 describe("open email self-registration", () => {
+  it("grants the initial seven-day trial inside the account-creation transaction", async () => {
+    vi.stubEnv("TRIAL_PROGRAM_ENABLED", "true");
+    vi.stubEnv("TRIAL_PROGRAM_ENDED_AT", "");
+    vi.stubEnv("TRIAL_DEDUP_SECRET", "dedicated-trial-fixture-only-not-production");
+    m.trialClaim.mockResolvedValue({ count: 1 });
+    expect(await registerAction({}, form())).toEqual({});
+    expect(m.membership).toHaveBeenCalledOnce();
+    const data = m.membership.mock.calls[0][0].data;
+    expect(data.userId).toBe("new-student");
+    expect(data.plan).toBe("trial");
+    expect(+data.endsAt - +data.startsAt).toBe(604_800_000);
+    expect(JSON.stringify(m.trialClaim.mock.calls)).not.toContain("selfsignup@example.test");
+  });
+  it("permits re-registration without granting a previously used email another trial", async () => {
+    vi.stubEnv("TRIAL_PROGRAM_ENABLED", "true");
+    vi.stubEnv("TRIAL_PROGRAM_ENDED_AT", "");
+    vi.stubEnv("TRIAL_DEDUP_SECRET", "dedicated-trial-fixture-only-not-production");
+    m.trialClaim.mockResolvedValue({ count: 0 });
+    expect(await registerAction({}, form())).toEqual({});
+    expect(m.membership).not.toHaveBeenCalled();
+    expect(m.signIn).toHaveBeenCalledOnce();
+  });
   it("registers without an invitation and without reading or altering the 20-person cohort", async () => {
     await expect(registerAction({}, form())).resolves.toEqual({});
     expect(m.invite).not.toHaveBeenCalled();

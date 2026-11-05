@@ -1,4 +1,5 @@
 "use client";
+import { fetchAiFeedback } from "@/components/ai-remaining";
 
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, CheckCircle2, Clock3, RotateCcw } from "lucide-react";
@@ -175,7 +176,7 @@ export function IeltsSpeakingSimulator() {
         { role: "interviewer" as const, content: `[Part ${answer.part}] ${answer.prompt}` },
         { role: "student" as const, content: answer.answer || "(no response)" },
       ]);
-      const response = await fetch("/api/interview-mock", {
+      const response = await fetchAiFeedback("/api/interview-mock", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-qiaoshen-locale": document.documentElement.lang },
         body: JSON.stringify({ mode: "feedback", subject: "IELTS Speaking", history }),

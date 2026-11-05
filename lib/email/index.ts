@@ -4,6 +4,7 @@ export interface EmailMessage {
   text: string;
   html: string;
   idempotencyKey?: string;
+  replyTo?: string;
 }
 
 export interface EmailAdapter {
@@ -30,6 +31,7 @@ class ResendEmailAdapter implements EmailAdapter {
   async send(message: EmailMessage): Promise<void> {
     const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
+      signal: AbortSignal.timeout(10_000),
       headers: {
         authorization: `Bearer ${this.apiKey}`,
         "content-type": "application/json",
@@ -43,6 +45,7 @@ class ResendEmailAdapter implements EmailAdapter {
         subject: message.subject,
         text: message.text,
         html: message.html,
+        reply_to: message.replyTo,
       }),
     });
     if (!response.ok) {

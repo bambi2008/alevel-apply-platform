@@ -1,4 +1,5 @@
 "use client";
+import { fetchAiFeedback } from "@/components/ai-remaining";
 
 import { useEffect, useMemo, useState } from "react";
 import { useLocale } from "next-intl";
@@ -6,7 +7,7 @@ import { useUiCopy } from "@/components/use-ui-copy";
 import { presentInterviewReview } from "@/lib/interview/review-presentation";
 import { AlertTriangle, Check, ChevronRight, Clock3, RotateCcw, Sparkles } from "lucide-react";
 import type { QuantitativeInterviewDrill } from "@/lib/interview/quantitative-interview";
-import { scoreQuantitativeResponse } from "@/lib/interview/quantitative-interview";
+import { scoreQuantitativeResponse } from "@/lib/interview/quantitative-scoring";
 import type { InterviewProcessSkillId } from "@/lib/interview/quantitative-interview-review";
 import { InterviewThinkingChecklist } from "./interview-thinking-checklist";
 import { clearRemoteProgress, loadLearningRecords, saveLearningRecord, saveRemoteProgress } from "@/lib/learning/client";
@@ -158,7 +159,7 @@ export function QuantitativeInterviewSimulator({
     if (feedbackLoading || !score) return;
     setFeedbackLoading(true);
     try {
-      const result = await fetch("/api/interview-mock", {
+      const result = await fetchAiFeedback("/api/interview-mock", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-qiaoshen-locale": document.documentElement.lang },
         body: JSON.stringify({

@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
+import { isConfiguredAdmin } from "@/lib/admin/allowlist";
 import { getContentPriorities } from "@/lib/tests/content-priority-server";
 import { contentPrioritiesCsv } from "@/lib/tests/content-priority";
 
 export async function GET(request: NextRequest) {
   const session = await auth();
-  const user = session?.user as { id?: string; role?: string } | undefined;
+  const user = session?.user;
   if (!user?.id) return NextResponse.json({ error: "unauthenticated" }, { status: 401 });
-  if (user.role !== "ADMIN") return NextResponse.json({ error: "forbidden" }, { status: 403 });
+  if (!isConfiguredAdmin(user)) return NextResponse.json({ error: "forbidden" }, { status: 403 });
   try {
     const snapshot = await getContentPriorities();
     const testId = request.nextUrl.searchParams.get("testId");

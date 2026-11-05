@@ -17,7 +17,7 @@ export function LatestBankUpdates({ testId }: { testId: string }) {
   }, [testId]);
   const current = state?.testId === testId ? state : null;
   return <section className="mt-8 border-t border-black/15 pt-4" aria-label={english ? "Latest question-bank updates" : "最近题库更新"}>
-    <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-sm font-semibold">{english ? "Latest bank updates" : "最近题库更新"}</h2><Link href={`/question-bank-updates?testId=${encodeURIComponent(testId)}`} className="inline-flex min-h-11 items-center text-sm underline">{english ? "All updates" : "全部更新记录"}</Link></div>
+    <div className="flex flex-wrap items-center justify-between gap-3"><h2 className="text-sm font-semibold">{english ? "Latest bank updates" : "最近题库更新"}</h2><Link href={`/updates?testId=${encodeURIComponent(testId)}`} className="inline-flex min-h-11 items-center text-sm underline">{english ? "All updates" : "全部更新记录"}</Link></div>
     {!current ? <p role="status" className="text-sm text-black/65">{english ? "Loading…" : "读取中…"}</p> : current.error ? <p className="text-sm text-black/65">{english ? "Updates unavailable. Open the full history to retry." : "更新摘要暂时不可用，可打开完整记录查看。"}</p> : <ul className="divide-y divide-black/10">{current.updates.map(update => <li key={update.id} className="flex flex-wrap gap-x-4 gap-y-1 py-2 text-sm text-black/70"><time dateTime={update.publishedAt}>{new Date(update.publishedAt).toLocaleDateString(english ? "en-GB" : "zh-CN", { timeZone: "Asia/Shanghai" })}</time><span>{english ? update.titleEn : update.title}{update.addedQuestions > 0 ? ` +${update.addedQuestions}` : ""}</span></li>)}</ul>}
   </section>;
 }

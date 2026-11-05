@@ -7,10 +7,12 @@ const ROUTES: Record<string, [string, string, string, string]> = {
   background: ["竞赛与专业实践", "Competitions and Projects", "进入 BMO、BPhO 题库，规划竞赛、研究与专业实践。", "Explore BMO and BPhO question banks and plan competitions, research and subject projects."],
   interview: ["面试训练", "Interviews", "练习学科推理、解释方法与回应追问。题目为训练用途，非官方面试题。", "Practise subject reasoning, explaining methods and responding to follow-up questions. Original training, not official interview questions."],
   statements: ["文书工作台", "Personal Statements", "整理真实经历、规划结构并修改自己的申请文书。AI 反馈仅供训练参考，不代写。", "Organise real experiences, plan a structure and revise your own statement. AI feedback supports training and does not write for you."],
-  pricing: ["套餐说明", "Study Plans", "查看基础练习、体验与学习套餐说明；支付尚未开放。", "Review Basic Practice, trial and study-plan information. Purchases are not enabled."],
+  pricing: ["考季卡与体验", "Exam Season Pass and Trial", "查看7天体验与考季卡说明；支付尚未开放。", "Review the seven-day trial and Exam Season Pass. Purchases are not enabled."],
+  purchase: ["考季卡", "Exam Season Pass", "查看考季卡价格、权益和购买须知。", "Review Exam Season Pass pricing, access and purchase terms."],
   privacy: ["隐私政策", "Privacy Policy", "了解桥申学习数据、图片上传、AI 数据处理及账号隐私权利。", "Understand study data, image uploads, AI processing and account privacy rights on QiaoShen."],
   terms: ["服务条款", "Terms of Service", "桥申训练服务的使用规则、AI 反馈限制与用户责任。", "Rules for using QiaoShen training, limitations of AI feedback and user responsibilities."],
   "question-bank-updates": ["题库更新记录", "Question-bank Updates", "查看各考试专项练习的新增与修正记录。", "See additions and corrections to topic-practice banks by exam."],
+  updates: ["题库更新记录", "Question-bank Updates", "查看各考试专项练习的新增与修正记录。", "See additions and corrections to topic-practice banks by exam."],
   login: ["登录", "Sign in", "登录桥申，继续自己的学习训练。", "Sign in to QiaoShen and continue your study."],
   register: ["注册", "Register", "创建桥申学习账号，注册方式以页面说明为准。", "Create a QiaoShen study account. Registration availability is shown on the page."],
   account: ["账号与隐私", "Account and Privacy", "管理自己的账号与学习数据。", "Manage your account and study data."],
@@ -18,7 +20,7 @@ const ROUTES: Record<string, [string, string, string, string]> = {
 };
 const EXAMS: Record<string, string> = { caie9709: "CAIE 9709 · Pure 3", esat: "ESAT", tmua: "TMUA", step: "STEP", mat: "MAT", pat: "PAT", lnat: "LNAT", tara: "TARA", ucat: "UCAT", ielts: "IELTS", bmo: "BMO", bpho: "BPhO", csat: "CSAT" };
 const SUBPAGES: Record<string, [string, string]> = { practice: ["专项练习", "Topic practice"], mock: ["计时训练", "Timed practice"], paper: ["训练卷", "Practice paper"], learn: ["知识点", "Knowledge"], history: ["学习记录", "Study history"], review: ["错题复盘", "Review"] };
-export const PUBLIC_PATHS = ["", "tests", "background", "interview", "statements", "pricing", "privacy", "terms", "question-bank-updates", ...Object.keys(EXAMS).map(id => `tests/${id}`)];
+export const PUBLIC_PATHS = ["", "tests", "background", "interview", "statements", "pricing", "purchase", "purchase/notice", "privacy", "terms", "updates", ...Object.keys(EXAMS).map(id => `tests/${id}`)];
 
 export function routeMetadata(locale: string, pathname: string): Metadata {
   const en = locale === "en";
@@ -27,7 +29,7 @@ export function routeMetadata(locale: string, pathname: string): Metadata {
   const labels = ROUTES[area] ?? ["学习训练", "Study", "继续桥申学习训练。", "Continue your QiaoShen study."];
   const exam = area === "tests" ? EXAMS[id] : undefined;
   const sub = SUBPAGES[level]?.[en ? 1 : 0];
-  const name = exam ? `${exam}${sub ? ` · ${sub}` : ""}` : labels[en ? 1 : 0];
+  const name = exam ? `${exam}${sub ? ` · ${sub}` : ""}` : path === "purchase/notice" ? (en ? "Purchase terms" : "购买须知") : labels[en ? 1 : 0];
   const title = path ? `${name} · ${en ? "QiaoShen" : "桥申"}` : name;
   const description = exam
     ? en ? `${exam}: original topic practice and timed training. Platform scores and difficulty are references, not official results.` : `${exam} 专项练习与原创计时训练。平台分数和难度仅供参考，不代表官方成绩。`

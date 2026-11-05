@@ -1,6 +1,8 @@
 "use client";
+import { fetchAiFeedback } from "@/components/ai-remaining";
 
 import { useState } from "react";
+import { useLocale } from "next-intl";
 import { saveStudentProgress } from "@/lib/background/student-project-actions";
 import type {
   StudentProjectDTO,
@@ -25,6 +27,7 @@ export function StudentProjectRun({
   project: StudentProjectDTO;
   structure: StudentStructure;
 }) {
+  const en = useLocale() === "en";
   const initial: StudentProgress = project.progress ?? { stages: [], reflectionNotes: "" };
   const [progress, setProgress] = useState<StudentProgress>(initial);
   const [openStage, setOpenStage] = useState<number | null>(structure.stages[0]?.num ?? null);
@@ -105,7 +108,7 @@ export function StudentProjectRun({
     }
     setFb((f) => ({ ...f, [num]: { loading: true } }));
     try {
-      const res = await fetch("/api/project-feedback", {
+      const res = await fetchAiFeedback("/api/project-feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -139,7 +142,7 @@ export function StudentProjectRun({
     }
     setRefFb({ loading: true });
     try {
-      const res = await fetch("/api/project-feedback", {
+      const res = await fetchAiFeedback("/api/project-feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -327,11 +330,11 @@ export function StudentProjectRun({
                     )}
                   </div>
 
-                  {/* AI 教练 */}
+                  {/* AI feedback */}
                   <div>
-                    <p className="text-xs font-semibold text-[var(--ink-soft)] mb-1.5">AI 教练反馈</p>
+                    <p className="text-xs font-semibold text-[var(--ink-soft)] mb-1.5">{en ? "AI feedback" : "AI 反馈"}</p>
                     <button onClick={() => getStageFeedback(stage.num)} disabled={fb[stage.num]?.loading} className="px-4 py-1.5 rounded-lg bg-white border border-indigo-200 text-[var(--indigo)] text-sm font-medium hover:bg-indigo-50 disabled:opacity-60">
-                      {fb[stage.num]?.loading ? "生成中…" : "🎓 获取 AI 教练反馈"}
+                      {fb[stage.num]?.loading ? (en ? "Preparing feedback…" : "生成中…") : en ? "Get AI feedback" : "获取 AI 反馈"}
                     </button>
                     {fb[stage.num]?.error && <p className="mt-2 text-sm text-amber-700 bg-amber-50 rounded-lg px-3 py-2">{fb[stage.num]?.error}</p>}
                     {fb[stage.num]?.data && <FeedbackBox data={fb[stage.num]!.data!} />}
@@ -366,7 +369,7 @@ export function StudentProjectRun({
         />
         <div className="mt-3">
           <button onClick={getReflectionFeedback} disabled={refFb.loading} className="px-4 py-1.5 rounded-lg bg-white border border-violet-200 text-[var(--violet)] text-sm font-medium hover:bg-violet-50 disabled:opacity-60">
-            {refFb.loading ? "生成中…" : "🎓 让 AI 文书教练点评我的反思"}
+            {refFb.loading ? (en ? "Preparing feedback…" : "生成中…") : en ? "Get AI feedback on my reflection" : "获取反思的 AI 反馈"}
           </button>
           {refFb.error && <p className="mt-2 text-sm text-amber-700 bg-amber-50 rounded-lg px-3 py-2">{refFb.error}</p>}
           {refFb.data && <FeedbackBox data={refFb.data} reflection />}

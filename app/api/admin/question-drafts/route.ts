@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
 import type { Prisma, QuestionWorkflowStage } from "@prisma/client";
 import { auth } from "@/auth";
+import { isConfiguredAdmin } from "@/lib/admin/allowlist";
 import { db } from "@/lib/db";
 import { questionDraftSchema, validateDraft, type QuestionDraft } from "@/lib/tests/authoring";
 
@@ -9,7 +10,7 @@ const STAGE_ORDER: QuestionWorkflowStage[] = ["DRAFT", "SUBJECT_REVIEW", "TEACHI
 
 async function currentAdmin() {
   const session = await auth();
-  return session?.user.role === "ADMIN" ? session.user : null;
+  return session && isConfiguredAdmin(session.user) ? session.user : null;
 }
 
 function contentHash(draft: QuestionDraft) {

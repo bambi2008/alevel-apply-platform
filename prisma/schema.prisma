@@ -40,12 +40,120 @@ model User {
   passwordResetTokens    PasswordResetToken[]
   authSessions           AuthSession[]
   aiEvaluations          AiEvaluation[]
+  aiFeedbackUses         AiFeedbackUse[]
   authoredQuestions      QuestionDraftRecord[]   @relation("QuestionDraftAuthor")
   subjectReviews         QuestionDraftRecord[]   @relation("QuestionDraftSubjectReviewer")
   teachingReviews        QuestionDraftRecord[]   @relation("QuestionDraftTeachingReviewer")
   betaInvite             BetaInvite?
+  membership             Membership?
+  studyAttempts          StudyAttempt[]
+  paymentOrders          PaymentOrder[]
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
+}
+
+enum MembershipPlan {
+  trial
+  season_pass
+}
+
+model Membership {
+  id            String         @id @default(cuid())
+  userId        String         @unique
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  plan          MembershipPlan
+  startsAt      DateTime
+  endsAt        DateTime
+  sourceOrderId String?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  @@index([plan, endsAt])
+}
+
+enum PaymentOrderStatus {
+  pending
+  paid
+  failed
+  closed
+}
+
+model PaymentOrder {
+  id               String             @id @default(cuid())
+  outTradeNo       String             @unique
+  requestKey       String             @unique
+  userId           String?
+  user             User?              @relation(fields: [userId], references: [id], onDelete: SetNull)
+  plan             MembershipPlan     @default(season_pass)
+  amountFen        Int
+  months           Int
+  status           PaymentOrderStatus @default(pending)
+  provider         String
+  providerChargeId String?
+  payway           String
+  agreedAt         DateTime
+  termsVersion     String
+  paidAt           DateTime?
+  membershipEndsAt DateTime?
+  recoveryCheckedAt DateTime?
+  testPayment      Boolean            @default(false)
+  complaints       PaymentComplaint[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  @@unique([provider, providerChargeId])
+  @@index([userId, createdAt])
+  @@index([status, paidAt])
+}
+
+model PaymentComplaint {
+  id               String       @id @default(cuid())
+  orderId          String
+  order            PaymentOrder @relation(fields: [orderId], references: [id], onDelete: Restrict)
+  fingerprint      String       @unique
+  detail           String
+  payerPhone       String?
+  emailAttemptedAt DateTime?
+  createdAt        DateTime     @default(now())
+
+  @@index([orderId, createdAt])
+}
+
+// Pseudonymous eligibility marker, purpose-limited and intentionally not related
+// to User: account deletion must not grant another new-user trial.
+model TrialClaim {
+  emailDigest String   @id
+  claimedAt   DateTime @default(now())
+}
+
+model StudyAttempt {
+  id           String         @id @default(cuid())
+  userId       String
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  testId       String
+  mode         String
+  paperId      String?
+  locale       String         @default("zh-CN")
+  questionIds  String[]
+  startedAt    DateTime       @default(now())
+  completedAt  DateTime?
+  reportId     String?        @unique
+  answers      StudyAttemptAnswer[]
+  createdAt    DateTime       @default(now())
+
+  @@index([userId, createdAt])
+  @@index([createdAt])
+}
+
+model StudyAttemptAnswer {
+  id           String       @id @default(cuid())
+  attemptId    String
+  attempt      StudyAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  questionId   String
+  submission   Json
+  submittedAt  DateTime     @default(now())
+
+  @@unique([attemptId, questionId])
 }
 
 enum BetaInviteStatus {
@@ -125,6 +233,8 @@ model Notification {
   readAt       DateTime?
   dismissedAt  DateTime?
   expiresAt    DateTime?
+  emailAttemptedAt DateTime?
+  emailSentAt  DateTime?
   createdAt    DateTime             @default(now())
   updatedAt    DateTime             @updatedAt
 
@@ -142,6 +252,7 @@ model NotificationPreference {
   deadlineEnabled     Boolean  @default(true)
   weeklyReportEnabled Boolean  @default(true)
   emailDigestEnabled  Boolean  @default(false)
+  membershipEmailEnabled Boolean @default(true)
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 }
@@ -870,6 +981,7 @@ model ExamSession {
   testId      String // "mat" | "step" | "engaa"
   mode        String // "practice" | "mock"
   totalEarned Int
+  totalEarnedExact Float?
   totalMax    Int
   timeUsedSec Int?
   paperId     String?
@@ -878,10 +990,23 @@ model ExamSession {
   completedAt DateTime       @default(now())
   clientMeta  Json?
   answers     ExamAnswer[]
+  sessionFeedback StudySessionFeedback[]
   createdAt   DateTime       @default(now())
 
   @@index([studentId])
   @@index([testId])
+}
+
+model StudySessionFeedback {
+  sessionId  String
+  session    ExamSession          @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  kind       QuestionFeedbackKind
+  questionId String?
+  reason     String?
+  createdAt  DateTime             @default(now())
+
+  @@id([sessionId, kind])
+  @@index([createdAt])
 }
 
 model ExamAnswer {
@@ -893,6 +1018,7 @@ model ExamAnswer {
   selected   String? // MCQ: 所选选项
   work       Json? // 大题: { "(i)": "...", ... }
   earned     Int
+  earnedExact Float?
   max        Int
   feedback   Json? // AI 评分 perPart 数组
 
@@ -951,6 +1077,7 @@ model AiEvaluation {
   promptTokens        Int?
   completionTokens    Int?
   totalTokens         Int?
+  providerCalls       Int                @default(1)
   estimatedCostMicros Int?
   latencyMs           Int?
   confidence          String?
@@ -963,6 +1090,37 @@ model AiEvaluation {
   @@index([userId, createdAt])
   @@index([route, status, createdAt])
   @@index([requestHash, createdAt])
+}
+
+enum AiFeedbackKind {
+  general
+  photo
+  statement
+}
+
+model AiFeedbackUse {
+  id           String         @id @default(cuid())
+  userId       String
+  user         User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  cacheKey     String
+  dayKey       String
+  kind         AiFeedbackKind
+  leaseUntil   DateTime
+  completedAt  DateTime?
+  output       Json?
+  createdAt    DateTime       @default(now())
+
+  @@unique([userId, cacheKey])
+  @@index([userId, dayKey])
+  @@index([createdAt])
+}
+
+model AiFeedbackSettings {
+  id           String   @id
+  total        Int
+  photo        Int
+  statement    Int
+  updatedAt    DateTime @updatedAt
 }
 
 enum QuestionWorkflowStage {

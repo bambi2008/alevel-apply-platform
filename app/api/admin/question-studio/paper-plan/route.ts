@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { auth } from "@/auth";
+import { isConfiguredAdmin } from "@/lib/admin/allowlist";
 import { buildPaperPlan, type PaperCandidate } from "@/lib/tests/authoring";
 import { getPracticeQuestionsForTest } from "@/lib/tests/lookup";
 
@@ -19,8 +20,7 @@ const bodySchema = z.object({
 
 export async function POST(request: Request) {
   const session = await auth();
-  const role = (session?.user as { role?: string } | undefined)?.role;
-  if (role !== "ADMIN") {
+  if (!isConfiguredAdmin(session?.user)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
   }
 

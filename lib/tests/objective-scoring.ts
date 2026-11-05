@@ -10,13 +10,13 @@ export function decodeMatrixAnswer(value: string | undefined, length: number): A
 
 export function isObjectiveAnswerComplete(question: MCQQuestion, selected: string | undefined) {
   if (question.responseMode !== "matrix") return Boolean(selected);
-  return Boolean(selected && selected.length === question.statements?.length && !selected.includes("-"));
+  return Boolean(selected && selected.length === question.statements?.length && /^[YN]+$/.test(selected));
 }
 
 export function scoreObjectiveAnswer(question: MCQQuestion, selected: string | undefined) {
   if (question.responseMode === "matrix") {
     const expected = encodeMatrixAnswer(question.matrixAnswer ?? []);
-    if (!isObjectiveAnswerComplete(question, selected)) return { earned: 0, max: 2, correct: false };
+    if (!expected.length || expected.length !== question.statements?.length || !isObjectiveAnswerComplete(question, selected)) return { earned: 0, max: 2, correct: false };
     const matches = [...expected].filter((value, index) => value === selected?.[index]).length;
     return { earned: matches === expected.length ? 2 : matches === expected.length - 1 ? 1 : 0, max: 2, correct: matches === expected.length };
   }
@@ -25,6 +25,7 @@ export function scoreObjectiveAnswer(question: MCQQuestion, selected: string | u
   if (question.scoringMode === "adjacent" && selected) {
     const selectedIndex = question.options.findIndex((option) => option.key === selected);
     const answerIndex = question.options.findIndex((option) => option.key === question.answer);
+    if (selectedIndex < 0 || answerIndex < 0) return { earned: 0, max: 1, correct: false };
     if (Math.abs(selectedIndex - answerIndex) === 1) return { earned: 0.5, max: 1, correct: false };
   }
   return { earned: 0, max: 1, correct: false };

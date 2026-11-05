@@ -1,7 +1,10 @@
+import type OpenAI from "openai";
+import { aiResponseLanguage } from "@/lib/ai-response-language";
+import { privateNoStore } from "@/lib/security/json-request";
+import { deepSeekFeedback, readFeedbackInput } from "@/lib/ai/feedback-response";
+import { z } from "zod";
 import { NextRequest, NextResponse } from "next/server";
 import { aiSystemForRequest, aiMessageForRequest } from "@/lib/ai-response-language";
-import OpenAI from "openai";
-import { captureError } from "@/lib/monitoring";
 import { requireAiAccess } from "@/lib/security/ai-route";
 
 export const runtime = "nodejs";
@@ -98,91 +101,54 @@ const HK_INTERVIEW_FEEDBACK_SYSTEM = `你是香港大学本科面试训练教练
 **现场能力未评估**
 **下一次训练任务**`;
 
+const interviewInput = z.object({
+  mode: z.enum(["interview", "feedback"]).optional(), subject: z.string().max(500),
+  subjectId: z.string().max(100).optional(), question: z.string().max(10_000).optional(),
+  history: z.array(z.object({ role: z.enum(["interviewer", "student"]), content: z.string().max(15_000) }).strict()).max(120).optional(),
+  studentReply: z.string().max(30_000).optional(),
+}).strict();
+
 export async function POST(req: NextRequest) {
   const access = await requireAiAccess(req, "interview-mock");
   if (!access.ok) return access.response;
   const aiEnabled = process.env.AI_ENABLED === "true";
-  const apiKey = process.env.DEEPSEEK_API_KEY?.trim();
-  if (!aiEnabled || !apiKey) {
-    return NextResponse.json(
-      {
-        error: !aiEnabled
-          ? aiMessageForRequest("AI 模拟面试当前未启用，请联系管理员", req)
-          : aiMessageForRequest("AI 模拟面试未配置 DeepSeek API 密钥，请联系管理员", req),
-        code: "AI_NOT_CONFIGURED",
-      },
-      { status: 503 },
-    );
+  if (!aiEnabled || !process.env.DEEPSEEK_API_KEY?.trim()) {
+    return NextResponse.json({
+      error: aiMessageForRequest(aiEnabled ? "AI 模拟面试未配置 DeepSeek API 密钥，请联系管理员" : "AI 模拟面试当前未启用，请联系管理员", req),
+      code: "AI_NOT_CONFIGURED",
+    }, { status: 503 });
   }
-  const client = new OpenAI({
-    apiKey,
-    baseURL: "https://api.deepseek.com",
-  });
-  try {
-    const body = (await req.json()) as MockRequest;
-    const { mode = "interview", subject, question, history = [], studentReply } = body;
-
-    // —— 复盘模式 ——
-    if (mode === "feedback") {
-      const transcript = history
-        .map((m) => `${m.role === "interviewer" ? "面试官" : "学生"}：${m.content}`)
-        .join("\n");
-      const completion = await client.chat.completions.create({
-        model: "deepseek-chat",
-        messages: [
-          {
-            role: "system",
-            content: `${aiSystemForRequest(subject === "IELTS Speaking"
-              ? IELTS_FEEDBACK_SYSTEM
-              : body.subjectId?.startsWith("hk-") || /^(?:港校|Hong Kong|HK\b)/.test(subject)
-                ? HK_INTERVIEW_FEEDBACK_SYSTEM
-              : FEEDBACK_SYSTEM, req)}\n\n本场学科：${subject || "综合"}。`,
-          },
-          { role: "user", content: `以下是完整面试记录，请复盘：\n\n${transcript}` },
-        ],
-        temperature: 0.6,
-        max_tokens: 800,
-      });
-      const feedback = completion.choices[0]?.message?.content?.trim() || "（暂时无法生成复盘）";
-      return NextResponse.json({ feedback });
-    }
-
-    // —— 面试模式 ——
-    const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
-      { role: "system", content: `${aiSystemForRequest(INTERVIEW_SYSTEM, req)}\n\n本场面试学科：${subject || "综合"}。` },
-    ];
-
-    if (history.length === 0 && !studentReply) {
-      if (question) {
-        return NextResponse.json({ interviewer: question });
-      }
-      messages.push({
-        role: "user",
-        content: `请为「${subject}」面试出一道适合开场、陌生情境式、可以逐步加深的问题，直接抛给学生。`,
-      });
-    } else {
-      for (const m of history) {
-        messages.push({
-          role: m.role === "interviewer" ? "assistant" : "user",
-          content: m.content,
-        });
-      }
-      if (studentReply) {
-        messages.push({ role: "user", content: studentReply });
-      }
-    }
-
-    const completion = await client.chat.completions.create({
-      model: "deepseek-chat",
-      messages,
-      temperature: 0.8,
-      max_tokens: 400,
+  const parsed = await readFeedbackInput(req, interviewInput);
+  if (!parsed.ok) return parsed.response;
+  const body: MockRequest = parsed.data;
+  const { mode = "interview", subject, question, history = [], studentReply } = body;
+  const en = aiResponseLanguage(req) === "en";
+  if (mode === "feedback") {
+    const system = subject === "IELTS Speaking" ? IELTS_FEEDBACK_SYSTEM
+      : body.subjectId?.startsWith("hk-") || /^(?:港校|Hong Kong|HK\b)/.test(subject) ? HK_INTERVIEW_FEEDBACK_SYSTEM : FEEDBACK_SYSTEM;
+    const transcript = history.map(message => `${message.role}: ${message.content}`).join("\n");
+    return deepSeekFeedback({
+      request: req, userId: access.userId, route: "/api/interview-mock/feedback", kind: "general", maxTokens: 800, temperature: 0.6,
+      messages: [
+        { role: "system", content: `${aiSystemForRequest(system, req)}\nSubject: ${subject || "General"}` },
+        { role: "user", content: `Review the following interview transcript:\n\n${transcript}` },
+      ],
+      parse: feedback => ({ feedback }),
     });
-
-    const interviewer = completion.choices[0]?.message?.content?.trim() || "（面试官沉默了，请再试一次）";
-    return NextResponse.json({ interviewer });
-  } catch (err) {
-    captureError(err, { route: "interview-mock" });
-    return NextResponse.json({ error: aiMessageForRequest("生成失败，请稍后再试", req) }, { status: 500 });
   }
+  if (!history.length && !studentReply && question) return NextResponse.json({ interviewer: question }, { headers: privateNoStore });
+
+  const messages: OpenAI.Chat.ChatCompletionMessageParam[] = [
+    { role: "system", content: `${aiSystemForRequest(INTERVIEW_SYSTEM, req)}\nSubject: ${subject || "General"}` },
+  ];
+  if (!history.length && !studentReply) {
+    messages.push({ role: "user", content: en ? `Ask an opening question for a ${subject} interview.` : `请为「${subject}」面试出一道适合开场、可以逐步加深的问题。` });
+  } else {
+    for (const message of history) messages.push({ role: message.role === "interviewer" ? "assistant" : "user", content: message.content });
+    if (studentReply) messages.push({ role: "user", content: studentReply });
+  }
+  return deepSeekFeedback({
+    request: req, userId: access.userId, route: "/api/interview-mock", kind: "general", maxTokens: 400,
+    temperature: 0.8, messages, parse: interviewer => ({ interviewer }),
+  });
 }

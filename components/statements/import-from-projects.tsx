@@ -1,4 +1,5 @@
 "use client";
+import { fetchAiFeedback } from "@/components/ai-remaining";
 import { useUiCopy } from "@/components/use-ui-copy";
 
 import { useEffect, useState } from "react";
@@ -96,7 +97,7 @@ export function ImportFromProjects({ content }: { content: UcasPsContent }) {
     setLoading(true);
     setResult(null);
     try {
-      const res = await fetch("/api/ps-from-project", {
+      const res = await fetchAiFeedback("/api/ps-from-project", {
         method: "POST",
         headers: { "Content-Type": "application/json", "x-qiaoshen-locale": document.documentElement.lang },
         body: JSON.stringify({

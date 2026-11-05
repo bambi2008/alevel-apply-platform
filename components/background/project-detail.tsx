@@ -1,6 +1,8 @@
 "use client";
+import { fetchAiFeedback } from "@/components/ai-remaining";
 
 import { useEffect, useState } from "react";
+import { useLocale } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import type { OnlineProject } from "@/lib/background/projects";
 import { projectFieldLabel } from "@/lib/background/projects";
@@ -19,6 +21,7 @@ import {
 const DIFF = ["", "入门", "进阶", "挑战"];
 
 export function ProjectDetail({ project }: { project: OnlineProject }) {
+  const en = useLocale() === "en";
   const total = project.stages.length;
   const [enrolled, setEnrolled] = useState(false);
   const [openStage, setOpenStage] = useState<number | null>(null);
@@ -42,7 +45,7 @@ export function ProjectDetail({ project }: { project: OnlineProject }) {
     }
     setRefFb({ loading: true });
     try {
-      const res = await fetch("/api/project-feedback", {
+      const res = await fetchAiFeedback("/api/project-feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -126,7 +129,7 @@ export function ProjectDetail({ project }: { project: OnlineProject }) {
     }
     setFb((f) => ({ ...f, [stageNum]: { loading: true } }));
     try {
-      const res = await fetch("/api/project-feedback", {
+      const res = await fetchAiFeedback("/api/project-feedback", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -483,14 +486,13 @@ export function ProjectDetail({ project }: { project: OnlineProject }) {
                     </div>
                   </Block>
 
-                  {/* AI 教练反馈 */}
-                  <Block label="AI 教练反馈">
+                  <Block label={en ? "AI feedback" : "AI 反馈"}>
                     <button
                       onClick={() => getFeedback(stage.num)}
                       disabled={fb[stage.num]?.loading}
                       className="px-4 py-1.5 rounded-lg bg-white border border-indigo-200 text-[var(--indigo)] text-sm font-medium hover:bg-indigo-50 transition-colors disabled:opacity-60"
                     >
-                      {fb[stage.num]?.loading ? "生成中…" : "🎓 获取 AI 教练反馈"}
+                      {fb[stage.num]?.loading ? (en ? "Preparing feedback…" : "生成中…") : en ? "Get AI feedback" : "获取 AI 反馈"}
                     </button>
                     <p className="text-[11px] text-[var(--ink-soft)] mt-1.5">
                       基于你填写的文字说明给出改进建议与追问（不打分、不替你做）。AI 看不到图片，请把关键数值写进说明里。
@@ -561,7 +563,7 @@ export function ProjectDetail({ project }: { project: OnlineProject }) {
             disabled={refFb.loading}
             className="px-4 py-1.5 rounded-lg bg-white border border-violet-200 text-[var(--violet)] text-sm font-medium hover:bg-violet-50 transition-colors disabled:opacity-60"
           >
-            {refFb.loading ? "生成中…" : "🎓 让 AI 文书教练点评我的反思"}
+            {refFb.loading ? (en ? "Preparing feedback…" : "生成中…") : en ? "Get AI feedback on my reflection" : "获取反思的 AI 反馈"}
           </button>
           <p className="text-[11px] text-[var(--ink-soft)] mt-1.5">
             AI 会像文书教练一样帮你把反思想得更深、更适合写进个人陈述（不代写、不给可照抄的文字）。

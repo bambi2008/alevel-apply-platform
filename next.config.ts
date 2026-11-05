@@ -27,6 +27,11 @@ const nextConfig: NextConfig = {
     ];
 
     return [
+      {
+        source: "/:locale(zh-CN|en)/question-bank-updates",
+        destination: "/:locale/updates",
+        permanent: true,
+      },
       ...retiredSections.map((section) => ({
         source: `/:locale/${section}/:path*`,
         destination: "/:locale",
@@ -44,7 +49,7 @@ const nextConfig: NextConfig = {
     const contentSecurityPolicy = [
       "default-src 'self'",
       "base-uri 'self'",
-      "form-action 'self'",
+      "form-action 'self' https://openapi.alipay.com",
       "frame-ancestors 'none'",
       "object-src 'none'",
       "img-src 'self' blob: data:",

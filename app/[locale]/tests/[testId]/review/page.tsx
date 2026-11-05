@@ -4,10 +4,9 @@ import { use, useEffect, useMemo, useState } from "react";
 import { AlertTriangle, CheckCircle2, Clock3, Play, RotateCcw, ShieldCheck, TrendingUp } from "lucide-react";
 import { Link } from "@/i18n/navigation";
 import { getTestById } from "@/lib/tests";
-import { getQuestionById, getTopicMeta } from "@/lib/tests/lookup";
 import type { RemediationCase, RemediationProfile, RemediationStatus } from "@/lib/tests/remediation";
 
-type RemediationResponse = { authenticated: true; profile: RemediationProfile };
+type RemediationResponse = { authenticated: true; profile: RemediationProfile; questionPreviews?: Record<string, string> };
 
 const statusMeta: Record<RemediationStatus, { label: string; className: string }> = {
   relapsed: { label: "复发", className: "bg-[var(--danger-bg)] text-[var(--danger)]" },
@@ -33,19 +32,19 @@ function isActionable(item: RemediationCase) {
 export default function ReviewQueuePage({ params }: { params: Promise<{ testId: string }> }) {
   const { testId } = use(params);
   const test = getTestById(testId);
-  const [data, setData] = useState<RemediationProfile | null>(null);
+  const [data, setData] = useState<(RemediationProfile & { questionPreviews?: Record<string, string> }) | null>(null);
   const [state, setState] = useState<"loading" | "ready" | "unauthorized" | "error">("loading");
 
   useEffect(() => {
     const controller = new AbortController();
-    fetch(`/api/exam-sessions/remediation?testId=${testId}`, { signal: controller.signal })
+    fetch(`/api/exam-sessions/remediation?testId=${testId}`, { signal: controller.signal, headers: { "x-qiaoshen-locale": document.documentElement.lang } })
       .then(async (response) => {
         if (!response.ok) throw new Error("复测数据加载失败");
         return response.json() as Promise<RemediationResponse | { authenticated: false }>;
       })
       .then((result) => {
         if (!result.authenticated) return setState("unauthorized");
-        setData(result.profile);
+        setData({ ...result.profile, questionPreviews: result.questionPreviews });
         setState("ready");
       })
       .catch((error) => {
@@ -114,6 +113,7 @@ export default function ReviewQueuePage({ params }: { params: Promise<{ testId: 
               title="今日清零队列"
               icon={<RotateCcw className="size-4 text-[var(--warning)]" />}
               cases={actionable}
+              previews={data.questionPreviews}
               testId={testId}
             />
           )}
@@ -123,6 +123,7 @@ export default function ReviewQueuePage({ params }: { params: Promise<{ testId: 
               title="全部修复轨迹"
               icon={<TrendingUp className="size-4 text-[var(--indigo)]" />}
               cases={active}
+              previews={data.questionPreviews}
               testId={testId}
             />
           )}
@@ -132,6 +133,7 @@ export default function ReviewQueuePage({ params }: { params: Promise<{ testId: 
               title="已通过稳定性复测"
               icon={<CheckCircle2 className="size-4 text-[var(--success)]" />}
               cases={verified}
+              previews={data.questionPreviews}
               testId={testId}
             />
           )}
@@ -141,7 +143,7 @@ export default function ReviewQueuePage({ params }: { params: Promise<{ testId: 
               <h2 className="text-sm font-semibold">反复失分主题</h2>
               <div className="mt-3 flex flex-wrap gap-2">
                 {data.topics.filter((topic) => topic.active > 0).slice(0, 6).map((topic) => {
-                  const meta = getTopicMeta(testId, topic.topicId);
+                  const meta = test.topics.find(item => item.id === topic.topicId);
                   return (
                     <Link key={topic.topicId} href={`/tests/${testId}/practice?topic=${topic.topicId}&adaptive=1&count=10`} className="rounded-md border border-[var(--border)] bg-[var(--surface)] px-3 py-2 text-xs hover:border-[color:var(--indigo)]/30">
                       <strong>{meta?.title ?? topic.topicId}</strong>
@@ -162,14 +164,13 @@ export default function ReviewQueuePage({ params }: { params: Promise<{ testId: 
   );
 }
 
-function CaseSection({ title, icon, cases, testId }: { title: string; icon: React.ReactNode; cases: RemediationCase[]; testId: string }) {
+function CaseSection({ title, icon, cases, testId, previews = {} }: { title: string; icon: React.ReactNode; cases: RemediationCase[]; testId: string; previews?: Record<string, string> }) {
   return (
     <section>
       <div className="mb-3 flex items-center gap-2">{icon}<h2 className="font-semibold">{title}</h2></div>
       <div className="divide-y divide-[var(--border)] border-y border-[var(--border)]">
         {cases.map((item) => {
-          const question = getQuestionById(item.questionId);
-          const topic = getTopicMeta(testId, item.topicId);
+          const topic = getTestById(testId)?.topics.find(topic => topic.id === item.topicId);
           const meta = statusMeta[item.status];
           return (
             <div key={`${title}-${item.questionId}`} className="flex items-center gap-3 py-4">
@@ -180,7 +181,7 @@ function CaseSection({ title, icon, cases, testId }: { title: string; icon: Reac
                   <span className="text-xs text-[var(--ink-faint)]">最近 {item.lastScore}% · 最佳 {item.bestScore}% · {item.attempts} 次作答</span>
                 </div>
                 <p className="mt-1 line-clamp-1 text-xs text-[var(--ink-soft)]">
-                  {question?.type === "mcq" ? question.question : question?.parts[0]?.question ?? item.questionId}
+                  {previews[item.questionId] ?? item.questionId}
                 </p>
               </div>
               <div className="shrink-0 text-right">

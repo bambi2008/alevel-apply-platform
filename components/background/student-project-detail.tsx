@@ -1,4 +1,5 @@
 "use client";
+import { fetchAiFeedback } from "@/components/ai-remaining";
 
 import { useState } from "react";
 import { useRouter } from "@/i18n/navigation";
@@ -50,7 +51,7 @@ export function StudentProjectDetail({ project }: { project: StudentProjectDTO }
     setError("");
     setGenerating(true);
     try {
-      const res = await fetch("/api/structure-project", {
+      const res = await fetchAiFeedback("/api/structure-project", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

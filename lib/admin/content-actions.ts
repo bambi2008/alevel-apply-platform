@@ -1,14 +1,7 @@
 "use server";
 
-import { auth } from "@/auth";
 import { db } from "@/lib/db";
-
-async function requireAdmin(): Promise<string> {
-  const session = await auth();
-  const u = session?.user as { id?: string; role?: string } | undefined;
-  if (u?.role !== "ADMIN" || !u.id) throw new Error("forbidden");
-  return u.id;
-}
+import { requireAdmin } from "@/lib/admin/actions";
 
 const REGIONS = ["UK", "HK"] as const;
 const FIELDS = ["cs", "ds", "economics", "business", "math", "engineering", "aerospace", "mechanical", "eee", "physics", "law", "medicine", "psychology"];

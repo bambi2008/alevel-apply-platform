@@ -15,6 +15,7 @@ import {
 import { parseRegistrationIntent, registrationIntentSchema } from "@/lib/auth/registration-intent";
 import { getRegistrationMode } from "@/lib/auth/registration-mode";
 import { classifyRegistrationInvite, hashInviteCode, normalizeInviteCode } from "@/lib/beta/invites";
+import { grantRegistrationTrial } from "@/lib/membership/trial";
 
 class InviteUnavailable extends Error {}
 
@@ -92,6 +93,7 @@ export async function registerAction(_prev: AuthState, formData: FormData): Prom
       select: { id: true, profile: { select: { id: true } } },
     });
     if (!user.profile) throw new Error("Student profile was not created");
+    await grantRegistrationTrial(tx, user.id, email, now);
     if (inviteRequired && invite) {
       const claimed = await tx.betaInvite.updateMany({
         where: { id: invite.id, email, status: "AVAILABLE", usedByUserId: null,
@@ -136,10 +138,13 @@ export async function loginAction(_prev: AuthState, formData: FormData): Promise
   const email = normalizeEmail(formData.get("email"));
   const password = String(formData.get("password") ?? "");
   const locale = formData.get("locale") === "en" ? "en" : "zh-CN";
+  const requested = formData.get("destination");
+  const destination = typeof requested === "string" && /^purchase(?:\/orders\/[a-zA-Z0-9_-]{1,100})?$/.test(requested)
+    ? `/${locale}/${requested}` : `/${locale}`;
   try {
     // 注册完成后的首次进入由 registerAction 引导填写档案；已有账号再次登录直接进入工作台。
     // 档案是否完整由工作台展示待办，不应阻断登录，也不应因历史数据差异反复把用户送回档案页。
-    await signIn("credentials", { email, password, redirectTo: `/${locale}` });
+    await signIn("credentials", { email, password, redirectTo: destination });
     return {};
   } catch (e) {
     if (e instanceof AuthError) return { error: "BADCREDS" };
