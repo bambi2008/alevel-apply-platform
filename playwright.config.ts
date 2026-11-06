@@ -11,6 +11,9 @@ const port = Number(process.env.E2E_PORT ?? 3130);
 const localBaseUrl = `http://127.0.0.1:${port}`;
 const baseURL = process.env.E2E_BASE_URL ?? localBaseUrl;
 const serverMode = process.env.E2E_USE_PRODUCTION === "true" ? "start" : "dev";
+const database = process.env.DATABASE_URL ? new URL(process.env.DATABASE_URL) : null;
+const isolatedDatabase = database && ["localhost", "127.0.0.1"].includes(database.hostname)
+  && database.pathname.endsWith("_e2e");
 
 export default defineConfig({
   testDir: "./tests/e2e",
@@ -63,6 +66,12 @@ export default defineConfig({
           LOCAL_STORAGE_PATH: process.env.LOCAL_STORAGE_PATH ?? path.join(process.cwd(), ".storage-e2e"),
           NEXT_PUBLIC_PHONE_AUTH_ENABLED: "false",
           AI_REQUIRES_CROSS_BORDER_CONSENT: "true",
+          ...(isolatedDatabase ? {
+            REGISTRATION_MODE: process.env.REGISTRATION_MODE ?? "open",
+            TRIAL_PROGRAM_ENABLED: "true",
+            TRIAL_DEDUP_SECRET: "isolated-e2e-trial-dedup-only-2026",
+            ADMIN_EMAILS: "e2e-operations@example.test,fixture-feedback-admin@example.test",
+          } : {}),
         },
       },
 });

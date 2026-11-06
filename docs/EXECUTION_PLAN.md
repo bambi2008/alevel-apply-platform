@@ -111,6 +111,8 @@ The experience must be direct and clear: after sign-in, students choose one of t
 
 ## Current Milestone
 
+- 2026-11-06: V4 source commit `d7a0482` is pushed and verified on GitHub. Browser regression now exercises trial registration, the protected TMUA mock and history, session feedback and account isolation, allowlisted admin access, and the existing interview preview with an active fixture. All 18 browser cases and scoped lint pass. The initial two failures were outdated login URL and feedback selectors. Beta release and public smoke are next.
+
 - 2026-11-06: Owner authorizes GitHub submission and deployment. Use the independent Beta deployment for the first v4 rollout. Existing accounts have no retroactive membership, so promoting with checkout disabled would block their exam access on the public site. Keep public sales off and retain the current production release until the existing-account access path and live payment gates are resolved.
 
 - 2026-11-05: V4 is a local review candidate on `codex/v4-season-pass`. Purchase, reminders, AI allowance, whole-session feedback and exam delivery are implemented and independently checked using synthetic accounts. The release still requires owner review of the purchase/About wording, the interview scope, financial retention and the administrator allowlist. The owner-run administrator-only Mianbaoduo payment and mail test remains a separate gate before sales. See `V4_IMPLEMENTATION_2026-11-03.md` for evidence and configuration. Production remains on the previously released version.

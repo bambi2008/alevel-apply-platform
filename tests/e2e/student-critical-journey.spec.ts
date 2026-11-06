@@ -16,7 +16,7 @@ async function removeTestUser(email: string) {
 test.beforeAll(() => {
   // This journey creates/deletes its own fixtures, never production accounts.
   const database = new URL(process.env.DATABASE_URL ?? "");
-  if (!database.pathname.endsWith("_e2e")) {
+  if (!["localhost", "127.0.0.1"].includes(database.hostname) || !database.pathname.endsWith("_e2e")) {
     throw new Error("Student journey requires an isolated *_e2e database");
   }
 });
@@ -48,35 +48,33 @@ test("student can register, finish a TMUA mock, open history, export data, and d
     await page.locator('input[name="crossBorderConsent"]').check();
     await page.locator('form button[type="submit"]').click();
     await expect(page).toHaveURL(/\/(?:zh-CN\/?)?$/);
-    const registered = await db.user.findUnique({ where: { email }, include: { profile: true } });
+    const registered = await db.user.findUnique({ where: { email }, include: { profile: true, membership: true } });
     expect(registered?.profile?.intendedUniversities).toEqual(["University of Cambridge"]);
     expect(registered?.profile?.intendedMajors).toEqual(["Mathematics"]);
     expect(registered?.role).toBe("STUDENT");
+    expect(registered?.membership?.plan).toBe("trial");
     expect(await db.betaParticipant.count({ where: { studentId: registered!.profile!.id } })).toBe(0);
 
     await page.goto("/zh-CN/tests/tmua/mock");
     await page.locator('a[href*="/tests/tmua/paper/"]').first().click();
     await expect(page).toHaveURL(/\/tests\/tmua\/paper\//);
-    await page.getByRole("button", { name: "开始考试", exact: true }).click();
+    await page.getByRole("button", { name: /开始作答/ }).click();
 
-    // Complete both real 20-question modules through the student's review UI.
+    // Complete both real 20-question modules through the membership-checked runner.
     for (let moduleIndex = 0; moduleIndex < 2; moduleIndex += 1) {
-      await expect(page.getByRole("button", { name: /^第 \d+ 题/ })).toHaveCount(20);
-      const firstOption = page.locator('button[type="button"]')
-        .filter({ has: page.locator("span.font-bold") }).first();
+      const navigator = page.getByRole("navigation", { name: "本模块题号" });
+      await expect(navigator.getByRole("button")).toHaveCount(20);
+      const firstOption = page.getByRole("article").getByRole("button", { name: /^A\./ });
       await expect(firstOption).toBeVisible();
       await firstOption.click();
-      await page.getByRole("button", { name: "交卷总览", exact: true }).last().click();
-      await expect(page.getByRole("heading", { name: "交卷总览", exact: true })).toBeVisible();
-      await page.getByRole("button", {
-        name: moduleIndex === 0 ? "提交并进入下一模块" : "确认交卷", exact: true,
-      }).click();
+      await navigator.getByRole("button", { name: "20", exact: true }).click();
+      await page.getByRole("button", { name: "提交本模块", exact: true }).click();
     }
-    await expect(page.getByRole("heading", { name: "逐题回看", exact: true })).toBeVisible({
+    await expect(page.getByRole("heading", { name: "本次练习已完成", exact: true })).toBeVisible({
       timeout: 60_000,
     });
 
-    const reportLink = page.locator('a[href*="/tests/tmua/history/"]');
+    const reportLink = page.getByRole("link", { name: "学习报告", exact: true });
     await expect(reportLink).toBeVisible();
     const reportHref = await reportLink.getAttribute("href");
     await reportLink.click();

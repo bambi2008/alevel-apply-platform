@@ -14,6 +14,7 @@ const password = "FixtureFeedback!2026";
 const first = getReleasedPracticeQuestions("tmua").find(q => q.type === "mcq")!;
 const emails: string[] = [];
 let adminEmail: string, historyId: string, studentId: string, adminId: string;
+const fixturePrefix = "fixture-feedback-";
 async function login(page: Page, email: string) {
   await page.goto("/zh-CN/login", { waitUntil: "domcontentloaded" });
   await page.locator('input[name="email"]').fill(email);
@@ -36,10 +37,10 @@ async function browserApi(page: Page, pathname: string, body?: Record<string, st
 }
 test.beforeAll(async () => {
   const url = new URL(process.env.DATABASE_URL ?? "");
-  if (!["localhost", "127.0.0.1"].includes(url.hostname) || !/^\/qiaoshen_feedback_\d+_e2e$/.test(url.pathname)) throw Error("Feedback checks require their own isolated loopback database");
+  if (!["localhost", "127.0.0.1"].includes(url.hostname) || !/^\/qiaoshen_(?:feedback_\d+_)?e2e$/.test(url.pathname)) throw Error("Feedback checks require their own isolated loopback database");
   // A failed Playwright test restarts its worker and reruns this fixture hook.
   // Only this uniquely owned database's synthetic fixture accounts are reset.
-  await db.user.deleteMany({ where: { email: { startsWith: "fixture-feedback-" } } });
+  await db.user.deleteMany({ where: { email: { startsWith: fixturePrefix } } });
   const hash = await bcrypt.hash(password, 10);
   for (let i = 0; i < 5; i++) {
     const email = `fixture-feedback-${i}@example.test`; emails.push(email);
@@ -50,28 +51,38 @@ test.beforeAll(async () => {
   adminEmail = "fixture-feedback-admin@example.test";
   adminId = (await db.user.create({ data: { email: adminEmail, passwordHash: hash, role: "ADMIN" } })).id;
 });
-test.afterAll(async () => { await db.$disconnect(); });
+test.afterAll(async () => {
+  if (adminId) await db.user.deleteMany({ where: { email: { startsWith: fixturePrefix } } });
+  await db.$disconnect();
+});
 
 test("feedback is authenticated, idempotent, user-isolated and shown in answer review", async ({ page, request, browser }) => {
-  expect((await request.post("/api/question-feedback", { data: { testId: "tmua", questionId: first.id, kind: "ERROR" } })).status()).toBe(401);
+  const url = `/api/study-feedback/${historyId}`;
+  expect((await request.get(url)).status()).toBe(401);
   expect((await request.get("/api/admin/content-priorities?format=csv")).status()).toBe(401);
   await login(page, emails[0]);
-  await page.goto(`/zh-CN/tests/tmua/history/${historyId}`);
-  const feedbackButton = page.getByRole("button", { name: "题目有误", exact: true });
+  await Promise.all([
+    page.waitForResponse(response => new URL(response.url()).pathname === url && response.status() === 200),
+    page.goto(`/zh-CN/tests/tmua/history/${historyId}`),
+  ]);
+  const feedbackButton = page.getByRole("button", { name: "有题目有误", exact: true });
   await expect(feedbackButton).toBeEnabled({ timeout: 60_000 });
   await feedbackButton.click();
-  await expect(page.getByRole("button", { name: "✓ 题目有误", exact: true })).toBeDisabled();
-  const body = { testId: "tmua", questionId: first.id, kind: "ERROR" };
-  const results = await Promise.all(Array.from({ length: 4 }, () => browserApi(page, "/api/question-feedback", body)));
+  const reason = page.getByRole("combobox").filter({ has: page.getByRole("option", { name: "选择原因", exact: true }) });
+  await expect(reason).toBeVisible();
+  await reason.selectOption("PROMPT");
+  await page.getByRole("button", { name: "提交反馈", exact: true }).click();
+  await expect(page.getByRole("button", { name: "有题目有误 ✓", exact: true })).toBeDisabled();
+  const body = { kind: "ERROR", questionId: first.id, reason: "PROMPT" };
+  const results = await Promise.all(Array.from({ length: 4 }, () => browserApi(page, url, body)));
   expect(results.map(response => response.status)).toEqual([200, 200, 200, 200]);
-  expect(await db.questionFeedback.count({ where: { userId: studentId, questionKey: feedbackQuestionKey(first), kind: "ERROR" } })).toBe(1);
+  expect(await db.studySessionFeedback.count({ where: { sessionId: historyId, kind: "ERROR" } })).toBe(1);
   expect((await browserApi(page, "/api/admin/content-priorities?format=csv")).status).toBe(403);
   const other = await browser.newContext();
   try {
     const otherPage = await other.newPage(); await login(otherPage, emails[1]);
-    const state = await browserApi(otherPage, `/api/question-feedback?testId=tmua&questionId=${encodeURIComponent(first.id)}&userId=${studentId}`);
-    expect(state.status).toBe(200);
-    expect(state.body).toEqual({ kinds: [] });
+    const state = await browserApi(otherPage, url);
+    expect(state.status).toBe(404);
   } finally { await other.close(); }
 });
 
@@ -123,7 +134,7 @@ test("real retention dry-run/apply clears 366-day answers, feedback and photo by
     await expect(storage.get(oldImage.key)).rejects.toThrow();
     expect(await storage.get(youngImage.key)).toHaveLength(youngImage.size);
     expect(await db.examSession.findUnique({ where: { id: sessions[1].id } })).not.toBeNull();
-    expect(await db.user.count()).toBe(6);
+    expect(await db.user.count({ where: { email: { startsWith: fixturePrefix } } })).toBe(6);
   } finally {
     await Promise.all([storage.delete(oldImage.key), storage.delete(youngImage.key)]);
   }

@@ -1,10 +1,39 @@
 import path from "node:path";
 import { expect, test } from "@playwright/test";
+import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
+
+const db = new PrismaClient();
+const email = `e2e-interview-${Date.now()}@example.test`;
+const password = "E2eInterview!2026";
+let fixtureCreated = false;
+
+test.beforeAll(async () => {
+  const database = new URL(process.env.DATABASE_URL ?? "");
+  if (!["localhost", "127.0.0.1"].includes(database.hostname) || !database.pathname.endsWith("_e2e")) {
+    throw new Error("Interview checks require an isolated loopback *_e2e database");
+  }
+  const startsAt = new Date();
+  await db.user.create({ data: { email, passwordHash: await bcrypt.hash(password, 10), role: "STUDENT",
+    membership: { create: { plan: "trial", startsAt, endsAt: new Date(+startsAt + 86_400_000) } },
+  } });
+  fixtureCreated = true;
+});
+
+test.afterAll(async () => {
+  if (fixtureCreated) await db.user.deleteMany({ where: { email } });
+  await db.$disconnect();
+});
 
 test("student can complete a timed quantitative interview drill", async ({ browser }) => {
   for (const viewport of [{ name: "desktop", width: 1440, height: 1000 }, { name: "mobile", width: 390, height: 844 }]) {
     const context = await browser.newContext({ viewport });
     const page = await context.newPage();
+    await page.goto("/zh-CN/login");
+    await page.locator('input[name="email"]').fill(email);
+    await page.locator('input[name="password"]').fill(password);
+    await page.getByRole("button", { name: "登录", exact: true }).click();
+    await expect(page).toHaveURL(/\/zh-CN\/?$/);
     await page.goto("/zh-CN/interview/maths");
     await page.getByRole("button", { name: "高压计算面试" }).click();
     await expect(page.getByRole("heading", { name: "高压定量面试训练" })).toBeVisible();
