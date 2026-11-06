@@ -32,6 +32,8 @@ Source: owner's `__v4__Codex_2026-11-02.md`, read in full on November 3. Base so
 
 ## Review and release conditions
 
+- November 6 review rollout: the owner authorized deployment to Beta. Beta runs `d3674f8`, the exact revision that passed GitHub Production check `42158167822`. Production remains on `a09c159`. Payments, new trial enrollment, AI provider calls and reminder delivery are disabled on the Beta review deployment. The rollback image, Beta database and encrypted pre-switch backup were verified at cutover. The public rollout must address continued exam access for existing students before changing production.
+
 - Confirm the purchase scope and the price sentence on the About page. Interview pages still carry the existing development status. The purchase notice excludes interviews from the current paid offering while the owner decides whether to finish interview answer isolation in this release. Signed-in members' existing development preview still receives reference material on its server-rendered page.
 - Confirm retention for financial records and complaint contact details. These are separate from the 365-day study deletion job. The account relationship is removed on account deletion while order evidence is retained. Existing users receive no retroactive trial or paid grant.
 - Supply the administrator account list in `ADMIN_EMAILS`. A listed account must also have the ADMIN role. Merchant credentials belong only in server configuration. WeChat H5 requires the merchant-side domain approval. In WeChat's embedded browser, the purchase page directs the user to open an external mobile browser. On desktop the QR encodes the site's purchase page.
